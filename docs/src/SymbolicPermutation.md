@@ -5,7 +5,7 @@ SymbolicPermutation
 ```
 
 ```@docs 
-entropy(x::Dataset{N, T}, est::SymbolicPermutation) where {N, T}
+entropy(x::Dataset{N, T}, est::SymbolicPermutation, α::Real = 1) where {N, T}
 ```
 
 ```@docs 

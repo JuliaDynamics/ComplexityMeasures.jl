@@ -7,6 +7,9 @@ CI && (ENV["GKSwstype"] = "100")
 using DelayEmbeddings
 using Documenter
 using DocumenterTools: Themes
+using Entropies
+using PyPlot
+using DynamicalSystems
 
 # %% JuliaDynamics theme.
 # download the themes
