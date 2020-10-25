@@ -5,8 +5,11 @@ version = "0.1.0"
 
 [deps]
 DelayEmbeddings = "5732040d-69e3-5649-938a-b6b4f237613f"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
+DelayEmbeddings = "1.10"
+StaticArrays = "0.12"
 julia = "1"
 DelayEmbeddings = "1.10"
 

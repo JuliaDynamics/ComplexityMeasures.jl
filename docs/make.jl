@@ -30,10 +30,11 @@ ENV["JULIA_DEBUG"] = "Documenter"
 
 PAGES = [
     "Documentation" => "index.md",
-    "Histogram estimation" => "histogram_estimation.md",
-    "Probability estimation" => [
-        "symbolic_estimation.md"
+    "Estimation" => [
+        "SymbolicPermutation.md",
+        "VisitationFrequency.md"
     ]
+    #"Histogram" => "histogram_estimation.md"
 ]
 
 makedocs(

@@ -9,7 +9,7 @@ A probability estimator based on permutations.
 abstract type PermutationProbabilityEstimator <: SymbolicProbabilityEstimator end
 
 """
-    SymbolicPermutation(; b::Real = 2, m::Int = 2)
+    SymbolicPermutation(m::Int; b::Real = 2)
 
 A symbolic permutation probabilities estimator using motifs of length `m`, based on Bandt & Pompe (2002)[^BandtPompe2002].
 
@@ -25,7 +25,7 @@ struct SymbolicPermutation <: PermutationProbabilityEstimator
     b::Real
     m::Int 
     
-    function SymbolicPermutation(; b::Real = 2, m::Int = 2)
+    function SymbolicPermutation(m::Int; b::Real = 2)
         m >= 2 || throw(ArgumentError("Dimensions of individual marginals must be at least 2. Otherwise, symbol sequences cannot be assigned to the marginals. Got m=$(m)."))
 
         new(b, m)
@@ -41,15 +41,18 @@ The symbol length is automatically determined from the dimension of the input da
 
 ## Example 
 
+Computing the order 5 permutation entropy for a 7-dimensional dataset.
+
 ```julia
 using DelayEmbeddings, Entropies
 D = Dataset([rand(7) for i = 1:1000])
-symbolize(D, SymbolicPermutation())
+symbolize(D, SymbolicPermutation(5))
 ```
 
 [^Berger2019]: Berger, Sebastian, et al. "Teaching Ordinal Patterns to a Computer: Efficient Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
 """
-function symbolize(x::Dataset{D, T}, est::PermutationProbabilityEstimator) where {D, T}
+function symbolize(x::Dataset{N, T}, est::PermutationProbabilityEstimator) where {N, T}
+    N >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series, embed it using `genembed` first.")
     s = zeros(Int, length(x))
     symbolize!(s, x, est)
     return s
@@ -82,7 +85,9 @@ function symbolize!(s::AbstractVector{Int}, x::Dataset{N, T}, est::SymbolicPermu
 end
 
 function probabilities!(s::Vector{Int}, x::Dataset{N, T}, est::SymbolicPermutation) where {N, T}
-    length(s) == length(x) || throw(ArgumentError("Need length(h) == length(x), got `length(h)=$(length(h))` and `length(x)==$(length(x))`."))
+    length(s) == length(x) || throw(ArgumentError("Need length(s) == length(x), got `length(s)=$(length(s))` and `length(x)==$(length(x))`."))
+    N >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series embed it using `genembed` first.")
+
     @inbounds for i = 1:length(x)
         s[i] = encode_motif(x[i], N)
     end
@@ -102,20 +107,64 @@ function probabilities(x::Dataset{N, T}, est::SymbolicPermutation) where {N, T}
     probabilities!(s, x, est)
 end
 
-function entropy!(s::Vector{Int}, x::Dataset{N, T}, est::SymbolicPermutation) where {N, T}
-    p = probabilities!(s, x, est)
-    return -sum(p .* log.(est.b, p))
+function entropy!(s::Vector{Int}, x::Dataset{N, T}, est::SymbolicPermutation, α::Real = 1) where {N, T}
+    ps = probabilities!(s, x, est)
+
+    α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
+    if α ≈ 0 # Hartley entropy, max-entropy
+        return log(est.b, length(ps)) 
+    elseif α ≈ 1
+        return -sum( x*log(est.b, x) for x in ps ) #Shannon entropy
+    elseif isinf(α)
+        return -log(est.b, maximum(ps)) #Min entropy
+    else
+        return (1/(1-α))*log(est.b, sum(x^α for x in ps) ) #Renyi α entropy
+    end
 end
 
 """
-    entropy(x::Dataset, est::SymbolicPermutation)
-    entropy!(s::Vector{Int}, x::Dataset, est::SymbolicPermutation)
+    entropy(x::Dataset, est::SymbolicPermutation, α::Real = 1)
+    entropy!(s::Vector{Int}, x::Dataset, est::SymbolicPermutation, α::Real = 1)
 
-Compute the permutation entropy of `x`. A pre-allocated symbol array `s`, 
-where `length(x) = length(s)`, can be provided to save some memory 
-allocations if the permutation entropy is to be computed for multiple data sets.
+Compute the generalized order `α` permutation entropy of `x`, using symbol size `est.m`.
+
+## Probability estimation 
+
+An unordered symbol frequency histogram is obtained by symbolizing the points in `x`,
+using [`probabilities(::Dataset{N, T}, ::SymbolicPermutation)`](@ref).
+Sum-normalizing this histogram yields a probability distribution over the symbols 
+
+A pre-allocated symbol array `s`, where `length(x) = length(s)`, can be provided to 
+save some memory allocations if the permutation entropy is to be computed for multiple data sets.
+
+## Entropy estimation
+
+After the symbolization histogram/distribution has been obtained, the order `α` generalized entropy 
+is computed from that sum-normalized symbol distribution.
+
+*Note: Do not confuse the order of the generalized entropy (`α`) with the order `m` of the 
+permutation entropy (`est.m`, which controls the symbol size). Permutation entropy is usually 
+estimated with `α = 1`, but the implementation here allows the generalized entropy of any 
+dimension to be computed from the symbol frequency distribution.*
+
+Let ``p`` be an array of probabilities (summing to 1). Then the Rényi entropy is
+
+```math
+H_\\alpha(p) = \\frac{1}{1-\\alpha} \\log \\left(\\sum_i p[i]^\\alpha\\right)
+```
+
+and generalizes other known entropies,
+like e.g. the information entropy
+(``\\alpha = 1``, see [^Shannon1948]), the maximum entropy (``\\alpha=0``,
+also known as Hartley entropy), or the correlation entropy
+(``\\alpha = 2``, also known as collision entropy).
+
+[^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
+[^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
+
+
 """
-function entropy(x::Dataset{N, T}, est::SymbolicPermutation) where {N, T}
+function entropy(x::Dataset{N, T}, est::SymbolicPermutation, α::Real = 1) where {N, T}
     s = zeros(Int, length(x))
-    entropy!(s, x, est)
+    entropy!(s, x, est, α)
 end
