@@ -95,16 +95,13 @@ See also: [`VisitationFrequency`](@ref), [`RectangularBinning`](@ref).
 using Entropies, DelayEmbeddings
 D = Dataset(rand(100, 3))
 
-# How shall the data be partitioned? 
-# Here, we subdivide each coordinate axis into 4 equal pieces
-# over the range of the data, resulting in rectangular boxes/bins
+# How shall the data be partitioned? Here, we subdivide each 
+# coordinate axis into 4 equal pieces over the range of the data, 
+# resulting in rectangular boxes/bins (see RectangularBinning).
 ϵ = RectangularBinning(4)
 
-# Feed partitioning instructions to estimator.
-est = VisitationFrequency(ϵ)
-
-# Estimate a probability distribution over the partition
-entropy(D, est)
+# Estimate entropy
+entropy(D, VisitationFrequency(ϵ))
 ```
 """
 function entropy(x::Dataset, est::VisitationFrequency, α::Real = 1)
