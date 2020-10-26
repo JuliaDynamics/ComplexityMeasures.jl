@@ -23,7 +23,7 @@ RectangularBinning
 Some convenience functions for symbolization are provided.
 
 ```@docs 
-encode
+encode_as_bin
 joint_visits
 marginal_visits
 ```
