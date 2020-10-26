@@ -15,7 +15,7 @@ unique integer array (one element for each dimension).
 For example, if a bin is visited three times, then the corresponding 
 integer array will appear three times in the array returned.
 
-See also: [`marginal_visits`](@ref), [`encode`](@ref).
+See also: [`marginal_visits`](@ref), [`encode_as_bin`](@ref).
 
 # Example 
 
@@ -28,7 +28,8 @@ joint_visits(pts, RectangularBinning(0.2))
 """
 function joint_visits(points, binning_scheme::RectangularBinning)
     axis_minima, box_edge_lengths = get_minima_and_edgelengths(points, binning_scheme)
-    encode(points, axis_minima, box_edge_lengths)
+    # encode points relative to axis minima, with boxes of fixed length
+    encode_as_bin(points, axis_minima, box_edge_lengths)
 end
 
 """
@@ -43,7 +44,7 @@ dimension in `dims`).
 For example, if a bin is visited three times, then the corresponding 
 integer array will appear three times in the array returned.
 
-See also: [`joint_visits`](@ref), [`encode`](@ref).
+See also: [`joint_visits`](@ref), [`encode_as_bin`](@ref).
 
 # Example
 
@@ -67,7 +68,8 @@ function marginal_visits(points, binning_scheme::RectangularBinning, dims)
     if sort(collect(dims)) == sort(collect(1:dim))
         joint_visits(points, binning_scheme)
     else
-        [encode(pt, axis_minima, box_edge_lengths)[dims] for pt in points]
+        # encode point relative to axis minima, with boxes of fixed length
+        [encode_as_bin(pt, axis_minima, box_edge_lengths)[dims] for pt in points]
     end
 end
 
@@ -78,7 +80,7 @@ If joint visits have been precomputed using [`joint_visits`](@ref), marginal
 visits can be returned directly without providing the binning again 
 using the `marginal_visits(joint_visits, dims)` signature.
 
-See also: [`joint_visits`](@ref), [`encode`](@ref).
+See also: [`joint_visits`](@ref), [`encode_as_bin`](@ref).
 
 # Example 
 

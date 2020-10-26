@@ -67,8 +67,8 @@ Estimate the generalized order `α` entropy of `x` using a visitation frequency 
 This is done by first estimating the sum-normalized unordered 1D histogram using
 [`probabilities`](@ref), then computing entropy over that histogram/distribution.
 
-The base `b` of the logarithms is given to the constructor of the estimator 
-(e.g. `est = VisitationFrequency(b = Base.MathConstants.e`).
+The base `b` of the logarithms is inferred from the provided estimator 
+(e.g. `est = VisitationFrequency(RectangularBinning(45), b = Base.MathConstants.e`).
 
 ## Description
 
