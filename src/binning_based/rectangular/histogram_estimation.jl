@@ -24,7 +24,7 @@ h2 = non0hist(mv)
 sum(h1) ≈ 1.0, sum(h2) ≈ 1.0
 ```
 """
-function _non0hist(bin_visits::Vector{T}) where {T <: Union{Vector, SVector, MVector}}
+function non0hist(bin_visits::Vector{T}) where {T <: Union{Vector, SVector, MVector}}
     L = length(bin_visits)
     hist = Vector{Float64}()
 
@@ -54,11 +54,11 @@ function _non0hist(bin_visits::Vector{T}) where {T <: Union{Vector, SVector, MVe
     return hist
 end
 
-_non0hist(x::Dataset) = _non0hist(x.data)
+non0hist(x::Dataset) = non0hist(x.data)
 
 
 """
-    _non0hist(points, binning_scheme::RectangularBinning, dims)
+    non0hist(points, binning_scheme::RectangularBinning, dims)
 
 Determine which bins are visited by `points` given the rectangular `binning_scheme`, 
 considering only the marginal along dimensions `dims`. Bins are referenced 
@@ -79,7 +79,7 @@ h2 = non0hist(pts, RectangularBinning(0.2), [1, 2])
 sum(h1) ≈ 1.0, sum(h2) ≈ 1.0
 ```
 """
-function _non0hist(points, binning_scheme::RectangularBinning, dims)
+function non0hist(points, binning_scheme::RectangularBinning, dims)
     bin_visits = marginal_visits(points, binning_scheme, dims)
     L = length(bin_visits)
     hist = Vector{Float64}()
@@ -110,6 +110,6 @@ function _non0hist(points, binning_scheme::RectangularBinning, dims)
     return hist
 end
 
-function _non0hist(points::Dataset{N, T}, binning_scheme::RectangularBinning) where {N, T}
-    _non0hist(points, binning_scheme, 1:N)
+function non0hist(points::Dataset{N, T}, binning_scheme::RectangularBinning) where {N, T}
+    non0hist(points, binning_scheme, 1:N)
 end

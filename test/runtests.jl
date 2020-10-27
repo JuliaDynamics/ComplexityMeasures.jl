@@ -53,3 +53,10 @@ end
     @test genentropy(2, xn) isa Real
     @test genentropy(1, xn) isa Real
 end
+
+@testset "Histogram estimation" begin 
+    x = rand(1:10, 100)
+    D = Dataset([rand(1:10, 3) for i = 1:100])
+    @test non0hist(x) isa AbstractVector{T} where T<:Real
+    @test non0hist(D) isa AbstractVector{T} where T<:Real
+end

@@ -91,7 +91,7 @@ function probabilities!(s::Vector{Int}, x::Dataset{N, T}, est::SymbolicPermutati
     @inbounds for i = 1:length(x)
         s[i] = encode_motif(x[i], N)
     end
-    _non0hist(s)
+    non0hist(s)
 end
 
 """
