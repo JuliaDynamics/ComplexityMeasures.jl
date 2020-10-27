@@ -56,7 +56,7 @@ probabilities(D, est)
 ```
 """
 function probabilities(x::Dataset, est::VisitationFrequency)
-    _non0hist(x, est.binning)
+    non0hist(x, est.binning)
 end
 
 """
