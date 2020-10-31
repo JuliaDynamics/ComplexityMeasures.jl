@@ -121,7 +121,7 @@ end
 
 
 """
-    genentropy(α::Real, x::Dataset, est::VisitationFrequency) where {N, T <: Real}
+    genentropy(α::Real, x::Dataset, est::VisitationFrequency)   
 
 Compute the `α` order generalized (Rényi) entropy[^Rényi1960] of a multivariate dataset `x`.
 
@@ -133,6 +133,21 @@ each of those boxes is obtained, which is then sum-normalized to obtain a probab
 distribution, using [`probabilities`](@ref). The generalized entropy to base `est.b` is 
 then computed over that box visitation distribution using 
 [`genentropy(::Real, ::AbstractArray)`](@ref).
+
+## Example
+
+```julia
+using DelayEmbeddings, Entropies
+
+# Estimator specification. Split each coordinate axis in five equal segments, and 
+# use logarithms to base 2.
+est = VisitationFrequency(RectangularBinning(5), b = 2) 
+
+# Estimate order-1 generalized entropy of some random data
+D = Dataset(rand(1:3, 20000, 3))
+
+Entropies.genentropy(1, D, est)
+```
 
 See also: [`VisitationFrequency`](@ref).
 """
