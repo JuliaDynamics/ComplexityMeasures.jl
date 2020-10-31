@@ -174,10 +174,10 @@ end
     
 """
     probabilities(x::Dataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
-    probabilities(x::AbstractVector, est::SymbolicWeightedPermutation; m::Int = 2, τ::Int = 1) → Vector{<:Real}
+    probabilities(x::AbstractVector, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
 
     probabilities!(s::Vector{Int}, x::Dataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
-    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicWeightedPermutation; m::Int = 2, τ::Int = 1) → Vector{<:Real}
+    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
 
 Compute the unordered probabilities of the occurrence of weighted symbol sequences 
 constructed from `x`. 
