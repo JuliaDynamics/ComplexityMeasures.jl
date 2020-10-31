@@ -20,6 +20,31 @@ like e.g. the information entropy
 also known as Hartley entropy), or the correlation entropy
 (``\\alpha = 2``, also known as collision entropy).
 
+## Example 
+
+```julia
+using Entropies
+p = rand(5000)
+p = p ./ sum(p) # normalizing to 1 ensures we have a probability distribution
+
+# Estimate order-1 generalized entropy to base 2 of the distribution
+Entropies.genentropy(1, ps, base = 2)
+```
+
+```julia
+using DelayEmbeddings, Entropies
+
+# Some random data, and its corresponding sum-normalized histogram (which sums to 1, so is a 
+# probability distribution)
+D = Dataset(rand(1:3, 10000, 3))
+ps = Entropies.non0hist(D)
+
+# Estimate order-1 generalized entropy to base 2 of the distribution
+Entropies.genentropy(1, ps, base = 2)
+```
+
+See also: [`non0hist`](@ref).
+
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
