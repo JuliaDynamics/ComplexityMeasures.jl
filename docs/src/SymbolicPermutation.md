@@ -26,7 +26,7 @@ m = 6 # Symbol size/dimension
 
 # Generate one time series for each value of the logistic parameter r
 lyaps, hs_entropies, hs_chaostools = Float64[], Float64[], Float64[]
-
+hs_wtperm = Float64[]
 for r in rs
     ds.p[1] = r
     push!(lyaps, lyapunov(ds, N_lyap))
@@ -36,28 +36,31 @@ for r in rs
     x = trajectory(ds, N_ent)
     τs = ([-i for i in 0:m-1]...,) # embedding lags
     emb = genembed(x, τs)
-    
-    # Pre-allocate symbol vector, one symbol for each point in the embedding - this is faster!
-    s = zeros(Int, length(emb));
-    push!(hs_entropies, entropy!(s, emb, SymbolicPermutation(), base = Base.MathConstants.e))
+
+    push!(hs_entropies, entropy(emb, SymbolicPermutation(), base = Base.MathConstants.e))
+    push!(hs_wtperm, entropy(emb, SymbolicWeightedPermutation(), base = Base.MathConstants.e))
 
     # Old ChaosTools.jl style estimation
     push!(hs_chaostools, permentropy(x, 6))
 end
 
 f = figure(figsize = (10,6))
-a1 = subplot(311)
+a1 = subplot(411)
 plot(rs, lyaps); ylim(-2, log(2)); ylabel("\$\\lambda\$")
 a1.axes.get_xaxis().set_ticklabels([])
 xlim(rs[1], rs[end]);
 
-a2 = subplot(312)
-plot(rs, hs_chaostools; color = "C1"); xlim(rs[1], rs[end]); 
+a2 = subplot(412)
+plot(rs, hs_chaostools; color = "C1"); xlim(rs[1], rs[end]);
 xlabel("\$r\$"); ylabel("\$h_6 (ChaosTools.jl)\$")
 
-a3 = subplot(313)
-plot(rs, hs_entropies; color = "C2"); xlim(rs[1], rs[end]); 
+a3 = subplot(413)
+plot(rs, hs_entropies; color = "C2"); xlim(rs[1], rs[end]);
 xlabel("\$r\$"); ylabel("\$h_6 (Entropies.jl)\$")
+
+a4 = subplot(414)
+plot(rs, hs_wtperm; color = "C3"); xlim(rs[1], rs[end]);
+xlabel("\$r\$"); ylabel("\$h_6 (Entropies.jl, wtperm)\$")
 tight_layout()
 savefig("permentropy.png")
 ```
