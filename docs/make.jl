@@ -35,13 +35,13 @@ PAGES = [
     "Documentation" => "index.md",
     "Estimation" => [
         "SymbolicPermutation.md",
+        "SymbolicWeightedPermutation.md",
         "VisitationFrequency.md"
     ]
-    #"Histogram" => "histogram_estimation.md"
 ]
 
 makedocs(
-    #modules = [Entropies],
+    modules = [Entropies],
     format = Documenter.HTML(
         prettyurls = CI,
         assets = [
