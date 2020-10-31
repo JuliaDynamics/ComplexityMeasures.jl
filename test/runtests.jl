@@ -28,9 +28,15 @@ end
         N = 100
         x = Dataset(repeat([1.1 2.2 3.3], N))
         y = Dataset(rand(N, 5))
+        z = rand(N)
+
+        @testset "Encoding" begin
+            @test encode_motif([2, 3, 1]) isa Int
+        end
         
         @testset "Pre-allocated" begin
             s = zeros(Int, N);
+
 
             # Probability distributions
             p1 = probabilities!(s, x, est)
@@ -43,6 +49,14 @@ end
             @test entropy!(s, y, est, 1) >= 0 # Regular order-1 entropy
             @test entropy!(s, x, est, 2) ≈ 0  # Higher-order entropy
             @test entropy!(s, y, est, 2) >= 0 # Higher-order entropy
+
+            # For a time series
+            m, τ = 3, 2
+            sz = zeros(Int, N - (m-1)*τ)
+            @test probabilities!(sz, z, est; m = m, τ = τ) isa Vector{<:Real}
+            @test probabilities(z, est; m = m, τ = τ) isa Vector{<:Real}
+            @test entropy!(sz, z, est; m = m, τ = τ) isa Real
+            @test entropy(z, est; m = m, τ = τ) isa Real
         end
         
         @testset "Not pre-allocated" begin
@@ -84,6 +98,11 @@ end
 
     @testset "VisitationFrequency" begin
         D = Dataset(rand(100, 3))
+
+        @testset "Counting visits" begin 
+            @test marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
+            @test joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
+        end
         
         binnings = [
             RectangularBinning(3),

@@ -3,11 +3,29 @@ export non0hist, binhist
 import DelayEmbeddings: AbstractDataset
 
 """ 
-    non0hist(x::Vector{T}) where T
+    non0hist(x::AbstractVector; normalize::Bool = true) → p::Vector{Float64}
+    non0hist(D::Dataset; normalize::Bool = true) → p::Vector{Float64}
 
-Compute the sum-normalized unordered histogram of the values of `x`. Assumes `x` can be sorted.
+Compute the (sum-normalized, if `normalize==true`) unordered histogram of the values of 
+`x`. Assumes `x` can be sorted.
+
+## Example 
+
+```julia
+using Entropies
+x = rand(1:10, 100000)
+Entropies.non0hist(x) # sum-normalized
+Entropies.non0hist(x, normalize = false) # histogram (counts)
+```
+
+```julia
+using DelayEmbeddings, Entropies
+D = Dataset(rand(1:3, 50000, 3))
+Entropies.non0hist(D) # sum-normalized
+Entropies.non0hist(D, normalize = false) # histogram (counts)
+```
 """
-function non0hist(x::Vector{T}) where T
+function non0hist(x::AbstractVector{T}; normalize::Bool = true) where T<:Real
     L = length(x)
 
     hist = Vector{Float64}()
@@ -22,26 +40,30 @@ function non0hist(x::Vector{T}) where T
         if val == prev_val
             count += 1
         else
-            push!(hist, count/L)
+            push!(hist, count)
             prev_val = val
             count = 1
         end
     end
-    push!(hist, count/L)
+    push!(hist, count)
 
     # Shrink histogram capacity to fit its size:
     sizehint!(hist, length(hist))
-    return hist
+    if normalize 
+        return hist ./ L
+    else 
+        return hist
+    end
 end
 
 # The following is from chaostools
 ##################################
 """
-    non0hist(ε, dataset::AbstractDataset) → p
+    non0hist(ε, dataset::AbstractDataset; normalize = true) → p
 
 Partition a dataset into tabulated intervals (boxes) of
-size `ε` and return the sum-normalized histogram in an unordered 1D form,
-discarding all zero elements and bin edge information.
+size `ε` and return the (sum-normalized, if `normalize==true`) histogram in an 
+unordered 1D form, discarding all zero elements and bin edge information.
 
 ## Performances Notes
 This method has a linearithmic time complexity (`n log(n)` for `n = length(data)`)
@@ -54,7 +76,7 @@ Use [`binhist`](@ref) to retain bin edge information.
 non0hist(args...) = _non0hist(args...)[1]
 
 
-function _non0hist(ε::Real, data::AbstractDataset{D, T}) where {D, T<:Real}
+function _non0hist(ε::Real, data::AbstractDataset{D, T}; normalize::Bool = true) where {D, T<:Real}
     mini = minima(data)
     L = length(data)
     hist = Vector{Float64}()
@@ -71,24 +93,29 @@ function _non0hist(ε::Real, data::AbstractDataset{D, T}) where {D, T<:Real}
         if bin == prev_bin
             count += 1
         else
-            push!(hist, count/L)
+            push!(hist, count)
             prev_bin = bin
             count = 1
         end
     end
-    push!(hist, count/L)
+    push!(hist, count)
 
     # Shrink histogram capacity to fit its size:
     sizehint!(hist, length(hist))
-    return hist, bins, mini
+
+    if normalize 
+        return hist ./ L, bins, mini
+    else 
+        return hist, bins, mini
+    end
 end
 
 """
-    binhist(ε, data) → p, bins
+    binhist(ε, data; normalize = true) → p, bins
 Do the same as [`non0hist`](@ref) but also return the bin edge information.
 """
-function binhist(ε, data)
-    hist, bins, mini = _non0hist(ε, data)
+function binhist(ε, data; normalize::Bool = true)
+    hist, bins, mini = _non0hist(ε, data, normalize = normalize)
     unique!(bins)
     b = [β .* ε .+ mini for β in bins]
     return hist, b

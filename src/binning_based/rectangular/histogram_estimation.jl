@@ -24,7 +24,7 @@ h2 = non0hist(mv)
 sum(h1) ≈ 1.0, sum(h2) ≈ 1.0
 ```
 """
-function non0hist(bin_visits::Vector{T}) where {T <: Union{Vector, SVector, MVector}}
+function non0hist(bin_visits::Vector{T}; normalize::Bool = true) where {T <: Union{Vector, SVector, MVector}}
     L = length(bin_visits)
     hist = Vector{Float64}()
 
@@ -41,30 +41,35 @@ function non0hist(bin_visits::Vector{T}) where {T <: Union{Vector, SVector, MVec
         if bin == prev_bin
             count += 1
         else
-            push!(hist, count/L)
+            push!(hist, count)
             prev_bin = bin
             count = 1
         end
     end
-    push!(hist, count/L)
+    push!(hist, count)
 
     # Shrink histogram capacity to fit its size:
     sizehint!(hist, length(hist))
 
-    return hist
+    if normalize 
+        return hist ./ L
+    else 
+        return hist
+    end
 end
 
-non0hist(x::Dataset) = non0hist(x.data)
+non0hist(x::Dataset; normalize::Bool = true) = non0hist(x.data, normalize = normalize)
 
 
 """
-    non0hist(points, binning_scheme::RectangularBinning, dims)
+    non0hist(points, binning_scheme::RectangularBinning, dims; normalize = true)
 
 Determine which bins are visited by `points` given the rectangular `binning_scheme`, 
 considering only the marginal along dimensions `dims`. Bins are referenced 
 relative to the axis minima.
 
-Returns the unordered histogram (visitation frequency) over the array of bin visits.
+Returns the unordered (sum-normalized, if `normalize==true`) histogram (visitation 
+frequency) over the array of bin visits.
 
 # Example 
 ```julia 
@@ -79,7 +84,7 @@ h2 = non0hist(pts, RectangularBinning(0.2), [1, 2])
 sum(h1) ≈ 1.0, sum(h2) ≈ 1.0
 ```
 """
-function non0hist(points, binning_scheme::RectangularBinning, dims)
+function non0hist(points, binning_scheme::RectangularBinning, dims; normalize::Bool = true)
     bin_visits = marginal_visits(points, binning_scheme, dims)
     L = length(bin_visits)
     hist = Vector{Float64}()
@@ -97,19 +102,23 @@ function non0hist(points, binning_scheme::RectangularBinning, dims)
         if bin == prev_bin
             count += 1
         else
-            push!(hist, count/L)
+            push!(hist, count)
             prev_bin = bin
             count = 1
         end
     end
-    push!(hist, count/L)
+    push!(hist, count)
 
     # Shrink histogram capacity to fit its size:
     sizehint!(hist, length(hist))
 
-    return hist
+    if normalize 
+        return hist ./ L
+    else 
+        return hist
+    end
 end
 
-function non0hist(points::Dataset{N, T}, binning_scheme::RectangularBinning) where {N, T}
-    non0hist(points, binning_scheme, 1:N)
+function non0hist(points::Dataset{N, T}, binning_scheme::RectangularBinning; normalize::Bool = true) where {N, T}
+    non0hist(points, binning_scheme, 1:N, normalize = normalize)
 end

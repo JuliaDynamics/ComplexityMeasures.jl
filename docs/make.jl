@@ -33,7 +33,9 @@ ENV["JULIA_DEBUG"] = "Documenter"
 
 PAGES = [
     "Documentation" => "index.md",
-    "Estimation" => [
+    "Generalized entropy" => "generalized_entropy.md",
+    "Histrogram estimation" => "histogram_estimation.md",
+    "Entropy/probability estimators" => [
         "SymbolicPermutation.md",
         "SymbolicWeightedPermutation.md",
         "VisitationFrequency.md"
