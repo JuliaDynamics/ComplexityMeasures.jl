@@ -28,6 +28,10 @@ end
         N = 100
         x = Dataset(repeat([1.1 2.2 3.3], N))
         y = Dataset(rand(N, 5))
+
+        @testset "Encoding" begin
+            @test encode_motif([2, 3, 1]) isa Int
+        end
         
         @testset "Pre-allocated" begin
             s = zeros(Int, N);
@@ -84,6 +88,11 @@ end
 
     @testset "VisitationFrequency" begin
         D = Dataset(rand(100, 3))
+
+        @testset "Counting visits" begin 
+            @test marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
+            @test joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
+        end
         
         binnings = [
             RectangularBinning(3),
