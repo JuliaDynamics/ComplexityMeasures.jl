@@ -121,16 +121,24 @@ end
 
 
 """
-    genentropy(α::Real, p::Dataset, est::VisitationFrequency) where {N, T <: Real}
+    genentropy(α::Real, x::Dataset, est::VisitationFrequency) where {N, T <: Real}
 
-Compute the `α` order generalized (Rényi) entropy[^Rényi1960] of a dataset,
-by first partitioning it into boxes using [`probabilities`](@ref) with binning
-instructions given by `est`.
+Compute the `α` order generalized (Rényi) entropy[^Rényi1960] of a multivariate dataset `x`.
 
+## Description 
+
+First, the state space defined by `x` is partitioned into rectangular boxes according to 
+the binning instructions given by `est.binning`. Then, a histogram of visitations to 
+each of those boxes is obtained, which is then sum-normalized to obtain a probability 
+distribution, using [`probabilities`](@ref). The generalized entropy to base `est.b` is 
+then computed over that box visitation distribution using 
+[`genentropy(::Real, ::AbstractArray)`](@ref).
+
+See also: [`VisitationFrequency`](@ref).
 """
-function genentropy(α::Real, p::Dataset{N, T}, est::VisitationFrequency) where {N, T <: Real}
+function genentropy(α::Real, x::Dataset{N, T}, est::VisitationFrequency) where {N, T <: Real}
     α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
 
-    ps = probabilities(p, est)
+    ps = probabilities(x, est)
     genentropy(α, ps, base = est.b)
 end

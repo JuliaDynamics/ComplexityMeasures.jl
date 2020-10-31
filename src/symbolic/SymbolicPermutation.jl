@@ -157,7 +157,7 @@ function probabilities!(s::Vector{Int}, x::Dataset{m, T}, est::SymbolicPermutati
     non0hist(s)
 end
 
-function probabilities!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 2, τ::Int = 1) where T<:Real
+function probabilities!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 2, τ::Int = 1) where {T<:Real}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     L = length(x)
     N = L - (m-1)*τ
@@ -179,6 +179,11 @@ end
 Compute the unordered probabilities of the occurrence of symbol sequences constructed from 
 the data `x`. 
 
+If `x` is a multivariate `Dataset`, then symbolization is performed directly on the state 
+vectors. If `x` is a univariate signal, then a delay reconstruction with embedding lag `τ` 
+and embedding dimension `m` is used to construct state vectors, on which symbolization is 
+then performed.
+
 A pre-allocated symbol array `s` can be provided to save some memory allocations if the 
 probabilities are to be computed for multiple data sets. If so, it is required that 
 `length(x) == length(s)` if `x` is a `Dataset`, or  `length(s) == length(x) - (m-1)τ` 
@@ -191,7 +196,7 @@ function probabilities(x::Dataset{m, T}, est::SymbolicPermutation) where {m, T}
     probabilities!(s, x, est)
 end
 
-function probabilities(x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 2, τ::Int = 1) where T<:Real
+function probabilities(x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 2, τ::Int = 1) where {T<:Real}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     τs = tuple([τ*i for i = 0:m-1]...)
     x_emb = genembed(x, τs)
@@ -208,7 +213,12 @@ end
     entropy!(s::Vector{Int}, x::AbstractVector, est::SymbolicPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
 
 Compute the generalized order `α` entropy over a permutation symbolization of `x`, using 
-symbol size/order `m`.
+symbol size/order `m`. 
+
+If `x` is a multivariate `Dataset`, then symbolization is performed directly on the state 
+vectors. If `x` is a univariate signal, then a delay reconstruction with embedding lag `τ` 
+and embedding dimension `m` is used to construct state vectors, on which symbolization is 
+then performed.
 
 A pre-allocated symbol array `s` can be provided to save some memory allocations if  
 probabilities are to be computed for multiple data sets. If so, it is required that 
@@ -224,9 +234,8 @@ Sum-normalizing this histogram yields a probability distribution over the symbol
 ## Entropy estimation
 
 After the symbolization histogram/distribution has been obtained, the order `α` generalized 
-entropy[^Rényi1960] is computed from that sum-normalized symbol distribution, using 
-[`genentropy`](@ref).
-
+entropy[^Rényi1960], to the given `base`, is computed from that sum-normalized symbol 
+distribution, using [`genentropy`](@ref).
 
 ### Notes 
 
@@ -246,7 +255,7 @@ end
 
 
 function entropy(x::AbstractArray{T}, est::SymbolicPermutation, α::Real = 1; 
-    m::Int = 3, τ::Int = 1, base = 2) where T
+    m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
     N = length(x)
     s = zeros(Int, N - (m-1)*τ)
     ps = probabilities!(s, x, est, m = m, τ = τ)
@@ -263,7 +272,7 @@ function entropy!(s::Vector{Int}, x::Dataset{m, T}, est::SymbolicPermutation, α
 end
 
 function entropy!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermutation, α::Real = 1; 
-        base::Real = 2) where {T}
+        base::Real = 2) where {T<:Real}
     
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     L = length(x)

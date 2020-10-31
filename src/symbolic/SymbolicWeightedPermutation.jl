@@ -182,6 +182,11 @@ end
 Compute the unordered probabilities of the occurrence of weighted symbol sequences 
 constructed from `x`. 
 
+If `x` is a multivariate `Dataset`, then symbolization is performed directly on the state 
+vectors. If `x` is a univariate signal, then a delay reconstruction with embedding lag `τ` 
+and embedding dimension `m` is used to construct state vectors, on which symbolization is 
+then performed.
+
 A pre-allocated symbol array `s` can be provided to save some memory allocations if the 
 probabilities are to be computed for multiple data sets. If so, it is required that 
 `length(x) == length(s)` if `x` is a `Dataset`, or  `length(s) == length(x) - (m-1)τ` 
@@ -197,7 +202,8 @@ function probabilities(x::Dataset{m, T}, est::SymbolicWeightedPermutation) where
     probs(πs, wts, est)
 end
 
-function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation; m::Int = 2, τ::Int = 1) where T
+function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation; 
+        m::Int = 3, τ::Int = 1) where {T<:Real}
     
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     τs = tuple([τ*i for i = 0:m-1]...)
@@ -215,6 +221,11 @@ end
 Compute the generalized order `α` entropy based on a weighted permutation 
 symbolization of `x`, using symbol size/order `m` for the permutations.
 
+If `x` is a multivariate `Dataset`, then symbolization is performed directly on the state 
+vectors. If `x` is a univariate signal, then a delay reconstruction with embedding lag `τ` 
+and embedding dimension `m` is used to construct state vectors, on which symbolization is 
+then performed.
+
 ## Probability estimation 
 
 An unordered symbol frequency histogram is obtained by symbolizing the points in `x` by
@@ -224,8 +235,8 @@ Sum-normalizing this histogram yields a probability distribution over the weight
 ## Entropy estimation
 
 After the symbolization histogram/distribution has been obtained, the order `α` generalized 
-entropy[^Rényi1960] is computed from that sum-normalized symbol distribution, using 
-[`genentropy`](@ref).
+entropy[^Rényi1960], to the given `base`, is computed from that sum-normalized symbol 
+distribution, using [`genentropy`](@ref).
 
 ### Notes 
 
@@ -245,7 +256,7 @@ function entropy(x::Dataset{m, T}, est::SymbolicWeightedPermutation, α::Real = 
 end
 
 function entropy(x::AbstractArray{T}, est::SymbolicWeightedPermutation, α::Real = 1; 
-        m::Int = 3, τ::Int = 1, base = 2) where T
+        m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
     
     ps = probabilities(x, est, m = m, τ = τ)
     genentropy(α, ps; base = base)

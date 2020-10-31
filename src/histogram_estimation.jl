@@ -3,11 +3,12 @@ export non0hist, binhist
 import DelayEmbeddings: AbstractDataset
 
 """ 
-    non0hist(x::Vector{T}) where T
+    non0hist(x::AbstractVector{<:Real}) → p::Vector{Float64}
 
-Compute the sum-normalized unordered histogram of the values of `x`. Assumes `x` can be sorted.
+Compute the sum-normalized unordered histogram of the values of `x`. Assumes `x` can be 
+sorted.
 """
-function non0hist(x::Vector{T}) where T
+function non0hist(x::AbstractVector{T}) where T<:Real
     L = length(x)
 
     hist = Vector{Float64}()
