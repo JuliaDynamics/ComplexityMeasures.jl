@@ -201,8 +201,30 @@ function probabilities(x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 
     τs = tuple([τ*i for i = 0:m-1]...)
     x_emb = genembed(x, τs)
 
-    s = zeros(Int, length(emb))
+    s = zeros(Int, length(x_emb))
     probabilities!(s, x_emb, est)
+end
+
+
+function entropy!(s::Vector{Int}, x::Dataset{m, T}, est::SymbolicPermutation, α::Real = 1; 
+        base::Real = 2) where {m, T}
+
+    length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
+    ps = probabilities!(s, x, est)
+
+    genentropy(α, ps, base = base)
+end
+
+function entropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation, α::Real = 1; 
+        base::Real = 2, m::Int = 3, τ::Int = 1) where {T<:Real}
+    
+    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+    L = length(x)
+    N = L - (m-1)*τ
+    length(s) == N || error("Pre-allocated symbol vector `s`needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
+    
+    ps = probabilities!(s, x, est, m = m, τ = τ)
+    genentropy(α, ps, base = base)
 end
 
 """
@@ -260,25 +282,4 @@ function entropy(x::AbstractArray{T}, est::SymbolicPermutation, α::Real = 1;
     s = zeros(Int, N - (m-1)*τ)
     ps = probabilities!(s, x, est, m = m, τ = τ)
     genentropy(α, ps; base = base)
-end
-
-function entropy!(s::Vector{Int}, x::Dataset{m, T}, est::SymbolicPermutation, α::Real = 1; 
-        base::Real = 2) where {m, T}
-
-    length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
-    ps = probabilities!(s, x, est)
-
-    genentropy(α, ps, base = base)
-end
-
-function entropy!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermutation, α::Real = 1; 
-        base::Real = 2) where {T<:Real}
-    
-    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-    L = length(x)
-    N = L - (m-1)*τ
-    length(s) == N || error("Pre-allocated symbol vector `s`needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
-    
-    ps = probabilities!(s, x, est)
-    genentropy(α, ps, base = base)
 end
