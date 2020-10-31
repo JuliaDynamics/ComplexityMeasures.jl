@@ -1,7 +1,7 @@
 export encode_motif
 
 """ 
-    encode_motif(x, m::Int = length(x))
+    encode_motif(x, m::Int = length(x)) → Int
 
 Encode the length-`m` motif `x` (a vector of indices that would sort some vector `v` in ascending order) 
 into its unique integer symbol, using Algorithm 1 in Berger et al. (2019)[^Berger2019].

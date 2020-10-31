@@ -4,16 +4,15 @@
 SymbolicPermutation
 ```
 
-```@docs 
-entropy(x::Dataset{N, T}, est::SymbolicPermutation, α::Real = 1) where {N, T}
+```@docs
+entropy(x::Dataset, est::SymbolicPermutation)
 ```
 
-```@docs 
-probabilities(x::Dataset{N, T}, est::SymbolicPermutation) where {N, T}
+```@docs
+probabilities(x::Dataset, est::SymbolicPermutation)
 ```
 
-## Example 
-
+## Example
 
 This example reproduces the permutation entropy example on the logistic map from Bandt and Pompe (2002).
 
@@ -23,6 +22,7 @@ using DynamicalSystems, PyPlot, Entropies
 ds = Systems.logistic()
 rs = 3.5:0.001:4
 N_lyap, N_ent = 100000, 10000
+m = 6 # Symbol size/dimension
 
 # Generate one time series for each value of the logistic parameter r
 lyaps, hs_entropies, hs_chaostools = Float64[], Float64[], Float64[]
@@ -34,12 +34,12 @@ for r in rs
     # For 1D systems `trajectory` returns a vector, so embed it using τs
     # to get the correct 6d dimension on the embedding
     x = trajectory(ds, N_ent)
-    τs = ([-i for i in 0:6-1]...,) # embedding lags
+    τs = ([-i for i in 0:m-1]...,) # embedding lags
     emb = genembed(x, τs)
     
     # Pre-allocate symbol vector, one symbol for each point in the embedding - this is faster!
     s = zeros(Int, length(emb));
-    push!(hs_entropies, entropy!(s, emb, SymbolicPermutation(6, b = Base.MathConstants.e)))
+    push!(hs_entropies, entropy!(s, emb, SymbolicPermutation(), base = Base.MathConstants.e))
 
     # Old ChaosTools.jl style estimation
     push!(hs_chaostools, permentropy(x, 6))
@@ -68,7 +68,7 @@ savefig("permentropy.png")
 
 Some convenience functions for symbolization are provided.
 
-```@docs 
+```@docs
 symbolize
 encode_motif
 ```
