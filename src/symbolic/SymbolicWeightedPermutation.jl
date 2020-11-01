@@ -4,7 +4,7 @@ import Entropies.symbolize
 import DelayEmbeddings: genembed, Dataset
 import Statistics: mean
 
-export SymbolicWeightedPermutation, probabilities, entropy
+export SymbolicWeightedPermutation, probabilities, genentropy, genentropy!
 
 """
     SymbolicWeightedPermutation <: PermutationProbabilityEstimator
@@ -134,7 +134,7 @@ end
 
 
 """ Compute probabilities of symbols `Π`, given weights `wts`. """
-function probs(Π::AbstractVector, wts::AbstractVector, est::SymbolicWeightedPermutation)
+function probs(Π::AbstractVector, wts::AbstractVector, est::SymbolicWeightedPermutation; normalize = true)
     length(Π) == length(wts) || error("Need length(Π) == length(wts)")
     N = length(Π)
     idxs = sortperm(Π, alg = QuickSort)
@@ -169,12 +169,18 @@ function probs(Π::AbstractVector, wts::AbstractVector, est::SymbolicWeightedPer
 
     # Normalize
     Σ = sum(sw)
-    pΠ = ps ./ Σ
+    if normalize 
+        return ps ./ Σ
+    else 
+        return ps
+    end
 end
     
 """
+# Weighted permutation-based symbol probabilities
+
     probabilities(x::Dataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
-    probabilities(x::AbstractVector, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
+    probabilities(x::AbstractVector{<:Real}, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
 
     probabilities!(s::Vector{Int}, x::Dataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
     probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
@@ -188,7 +194,7 @@ and embedding dimension `m` is used to construct state vectors, on which symboli
 then performed.
 
 A pre-allocated symbol array `s` can be provided to save some memory allocations if the 
-probabilities are to be computed for multiple data sets. If so, it is required that 
+probabilities are to be computed for multiple data sets. If provided, it is required that 
 `length(x) == length(s)` if `x` is a `Dataset`, or  `length(s) == length(x) - (m-1)τ` 
 if `x` is a univariate signal`.
 
@@ -199,7 +205,7 @@ function probabilities(x::Dataset{m, T}, est::SymbolicWeightedPermutation) where
     πs = symbolize(x, SymbolicPermutation()) 
     wts = weights_from_variance.(x.data, m)
 
-    probs(πs, wts, est)
+    probs(πs, wts, est, normalize = true)
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation; 
@@ -211,12 +217,14 @@ function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation;
     πs = symbolize(emb, SymbolicPermutation()) 
     wts = weights_from_variance.(emb.data, m)
     
-    probs(πs, wts, est)
+    probs(πs, wts, est, normalize = true)
 end
 
 """
-    entropy(x::Dataset, est::SymbolicWeightedPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
-    entropy(x::AbstractVector, est::SymbolicWeightedPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
+# Weighted permutation entropy 
+
+    genentropy(x::Dataset, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) → Real
+    genentropy(x::AbstractVector{<:Real}, est::SymbolicWeightedPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
 
 Compute the generalized order `α` entropy based on a weighted permutation 
 symbolization of `x`, using symbol size/order `m` for the permutations.
@@ -249,13 +257,13 @@ dimension to be computed from the symbol frequency distribution.*
 
 See also: [`SymbolicWeightedPermutation`](@ref), [`genentropy`](@ref).
 """
-function entropy(x::Dataset{m, T}, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) where {m, T}
+function genentropy(x::Dataset{m, T}, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) where {m, T}
     
     ps = probabilities(x, est)
     genentropy(α, ps; base = base)
 end
 
-function entropy(x::AbstractArray{T}, est::SymbolicWeightedPermutation, α::Real = 1; 
+function genentropy(x::AbstractArray{T}, est::SymbolicWeightedPermutation, α::Real = 1; 
         m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
     
     ps = probabilities(x, est, m = m, τ = τ)

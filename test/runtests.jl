@@ -45,18 +45,18 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropies
-            @test entropy!(s, x, est, 1) ≈ 0  # Regular order-1 entropy
-            @test entropy!(s, y, est, 1) >= 0 # Regular order-1 entropy
-            @test entropy!(s, x, est, 2) ≈ 0  # Higher-order entropy
-            @test entropy!(s, y, est, 2) >= 0 # Higher-order entropy
+            @test genentropy!(s, x, est, 1) ≈ 0  # Regular order-1 entropy
+            @test genentropy!(s, y, est, 1) >= 0 # Regular order-1 entropy
+            @test genentropy!(s, x, est, 2) ≈ 0  # Higher-order entropy
+            @test genentropy!(s, y, est, 2) >= 0 # Higher-order entropy
 
             # For a time series
             m, τ = 3, 2
             sz = zeros(Int, N - (m-1)*τ)
             @test probabilities!(sz, z, est; m = m, τ = τ) isa Vector{<:Real}
             @test probabilities(z, est; m = m, τ = τ) isa Vector{<:Real}
-            @test entropy!(sz, z, est; m = m, τ = τ) isa Real
-            @test entropy(z, est; m = m, τ = τ) isa Real
+            @test genentropy!(sz, z, est; m = m, τ = τ) isa Real
+            @test genentropy(z, est; m = m, τ = τ) isa Real
         end
         
         @testset "Not pre-allocated" begin
@@ -68,8 +68,8 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropy
-            @test entropy(x, est, 1) ≈ 0  # Regular order-1 entropy
-            @test entropy(y, est, 2) >= 0 # Higher-order entropy
+            @test genentropy(x, est, 1) ≈ 0  # Regular order-1 entropy
+            @test genentropy(y, est, 2) >= 0 # Higher-order entropy
         end
     end
 
@@ -90,8 +90,8 @@ end
         @test all(p1 .≈ p2)
 
         # Entropy
-        e1 = entropy(D, SymbolicWeightedPermutation())
-        e2 = entropy(x, SymbolicWeightedPermutation(), m = m, τ = τ)
+        e1 = genentropy(D, SymbolicWeightedPermutation())
+        e2 = genentropy(x, SymbolicWeightedPermutation(), m = m, τ = τ)
         @test e1 ≈ e2
     end
 
@@ -114,8 +114,9 @@ end
         @testset "Binning test $i" for i in 1:length(binnings)
             est = VisitationFrequency(binnings[i])
             @test probabilities(D, est) isa Vector{T} where T <: Real
-            @test entropy(D, est, 1) isa Real # Regular order-1 entropy
-            @test entropy(D, est, 3) isa Real # Higher-order entropy
+            @test genentropy(D, est, 1, base = 3) isa Real # Regular order-1 entropy
+            @test genentropy(D, est, 3, base = 2) isa Real # Higher-order entropy
+            @test genentropy(D, est, 3, base = 0) isa Real # Higher-order entropy
 
         end
     end

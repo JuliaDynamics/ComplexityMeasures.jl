@@ -1,5 +1,5 @@
 export PermutationProbabilityEstimator, SymbolicPermutation
-export symbolize, entropy, entropy!, probabilities, probabilities!
+export symbolize, genentropy, genentropy!, probabilities, probabilities!
 
 import DelayEmbeddings: Dataset
 
@@ -104,7 +104,7 @@ The symbol length is automatically determined from the dimension of the input da
 
 ## Example 
 
-Computing the order 5 permutation entropy for a 7-dimensional dataset.
+Computing the order-5 permutation entropy for a 7-dimensional dataset.
 
 ```julia
 using DelayEmbeddings, Entropies
@@ -154,7 +154,7 @@ function probabilities!(s::Vector{Int}, x::Dataset{m, T}, est::SymbolicPermutati
     @inbounds for i = 1:length(x)
         s[i] = encode_motif(x[i], m)
     end
-    non0hist(s)
+    non0hist(s, normalize = true)
 end
 
 function probabilities!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 2, τ::Int = 1) where {T<:Real}
@@ -170,6 +170,8 @@ function probabilities!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermu
 end
 
 """
+# Permutation-based symbol probabilities
+
     probabilities(x::Dataset, est::SymbolicPermutation) → Vector{<:Real} 
     probabilities(x::AbstractVector, est::SymbolicPermutation;  m::Int = 2, τ::Int = 1) → Vector{<:Real} 
 
@@ -185,7 +187,7 @@ and embedding dimension `m` is used to construct state vectors, on which symboli
 then performed.
 
 A pre-allocated symbol array `s` can be provided to save some memory allocations if the 
-probabilities are to be computed for multiple data sets. If so, it is required that 
+probabilities are to be computed for multiple data sets. If provided, it is required that 
 `length(x) == length(s)` if `x` is a `Dataset`, or  `length(s) == length(x) - (m-1)τ` 
 if `x` is a univariate signal.
 
@@ -206,7 +208,7 @@ function probabilities(x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 
 end
 
 
-function entropy!(s::Vector{Int}, x::Dataset{m, T}, est::SymbolicPermutation, α::Real = 1; 
+function genentropy!(s::Vector{Int}, x::Dataset{m, T}, est::SymbolicPermutation, α::Real = 1; 
         base::Real = 2) where {m, T}
 
     length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
@@ -215,7 +217,7 @@ function entropy!(s::Vector{Int}, x::Dataset{m, T}, est::SymbolicPermutation, α
     genentropy(α, ps, base = base)
 end
 
-function entropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation, α::Real = 1; 
+function genentropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation, α::Real = 1; 
         base::Real = 2, m::Int = 3, τ::Int = 1) where {T<:Real}
     
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
@@ -228,13 +230,15 @@ function entropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation, α::Re
 end
 
 """
-    entropy(x::Dataset, est::SymbolicPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
-    entropy(x::AbstractVector, est::SymbolicPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
+# Permutation entropy 
 
-    entropy!(s::Vector{Int}, x::Dataset, est::SymbolicPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
-    entropy!(s::Vector{Int}, x::AbstractVector, est::SymbolicPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
+    genentropy(x::Dataset, est::SymbolicPermutation, α::Real = 1; base = 2) → Real
+    genentropy(x::AbstractVector{<:Real}, est::SymbolicPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
 
-Compute the generalized order `α` entropy over a permutation symbolization of `x`, using 
+    genentropy!(s::Vector{Int}, x::Dataset, est::SymbolicPermutation, α::Real = 1; base = 2) → Real
+    genentropy!(s::Vector{Int}, x::AbstractVector{<:Real}, est::SymbolicPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
+
+Compute the generalized order-`α` entropy over a permutation symbolization of `x`, using 
 symbol size/order `m`. 
 
 If `x` is a multivariate `Dataset`, then symbolization is performed directly on the state 
@@ -243,7 +247,7 @@ and embedding dimension `m` is used to construct state vectors, on which symboli
 then performed.
 
 A pre-allocated symbol array `s` can be provided to save some memory allocations if  
-probabilities are to be computed for multiple data sets. If so, it is required that 
+probabilities are to be computed for multiple data sets. If provided, it is required that 
 `length(x) == length(s)` if `x` is a `Dataset`, or  `length(s) == length(x) - (m-1)τ` 
 if `x` is a univariate signal.
 
@@ -270,13 +274,13 @@ dimension to be computed from the symbol frequency distribution.*
 
 See also: [`SymbolicPermutation`](@ref), [`genentropy`](@ref).
 """
-function entropy(x::Dataset{N, T}, est::SymbolicPermutation, α::Real = 1; base::Real = 2) where {N, T}
+function genentropy(x::Dataset{N, T}, est::SymbolicPermutation, α::Real = 1; base::Real = 2) where {N, T}
     s = zeros(Int, length(x))
-    entropy!(s, x, est, α; base = base)
+    genentropy!(s, x, est, α; base = base)
 end
 
 
-function entropy(x::AbstractArray{T}, est::SymbolicPermutation, α::Real = 1; 
+function genentropy(x::AbstractArray{T}, est::SymbolicPermutation, α::Real = 1; 
     m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
     N = length(x)
     s = zeros(Int, N - (m-1)*τ)

@@ -6,12 +6,9 @@ export encode_motif
 Encode the length-`m` motif `x` (a vector of indices that would sort some vector `v` in ascending order) 
 into its unique integer symbol, using Algorithm 1 in Berger et al. (2019)[^Berger2019].
 
-Note: no error checking is done to see if `length(x) == m`, so be sure to provide the correct motif length!
-
 ## Example 
 
 ```julia
-# Some random vector
 v = rand(5)
 
 # The indices that would sort `v` in ascending order. This is now a permutation 
