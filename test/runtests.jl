@@ -79,7 +79,7 @@ end
         m = 4
         τ = 1
         τs = tuple([τ*i for i = 0:m-1]...)
-        x = rand(25)
+        x = rand(100)
         D = genembed(x, τs)
 
         # Probability distributions

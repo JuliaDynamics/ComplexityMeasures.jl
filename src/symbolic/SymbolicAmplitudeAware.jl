@@ -44,6 +44,7 @@ function genentropy(x::Dataset{m, T}, est::SymbolicAmplitudeAwarePermutation, α
         base = 2) where {m, T}
     
     ps = probabilities(x, est)
+    @show minimum(ps)
     genentropy(α, ps; base = base)
 end
 
@@ -51,5 +52,10 @@ function genentropy(x::AbstractArray{T}, est::SymbolicAmplitudeAwarePermutation,
         m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
     
     ps = probabilities(x, est, m = m, τ = τ)
+    if minimum(ps) < 0
+        @show minimum(ps) 
+        @show ps
+        @show sum(ps)
+    end
     genentropy(α, ps; base = base)
 end

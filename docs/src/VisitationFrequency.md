@@ -4,12 +4,8 @@
 VisitationFrequency
 ```
 
-```@docs 
-entropy(x::Dataset, est::VisitationFrequency)
-```
-
-```@docs 
-probabilities(x::Dataset, est::VisitationFrequency)
+```@docs
+genentropy(x::Dataset, est::VisitationFrequency)
 ```
 
 ## Specifying binning/boxes
