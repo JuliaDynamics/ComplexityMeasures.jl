@@ -4,25 +4,17 @@
 VisitationFrequency
 ```
 
-```@docs 
-entropy(x::Dataset, est::VisitationFrequency)
-```
-
-```@docs 
-probabilities(x::Dataset, est::VisitationFrequency)
-```
-
 ## Specifying binning/boxes
 
 ```@docs
 RectangularBinning
 ```
 
-## Utils
+## Utility methods
 
-Some convenience functions for symbolization are provided.
+Some convenience functions bin encoding are provided.
 
-```@docs 
+```@docs
 encode_as_bin
 joint_visits
 marginal_visits
