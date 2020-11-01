@@ -1,27 +1,25 @@
-export VisitationFrequency, entropy, probabilities, genentropy
+export VisitationFrequency, probabilities, genentropy
 import DelayEmbeddings: Dataset, AbstractDataset
 
 """
-    VisitationFreqency(r::RectangularBinning; b::Real = 2)
+    VisitationFrequency(r::RectangularBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by 
 the binning scheme `r`.
-
-If the estimator is used for entropy computation, then the entropy is computed 
-to base `b` (the default `b = 2` gives the entropy in bits).
 
 See also: [`RectangularBinning`](@ref).
 """
 struct VisitationFrequency <: BinningProbabilitiesEstimator
     binning::RectangularBinning
-    b::Real
     
-    function VisitationFrequency(r::RectangularBinning; b::Real = 2)
-        new(r, b)
+    function VisitationFrequency(r::RectangularBinning)
+        new(r)
     end
 end
 
 """
+# Visitation frequency, binning based probabilities
+
     probabilities(x::Dataset, est::VisitationFrequency) → Vector{Real}
 
 Superimpose a rectangular grid (bins/boxes) dictated by `est` over the data `x` and return 
@@ -56,81 +54,23 @@ probabilities(D, est)
 ```
 """
 function probabilities(x::Dataset, est::VisitationFrequency)
-    non0hist(x, est.binning)
+    non0hist(x, est.binning, normalize = true)
 end
 
 """
-    entropy(x::Dataset, est::VisitationFrequency, α::Real = 1) → Real
+# Visitation frequency, binning based entropy 
 
+    genentropy(x::Dataset, est::VisitationFrequency, α::Real = 1; base::Real = 2)   
 
-Estimate the generalized order `α` entropy of `x` using a visitation frequency approach. 
-This is done by first estimating the sum-normalized unordered 1D histogram using
-[`probabilities`](@ref), then computing entropy over that histogram/distribution.
-
-The base `b` of the logarithms is inferred from the provided estimator 
-(e.g. `est = VisitationFrequency(RectangularBinning(45), b = Base.MathConstants.e`).
-
-## Description
-
-Let ``p`` be an array of probabilities (summing to 1). Then the Rényi entropy is
-
-```math
-H_\\alpha(p) = \\frac{1}{1-\\alpha} \\log \\left(\\sum_i p[i]^\\alpha\\right)
-```
-
-and generalizes other known entropies,
-like e.g. the information entropy
-(``\\alpha = 1``, see [^Shannon1948]), the maximum entropy (``\\alpha=0``,
-also known as Hartley entropy), or the correlation entropy
-(``\\alpha = 2``, also known as collision entropy).
-
-[^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
-[^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
-
-See also: [`VisitationFrequency`](@ref), [`RectangularBinning`](@ref).
-
-## Example
-
-```julia
-using Entropies, DelayEmbeddings
-D = Dataset(rand(100, 3))
-
-# How shall the data be partitioned? Here, we subdivide each 
-# coordinate axis into 4 equal pieces over the range of the data, 
-# resulting in rectangular boxes/bins (see RectangularBinning).
-ϵ = RectangularBinning(4)
-
-# Estimate entropy
-entropy(D, VisitationFrequency(ϵ))
-```
-"""
-function entropy(x::Dataset, est::VisitationFrequency, α::Real = 1)
-    ps = probabilities(x, est)
-
-    α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
-    if α ≈ 0 # Hartley entropy, max-entropy
-        return log(est.b, length(ps)) 
-    elseif α ≈ 1
-        return -sum( x*log(est.b, x) for x in ps ) #Shannon entropy
-    elseif isinf(α)
-        return -log(est.b, maximum(ps)) #Min entropy
-    else
-        return (1/(1-α))*log(est.b, sum(x^α for x in ps) ) #Renyi α entropy
-    end
-end
-
-
-"""
-    genentropy(α::Real, x::Dataset, est::VisitationFrequency)   
-
-Compute the `α` order generalized (Rényi) entropy[^Rényi1960] of a multivariate dataset `x`.
+Compute the order-`α` generalized (Rényi) entropy[^Rényi1960] of a multivariate dataset `x`
+using a visitation frequency approach.
 
 ## Description 
 
 First, the state space defined by `x` is partitioned into rectangular boxes according to 
 the binning instructions given by `est.binning`. Then, a histogram of visitations to 
 each of those boxes is obtained, which is then sum-normalized to obtain a probability 
-distribution, using [`probabilities`](@ref). The generalized entropy to base `est.b` is 
+distribution, using [`probabilities`](@ref). The generalized entropy to the given `base` is 
 then computed over that box visitation distribution using 
 [`genentropy(::Real, ::AbstractArray)`](@ref).
 
@@ -138,22 +78,20 @@ then computed over that box visitation distribution using
 
 ```julia
 using DelayEmbeddings, Entropies
-
-# Estimator specification. Split each coordinate axis in five equal segments, and 
-# use logarithms to base 2.
-est = VisitationFrequency(RectangularBinning(5), b = 2) 
-
-# Estimate order-1 generalized entropy of some random data
 D = Dataset(rand(1:3, 20000, 3))
 
-Entropies.genentropy(1, D, est)
+# Estimator specification. Split each coordinate axis in five equal segments.
+est = VisitationFrequency(RectangularBinning(5)) 
+
+# Estimate order-1 (default) generalized entropy
+Entropies.genentropy(D, est, base = 2)
 ```
 
 See also: [`VisitationFrequency`](@ref).
 """
-function genentropy(α::Real, x::Dataset{N, T}, est::VisitationFrequency) where {N, T <: Real}
+function genentropy(x::Dataset, est::VisitationFrequency, α::Real = 1; base::Real = 2)
     α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
 
     ps = probabilities(x, est)
-    genentropy(α, ps, base = est.b)
+    genentropy(α, ps, base = base)
 end

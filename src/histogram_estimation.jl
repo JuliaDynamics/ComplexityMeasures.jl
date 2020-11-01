@@ -6,8 +6,11 @@ import DelayEmbeddings: AbstractDataset
     non0hist(x::AbstractVector; normalize::Bool = true) → p::Vector{Float64}
     non0hist(D::Dataset; normalize::Bool = true) → p::Vector{Float64}
 
-Compute the (sum-normalized, if `normalize==true`) unordered histogram of the values of 
-`x`. Assumes `x` can be sorted.
+Compute the unordered histogram of the values of `x`. 
+
+If `normalize==true`, then the histogram is sum-normalized. If `normalize==false`, 
+then occurrence counts for the unique elements in `x` is returned. Assumes that `x` can be 
+sorted.
 
 ## Example 
 

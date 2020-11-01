@@ -4,14 +4,6 @@
 SymbolicPermutation
 ```
 
-```@docs
-entropy(x::Dataset, est::SymbolicPermutation)
-```
-
-```@docs
-probabilities(x::Dataset, est::SymbolicPermutation)
-```
-
 ## Example
 
 This example reproduces the permutation entropy example on the logistic map from Bandt and Pompe (2002).
@@ -37,8 +29,8 @@ for r in rs
     τs = ([-i for i in 0:m-1]...,) # embedding lags
     emb = genembed(x, τs)
 
-    push!(hs_entropies, entropy(emb, SymbolicPermutation(), base = Base.MathConstants.e))
-    push!(hs_wtperm, entropy(emb, SymbolicWeightedPermutation(), base = Base.MathConstants.e))
+    push!(hs_entropies, Entropies.genentropy(emb, SymbolicPermutation(), base = Base.MathConstants.e))
+    push!(hs_wtperm, Entropies.genentropy(emb, SymbolicWeightedPermutation(), base = Base.MathConstants.e))
 
     # Old ChaosTools.jl style estimation
     push!(hs_chaostools, permentropy(x, 6))
@@ -67,7 +59,7 @@ savefig("permentropy.png")
 
 ![](permentropy.png)
 
-## Utils
+## Utility methods
 
 Some convenience functions for symbolization are provided.
 
