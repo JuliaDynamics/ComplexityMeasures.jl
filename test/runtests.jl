@@ -95,6 +95,26 @@ end
         @test e1 ≈ e2
     end
 
+    @testset "Amplitude-aware permutation entropy" begin 
+        m = 4
+        τ = 1
+        τs = tuple([τ*i for i = 0:m-1]...)
+        x = rand(25)
+        D = genembed(x, τs)
+
+        # Probability distributions
+        p1 = probabilities(x, SymbolicAmplitudeAwarePermutation(), m = m, τ = τ)
+        p2 = probabilities(D, SymbolicAmplitudeAwarePermutation())
+        @test sum(p1) ≈ 1.0
+        @test sum(p2) ≈ 1.0
+        @test all(p1 .≈ p2)
+
+        # Entropy
+        e1 = genentropy(D, SymbolicAmplitudeAwarePermutation())
+        e2 = genentropy(x, SymbolicAmplitudeAwarePermutation(), m = m, τ = τ)
+        @test e1 ≈ e2
+    end
+
 
     @testset "VisitationFrequency" begin
         D = Dataset(rand(100, 3))

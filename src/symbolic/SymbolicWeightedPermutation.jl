@@ -134,7 +134,7 @@ end
 
 
 """ Compute probabilities of symbols `Π`, given weights `wts`. """
-function probs(Π::AbstractVector, wts::AbstractVector, est::SymbolicWeightedPermutation; normalize = true)
+function probs(Π::AbstractVector, wts::AbstractVector; normalize = true)
     length(Π) == length(wts) || error("Need length(Π) == length(wts)")
     N = length(Π)
     idxs = sortperm(Π, alg = QuickSort)
@@ -205,7 +205,7 @@ function probabilities(x::Dataset{m, T}, est::SymbolicWeightedPermutation) where
     πs = symbolize(x, SymbolicPermutation()) 
     wts = weights_from_variance.(x.data, m)
 
-    probs(πs, wts, est, normalize = true)
+    probs(πs, wts, normalize = true)
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation; 
@@ -217,7 +217,7 @@ function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation;
     πs = symbolize(emb, SymbolicPermutation()) 
     wts = weights_from_variance.(emb.data, m)
     
-    probs(πs, wts, est, normalize = true)
+    probs(πs, wts, normalize = true)
 end
 
 """
