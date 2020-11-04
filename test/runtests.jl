@@ -25,9 +25,19 @@ end
 end
 
 @testset "Probability/entropy estimators" begin
+    @test CountOccurrences() isa CountOccurrences
     @test SymbolicPermutation() isa SymbolicPermutation
     @test SymbolicWeightedPermutation() isa SymbolicWeightedPermutation
+    @test SymbolicAmplitudeAwarePermutation() isa SymbolicAmplitudeAwarePermutation
+
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
+
+    @testset "Counting based" begin
+        D = Dataset(rand(1:3, 5000, 3))
+        ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
+        @test Entropies.genentropy(D, CountOccurrences(), 2, base = 2) isa Real
+        @test Entropies.genentropy(ts, CountOccurrences()) isa Real
+    end
 
     @testset "Permutation entropy" begin
         est = SymbolicPermutation()

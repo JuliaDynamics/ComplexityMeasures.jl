@@ -39,7 +39,7 @@ for r in rs
     push!(hs_chaostools, permentropy(x, 6))
 end
 
-f = figure(figsize = (13,6))
+f = figure(figsize = (6, 23))
 a1 = subplot(511)
 plot(rs, lyaps); ylim(-2, log(2)); ylabel("\$\\lambda\$")
 a1.axes.get_xaxis().set_ticklabels([])
@@ -47,19 +47,19 @@ xlim(rs[1], rs[end]);
 
 a2 = subplot(512)
 plot(rs, hs_chaostools; color = "C1"); xlim(rs[1], rs[end]);
-xlabel("\$r\$"); ylabel("\$h_6 (ChaosTools.jl)\$")
+xlabel(""); ylabel("\$h_6 (ChaosTools.jl)\$")
 
 a3 = subplot(513)
 plot(rs, hs_entropies; color = "C2"); xlim(rs[1], rs[end]);
-xlabel("\$r\$"); ylabel("\$h_6 (Entropies.jl)\$")
+xlabel(""); ylabel("\$h_6 (SP)\$")
 
 a4 = subplot(514)
 plot(rs, hs_wtperm; color = "C3"); xlim(rs[1], rs[end]);
-xlabel("\$r\$"); ylabel("\$h_6 (Entropies.jl, wtperm)\$")
+xlabel(""); ylabel("\$h_6 (SWP)\$")
 
 a5 = subplot(515)
-plot(rs, hs_ampperm; color = "C3"); xlim(rs[1], rs[end]);
-xlabel("\$r\$"); ylabel("\$h_6 (Entropies.jl, ampperm)\$")
+plot(rs, hs_ampperm; color = "C4"); xlim(rs[1], rs[end]);
+xlabel("\$r\$"); ylabel("\$h_6 (SAAP)\$")
 tight_layout()
 savefig("permentropy.png")
 ```

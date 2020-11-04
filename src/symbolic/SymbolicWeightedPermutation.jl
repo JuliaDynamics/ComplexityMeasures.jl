@@ -13,9 +13,9 @@ A symbolic, weighted permutation based probabilities/entropy estimator.
 
 ## Description
 
-Weighted permutations of a signal preserve not only ordinal patterns (sorting information), 
-but also encodes amplitude. The implementation here is based on 
-Fadlallah et al. (2013)[^Fadlallah2013].
+Weighted permutations of a signal preserve not only ordinal patterns (sorting information; 
+; see [`SymbolicPermutation`](@ref)), but also encodes amplitude information. This 
+implementation is based on Fadlallah et al. (2013)[^Fadlallah2013].
 
 ### From univariate signals
 
@@ -45,9 +45,7 @@ p(\\pi_i^{m, \\tau}) = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i} \\left( 
 
 The weighted permutation entropy is equivalent to regular permutation entropy when weights 
 are positive and identical (``w_j = \\beta \\,\\,\\, \\forall \\,\\,\\, j \\leq N`` and 
-``\\beta > 0)``. There are many different choices of weights, but in 
-Fadlallah et al. (2013)[^Fadlallah2013], weights are dictated by the variance of the 
-state vectors.
+``\\beta > 0)``. Weights are dictated by the variance of the state vectors.
 
 Let the aritmetic mean of state vector ``\\mathbf{x}_i`` be denoted 
 by
@@ -62,23 +60,23 @@ Weights are then computed as
 w_j = \\dfrac{1}{m}\\sum_{k=1}^m (x_{j+(k+1)\\tau} - \\mathbf{\\hat{x}}_j^{m, \\tau})^2.
 ```
 
-### Difference between original paper and this implementation
+!!! question "Implementation details"
+    *Note: in equation 7, section III, of the original paper, the authors write*
 
-*Note: in equation 7, section III, of the original paper, the authors write*
+    ```math
+    w_j = \\dfrac{1}{m}\\sum_{k=1}^m (x_{j-(k-1)\\tau} - \\mathbf{\\hat{x}}_j^{m, \\tau})^2.
+    ``` 
+    *But given the formula they give for the arithmetic mean, this is **not** the variance 
+    of ``\\mathbf{x}_i``, because the indices are mixed: ``x_{j+(k-1)\\tau}`` in the weights 
+    formula, vs. ``x_{j+(k+1)\\tau}`` in the arithmetic mean formula. This seems to imply 
+    that amplitude information about previous delay vectors 
+    are mixed with mean amplitude information about current vectors. The authors also mix the 
+    terms "vector" and "neighboring vector" (but uses the same notation for both), making it 
+    hard to interpret whether the sign switch is a typo or intended. Here, we use the notation 
+    above, which actually computes the variance for ``\\mathbf{x}_i``*.
 
-```math
-w_j = \\dfrac{1}{m}\\sum_{k=1}^m (x_{j-(k-1)\\tau} - \\mathbf{\\hat{x}}_j^{m, \\tau})^2.
-``` 
-*But this is **not** the variance of ``\\mathbf{x}_i``, because the indices are mixed: 
-``x_{j+(k-1)\\tau}`` in the weights formula, vs. ``x_{j+(k+1)\\tau}`` in the arithmetic 
-mean formula. This seems to imply that amplitude information about previous delay vectors 
-are mixed with mean amplitude information about current vectors. The authors also mix the 
-terms "vector" and "neighboring vector" (but uses the same notation for both), making it 
-hard to interpret whether the sign switch is a typo or intended. Here, we use the notation 
-above, which actually computes the variance for ``\\mathbf{x}_i``*.
 
-
-#### Estimation 
+### Estimation from univariate time series/datasets
 
 - To compute weighted permutation entropy for a univariate signal `x`, use the signature 
     `entropy(x::AbstractVector, est::SymbolicWeightedPermutation; τ::Int = 1, m::Int = 3)`.
@@ -87,17 +85,18 @@ above, which actually computes the variance for ``\\mathbf{x}_i``*.
     univariate signal `x` can be computed using `probabilities(x::AbstractVector, 
     est::SymbolicWeightedPermutation; τ::Int = 1, m::Int = 3)`.  
 
+!!! info "Default embedding dimension and embedding lag" 
+    By default, embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` is used. You 
+    should probably make a more informed decision about embedding parameters when computing the 
+    permutation entropy of a real dataset. In all cases, ``m`` must be at least 2 (there are 
+    no permutations of a single-element state vector, so need ``m \\geq 2``).
 
-*Note: by default, embedding dimension ``m = 3`` with embedding lag ``1`` is used. You 
-should probably make a more informed decision about embedding parameters when computing the 
-permutation entropy of a real dataset. In all cases, ``m`` must be at least 2* (there are 
-no permutations of a single-element state vector, so need ``m \\geq 2``).
+### Estimation from multivariate time series/datasets
 
-### From multivariate time series/datasets
-
-Weighted permutation entropy, just like regular permutation entropy, is can also be 
-computed for multivariate datasets (either embedded or consisting of multiple time series 
-variables). This assumes that the mixed symbols described above are actually a typo). 
+Although not dealt with in the original paper, numerically speaking, weighted permutation 
+entropy, just like regular permutation entropy, can also be computed for multivariate 
+datasets (either embedded or consisting of multiple time series 
+variables). This assumes that the mixed symbols described above are actually a typo.
 
 Then, just skip the delay reconstruction step, compute symbols 
 directly from the ``L`` existing state vectors 
@@ -109,13 +108,19 @@ quantity
 H = - \\sum_j p(\\pi) \\ln p(\\pi_j).
 ```
 
-#### Estimation 
-
 - To compute weighted permutation entropy for a multivariate/embedded dataset `x`, use the 
-    signature `entropy(x::Dataset, est::SymbolicWeightedPermutation)`.`
+    signature `entropy(x::AbstractDataset, est::SymbolicWeightedPermutation)`.`
 
-- To get the probability distribution for a multivariate/embedded dataset `x`, use 
-    `probabilities(x::Dataset, est::SymbolicWeightedPermutation)`.
+- To get the corresponding probability distribution for a multivariate/embedded dataset `x`, 
+    use `probabilities(x::AbstractDataset, est::SymbolicWeightedPermutation)`.
+
+!!! warn "Dynamical interpretation"
+    A dynamical interpretation of the permutation entropy does not necessarily hold if 
+    computing it on generic multivariate datasets. Method signatures for `Dataset`s are 
+    provided for convenience, and should only be applied if you understand the relation 
+    between your input data, the numerical value for the weighted permutation entropy, and 
+    its interpretation.
+
 
 [^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity 
     measure for time series incorporating amplitude information." Physical 
@@ -179,10 +184,10 @@ end
 """
 # Weighted permutation-based symbol probabilities
 
-    probabilities(x::Dataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
+    probabilities(x::AbstractDataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
     probabilities(x::AbstractVector{<:Real}, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
 
-    probabilities!(s::Vector{Int}, x::Dataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
+    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
     probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
 
 Compute the unordered probabilities of the occurrence of weighted symbol sequences 
@@ -200,7 +205,7 @@ if `x` is a univariate signal`.
 
 See also: [`SymbolicWeightedPermutation`](@ref).
 """
-function probabilities(x::Dataset{m, T}, est::SymbolicWeightedPermutation) where {m, T}
+function probabilities(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation) where {m, T}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     πs = symbolize(x, SymbolicPermutation()) 
     wts = weights_from_variance.(x.data, m)
@@ -223,7 +228,7 @@ end
 """
 # Weighted permutation entropy 
 
-    genentropy(x::Dataset, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) → Real
+    genentropy(x::AbstractDataset, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) → Real
     genentropy(x::AbstractVector{<:Real}, est::SymbolicWeightedPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
 
 Compute the generalized order `α` entropy based on a weighted permutation 
@@ -234,30 +239,27 @@ vectors. If `x` is a univariate signal, then a delay reconstruction with embeddi
 and embedding dimension `m` is used to construct state vectors, on which symbolization is 
 then performed.
 
-## Probability estimation 
+## Probability and entropy estimation 
 
 An unordered symbol frequency histogram is obtained by symbolizing the points in `x` by
-a weighted procedure, using [`probabilities(::Dataset, ::SymbolicWeightedPermutation)`](@ref).
+a weighted procedure, using [`probabilities(::AbstractDataset, ::SymbolicWeightedPermutation)`](@ref).
 Sum-normalizing this histogram yields a probability distribution over the weighted symbols.
-
-## Entropy estimation
 
 After the symbolization histogram/distribution has been obtained, the order `α` generalized 
 entropy[^Rényi1960], to the given `base`, is computed from that sum-normalized symbol 
 distribution, using [`genentropy`](@ref).
 
-### Notes 
-
-*Do not confuse the order of the generalized entropy (`α`) with the order `m` of the 
-permutation entropy (`m`, which controls the symbol size). Permutation entropy is usually 
-estimated with `α = 1`, but the implementation here allows the generalized entropy of any 
-dimension to be computed from the symbol frequency distribution.*
+!!! hint "Generalized entropy order vs. permutation order"
+    Do not confuse the order of the generalized entropy (`α`) with the order `m` of the 
+    permutation entropy (`m`, which controls the symbol size). Permutation entropy is usually 
+    estimated with `α = 1`, but the implementation here allows the generalized entropy of any 
+    dimension to be computed from the symbol frequency distribution.
 
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 
 See also: [`SymbolicWeightedPermutation`](@ref), [`genentropy`](@ref).
 """
-function genentropy(x::Dataset{m, T}, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) where {m, T}
+function genentropy(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) where {m, T}
     
     ps = probabilities(x, est)
     genentropy(α, ps; base = base)

@@ -37,8 +37,10 @@ PAGES = [
     "Probabilities" => "probabilities.md",
     "Generalized entropy" => "generalized_entropy.md",
     "Estimators" => [
+        "CountOccurrences.md",
         "SymbolicPermutation.md",
         "SymbolicWeightedPermutation.md",
+        "SymbolicAmplitudeAwarePermutation.md",
         "VisitationFrequency.md"
     ]
 ]

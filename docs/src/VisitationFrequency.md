@@ -1,4 +1,4 @@
-# Visitation frequency
+# Visitation frequency (binning)
 
 ```@docs
 VisitationFrequency

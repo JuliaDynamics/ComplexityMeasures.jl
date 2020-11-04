@@ -1,0 +1,5 @@
+# CountOccurrences (counting)
+
+```@docs
+CountOccurrences
+```
