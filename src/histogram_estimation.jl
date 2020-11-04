@@ -3,14 +3,16 @@ export non0hist, binhist
 import DelayEmbeddings: AbstractDataset
 
 """ 
+# Histograms from collections
+
     non0hist(x::AbstractVector; normalize::Bool = true) → p::Vector{Float64}
-    non0hist(D::Dataset; normalize::Bool = true) → p::Vector{Float64}
 
-Compute the unordered histogram of the values of `x`. 
+Compute the unordered histogram of the values of `x`, directly from the distribution of 
+values, without any coarse-graining or discretization. Assumes that `x` can be sorted.
 
-If `normalize==true`, then the histogram is sum-normalized. If `normalize==false`, 
-then occurrence counts for the unique elements in `x` is returned. Assumes that `x` can be 
-sorted.
+If `normalize==true`, then the 
+histogram is sum-normalized. If `normalize==false`, then occurrence counts for the unique 
+elements in `x` is returned. 
 
 ## Example 
 
@@ -20,6 +22,15 @@ x = rand(1:10, 100000)
 Entropies.non0hist(x) # sum-normalized
 Entropies.non0hist(x, normalize = false) # histogram (counts)
 ```
+
+# Histograms of `Dataset`s
+
+    non0hist(x::Dataset; normalize::Bool = true) → p::Vector{Float64}
+
+Compute the unordered histogram of the values of the `Dataset` `x` , directly from the 
+distribution of points, without any coarse-graining or discretization.
+
+## Example 
 
 ```julia
 using DelayEmbeddings, Entropies

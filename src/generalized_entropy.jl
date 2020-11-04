@@ -1,10 +1,16 @@
 export genentropy
+import DelayEmbeddings: AbstractDataset
 
 """
     genentropy(α::Real, p::AbstractArray; base = Base.MathConstants.e)
+    genentropy(α::Real, x::Dataset; base = Base.MathConstants.e)
 
 Compute the entropy, to the given `base`, of an array of probabilities `p`, assuming 
-that `p` is sum-normalized.
+that `p` is sum-normalized. 
+
+If a multivariate `Dataset` `x` is given, then the a sum-normalized histogram is obtained 
+directly on the elements of `x`, and the generalized entropy is computed on that 
+distribution.
 
 ## Description
 
@@ -31,6 +37,14 @@ p = p ./ sum(p) # normalizing to 1 ensures we have a probability distribution
 Entropies.genentropy(1, ps, base = 2)
 ```
 
+```julia
+using Entropies, DelayEmbeddings
+D = Dataset(rand(5000))
+
+# Estimate order-1 generalized entropy to base 2 of the dataset
+Entropies.genentropy(1, D, base = 2)
+```
+
 See also: [`non0hist`](@ref).
 
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
@@ -47,4 +61,9 @@ function genentropy(α::Real, p::AbstractArray{T}; base = Base.MathConstants.e) 
     else
         return (1/(1-α))*log(base, sum(x^α for x in p) ) #Renyi α entropy
     end
+end
+
+
+function genentropy(α::Real, x::AbstractDataset{m, T}; base = Base.MathConstants.e) where {m, T <: Real}
+    genentropy(α, non0hist(x, normalize = true), base = base)
 end
