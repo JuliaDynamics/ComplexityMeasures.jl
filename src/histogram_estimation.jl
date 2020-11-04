@@ -39,7 +39,7 @@ Entropies.non0hist(D) # sum-normalized
 Entropies.non0hist(D, normalize = false) # histogram (counts)
 ```
 """
-function non0hist(x::AbstractVector{T}; normalize::Bool = true) where T<:Real
+function non0hist(x::AbstractVector{T}; normalize::Bool = true) where T
     L = length(x)
 
     hist = Vector{Float64}()
