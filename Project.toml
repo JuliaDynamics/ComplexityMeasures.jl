@@ -1,7 +1,7 @@
 name = "Entropies"
 uuid = "ed8fcbec-b94c-44b6-89df-898894ad9591"
 repo = "https://github.com/kahaaga/Entropies.jl.git"
-version = "0.3.0"
+version = "0.3.1"
 
 [deps]
 DelayEmbeddings = "5732040d-69e3-5649-938a-b6b4f237613f"

@@ -1,4 +1,4 @@
-export non0hist
+export non0hist, genentropy
 
 """
     _non0hist(bin_visits::Vector{T}) where {T <: Union{Vector, SVector, MVector}} → Vector{Real}
