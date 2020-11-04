@@ -25,9 +25,19 @@ end
 end
 
 @testset "Probability/entropy estimators" begin
+    @test CountOccurrences() isa CountOccurrences
     @test SymbolicPermutation() isa SymbolicPermutation
     @test SymbolicWeightedPermutation() isa SymbolicWeightedPermutation
+    @test SymbolicAmplitudeAwarePermutation() isa SymbolicAmplitudeAwarePermutation
+
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
+
+    @testset "Counting based" begin
+        D = Dataset(rand(1:3, 5000, 3))
+        ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
+        @test Entropies.genentropy(D, CountOccurrences(), 2, base = 2) isa Real
+        @test Entropies.genentropy(ts, CountOccurrences()) isa Real
+    end
 
     @testset "Permutation entropy" begin
         est = SymbolicPermutation()
@@ -85,7 +95,7 @@ end
         m = 4
         τ = 1
         τs = tuple([τ*i for i = 0:m-1]...)
-        x = rand(25)
+        x = rand(100)
         D = genembed(x, τs)
 
         # Probability distributions
@@ -98,6 +108,26 @@ end
         # Entropy
         e1 = genentropy(D, SymbolicWeightedPermutation())
         e2 = genentropy(x, SymbolicWeightedPermutation(), m = m, τ = τ)
+        @test e1 ≈ e2
+    end
+
+    @testset "Amplitude-aware permutation entropy" begin 
+        m = 4
+        τ = 1
+        τs = tuple([τ*i for i = 0:m-1]...)
+        x = rand(25)
+        D = genembed(x, τs)
+
+        # Probability distributions
+        p1 = probabilities(x, SymbolicAmplitudeAwarePermutation(), m = m, τ = τ)
+        p2 = probabilities(D, SymbolicAmplitudeAwarePermutation())
+        @test sum(p1) ≈ 1.0
+        @test sum(p2) ≈ 1.0
+        @test all(p1 .≈ p2)
+
+        # Entropy
+        e1 = genentropy(D, SymbolicAmplitudeAwarePermutation())
+        e2 = genentropy(x, SymbolicAmplitudeAwarePermutation(), m = m, τ = τ)
         @test e1 ≈ e2
     end
 

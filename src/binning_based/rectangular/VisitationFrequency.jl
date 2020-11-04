@@ -18,9 +18,9 @@ struct VisitationFrequency <: BinningProbabilitiesEstimator
 end
 
 """
-# Visitation frequency, binning based probabilities
+# Probabilities based on binning (visitation frequency)
 
-    probabilities(x::Dataset, est::VisitationFrequency) → Vector{Real}
+    probabilities(x::AbstractDataset, est::VisitationFrequency) → Vector{Real}
 
 Superimpose a rectangular grid (bins/boxes) dictated by `est` over the data `x` and return 
 the sum-normalized histogram (i.e. frequency at which the points of `x` visits the bins/boxes 
@@ -53,14 +53,14 @@ est = VisitationFrequency(ϵ)
 probabilities(D, est)
 ```
 """
-function probabilities(x::Dataset, est::VisitationFrequency)
+function probabilities(x::AbstractDataset, est::VisitationFrequency)
     non0hist(x, est.binning, normalize = true)
 end
 
 """
-# Visitation frequency, binning based entropy 
+# Entropy based on binning (visitation frequency)
 
-    genentropy(x::Dataset, est::VisitationFrequency, α::Real = 1; base::Real = 2)   
+    genentropy(x::AbstractDataset, est::VisitationFrequency, α::Real = 1; base::Real = 2)   
 
 Compute the order-`α` generalized (Rényi) entropy[^Rényi1960] of a multivariate dataset `x`
 using a visitation frequency approach.
@@ -78,7 +78,7 @@ then computed over that box visitation distribution using
 
 ```julia
 using DelayEmbeddings, Entropies
-D = Dataset(rand(1:3, 20000, 3))
+D = Dataset(rand(20000, 5))
 
 # Estimator specification. Split each coordinate axis in five equal segments.
 est = VisitationFrequency(RectangularBinning(5)) 
@@ -87,9 +87,42 @@ est = VisitationFrequency(RectangularBinning(5))
 Entropies.genentropy(D, est, base = 2)
 ```
 
-See also: [`VisitationFrequency`](@ref).
+```julia
+using DelayEmbeddings, Entropies
+D = Dataset(rand(20000, 5))
+
+# Different ways to bin the state space (all guaranteed to cover all points in D)
+binnings = [RectangularBinning(6), 
+    RectangularBinning(0.25),
+    RectangularBinning([2, 2, 3, 2, 5]), 
+    RectangularBinning([0.5, 0.3, 0.33, 0.5, 0.2])]
+
+# Compute generalized order-1 entropies based on different types of binnings.
+es = [Entropies.genentropy(D, VisitationFrequency(b), 1) for b in binnings]
+```
+
+```julia
+using Entropies, DelayEmbeddings
+
+D = Dataset(rand(10000, 3)); # three-dimensional state vectors with values in range [0, 1]
+
+# Define bounds of the box covering (NOT covering all points - beware when computing entropy)
+x₁, x₂ = 0.5, 1 # not completely covering the data, which are on [0, 1]
+y₁, y₂ = -2, 1.5 # covering the data, which are on [0, 1]
+z₁, z₂ = 0, 0.5 # not completely covering the data, which are on [0, 1]
+
+n_subdivisions = 5 # split each axis range in five equal-length pieces
+# [1st axis interval, 2nd axis interval, ...], n_subdivs
+ϵ = [(x₁, x₂), (y₁, y₂), (z₁, z₂)], n_subdivisions
+est = VisitationFrequency(RectangularBinning(ϵ))
+
+# Order-1 generalized entropy using a grid that does not entirely cover all points 
+# in the state space.
+Entropies.genentropy(D, est, 1)
+```
+See also: [`VisitationFrequency`](@ref), [`RectangularBinning`](@ref).
 """
-function genentropy(x::Dataset, est::VisitationFrequency, α::Real = 1; base::Real = 2)
+function genentropy(x::AbstractDataset, est::VisitationFrequency, α::Real = 1; base::Real = 2)
     α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
 
     ps = probabilities(x, est)

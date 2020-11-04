@@ -25,7 +25,7 @@ Entropies.non0hist(x, normalize = false) # histogram (counts)
 
 # Histograms of `Dataset`s
 
-    non0hist(x::Dataset; normalize::Bool = true) → p::Vector{Float64}
+    non0hist(x::AbstractDataset; normalize::Bool = true) → p::Vector{Float64}
 
 Compute the unordered histogram of the values of the `Dataset` `x` , directly from the 
 distribution of points, without any coarse-graining or discretization.
