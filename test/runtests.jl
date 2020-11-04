@@ -7,8 +7,14 @@ using DelayEmbeddings
 @testset "Histogram estimation" begin 
     x = rand(1:10, 100)
     D = Dataset([rand(1:10, 3) for i = 1:100])
+    D2 = [(rand(1:10), rand(1:10, rand(1:10)) for i = 1:100)]
     @test non0hist(x) isa AbstractVector{T} where T<:Real
     @test non0hist(D) isa AbstractVector{T} where T<:Real
+    @test non0hist(D2) isa AbstractVector{T} where T<:Real
+
+    @test non0hist(x, normalize = true) |> sum ≈ 1.0
+    @test non0hist(D, normalize = true) |> sum ≈ 1.0
+    @test non0hist(D2, normalize = true)|> sum ≈ 1.0
 end
 
 @testset "Generalized entropy" begin 
