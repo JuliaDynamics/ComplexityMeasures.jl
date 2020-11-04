@@ -18,15 +18,9 @@ struct CountOccurrences <: ProbabilitiesEstimator end
     genentropy(x::AbstractDataset, est::CountOccurrences, α = 1; base = Base.MathConstants.e)
     genentropy(x::AbstractVector{T}, est::CountOccurrences, α = 1; base = Base.MathConstants.e) where T
     
-Compute the order-`α` generalized (Rényi) entropy[^Rényi1960] of a multivariate dataset `x`
+Compute the order-`α` generalized (Rényi) entropy[^Rényi1960] of a dataset `x`
 by counting repeated elements in `x`. Then, obtain a sum-normalized histogram from the 
-counts of repeated elements, and compute generalized entropy.
-
-Assume that `x` can be sorted.
-
-If `x` is a `Dataset`, then identical state vectors are counted as repetitions. If `x`
-is vector-like consisting of elements of the same type `T`, then identical elements of that 
-type are counted as repetitions. 
+counts of repeated elements, and compute generalized entropy. Assumes that `x` can be sorted.
 
 ## Example 
 
@@ -46,8 +40,8 @@ using Entropies, DelayEmbeddings
 # A bunch of tuples, many potentially identical
 x = [(rand(1:5), rand(1:5), rand(1:5)) for i = 1:10000]
 
-# Estimate order-1 generalized entropy to base 2 of the tuples
-Entropies.genentropy(x, CountOccurrences(), 1, base = 2)
+# Default generalized entropy of the tuples
+Entropies.genentropy(x, CountOccurrences())
 ```
 
 See also: [`CountOccurrences`](@ref).

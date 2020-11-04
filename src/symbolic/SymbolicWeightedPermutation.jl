@@ -11,13 +11,13 @@ export SymbolicWeightedPermutation, probabilities, genentropy, genentropy!
 
 A symbolic, weighted permutation based probabilities/entropy estimator.
 
+## Properties of original signal preserved
+
+Weighted permutations of a signal preserve not only ordinal patterns (sorting information), 
+but also encodes amplitude information. This implementation is based on Fadlallah et al. 
+(2013)[^Fadlallah2013].
+
 ## Description
-
-Weighted permutations of a signal preserve not only ordinal patterns (sorting information; 
-; see [`SymbolicPermutation`](@ref)), but also encodes amplitude information. This 
-implementation is based on Fadlallah et al. (2013)[^Fadlallah2013].
-
-### From univariate signals
 
 Consider the ``n``-element univariate time series ``\\{x(t) = x_1, x_2, \\ldots, x_n\\}``. 
 Let ``\\mathbf{x_i}^{m, \\tau} = \\{x_j, x_{j+\\tau}, \\ldots, x_{j+(m-1)\\tau}\\}`` for 
@@ -109,7 +109,7 @@ H = - \\sum_j p(\\pi) \\ln p(\\pi_j).
 ```
 
 - To compute weighted permutation entropy for a multivariate/embedded dataset `x`, use the 
-    signature `entropy(x::AbstractDataset, est::SymbolicWeightedPermutation)`.`
+    signature `entropy(x::AbstractDataset, est::SymbolicWeightedPermutation)`.
 
 - To get the corresponding probability distribution for a multivariate/embedded dataset `x`, 
     use `probabilities(x::AbstractDataset, est::SymbolicWeightedPermutation)`.
@@ -121,6 +121,7 @@ H = - \\sum_j p(\\pi) \\ln p(\\pi_j).
     between your input data, the numerical value for the weighted permutation entropy, and 
     its interpretation.
 
+See also: [`SymbolicPermutation`](@ref), [`SymbolicAmplitudeAwarePermutation`](@ref).
 
 [^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity 
     measure for time series incorporating amplitude information." Physical 

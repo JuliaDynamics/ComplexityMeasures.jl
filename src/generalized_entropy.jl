@@ -2,6 +2,8 @@ export genentropy
 import DelayEmbeddings: AbstractDataset
 
 """
+# Generalized entropy of a probability distribution
+
     genentropy(α::Real, p::AbstractArray; base = Base.MathConstants.e)
 
 Compute the entropy, to the given `base`, of an array of probabilities `p` (assuming 

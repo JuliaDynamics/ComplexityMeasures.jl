@@ -13,13 +13,12 @@ abstract type PermutationProbabilityEstimator <: SymbolicProbabilityEstimator en
 
 A symbolic, permutation based probabilities/entropy estimator.
 
-## Description
+## Properties of original signal preserved
 
 Permutations of a signal preserve ordinal patterns (sorting information). This 
 implementation is based on Bandt & Pompe et al. (2002)[^BandtPompe2002].
 
-
-### From univariate time series 
+## Description
 
 Consider the ``n``-element univariate time series ``\\{x(t) = x_1, x_2, \\ldots, x_n\\}``. 
 Let ``\\mathbf{x_i}^{m, \\tau} = \\{x_j, x_{j+\\tau}, \\ldots, x_{j+(m-1)\\tau}\\}`` 

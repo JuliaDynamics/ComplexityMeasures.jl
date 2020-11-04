@@ -6,11 +6,13 @@ export SymbolicAmplitudeAwarePermutation, probabilities, genentropy
 
 A symbolic, amplitude-aware permutation based probabilities/entropy estimator.
 
-## Description
+## Properties of original signal preserved
 
 Amplitude-aware permutations of a signal preserve not only ordinal patterns (sorting 
-information; see [`SymbolicPermutation`](@ref)), but also encodes amplitude. This 
-implementation is based on Azami & Escudero (2016) [^Azami2016].
+information), but also encodes amplitude information. This implementation is based on Azami & Escudero 
+(2016) [^Azami2016].
+
+## Description
 
 Consider the ``n``-element univariate time series ``\\{x(t) = x_1, x_2, \\ldots, x_n\\}``. 
 Let ``\\mathbf{x_i}^{m, \\tau} = \\{x_j, x_{j+\\tau}, \\ldots, x_{j+(m-1)\\tau}\\}`` for 
@@ -80,7 +82,7 @@ H = - \\sum_j p(\\pi) \\ln p(\\pi_j).
 ```
 
 - To compute amplitude-aware permutation entropy for a multivariate/embedded dataset `x`, use the 
-    signature `entropy(x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation)`.`
+    signature `entropy(x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation)`.
 
 - To get the corresponding probability distribution for a multivariate/embedded dataset `x`, use 
     `probabilities(x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation)`.
