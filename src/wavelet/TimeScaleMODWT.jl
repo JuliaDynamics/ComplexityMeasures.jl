@@ -85,8 +85,8 @@ end
 """
 # Wavelet-based time-scale probability estimation 
 
-    probabilities(x::AbstractVector{<:Real}, est::TimeScaleMODWT, α::Real = 1; 
-        base::Real = 2) → ps::AbstractVector{<:Real}
+    probabilities(x::AbstractVector{<:Real}, est::TimeScaleMODWT, α = 1; 
+        base = 2) → ps::AbstractVector{<:Real}
 
 Compute the probability distribution of energies from a maximal overlap discrete wavelet 
 transform (MODWT) of `x`. The probability `ps[i]` is the relative/total energy for the 
@@ -116,8 +116,7 @@ end
 """
 # Wavelet-based time-scale entropy
 
-    genentropy(x::AbstractVector{<:Real}, est::TimeScaleMODWT, α::Real = 1; 
-        base::Real = 2) → h::Real
+    genentropy(x::AbstractVector{<:Real}, est::TimeScaleMODWT, α = 1; base = 2) → h::Real
 
 Compute the generalized order-`α` time-scale entropy of `x`, from a maximal overlap 
 discrete wavelet transform (MODWT) of `x`.
