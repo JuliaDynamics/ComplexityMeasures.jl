@@ -36,7 +36,7 @@ for r in rs
     push!(hs_ampperm, Entropies.genentropy(emb, SymbolicAmplitudeAwarePermutation(), base = Base.MathConstants.e))
 
     # Old ChaosTools.jl style estimation
-    push!(hs_chaostools, permentropy(x, 6))
+    push!(hs_chaostools, permentropy(x, m))
 end
 
 f = figure(figsize = (6, 23))

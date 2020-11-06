@@ -1,7 +1,7 @@
 using Test
 using Entropies
 using DelayEmbeddings 
-
+using Wavelets
 
 
 @testset "Histogram estimation" begin 
@@ -31,6 +31,8 @@ end
     @test SymbolicAmplitudeAwarePermutation() isa SymbolicAmplitudeAwarePermutation
 
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
+    @test TimeScaleMODWT() isa TimeScaleMODWT
+    @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
 
     @testset "Counting based" begin
         D = Dataset(rand(1:3, 5000, 3))
@@ -154,6 +156,38 @@ end
             @test genentropy(D, est, 3, base = 2) isa Real # Higher-order entropy
             @test genentropy(D, est, 3, base = 0) isa Real # Higher-order entropy
 
+        end
+    end
+
+    @testset "Wavelet" begin
+        N = 200
+        a = 10
+        t = LinRange(0, 2*a*π, N)
+        x = sin.(t .+  cos.(t/0.1)) .- 0.1;
+
+        @testset "TimeScaleMODWT" begin
+            wl = WT.Daubechies{4}()
+            est = TimeScaleMODWT(wl)
+
+            @test Entropies.get_modwt(x) isa AbstractArray{<:Real, 2}
+            @test Entropies.get_modwt(x, wl) isa AbstractArray{<:Real, 2}
+
+            W = Entropies.get_modwt(x)
+            Nlevels = maxmodwttransformlevels(x)
+            @test Entropies.energy_at_scale(W, 1) isa Real
+            @test Entropies.energy_at_time(W, 1) isa Real
+            
+            @test_throws ErrorException Entropies.energy_at_scale(W, 0)
+            @test_throws ErrorException Entropies.energy_at_scale(W, Nlevels + 2)
+            @test_throws ErrorException Entropies.energy_at_time(W, 0)
+            @test_throws ErrorException Entropies.energy_at_time(W, N+1)
+
+            @test Entropies.relative_wavelet_energy(W, 1) isa Real 
+            @test Entropies.relative_wavelet_energies(W, 1:2) isa AbstractVector{<:Real}
+
+            @test Entropies.time_scale_density(x, wl) isa AbstractVector{<:Real}
+            @test probabilities(x, TimeScaleMODWT()) isa AbstractVector{<:Real}
+            @test genentropy(x, TimeScaleMODWT(), 1) isa Real
         end
     end
 end
