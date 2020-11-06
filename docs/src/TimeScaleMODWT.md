@@ -1,4 +1,4 @@
-# Time-scale entropy (wavelet-based)
+# Time-scale (wavelet)
 
 ```@docs
 TimeScaleMODWT
