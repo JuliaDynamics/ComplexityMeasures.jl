@@ -2,7 +2,7 @@ export non0hist, genentropy
 
 """
     _non0hist(bin_visits::Vector{T}) where {T <: Union{Vector, SVector, MVector}} → Vector{Real}
-    _non0hist(x::Dataset) → Vector{Real}
+    _non0hist(x::AbstractDataset) → Vector{Real}
 
 Return the unordered histogram (visitation frequency) over the array of `bin_visits`,
 which is a vector containing bin encodings (each point encoded by an integer vector).
@@ -58,7 +58,7 @@ function non0hist(bin_visits::Vector{T}; normalize::Bool = true) where {T <: Uni
     end
 end
 
-non0hist(x::Dataset; normalize::Bool = true) = non0hist(x.data, normalize = normalize)
+non0hist(x::AbstractDataset; normalize::Bool = true) = non0hist(x.data, normalize = normalize)
 
 
 """
@@ -119,6 +119,6 @@ function non0hist(points, binning_scheme::RectangularBinning, dims; normalize::B
     end
 end
 
-function non0hist(points::Dataset{N, T}, binning_scheme::RectangularBinning; normalize::Bool = true) where {N, T}
+function non0hist(points::AbstractDataset{N, T}, binning_scheme::RectangularBinning; normalize::Bool = true) where {N, T}
     non0hist(points, binning_scheme, 1:N, normalize = normalize)
 end

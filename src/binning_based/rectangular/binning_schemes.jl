@@ -157,7 +157,7 @@ Return a vector of tuples containing axis-wise (minimum, maximum) values.
 """
 function get_minmaxes end
 
-function get_minima(pts::Dataset)
+function get_minima(pts::AbstractDataset)
     minima(pts)
 end
 
@@ -165,7 +165,7 @@ function get_minima(pts::Vector{T}) where {T <: Union{SVector, MVector, Vector}}
     minima(Dataset(pts))
 end
 
-function get_maxima(pts::Dataset)
+function get_maxima(pts::AbstractDataset)
     maxima(pts)
 end
 
@@ -174,7 +174,7 @@ function get_maxima(pts::Vector{T}) where {T <: Union{SVector, MVector, Vector}}
 end
 
 
-function get_minmaxes(pts::Dataset)
+function get_minmaxes(pts::AbstractDataset)
     mini, maxi = minima(pts), maxima(pts)
     minmaxes = [(mini[i], maxi[i]) for i = 1:length(mini)]
 end

@@ -8,8 +8,7 @@ abstract type SymbolicProbabilityEstimator <: ProbabilitiesEstimator end
 include("utils.jl")
 include("SymbolicPermutation.jl")
 include("SymbolicWeightedPermutation.jl")
-
-
+include("SymbolicAmplitudeAware.jl")
 
 
 
