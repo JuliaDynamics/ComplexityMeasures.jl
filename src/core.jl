@@ -2,6 +2,7 @@ using DelayEmbeddings
 import DelayEmbeddings: AbstractDataset, Dataset
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!, entropy
+export Dataset, DelayEmbeddings.dimension
 
 const Vector_or_Dataset = Union{AbstractVector, Dataset}
 
@@ -38,20 +39,26 @@ abstract type ProbabilitiesEstimator end
 const ProbEst = ProbabilitiesEstimator # shorthand
 
 """
-    probabilities(x::Dataset, est::ProbabilitiesEstimator) → p::Probabilities
-Calculate probabilities representing the given dataset `x` based on the provided
+    probabilities(x::Vector_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
+Calculate probabilities representing `x` based on the provided
 estimator and return them as a [`Probabilities`](@ref) container (`Vector`-like).
 The probabilities are typically unordered and may or may not contain 0s, see the
 documentation of the individual estimators for more.
 
 The configuration options are always given as arguments to the chosen estimator.
 
-    probabilities(x::Dataset, ε::Real) → p::Probabilities
-Convenience syntax which provides probabilities for `x` based on rectangular binning.
-In short, the state space is divided into boxes of length `ε`, see
-[`RectangularBinning`](@ref) for more.
+    probabilities(x::Vector_or_Dataset, ε::Real) → p::Probabilities
+Convenience syntax which provides probabilities for `x` based on rectangular binning,
+(i.e. performing a histogram). In short, the state space is divided into boxes of length
+`ε`, see [`RectangularBinning`](@ref) for more.
+This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
+and a linear space complexity (`l` for `l = dimension(x)`).
+This allows computation of probabilities (histograms) of high-dimensional
+datasets and with small box sizes `ε` without memory overflow and with maximum performance.
+To obtain the bin information along with `p`, use [`binhist`](@ref).
 
-    probabilities(x::Dataset_or_Vector) → p::Probabilities
+
+    probabilities(x::Vector_or_Dataset) → p::Probabilities
 Directly count probabilities from the elements of `x` without any discretization,
 binning, or other processing (mostly useful when `x` contains categorical or integer data).
 """
