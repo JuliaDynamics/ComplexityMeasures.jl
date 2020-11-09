@@ -45,6 +45,10 @@ The configuration options are always given as arguments to the chosen estimator.
 Convenience syntax which provides probabilities for `x` based on rectangular binning.
 In short, the state space is divided into boxes of length `ε`, see
 [`RectangularBinning`](@ref) for more.
+
+    probabilities(x::Dataset_or_Vector) → p::Probabilities
+Directly count probabilities from the elements of `x` without any discretization or
+binning (mostly useful when `x` contains categorical or integer data).
 """
 function probabilities end
 
@@ -59,7 +63,7 @@ function probabilities! end
     entropy(p::Probabilities, α = 1.0; base = Base.MathConstants.e)
 
 Compute the generalized order-`α` entropy of some probabilities
-returned by [`probabilities`](@ref) function.
+returned by the [`probabilities`](@ref) function.
 
     entropy(x::Vector_or_Dataset, pe::ProbabilityEstimator, α = 1.0; base)
 
