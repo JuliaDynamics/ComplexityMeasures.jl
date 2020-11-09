@@ -3,6 +3,8 @@ import DelayEmbeddings: AbstractDataset, Dataset
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!, entropy
 
+Vector_or_Dataset = Union{AbstractVector, Dataset}
+
 """
     Probabilities(x) → p
 A simple wrapper type around an `x::AbstractVector` which ensures that `p` sums to 1.
@@ -47,8 +49,8 @@ In short, the state space is divided into boxes of length `ε`, see
 [`RectangularBinning`](@ref) for more.
 
     probabilities(x::Dataset_or_Vector) → p::Probabilities
-Directly count probabilities from the elements of `x` without any discretization or
-binning (mostly useful when `x` contains categorical or integer data).
+Directly count probabilities from the elements of `x` without any discretization,
+binning, or other processing (mostly useful when `x` contains categorical or integer data).
 """
 function probabilities end
 
