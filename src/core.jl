@@ -65,11 +65,10 @@ function probabilities! end
 Compute the generalized order-`α` entropy of some probabilities
 returned by the [`probabilities`](@ref) function.
 
-    entropy(x::Vector_or_Dataset, pe::ProbabilityEstimator, α = 1.0; base)
+    entropy(x::Vector_or_Dataset, est::ProbabilityEstimator, α = 1.0; base)
 
-A convenience syntax, which calls If a multivariate `Dataset` `x` is given, then the a sum-normalized histogram is obtained
-directly on the elements of `x`, and the generalized entropy is computed on that
-distribution.
+A convenience syntax, which calls first `probabilities(x, est)`
+and then calculates the entropy of the result.
 
 ## Description
 
