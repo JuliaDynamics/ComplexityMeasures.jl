@@ -3,7 +3,7 @@ import DelayEmbeddings: AbstractDataset, Dataset
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!, entropy
 
-Vector_or_Dataset = Union{AbstractVector, Dataset}
+const Vector_or_Dataset = Union{AbstractVector, Dataset}
 
 """
     Probabilities(x) → p
@@ -35,6 +35,7 @@ end
 An abstract type for probabilities estimators.
 """
 abstract type ProbabilitiesEstimator end
+const ProbEst = ProbabilitiesEstimator # shorthand
 
 """
     probabilities(x::Dataset, est::ProbabilitiesEstimator) → p::Probabilities
@@ -100,4 +101,9 @@ function entropy(p::Probabilities, α = 1.0; base = Base.MathConstants.e)
     else
         return (1/(1-α))*log(base, sum(x^α for x in p) ) #Renyi α entropy
     end
+end
+
+function entropy(x, est::ProbEst, α = 1.0; base = Base.MathConstants.e)
+    p = probabilities(x, est)
+    entropy(p, α; base)
 end
