@@ -41,6 +41,8 @@ const ProbEst = ProbabilitiesEstimator # shorthand
     probabilities(x::Dataset, est::ProbabilitiesEstimator) → p::Probabilities
 Calculate probabilities representing the given dataset `x` based on the provided
 estimator and return them as a [`Probabilities`](@ref) container (`Vector`-like).
+The probabilities are typically unordered and may or may not contain 0s, see the
+documentation of the individual estimators for more.
 
 The configuration options are always given as arguments to the chosen estimator.
 

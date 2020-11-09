@@ -89,7 +89,7 @@ function _non0hist(data::AbstractDataset{D, T}, ε::Real) where {D, T<:Real}
 
     # Shrink histogram capacity to fit its size:
     sizehint!(hist, length(hist))
-    return Propabilities(hist ./ L), bins, mini
+    return Probabilities(hist ./ L), bins, mini
 end
 
 """
