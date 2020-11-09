@@ -1,7 +1,7 @@
 using DelayEmbeddings
 import DelayEmbeddings: AbstractDataset, Dataset
 export ProbabilitiesEstimator, Probabilities
-export probabilities, probabilities!, entropy
+export probabilities, probabilities!, entropy, entropy!
 export Dataset, DelayEmbeddings.dimension
 
 const Vector_or_Dataset = Union{AbstractVector, Dataset}
@@ -114,5 +114,15 @@ end
 
 function entropy(x, est::ProbEst, α = 1.0; base = Base.MathConstants.e)
     p = probabilities(x, est)
+    entropy(p, α; base)
+end
+
+"""
+    entropy!(p, x, est, α = 1.0; base)
+
+Similarly with `probabilities!` this is an in-place version of `entropy`.
+"""
+function entropy!(p, x, est::ProbEst, α = 1.0; base = Base.MathConstants.e)
+    probabilities!(p, x, est)
     entropy(p, α; base)
 end
