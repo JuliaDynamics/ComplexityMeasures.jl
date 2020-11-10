@@ -35,6 +35,13 @@ end
 @inline Base.sum(d::Probabilities{T}) where T = one(T)
 
 """
+An abstract type for entropy estimators (that don't explicitly estimate probabilities
+directly).
+"""
+abstract type EntropyEstimator end
+const EntEst = EntropyEstimator # shorthand
+
+"""
 An abstract type for probabilities estimators.
 """
 abstract type ProbabilitiesEstimator end
