@@ -1,6 +1,7 @@
 export binhist
 
-function probabilities(x::AbstractVector{T}) where T
+probabilities(x) = _non0hist(x)
+function _non0hist(x)
     L = length(x)
 
     hist = Vector{Float64}()
@@ -26,6 +27,9 @@ function probabilities(x::AbstractVector{T}) where T
     sizehint!(hist, length(hist))
     return Probabilities(hist ./ L)
 end
+_non0hist(x::AbstractDataset) = _non0hist(x.data)
+probabilities(x::AbstractDataset) = _non0hist(x.data)
+
 
 # The following is originally from ChaosTools.jl
 probabilities(data::AbstractDataset, ε::Real) = _non0hist(data, ε)[1]
@@ -67,7 +71,7 @@ Notice that `bins` are the starting corners of each bin. The actual bin size is
 `ε` across each dimension.
 """
 function binhist(data, ε)
-    hist, bins, mini = _non0hist(ε, data)
+    hist, bins, mini = _non0hist(data, ε)
     unique!(bins)
     b = [β .* ε .+ mini for β in bins]
     return hist, b

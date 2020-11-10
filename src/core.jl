@@ -1,8 +1,10 @@
 using DelayEmbeddings
-import DelayEmbeddings: AbstractDataset, Dataset
+import DelayEmbeddings: AbstractDataset, Dataset, dimension
 export ProbabilitiesEstimator, Probabilities
-export probabilities, probabilities!, entropy, entropy!
-export Dataset, DelayEmbeddings.dimension
+export EntropyEstimator
+export probabilities, probabilities!
+export genentropy, genentropy!
+export Dataset, dimension
 
 const Vector_or_Dataset = Union{AbstractVector, Dataset}
 
@@ -40,6 +42,7 @@ const ProbEst = ProbabilitiesEstimator # shorthand
 
 """
     probabilities(x::Vector_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
+
 Calculate probabilities representing `x` based on the provided
 estimator and return them as a [`Probabilities`](@ref) container (`Vector`-like).
 The probabilities are typically unordered and may or may not contain 0s, see the
@@ -48,6 +51,7 @@ documentation of the individual estimators for more.
 The configuration options are always given as arguments to the chosen estimator.
 
     probabilities(x::Vector_or_Dataset, ε::Real) → p::Probabilities
+
 Convenience syntax which provides probabilities for `x` based on rectangular binning,
 (i.e. performing a histogram). In short, the state space is divided into boxes of length
 `ε`, see [`RectangularBinning`](@ref) for more.
@@ -66,18 +70,18 @@ function probabilities end
 
 """
     probabilities!(p, args...)
-Identical with `probabilities(args...)` but writes the estimated probabilities in the
+Identical to `probabilities(args...)`, but writes the estimated probabilities in the
 pre-allocated vector `p` instead of making a new one.
 """
 function probabilities! end
 
 """
-    entropy(p::Probabilities, α = 1.0; base = Base.MathConstants.e)
+    genentropy(p::Probabilities; α = 1.0, base = Base.MathConstants.e)
 
 Compute the generalized order-`α` entropy of some probabilities
 returned by the [`probabilities`](@ref) function.
 
-    entropy(x::Vector_or_Dataset, est::ProbabilityEstimator, α = 1.0; base)
+    genentropy(x::Vector_or_Dataset, est::ProbabilityEstimator, α = 1.0; base)
 
 A convenience syntax, which calls first `probabilities(x, est)`
 and then calculates the entropy of the result.
@@ -99,7 +103,7 @@ also known as Hartley entropy), or the correlation entropy
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
-function entropy(p::Probabilities, α = 1.0; base = Base.MathConstants.e)
+function genentropy(p::Probabilities; α = 1.0, base = Base.MathConstants.e)
     α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
     if α ≈ 0
         return log(base, length(p)) #Hartley entropy, max-entropy
@@ -112,17 +116,20 @@ function entropy(p::Probabilities, α = 1.0; base = Base.MathConstants.e)
     end
 end
 
-function entropy(x, est::ProbEst, α = 1.0; base = Base.MathConstants.e)
+genentropy(x::AbstractArray{<:Real}) = 
+    error("For single-argument input, do `genentropy(Probabilities(x))` instead.")
+
+function genentropy(x, est::ProbEst; α = 1.0, base = Base.MathConstants.e)
     p = probabilities(x, est)
-    entropy(p, α; base)
+    genentropy(p, α; base)
 end
 
 """
-    entropy!(p, x, est, α = 1.0; base)
+    genentropy!(p, x, est; α = 1.0, base)
 
-Similarly with `probabilities!` this is an in-place version of `entropy`.
+Similarly with `probabilities!` this is an in-place version of `genentropy`.
 """
-function entropy!(p, x, est::ProbEst, α = 1.0; base = Base.MathConstants.e)
+function genentropy!(p, x, est::ProbEst; α = 1.0, base = Base.MathConstants.e)
     probabilities!(p, x, est)
-    entropy(p, α; base)
+    genentropy(p, α; base)
 end

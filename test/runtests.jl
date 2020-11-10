@@ -3,25 +3,26 @@ using Entropies
 using DelayEmbeddings 
 using Wavelets
 
-
 @testset "Histogram estimation" begin 
     x = rand(1:10, 100)
     D = Dataset([rand(1:10, 3) for i = 1:100])
     D2 = [(rand(1:10), rand(1:10, rand(1:10)) for i = 1:100)]
-    @test non0hist(x) isa AbstractVector{T} where T<:Real
-    @test non0hist(D) isa AbstractVector{T} where T<:Real
-    @test non0hist(D2) isa AbstractVector{T} where T<:Real
+    @test Entropies._non0hist(x) isa Probabilities
+    @test Entropies._non0hist(D) isa Probabilities
+    @test Entropies._non0hist(D2) isa Probabilities
 
-    @test non0hist(x, normalize = true) |> sum ≈ 1.0
-    @test non0hist(D, normalize = true) |> sum ≈ 1.0
-    @test non0hist(D2, normalize = true)|> sum ≈ 1.0
+    @test Entropies._non0hist(x) |> sum ≈ 1.0
+    @test Entropies._non0hist(D) |> sum ≈ 1.0
+    @test Entropies._non0hist(D2)|> sum ≈ 1.0
 end
 
 @testset "Generalized entropy" begin 
     x = rand(1000)
     xn = x ./ sum(x)
-    @test genentropy(2, xn) isa Real
-    @test genentropy(1, xn) isa Real
+    xp = Probabilities(xn)
+    @test genentropy(xp, α = 2) isa Real
+    @test genentropy(xp, α = 1) isa Real
+    @test_throws MethodError genentropy(xn, α = 2) isa Real
 end
 
 @testset "Probability/entropy estimators" begin
@@ -37,8 +38,7 @@ end
     @testset "Counting based" begin
         D = Dataset(rand(1:3, 5000, 3))
         ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
-        @test Entropies.genentropy(D, CountOccurrences(), 2, base = 2) isa Real
-        @test Entropies.genentropy(ts, CountOccurrences()) isa Real
+        @test Entropies.genentropy(D, CountOccurrences(), α = 2, base = 2) isa Real
     end
 
     @testset "Permutation entropy" begin
@@ -63,16 +63,16 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropies
-            @test genentropy!(s, x, est, 1) ≈ 0  # Regular order-1 entropy
-            @test genentropy!(s, y, est, 1) >= 0 # Regular order-1 entropy
-            @test genentropy!(s, x, est, 2) ≈ 0  # Higher-order entropy
-            @test genentropy!(s, y, est, 2) >= 0 # Higher-order entropy
+            @test genentropy!(s, x, est, α = 1) ≈ 0  # Regular order-1 entropy
+            @test genentropy!(s, y, est, α = 1) >= 0 # Regular order-1 entropy
+            @test genentropy!(s, x, est, α = 2) ≈ 0  # Higher-order entropy
+            @test genentropy!(s, y, est, α = 2) >= 0 # Higher-order entropy
 
             # For a time series
             m, τ = 3, 2
             sz = zeros(Int, N - (m-1)*τ)
-            @test probabilities!(sz, z, est; m = m, τ = τ) isa Vector{<:Real}
-            @test probabilities(z, est; m = m, τ = τ) isa Vector{<:Real}
+            @test probabilities!(sz, z, est; m = m, τ = τ) isa Probabilities
+            @test probabilities(z, est; m = m, τ = τ) isa Probabilities
             @test genentropy!(sz, z, est; m = m, τ = τ) isa Real
             @test genentropy(z, est; m = m, τ = τ) isa Real
         end
@@ -86,8 +86,8 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropy
-            @test genentropy(x, est, 1) ≈ 0  # Regular order-1 entropy
-            @test genentropy(y, est, 2) >= 0 # Higher-order entropy
+            @test genentropy(x, est, α = 1) ≈ 0  # Regular order-1 entropy
+            @test genentropy(y, est, α = 2) >= 0 # Higher-order entropy
         end
     end
 
@@ -105,7 +105,7 @@ end
         p2 = probabilities(D, SymbolicWeightedPermutation())
         @test sum(p1) ≈ 1.0
         @test sum(p2) ≈ 1.0
-        @test all(p1 .≈ p2)
+        @test all(p1.p .≈ p2.p)
 
         # Entropy
         e1 = genentropy(D, SymbolicWeightedPermutation())
@@ -125,7 +125,7 @@ end
         p2 = probabilities(D, SymbolicAmplitudeAwarePermutation())
         @test sum(p1) ≈ 1.0
         @test sum(p2) ≈ 1.0
-        @test all(p1 .≈ p2)
+        @test all(p1.p .≈ p2.p)
 
         # Entropy
         e1 = genentropy(D, SymbolicAmplitudeAwarePermutation())
@@ -151,10 +151,10 @@ end
 
         @testset "Binning test $i" for i in 1:length(binnings)
             est = VisitationFrequency(binnings[i])
-            @test probabilities(D, est) isa Vector{T} where T <: Real
-            @test genentropy(D, est, 1, base = 3) isa Real # Regular order-1 entropy
-            @test genentropy(D, est, 3, base = 2) isa Real # Higher-order entropy
-            @test genentropy(D, est, 3, base = 0) isa Real # Higher-order entropy
+            @test probabilities(D, est) isa Probabilities
+            @test genentropy(D, est, α=1, base = 3) isa Real # Regular order-1 entropy
+            @test genentropy(D, est, α=3, base = 2) isa Real # Higher-order entropy
+            @test genentropy(D, est, α=3, base = 1) isa Real # Higher-order entropy
 
         end
     end
@@ -186,8 +186,8 @@ end
             @test Entropies.relative_wavelet_energies(W, 1:2) isa AbstractVector{<:Real}
 
             @test Entropies.time_scale_density(x, wl) isa AbstractVector{<:Real}
-            @test probabilities(x, TimeScaleMODWT()) isa AbstractVector{<:Real}
-            @test genentropy(x, TimeScaleMODWT(), 1) isa Real
+            @test probabilities(x, TimeScaleMODWT()) isa Probabilities
+            @test genentropy(x, TimeScaleMODWT()) isa Real
         end
     end
 end

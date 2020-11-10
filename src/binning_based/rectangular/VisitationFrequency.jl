@@ -20,7 +20,7 @@ end
 """
 # Probabilities based on binning (visitation frequency)
 
-    probabilities(x::AbstractDataset, est::VisitationFrequency) → Vector{Real}
+    probabilities(x::AbstractDataset, est::VisitationFrequency) → ps::Probabilities
 
 Superimpose a rectangular grid (bins/boxes) dictated by `est` over the data `x` and return 
 the sum-normalized histogram (i.e. frequency at which the points of `x` visits the bins/boxes 
@@ -54,13 +54,13 @@ probabilities(D, est)
 ```
 """
 function probabilities(x::AbstractDataset, est::VisitationFrequency)
-    non0hist(x, est.binning, normalize = true)
+    _non0hist(x, est.binning)
 end
 
 """
 # Entropy based on binning (visitation frequency)
 
-    genentropy(x::AbstractDataset, est::VisitationFrequency, α::Real = 1; base::Real = 2)   
+    genentropy(x::AbstractDataset, est::VisitationFrequency; α::Real = 1, base::Real = 2)   
 
 Compute the order-`α` generalized (Rényi) entropy[^Rényi1960] of a multivariate dataset `x`
 using a visitation frequency approach.
@@ -122,9 +122,9 @@ Entropies.genentropy(D, est, 1)
 ```
 See also: [`VisitationFrequency`](@ref), [`RectangularBinning`](@ref).
 """
-function genentropy(x::AbstractDataset, est::VisitationFrequency, α::Real = 1; base::Real = 2)
+function genentropy(x::AbstractDataset, est::VisitationFrequency; α::Real = 1, base::Real = 2)
     α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
 
     ps = probabilities(x, est)
-    genentropy(α, ps, base = base)
+    genentropy(ps, α = α, base = base)
 end

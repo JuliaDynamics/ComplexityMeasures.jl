@@ -121,11 +121,11 @@ end
 """
 # Amplitude-aware permutation-based symbol probabilities
 
-    probabilities(x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation) → Vector{<:Real}  
-    probabilities(x::AbstractVector{<:Real}, est::SymbolicAmplitudeAwarePermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
+    probabilities(x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation) → ps::Probabilities
+    probabilities(x::AbstractVector{<:Real}, est::SymbolicAmplitudeAwarePermutation; m::Int = 3, τ::Int = 1) → ps::Probabilities
 
-    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation) → Vector{<:Real}  
-    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicAmplitudeAwarePermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
+    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation) → ps::Probabilities
+    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicAmplitudeAwarePermutation; m::Int = 3, τ::Int = 1) → ps::Probabilities
 
 Compute the unordered probabilities of the occurrence of amplitude-encoding symbol sequences 
 constructed from `x`. 
@@ -147,7 +147,7 @@ function probabilities(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePerm
     πs = symbolize(x, SymbolicPermutation()) 
     wts = AAPE.(x.data, A = A, m = m)
 
-    probs(πs, wts, normalize = true)
+    Probabilities(probs(πs, wts, normalize = true))
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutation; 
@@ -159,15 +159,15 @@ function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutat
     πs = symbolize(emb, SymbolicPermutation()) 
     wts = AAPE.(emb.data, A = A, m = m)
 
-    probs(πs, wts, normalize = true)
+    Probabilities(probs(πs, wts, normalize = true))
 end
 
 """
 # Amplitude-aware permutation entropy 
 
-    genentropy(x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation, α::Real = 1; base = 2) → Real
-    genentropy(x::AbstractVector{<:Real}, est::SymbolicAmplitudeAwarePermutation, α::Real = 1; 
-        m::Int = 3, τ::Int = 1, base = 2) → Real
+    genentropy(x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation; α::Real = 1, base = 2) → Real
+    genentropy(x::AbstractVector{<:Real}, est::SymbolicAmplitudeAwarePermutation; 
+        α::Real = 1, m::Int = 3, τ::Int = 1, base = 2) → Real
 
 Compute the generalized order `α` entropy based on an amplitude-sensitive permutation 
 symbolization of `x`, using symbol size/order `m` for the permutations.
@@ -200,16 +200,16 @@ distribution, using [`genentropy`](@ref).
 
 See also: [`SymbolicAmplitudeAwarePermutation`](@ref), [`genentropy`](@ref).
 """
-function genentropy(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePermutation, α::Real = 1; 
-        A::Real = 0.5, base = 2) where {m, T}
+function genentropy(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePermutation; 
+        α::Real = 1, A::Real = 0.5, base = 2) where {m, T}
     
     ps = probabilities(x, est, A = A)
-    genentropy(α, ps; base = base)
+    genentropy(ps, α = α, base = base)
 end
 
-function genentropy(x::AbstractArray{T}, est::SymbolicAmplitudeAwarePermutation, α::Real = 1; 
-        A::Real = 0.5, m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
+function genentropy(x::AbstractArray{T}, est::SymbolicAmplitudeAwarePermutation; 
+        α::Real = 1, A::Real = 0.5, m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
     
     ps = probabilities(x, est, A = A, m = m, τ = τ)
-    genentropy(α, ps; base = base)
+    genentropy(ps, α = α, base = base)
 end
