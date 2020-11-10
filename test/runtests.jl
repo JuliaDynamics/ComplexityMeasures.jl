@@ -34,11 +34,23 @@ end
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
 
+    @test NaiveKernel(0.1) isa NaiveKernel
+
     @testset "Counting based" begin
         D = Dataset(rand(1:3, 5000, 3))
         ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
         @test Entropies.genentropy(D, CountOccurrences(), 2, base = 2) isa Real
         @test Entropies.genentropy(ts, CountOccurrences()) isa Real
+    end
+
+    @testset "NaiveKernel" begin
+        D = Dataset(rand(1:3, 5000, 3))
+        ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
+        est = NaiveKernel(0.05)
+
+        @test Entropies.genentropy(D, est, base = 2) isa Real
+        @test Entropies.probabilities(D, est) isa Vector{<:Real}
+
     end
 
     @testset "Permutation entropy" begin
