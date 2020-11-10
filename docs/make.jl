@@ -10,6 +10,7 @@ using DocumenterTools: Themes
 using Entropies
 using PyPlot
 using DynamicalSystems
+using Wavelets
 
 # %% JuliaDynamics theme.
 # download the themes
@@ -28,6 +29,7 @@ Themes.compile(joinpath(@__DIR__, "juliadynamics-light.scss"), joinpath(@__DIR__
 Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-dark.css"))
 
 # %% Build docs
+PyPlot.ioff()
 cd(@__DIR__)
 ENV["JULIA_DEBUG"] = "Documenter"
 
@@ -35,10 +37,10 @@ PAGES = [
     "Entropies and probabilities" => "index.md",
     "Estimators" => [
         "CountOccurrences.md",
+        "VisitationFrequency.md",
         "SymbolicPermutation.md",
         "SymbolicWeightedPermutation.md",
         "SymbolicAmplitudeAwarePermutation.md",
-        "VisitationFrequency.md",
         "TimeScaleMODWT.md"
     ],
     "Details" => [
@@ -67,3 +69,5 @@ if CI
         push_preview = true
     )
 end
+PyPlot.close("all")
+PyPlot.ion()
