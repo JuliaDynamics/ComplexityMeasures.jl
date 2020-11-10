@@ -29,10 +29,13 @@ end
     @test SymbolicPermutation() isa SymbolicPermutation
     @test SymbolicWeightedPermutation() isa SymbolicWeightedPermutation
     @test SymbolicAmplitudeAwarePermutation() isa SymbolicAmplitudeAwarePermutation
-
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
+    @test Kraskov(k = 2, w = 1) isa Kraskov
+    @test Kraskov() isa Kraskov
+    @test KozachenkoLeonenko() isa KozachenkoLeonenko
+    @test KozachenkoLeonenko(w = 5) isa KozachenkoLeonenko
 
     @testset "Counting based" begin
         D = Dataset(rand(1:3, 5000, 3))
@@ -189,5 +192,19 @@ end
             @test probabilities(x, TimeScaleMODWT()) isa AbstractVector{<:Real}
             @test genentropy(x, TimeScaleMODWT(), 1) isa Real
         end
+    end
+
+    @testset "Nearest neighbor based" begin 
+        m = 4
+        τ = 1
+        τs = tuple([τ*i for i = 0:m-1]...)
+        x = rand(250)
+        D = genembed(x, τs)
+
+        est_nn = KozachenkoLeonenko(w = 5)
+        est_knn = Kraskov(k = 2, w = 1)
+
+        @test entropy(D, est_nn) isa Real
+        @test entropy(D, est_knn) isa Real
     end
 end

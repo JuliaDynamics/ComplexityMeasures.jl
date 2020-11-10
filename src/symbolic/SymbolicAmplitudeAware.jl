@@ -195,8 +195,7 @@ distribution, using [`genentropy`](@ref).
     estimated with `α = 1`, but the implementation here allows the generalized entropy of any 
     dimension to be computed from the symbol frequency distribution.
 
-[^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, 
-    Statistics and Probability*, pp 547 (1960)
+[^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 
 See also: [`SymbolicAmplitudeAwarePermutation`](@ref), [`genentropy`](@ref).
 """
