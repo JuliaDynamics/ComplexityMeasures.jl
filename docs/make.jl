@@ -42,6 +42,7 @@ PAGES = [
         "SymbolicWeightedPermutation.md",
         "SymbolicAmplitudeAwarePermutation.md",
         "VisitationFrequency.md",
+        "NaiveKernel.md",
         "TimeScaleMODWT.md"
     ]
 ]
