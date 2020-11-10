@@ -110,6 +110,8 @@ also known as Hartley entropy), or the correlation entropy
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
+function genentropy end
+
 function genentropy(p::Probabilities; α = 1.0, base = Base.MathConstants.e)
     α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
     if α ≈ 0
@@ -123,7 +125,7 @@ function genentropy(p::Probabilities; α = 1.0, base = Base.MathConstants.e)
     end
 end
 
-genentropy(x::AbstractArray{<:Real}) = 
+genentropy(x::AbstractArray{<:Real}) =
     error("For single-argument input, do `genentropy(Probabilities(x))` instead.")
 
 function genentropy(x, est::ProbEst; α = 1.0, base = Base.MathConstants.e)

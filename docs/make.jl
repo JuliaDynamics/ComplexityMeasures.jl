@@ -34,7 +34,7 @@ cd(@__DIR__)
 ENV["JULIA_DEBUG"] = "Documenter"
 
 PAGES = [
-    "Entropies and probabilities" => "index.md",
+    "Entropies.jl" => "index.md",
     "Estimators" => [
         "CountOccurrences.md",
         "VisitationFrequency.md",
