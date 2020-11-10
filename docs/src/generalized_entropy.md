@@ -1,38 +1,11 @@
 # Generalized entropy
 
-## For probability distributions
-
-Generalized entropy is a property of probability distributions.
-
-```@docs
-Entropies.genentropy(α::Real, p::AbstractArray{T}; base = Base.MathConstants.e) where {T <: Real}
-```
-
-## For real data (ordered sequences, time series)
-
-The method above only works when you actually have access to a probability distribution.
-In most cases, probability distributions have to be estimated from data.
-
-Currently, we implement the following probability estimators:
-
-- [`CountOccurrences`](@ref)
-- [`VisitationFrequency`](@ref)
-- [`SymbolicPermutation`](@ref)
-- [`SymbolicWeightedPermutation`](@ref)
-- [`SymbolicAmplitudeAwarePermutation`](@ref)
-
-### Getting the distributions
-
-Distributions can be obtained directly for dataset `x` using the signature
-
-```julia
-probabilities(x, estimator)
-```
-
-### Computing the entropy
-
-The syntax for using the different estimators to compute generalized entropy are as follows.
+Generalized entropy is a property of probability distributions. We provide the following
+interfaces for computing generalized entropy, either directly on pre-computed distributions,
+indirectly by first applying some `ProbabilityEstimator`, or directly using some 
+`EntropyEstimator`. Check the docstrings for individual estimators to see which methods
+work on which kinds of data.
 
 ```@docs
-Entropies.genentropy(::AbstractDataset)
+Entropies.genentropy(p::Probabilities)
 ```

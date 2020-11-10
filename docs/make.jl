@@ -33,9 +33,8 @@ ENV["JULIA_DEBUG"] = "Documenter"
 
 PAGES = [
     "Documentation" => "index.md",
-    "Histograms" => "histogram_estimation.md",
-    "Probabilities" => "probabilities.md",
     "Generalized entropy" => "generalized_entropy.md",
+    "Probabilities" => "probabilities.md",
     "Estimators" => [
         "CountOccurrences.md",
         "SymbolicPermutation.md",
@@ -43,7 +42,8 @@ PAGES = [
         "SymbolicAmplitudeAwarePermutation.md",
         "VisitationFrequency.md",
         "TimeScaleMODWT.md"
-    ]
+    ]#,
+    #"Histograms" => "histogram_estimation.md"
 ]
 
 makedocs(
