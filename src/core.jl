@@ -32,7 +32,7 @@ end
 @inline Base.iterate(d::Probabilities, i = 1) = iterate(d.p, i)
 @inline Base.getindex(d::Probabilities, i) = d.p[i]
 @inline Base.:*(d::Probabilities, x::Number) = d.p * x
-@inline Base.sum(d::Probabilities{T}) = one(T)
+@inline Base.sum(d::Probabilities{T}) where T = one(T)
 
 """
 An abstract type for probabilities estimators.
