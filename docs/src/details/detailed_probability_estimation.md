@@ -1,9 +1,4 @@
-# Probabilities
-
-```@docs
-probabilities
-probabilities!
-```
+# Details on probability estimation
 
 Specifics on how probabilities may be estimated follow.
 

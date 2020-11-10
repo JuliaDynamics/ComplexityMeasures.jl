@@ -32,9 +32,7 @@ cd(@__DIR__)
 ENV["JULIA_DEBUG"] = "Documenter"
 
 PAGES = [
-    "Documentation" => "index.md",
-    "Generalized entropy" => "generalized_entropy.md",
-    "Probabilities" => "probabilities.md",
+    "Entropies and probabilities" => "index.md",
     "Estimators" => [
         "CountOccurrences.md",
         "SymbolicPermutation.md",
@@ -42,7 +40,10 @@ PAGES = [
         "SymbolicAmplitudeAwarePermutation.md",
         "VisitationFrequency.md",
         "TimeScaleMODWT.md"
-    ]#,
+    ],
+    "Details" => [
+        "Probability estimation" => "details/detailed_probability_estimation.md"
+    ],
     #"Histograms" => "histogram_estimation.md"
 ]
 
