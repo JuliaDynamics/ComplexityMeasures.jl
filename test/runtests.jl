@@ -54,7 +54,7 @@ end
     end
 
     @testset "Permutation entropy" begin
-        est = SymbolicPermutation()
+        est = SymbolicPermutation(m = 5, τ = 1)
         N = 100
         x = Dataset(repeat([1.1 2.2 3.3], N))
         y = Dataset(rand(N, 5))
@@ -81,12 +81,11 @@ end
             @test genentropy!(s, y, est, α = 2) >= 0 # Higher-order entropy
 
             # For a time series
-            m, τ = 3, 2
-            sz = zeros(Int, N - (m-1)*τ)
-            @test probabilities!(sz, z, est; m = m, τ = τ) isa Probabilities
-            @test probabilities(z, est; m = m, τ = τ) isa Probabilities
-            @test genentropy!(sz, z, est; m = m, τ = τ) isa Real
-            @test genentropy(z, est; m = m, τ = τ) isa Real
+            sz = zeros(Int, N - (est.m-1)*est.τ)
+            @test probabilities!(sz, z, est) isa Probabilities
+            @test probabilities(z, est) isa Probabilities
+            @test genentropy!(sz, z, est) isa Real
+            @test genentropy(z, est) isa Real
         end
         
         @testset "Not pre-allocated" begin
@@ -113,15 +112,16 @@ end
         D = genembed(x, τs)
 
         # Probability distributions
-        p1 = probabilities(x, SymbolicWeightedPermutation(), m = m, τ = τ)
-        p2 = probabilities(D, SymbolicWeightedPermutation())
+        est = SymbolicWeightedPermutation(m = m, τ = τ)
+        p1 = probabilities(x, est)
+        p2 = probabilities(D, est)
         @test sum(p1) ≈ 1.0
         @test sum(p2) ≈ 1.0
         @test all(p1.p .≈ p2.p)
 
         # Entropy
-        e1 = genentropy(D, SymbolicWeightedPermutation())
-        e2 = genentropy(x, SymbolicWeightedPermutation(), m = m, τ = τ)
+        e1 = genentropy(D, est)
+        e2 = genentropy(x, est)
         @test e1 ≈ e2
     end
 
@@ -132,16 +132,17 @@ end
         x = rand(25)
         D = genembed(x, τs)
 
+        est = SymbolicAmplitudeAwarePermutation(m = m, τ = τ)
         # Probability distributions
-        p1 = probabilities(x, SymbolicAmplitudeAwarePermutation(), m = m, τ = τ)
-        p2 = probabilities(D, SymbolicAmplitudeAwarePermutation())
+        p1 = probabilities(x, est)
+        p2 = probabilities(D, est)
         @test sum(p1) ≈ 1.0
         @test sum(p2) ≈ 1.0
         @test all(p1.p .≈ p2.p)
 
         # Entropy
-        e1 = genentropy(D, SymbolicAmplitudeAwarePermutation())
-        e2 = genentropy(x, SymbolicAmplitudeAwarePermutation(), m = m, τ = τ)
+        e1 = genentropy(D, est)
+        e2 = genentropy(x, est)
         @test e1 ≈ e2
     end
 

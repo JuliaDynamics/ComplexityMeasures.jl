@@ -137,15 +137,18 @@ genentropy(x::AbstractArray{<:Real}) =
 
 function genentropy(x::Vector_or_Dataset, est; α = 1.0, base = Base.MathConstants.e)
     p = probabilities(x, est)
-    genentropy(p, α; base)
+    genentropy(p; α = α, base = base)
 end
 
 """
     genentropy!(p, x, est::ProbabilitiesEstimator; α = 1.0, base)
 
-Similarly with `probabilities!` this is an in-place version of `genentropy`.
+Similarly with `probabilities!` this is an in-place version of `genentropy` that allows 
+pre-allocation of temporarily used containers.
+
+Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
 function genentropy!(p, x, est; α = 1.0, base = Base.MathConstants.e)
     probabilities!(p, x, est)
-    genentropy(p, α; base)
+    genentropy(p; α = α, base = base)
 end
