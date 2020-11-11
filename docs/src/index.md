@@ -11,7 +11,7 @@ based on which method for probability/entropy estimation is applied.
 The main **API** of this package is contained in two functions:
 
 * [`probabilities`](@ref) which computes probability distributions of given datasets
-* [`Entropies.genentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
+* [`genentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
     pre-computed [`Probabilities`](@ref), to calculate entropies.
 
 These functions dispatch on subtypes of [`ProbabilitiesEstimator`](@ref), which are:

@@ -91,6 +91,8 @@ reconstruction step, compute and symbols directly from the ``L`` existing state 
 
 ## Description
 
+### Probability computation
+
 Consider the ``n``-element univariate time series ``\\{x(t) = x_1, x_2, \\ldots, x_n\\}``.
 Let ``\\mathbf{x_i}^{m, \\tau} = \\{x_j, x_{j+\\tau}, \\ldots, x_{j+(m-1)\\tau}\\}``
 for ``j = 1, 2, \\ldots n - (m-1)\\tau`` be the ``i``-th state vector in a delay
@@ -120,6 +122,8 @@ p(\\pi_i^{m, \\tau}) = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i} \\left(\
 where the function ``\\mathbf{1}_A(u)`` is the indicator function of a set ``A``. That
     is, ``\\mathbf{1}_A(u) = 1`` if ``u \\in A``, and ``\\mathbf{1}_A(u) = 0`` otherwise.
 
+### Entropy computation
+
 The generalized order-`α` Renyi entropy[^Rényi1960] can be computed over the probability 
 distribution of symbols as 
 ``
@@ -144,28 +148,49 @@ H(m, \\tau) = - \\sum_j^R p(\\pi_j^{m, \\tau}) \\ln p(\\pi_j^{m, \\tau})
 struct SymbolicPermutation <: PermutationProbabilityEstimator
     τ
     m
-    function SymbolicPermutation(; m::Int = 3, τ::Int = 1)
+    function SymbolicPermutation(; τ::Int = 1, m::Int = 3)
         m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
         new(τ, m)
     end
 end
 
 """
-    symbolize(x::AbstractDataset, est::SymbolicPermutation) → Vector{Int}
+    symbolize(x::AbstractVector{T}, est::SymbolicPermutation) where {T} → Vector{Int}
+    symbolize(x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T} → Vector{Int}
 
-Symbolize the vectors in `x` using Algorithm 1 from Berger et al. (2019)[^Berger2019].
 
-The symbol length is automatically determined from the dimension of the input data vectors.
+If `x` is an `m`-dimensional dataset, then symbolize `x` by converting each `m`-dimensional 
+state vector as a unique integer in the range ``1, 2, \\ldots, m-1``, using 
+[`encode_motif`](@ref). 
+    
+If `x` is a univariate time series, first `x` create a delay reconstruction of `x`
+using embedding lag `est.τ` and embedding dimension `est.m`, then symbolizing the resulting 
+state vectors with [`encode_motif`](@ref). 
 
-## Example
 
-Symbolize the state vectors of a dataset: 
+## Examples
+
+Symbolize a 7-dimensional dataset. Motif lengths (or order of the permutations) are 
+inferred to be 7.
 
 ```julia
 using DelayEmbeddings, Entropies
 D = Dataset([rand(7) for i = 1:1000])
-symbolize(D, SymbolicPermutation())
+s = symbolize(D, SymbolicPermutation())
 ```
+
+Symbolize a univariate time series by first embedding it in dimension 5 with embedding lag 2.
+Motif lengths (or order of the permutations) are therefore 5.
+
+```julia
+using DelayEmbeddings, Entropies
+n = 5000
+x = rand(n)
+s = symbolize(x, SymbolicPermutation(m = 5, τ = 2))
+```
+
+The integer vector `s` now has length `n-(m-1)*τ = 4992`, and each `s[i]` contains 
+the integer symbol for the ordinal pattern of state vector `x[i]`.
 
 [^Berger2019]: Berger, Sebastian, et al. "Teaching Ordinal Patterns to a Computer: Efficient Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
 """
@@ -173,6 +198,16 @@ function symbolize(x::AbstractDataset{m, T}, est::PermutationProbabilityEstimato
     m >= 2 || error("Data must be at least 2-dimensional to symbolize. If data is a univariate time series, embed it using `genembed` first.")
     s = zeros(Int, length(x))
     symbolize!(s, x, est)
+    return s
+end
+
+function symbolize(x::AbstractVector{T}, est::PermutationProbabilityEstimator) where {T}
+    N = length(x)
+    τs = tuple([est.τ*i for i = 0:est.m-1]...)
+    x_emb = genembed(x, τs)
+
+    s = zeros(Int, length(x_emb))
+    symbolize!(s, x_emb, est)
     return s
 end
 
