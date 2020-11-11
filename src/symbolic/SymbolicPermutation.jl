@@ -119,9 +119,11 @@ H = - \\sum_j p(\\pi) \\ln p(\\pi_j).
     Review E 87.2 (2013): 022911.
 """
 struct SymbolicPermutation <: PermutationProbabilityEstimator
-
-    function SymbolicPermutation()
-        new()
+    τ
+    m
+    function SymbolicPermutation(; m::Int = 2, τ::Int = 1)
+        m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+        new(τ, m)
     end
 end
 
@@ -187,13 +189,12 @@ function probabilities!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicP
     probabilities(s)
 end
 
-function probabilities!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 2, τ::Int = 1) where {T<:Real}
-    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+function probabilities!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
     L = length(x)
-    N = L - (m-1)*τ
+    N = L - (est.m-1)*est.τ
     length(s) == N || error("Pre-allocated symbol vector `s`needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
 
-    τs = tuple([τ*i for i = 0:m-1]...)
+    τs = tuple([est.τ*i for i = 0:est.m-1]...)
     x_emb = genembed(x, τs)
 
     probabilities!(s, x_emb, est)
@@ -228,15 +229,14 @@ function probabilities(x::AbstractDataset{m, T}, est::SymbolicPermutation) where
     probabilities!(s, x, est)
 end
 
-function probabilities(x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 2, τ::Int = 1) where {T<:Real}
-    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-    τs = tuple([τ*i for i = 0:m-1]...)
+function probabilities(x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
+    est.m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+    τs = tuple([est.τ*i for i = 0:est.m-1]...)
     x_emb = genembed(x, τs)
 
     s = zeros(Int, length(x_emb))
     probabilities!(s, x_emb, est)
 end
-
 
 function genentropy!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation; α::Real = 1,
         base::Real = 2) where {m, T}
@@ -248,14 +248,13 @@ function genentropy!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPerm
 end
 
 function genentropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation; α::Real = 1,
-        base::Real = 2, m::Int = 3, τ::Int = 1) where {T<:Real}
+        base::Real = 2) where {T<:Real}
 
-    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     L = length(x)
-    N = L - (m-1)*τ
+    N = L - (est.m-1)*est.τ
     length(s) == N || error("Pre-allocated symbol vector `s`needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
 
-    ps = probabilities!(s, x, est, m = m, τ = τ)
+    ps = probabilities!(s, x, est)
     genentropy(ps, α = α, base = base)
 end
 
@@ -263,8 +262,7 @@ end
 # Permutation entropy
 
     genentropy(x::AbstractDataset, est::SymbolicPermutation; α::Real = 1, base = 2) → Real
-    genentropy(x::AbstractVector{<:Real}, est::SymbolicPermutation;
-        α::Real = 1, m::Int = 3, τ::Int = 1, base = 2) → Real
+    genentropy(x::AbstractVector{<:Real}, est::SymbolicPermutation; α::Real = 1, base = 2) → Real
 
     genentropy!(s::Vector{Int}, x::AbstractDataset, est::SymbolicPermutation;
         α::Real = 1, base = 2) → Real
@@ -304,17 +302,17 @@ distribution, using [`genentropy`](@ref).
 
 See also: [`SymbolicPermutation`](@ref), [`genentropy`](@ref).
 """
-function genentropy(x::AbstractDataset{N, T}, est::SymbolicPermutation; α::Real = 1, base::Real = 2) where {N, T}
-    s = zeros(Int, length(x))
-    genentropy!(s, x, est; α = α, base = base)
-end
+# function genentropy(x::AbstractDataset{N, T}, est::SymbolicPermutation; α::Real = 1, base::Real = 2) where {N, T}
+#     s = zeros(Int, length(x))
+#     genentropy!(s, x, est; α = α, base = base)
+# end
 
 
-function genentropy(x::AbstractArray{T}, est::SymbolicPermutation; α::Real = 1,
-        m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
+# function genentropy(x::AbstractArray{T}, est::SymbolicPermutation; α::Real = 1,
+#         m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
 
-    N = length(x)
-    s = zeros(Int, N - (m-1)*τ)
-    ps = probabilities!(s, x, est, m = m, τ = τ)
-    genentropy(ps; α = α, base = base)
-end
+#     N = length(x)
+#     s = zeros(Int, N - (m-1)*τ)
+#     ps = probabilities!(s, x, est, m = m, τ = τ)
+#     genentropy(ps; α = α, base = base)
+# end

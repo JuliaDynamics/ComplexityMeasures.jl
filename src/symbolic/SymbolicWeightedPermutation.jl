@@ -125,9 +125,11 @@ See also: [`SymbolicPermutation`](@ref), [`SymbolicAmplitudeAwarePermutation`](@
     Review E 87.2 (2013): 022911.
 """
 struct SymbolicWeightedPermutation
-
-    function SymbolicWeightedPermutation()
-        new()
+    τ
+    m
+    function SymbolicWeightedPermutation(; τ::Int=1, m::Int=2)
+        m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+        new(τ, m)
     end
 end
 
@@ -205,20 +207,17 @@ See also: [`SymbolicWeightedPermutation`](@ref).
 """
 function probabilities(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation) where {m, T}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-    πs = symbolize(x, SymbolicPermutation())
+    πs = symbolize(x, SymbolicPermutation(m = m))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
 
     Probabilities(probs(πs, wts, normalize = true))
 end
 
-function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation;
-        m::Int = 3, τ::Int = 1) where {T<:Real}
-
-    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-    τs = tuple([τ*i for i = 0:m-1]...)
+function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) where {T<:Real}
+    τs = tuple([est.τ*i for i = 0:est.m-1]...)
     emb = genembed(x, τs)
-    πs = symbolize(emb, SymbolicPermutation())
-    wts = weights_from_variance.(emb.data, m)
+    πs = symbolize(emb, SymbolicPermutation(m = est.m)) # motif length controlled by estimator m
+    wts = weights_from_variance.(emb.data, est.m)
 
     Probabilities(probs(πs, wts, normalize = true))
 end
@@ -259,16 +258,16 @@ distribution, using [`genentropy`](@ref).
 
 See also: [`SymbolicWeightedPermutation`](@ref), [`genentropy`](@ref).
 """
-function genentropy(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation;
-        α::Real = 1, base = 2) where {m, T}
+# function genentropy(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation;
+#         α::Real = 1, base = 2) where {m, T}
 
-    ps = probabilities(x, est)
-    genentropy(ps, α = α, base = base)
-end
+#     ps = probabilities(x, est)
+#     genentropy(ps, α = α, base = base)
+# end
 
-function genentropy(x::AbstractArray{T}, est::SymbolicWeightedPermutation;
-        α::Real = 1, m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
+# function genentropy(x::AbstractArray{T}, est::SymbolicWeightedPermutation;
+#         α::Real = 1, m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
 
-    ps = probabilities(x, est, m = m, τ = τ)
-    genentropy(ps, α = α, base = base)
-end
+#     ps = probabilities(x, est, m = m, τ = τ)
+#     genentropy(ps, α = α, base = base)
+# end
