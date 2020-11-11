@@ -61,26 +61,6 @@ reconstruction step, compute and symbols directly from the ``L`` existing state 
     between your input data, the numerical value for the permutation entropy, and
     its interpretation.
 
-## Speeding up repeated computations
-
-!!! tip
-    A pre-allocated integer symbol array `s` can be provided to save some memory 
-    allocations if the probabilities are to be computed for multiple data sets.
-
-    *Note: it is not the array that will hold the final probabilities that is pre-allocated,
-    but the temporary integer array containing the symbolized data points. Thus, if
-    provided, it is required that `length(x) == length(s)` if `x` is a Dataset, or
-    `length(s) == length(x) - (m-1)τ` if `x` is a univariate signal that is to be embedded
-    first*.
-
-    Use the following signatures.
-
-    ```julia
-    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicWeightedPermutation) → ps::Probabilities
-    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicWeightedPermutation) → ps::Probabilities
-    ```
-
-
 !!! hint "Generalized entropy order vs. permutation order"
     Do not confuse the order of the generalized entropy (`α`) with the order `m` of the
     permutation entropy (`m`, which controls the symbol size). Permutation entropy is usually
@@ -220,7 +200,6 @@ function probs(Π::AbstractVector, wts::AbstractVector; normalize = true)
         i += 1
     end
     push!(ps, W) # last entry
-
 
     # Normalize
     Σ = sum(sw)
