@@ -13,12 +13,10 @@ The main **API** of this package is contained in two functions:
 * [`genentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
     pre-computed `Probabilities`, to calculate entropies.
 
-These functions dispatch on subtypes of [`ProbabilitiesEstimator`](@ref), which are
-
-## Generalized entropy
-
-```@docs
-Entropies.genentropy
+These functions dispatch on subtypes of [`ProbabilitiesEstimator`](@ref), which are:
+```@example
+using Entropies
+subtypes(ProbabilitiesEstimator)
 ```
 
 ## Probabilities
@@ -28,6 +26,12 @@ Probabilities
 probabilities
 probabilities!
 ProbabilitiesEstimator
+```
+
+## Generalized entropy
+
+```@docs
+Entropies.genentropy
 ```
 
 ## Fast histograms
