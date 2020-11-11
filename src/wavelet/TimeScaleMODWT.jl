@@ -12,8 +12,7 @@ wavelet scales. This implementation is based on Rosso et
 al. (2001)[^Rosso2001].
 Optionally specify a wavelet to be used.
 
-The probability `p[i]` is the relative/total energy for the
-i-th wavelet scale.
+The probability `p[i]` is the relative/total energy for the i-th wavelet scale.
 
 ## Example
 
