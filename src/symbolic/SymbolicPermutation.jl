@@ -147,7 +147,7 @@ symbolize(D, SymbolicPermutation(5))
 [^Berger2019]: Berger, Sebastian, et al. "Teaching Ordinal Patterns to a Computer: Efficient Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
 """
 function symbolize(x::AbstractDataset{m, T}, est::PermutationProbabilityEstimator) where {m, T}
-    m >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series, embed it using `genembed` first.")
+    m >= 2 || error("Data must be at least 2-dimensional to symbolize. If data is a univariate time series, embed it using `genembed` first.")
     s = zeros(Int, length(x))
     symbolize!(s, x, est)
     return s
