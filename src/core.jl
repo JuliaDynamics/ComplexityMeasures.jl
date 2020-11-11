@@ -141,14 +141,14 @@ end
 genentropy(x::AbstractArray{<:Real}) =
     error("For single-argument input, do `genentropy(Probabilities(x))` instead.")
 
-function genentropy(x, est::ProbEst; α = 1.0, base = Base.MathConstants.e)
+function genentropy(x::Vector_or_Dataset, est::ProbEst; α = 1.0, base = Base.MathConstants.e)
     p = probabilities(x, est)
     genentropy(p, α; base)
 end
 
-function genentropy(x::Dataset, ε::Real; α = 1.0, base = Base.MathConstants.e)
+function genentropy(x::Vector_or_Dataset, ε::Real; α = 1.0, base = Base.MathConstants.e)
     p = probabilities(x, ε)
-    genentropy(p, α; base)
+    genentropy(p; α, base)
 end
 
 """
