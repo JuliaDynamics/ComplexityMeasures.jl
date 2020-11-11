@@ -108,17 +108,11 @@ like e.g. the information entropy
 also known as Hartley entropy), or the correlation entropy
 (``\\alpha = 2``, also known as collision entropy).
 
-    genentropy(x::Vector_or_Dataset, est::ProbabilityEstimator; α = 1.0, base)
+    genentropy(x::Vector_or_Dataset, est; α = 1.0, base)
 
 A convenience syntax, which calls first `probabilities(x, est)`
-and then calculates the entropy of the result.
-
-    genentropy(x::Vector_or_Dataset, ε::AbstractFloat; α = 1.0, base)
-
-Convenience syntax which provides probabilities for `x` based on rectangular binning
-(i.e. performing a histogram). In short, the state space is divided into boxes of length
-`ε`, and formally we use `est = VisitationFrequency(RectangularBinning(ε))`
-as an estimator, see [`VisitationFrequency`](@ref).
+and then calculates the entropy of the result (and thus `est` can be a
+`ProbabilitiesEstimator` or simple `ε::Real`).
 
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
@@ -141,14 +135,9 @@ end
 genentropy(x::AbstractArray{<:Real}) =
     error("For single-argument input, do `genentropy(Probabilities(x))` instead.")
 
-function genentropy(x::Vector_or_Dataset, est::ProbEst; α = 1.0, base = Base.MathConstants.e)
+function genentropy(x::Vector_or_Dataset, est; α = 1.0, base = Base.MathConstants.e)
     p = probabilities(x, est)
     genentropy(p, α; base)
-end
-
-function genentropy(x::Vector_or_Dataset, ε::Real; α = 1.0, base = Base.MathConstants.e)
-    p = probabilities(x, ε)
-    genentropy(p; α, base)
 end
 
 """
@@ -156,7 +145,7 @@ end
 
 Similarly with `probabilities!` this is an in-place version of `genentropy`.
 """
-function genentropy!(p, x, est::ProbEst; α = 1.0, base = Base.MathConstants.e)
+function genentropy!(p, x, est; α = 1.0, base = Base.MathConstants.e)
     probabilities!(p, x, est)
     genentropy(p, α; base)
 end
