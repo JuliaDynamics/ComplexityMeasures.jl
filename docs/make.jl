@@ -60,7 +60,7 @@ makedocs(
 
 if CI
     deploydocs(
-        repo = "github.com/juliadynamics/Entropies.jl.git",
+        repo = "github.com/JuliaDynamics/Entropies.jl.git",
         target = "build",
         push_preview = true
     )
