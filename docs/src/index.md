@@ -17,7 +17,7 @@ The main **API** of this package is contained in two functions:
 These functions dispatch on subtypes of [`ProbabilitiesEstimator`](@ref), which are:
 
 ```@example
-using Entropies
+using Entropies, InteractiveUtils
 subtypes(ProbabilitiesEstimator)
 ```
 
