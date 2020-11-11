@@ -36,21 +36,21 @@ for r in rs
     push!(hs_ampperm, Entropies.genentropy(emb, SymbolicAmplitudeAwarePermutation(), base = Base.MathConstants.e))
 end
 
-f = figure(figsize = (6, 23))
+f = figure(figsize = (6, 8))
 a1 = subplot(411)
 plot(rs, lyaps); ylim(-2, log(2)); ylabel("\$\\lambda\$")
 a1.axes.get_xaxis().set_ticklabels([])
 xlim(rs[1], rs[end]);
 
-a2 = subplot(413)
+a2 = subplot(311)
 plot(rs, hs_entropies; color = "C2"); xlim(rs[1], rs[end]);
 xlabel(""); ylabel("\$h_6 (SP)\$")
 
-a3 = subplot(414)
+a3 = subplot(312)
 plot(rs, hs_wtperm; color = "C3"); xlim(rs[1], rs[end]);
 xlabel(""); ylabel("\$h_6 (SWP)\$")
 
-a4 = subplot(414)
+a4 = subplot(313)
 plot(rs, hs_ampperm; color = "C4"); xlim(rs[1], rs[end]);
 xlabel("\$r\$"); ylabel("\$h_6 (SAAP)\$")
 tight_layout()
