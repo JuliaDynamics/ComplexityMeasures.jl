@@ -6,11 +6,14 @@ Most of the code in this package assumes that your data is represented by the `D
 `AbstractVector{<:Real}` also work with some estimators, but are treated differently
 based on which method for probability/entropy estimation is applied.
 
+## API
 The main **API** of this package is contained in two functions:
 
 * [`probabilities`](@ref) which computes probability distributions of given datasets
-* [`genentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of 
+* [`genentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
     pre-computed `Probabilities`, to calculate entropies.
+
+These functions dispatch on subtypes of [`ProbabilitiesEstimator`](@ref), which are
 
 ## Generalized entropy
 
@@ -24,9 +27,10 @@ Entropies.genentropy
 Probabilities
 probabilities
 probabilities!
+ProbabilitiesEstimator
 ```
 
-### Histogram
+## Fast histograms
 
 ```@docs
 Entropies.binhist

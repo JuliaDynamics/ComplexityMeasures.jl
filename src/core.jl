@@ -58,11 +58,13 @@ documentation of the individual estimators for more.
 
 The configuration options are always given as arguments to the chosen estimator.
 
-    probabilities(x::Vector_or_Dataset, ε::Real) → p::Probabilities
+    probabilities(x::Vector_or_Dataset, ε::AbstractFloat) → p::Probabilities
 
-Convenience syntax which provides probabilities for `x` based on rectangular binning,
+Convenience syntax which provides probabilities for `x` based on rectangular binning
 (i.e. performing a histogram). In short, the state space is divided into boxes of length
-`ε`, see [`RectangularBinning`](@ref) for more.
+`ε`, and formally we use `est = VisitationFrequency(RectangularBinning(ε))`
+as an estimator, see [`VisitationFrequency`](@ref).
+
 This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
 and a linear space complexity (`l` for `l = dimension(x)`).
 This allows computation of probabilities (histograms) of high-dimensional
@@ -78,8 +80,8 @@ function probabilities end
 
 """
     probabilities!(args...)
-Identical to `probabilities(args...)`, but allows pre-allocation of temporarily used 
-containers.  
+Identical to `probabilities(args...)`, but allows pre-allocation of temporarily used
+containers.
 
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
@@ -89,10 +91,10 @@ function probabilities! end
     genentropy(p::Probabilities; α = 1.0, base = Base.MathConstants.e)
 
 Compute the generalized order-`α` entropy of some probabilities
-returned by the [`probabilities`](@ref) function. Alternatively, compute entropy 
+returned by the [`probabilities`](@ref) function. Alternatively, compute entropy
 from pre-computed `Probabilities`.
 
-    genentropy(x::Vector_or_Dataset, est::ProbabilityEstimator, α = 1.0; base)
+    genentropy(x::Vector_or_Dataset, est::ProbabilityEstimator; α = 1.0, base)
 
 A convenience syntax, which calls first `probabilities(x, est)`
 and then calculates the entropy of the result.
