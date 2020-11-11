@@ -1,4 +1,4 @@
-export genentropy
+export genentropy, binhist
 
 """
     _non0hist(points, binning_scheme::RectangularBinning, dims)

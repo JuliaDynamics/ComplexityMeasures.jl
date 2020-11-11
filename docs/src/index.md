@@ -25,3 +25,9 @@ Probabilities
 probabilities
 probabilities!
 ```
+
+### Histogram
+
+```@docs
+Entropies.binhist
+```
