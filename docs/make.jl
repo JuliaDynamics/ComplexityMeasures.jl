@@ -42,11 +42,7 @@ PAGES = [
         "SymbolicWeightedPermutation.md",
         "SymbolicAmplitudeAwarePermutation.md",
         "TimeScaleMODWT.md"
-    ],
-    "Details" => [
-        "Probability estimation" => "details/detailed_probability_estimation.md"
-    ],
-    #"Histograms" => "histogram_estimation.md"
+    ]
 ]
 
 makedocs(

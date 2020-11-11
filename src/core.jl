@@ -77,9 +77,11 @@ binning, or other processing (mostly useful when `x` contains categorical or int
 function probabilities end
 
 """
-    probabilities!(p, args...)
-Identical to `probabilities(args...)`, but writes the estimated probabilities in the
-pre-allocated vector `p` instead of making a new one.
+    probabilities!(args...)
+Identical to `probabilities(args...)`, but allows pre-allocation of temporarily used 
+containers.  
+
+Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
 function probabilities! end
 
@@ -87,7 +89,8 @@ function probabilities! end
     genentropy(p::Probabilities; α = 1.0, base = Base.MathConstants.e)
 
 Compute the generalized order-`α` entropy of some probabilities
-returned by the [`probabilities`](@ref) function.
+returned by the [`probabilities`](@ref) function. Alternatively, compute entropy 
+from pre-computed `Probabilities`.
 
     genentropy(x::Vector_or_Dataset, est::ProbabilityEstimator, α = 1.0; base)
 

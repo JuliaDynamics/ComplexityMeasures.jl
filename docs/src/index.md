@@ -9,19 +9,10 @@ based on which method for probability/entropy estimation is applied.
 The main **API** of this package is contained in two functions:
 
 * [`probabilities`](@ref) which computes probability distributions of given datasets
-* [`genentropy`](@ref) which uses the output of [`probabilities`](@ref) to calculate entropies
+* [`genentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of 
+    pre-computed `Probabilities`, to calculate entropies.
 
 ## Generalized entropy
-
-Generalized entropy is a property of probability distributions.
-In Entropies.jl, the generalized entropy can be estimated
-
-- directly on pre-computed [`Probabilites`](@ref),
-- directly using some `EntropyEstimator`, or
-- indirectly by using some `ProbabilityEstimator` to estimate a probability distribution,
-  then computing entropy on that distribution.
-
-Check the docstrings for individual estimators to see which methods work on which kinds of data.
 
 ```@docs
 Entropies.genentropy
