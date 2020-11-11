@@ -26,9 +26,10 @@ struct Probabilities{T}
 end
 
 # extend base Vector interface:
-for f in (:length, :size, :IteratorSize, :eachindex, :eltype, :lastindex, :firstindex)
+for f in (:length, :size, :eachindex, :eltype, :lastindex, :firstindex)
     @eval Base.$(f)(d::Probabilities) = $(f)(d.p)
 end
+Base.IteratorSize(d::Probabilities) = Base.HasLength()
 @inline Base.iterate(d::Probabilities, i = 1) = iterate(d.p, i)
 @inline Base.getindex(d::Probabilities, i) = d.p[i]
 @inline Base.:*(d::Probabilities, x::Number) = d.p * x
