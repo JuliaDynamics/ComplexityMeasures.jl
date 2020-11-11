@@ -137,7 +137,7 @@ genentropy(x::AbstractArray{<:Real}) =
 
 function genentropy(x::Vector_or_Dataset, est; α = 1.0, base = Base.MathConstants.e)
     p = probabilities(x, est)
-    genentropy(p, α; base)
+    genentropy(p; α = α, base = base)
 end
 
 """
@@ -147,5 +147,5 @@ Similarly with `probabilities!` this is an in-place version of `genentropy`.
 """
 function genentropy!(p, x, est; α = 1.0, base = Base.MathConstants.e)
     probabilities!(p, x, est)
-    genentropy(p, α; base)
+    genentropy(p; α = α, base = base)
 end
