@@ -94,11 +94,6 @@ Compute the generalized order-`α` entropy of some probabilities
 returned by the [`probabilities`](@ref) function. Alternatively, compute entropy
 from pre-computed `Probabilities`.
 
-    genentropy(x::Vector_or_Dataset, est::ProbabilityEstimator; α = 1.0, base)
-
-A convenience syntax, which calls first `probabilities(x, est)`
-and then calculates the entropy of the result.
-
 ## Description
 
 Let ``p`` be an array of probabilities (summing to 1). Then the generalized (Rényi) entropy is
@@ -112,6 +107,18 @@ like e.g. the information entropy
 (``\\alpha = 1``, see [^Shannon1948]), the maximum entropy (``\\alpha=0``,
 also known as Hartley entropy), or the correlation entropy
 (``\\alpha = 2``, also known as collision entropy).
+
+    genentropy(x::Vector_or_Dataset, est::ProbabilityEstimator; α = 1.0, base)
+
+A convenience syntax, which calls first `probabilities(x, est)`
+and then calculates the entropy of the result.
+
+    genentropy(x::Vector_or_Dataset, ε::AbstractFloat; α = 1.0, base)
+
+Convenience syntax which provides probabilities for `x` based on rectangular binning
+(i.e. performing a histogram). In short, the state space is divided into boxes of length
+`ε`, and formally we use `est = VisitationFrequency(RectangularBinning(ε))`
+as an estimator, see [`VisitationFrequency`](@ref).
 
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
@@ -139,8 +146,13 @@ function genentropy(x, est::ProbEst; α = 1.0, base = Base.MathConstants.e)
     genentropy(p, α; base)
 end
 
+function genentropy(x::Dataset, ε::Real; α = 1.0, base = Base.MathConstants.e)
+    p = probabilities(x, ε)
+    genentropy(p, α; base)
+end
+
 """
-    genentropy!(p, x, est; α = 1.0, base)
+    genentropy!(p, x, est::ProbabilitiesEstimator; α = 1.0, base)
 
 Similarly with `probabilities!` this is an in-place version of `genentropy`.
 """
