@@ -143,7 +143,10 @@ end
 """
     genentropy!(p, x, est::ProbabilitiesEstimator; α = 1.0, base)
 
-Similarly with `probabilities!` this is an in-place version of `genentropy`.
+Similarly with `probabilities!` this is an in-place version of `genentropy` that allows 
+pre-allocation of temporarily used containers.
+
+Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
 function genentropy!(p, x, est; α = 1.0, base = Base.MathConstants.e)
     probabilities!(p, x, est)
