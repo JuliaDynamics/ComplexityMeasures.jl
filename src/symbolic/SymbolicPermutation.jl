@@ -91,7 +91,7 @@ reconstruction step, compute and symbols directly from the ``L`` existing state 
 
 ## Description
 
-### Probability computation
+### Embedding, ordinal patterns and symbolization
 
 Consider the ``n``-element univariate time series ``\\{x(t) = x_1, x_2, \\ldots, x_n\\}``.
 Let ``\\mathbf{x_i}^{m, \\tau} = \\{x_j, x_{j+\\tau}, \\ldots, x_{j+(m-1)\\tau}\\}``
@@ -111,6 +111,8 @@ Each unique motif ``\\pi_i^{m, \\tau}`` can be mapped to a unique integer
 symbol ``0 \\leq s_i \\leq M!-1``. Let ``S(\\pi) : \\mathbb{R}^m \\to \\mathbb{N}_0`` be
 the function that maps the motif ``\\pi`` to its symbol ``s``, and let ``\\Pi``
 denote the set of symbols ``\\Pi = \\{ s_i \\}_{i\\in \\{ 1, \\ldots, R\\}}``.
+
+### Probability computation
 
 The probability of a given motif is its frequency of occurrence, normalized by the total
 number of motifs (with notation from [^Fadlallah2013]),

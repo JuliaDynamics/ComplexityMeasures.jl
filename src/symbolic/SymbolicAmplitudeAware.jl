@@ -106,7 +106,7 @@ Each unique motif ``\\pi_i^{m, \\tau}`` can be mapped to a unique integer symbol
 function that maps the motif ``\\pi`` to its symbol ``s``, and let ``\\Pi`` denote the set 
     of symbols ``\\Pi = \\{ s_i \\}_{i\\in \\{ 1, \\ldots, R\\}}``.
 
-### Encoding amplitude information in relative symbol probabilities
+### Probability computation
 
 Amplitude-aware permutation entropy is computed analogously to regular permutation entropy
 (see [`SymbolicPermutation`](@ref)), but probabilities are weighted by amplitude information as follows.
@@ -125,7 +125,7 @@ with ``0 \\leq A \\leq 1``. When ``A=0`` , only internal differences between the
 ``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector 
 elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is used.
 
-### Computing generalized entropy
+### Entropy computation
 
 The generalized order-`α` Renyi entropy[^Rényi1960] can be computed over the probability 
 distribution of symbols as 
@@ -152,7 +152,6 @@ struct SymbolicAmplitudeAwarePermutation <: PermutationProbabilityEstimator
     end
 end
 
-
 """
     AAPE(x, A::Real = 0.5, m::Int = length(a))
 
@@ -165,30 +164,6 @@ function AAPE(x; A::Real = 0.5, m::Int = length(x))
     (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
 end
 
-"""
-# Amplitude-aware permutation-based symbol probabilities
-
-    probabilities(x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation) → ps::Probabilities
-    probabilities(x::AbstractVector{<:Real}, est::SymbolicAmplitudeAwarePermutation; m::Int = 3, τ::Int = 1) → ps::Probabilities
-
-    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation) → ps::Probabilities
-    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicAmplitudeAwarePermutation; m::Int = 3, τ::Int = 1) → ps::Probabilities
-
-Compute the unordered probabilities of the occurrence of amplitude-encoding symbol sequences 
-constructed from `x`. 
-
-If `x` is a multivariate `Dataset`, then symbolization is performed directly on the state 
-vectors. If `x` is a univariate signal, then a delay reconstruction with embedding lag `τ` 
-and embedding dimension `m` is used to construct state vectors, on which symbolization is 
-then performed.
-
-A pre-allocated symbol array `s` can be provided to save some memory allocations if the 
-probabilities are to be computed for multiple data sets. If provided, it is required that 
-`length(x) == length(s)` if `x` is a `Dataset`, or  `length(s) == length(x) - (m-1)τ` 
-if `x` is a univariate signal`.
-
-See also: [`SymbolicAmplitudeAwarePermutation`](@ref).
-"""
 function probabilities(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePermutation) where {m, T}
     πs = symbolize(x, SymbolicPermutation(m = m)) # motif length controlled by dimension of input data
     wts = AAPE.(x.data, A = est.A, m = est.m)
@@ -204,55 +179,3 @@ function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutat
 
     Probabilities(probs(πs, wts, normalize = true))
 end
-
-"""
-# Amplitude-aware permutation entropy 
-
-    genentropy(x::AbstractDataset, est::SymbolicAmplitudeAwarePermutation; α::Real = 1, base = 2) → Real
-    genentropy(x::AbstractVector{<:Real}, est::SymbolicAmplitudeAwarePermutation; 
-        α::Real = 1, m::Int = 3, τ::Int = 1, base = 2) → Real
-
-Compute the generalized order `α` entropy based on an amplitude-sensitive permutation 
-symbolization of `x`, using symbol size/order `m` for the permutations.
-
-If `x` is a multivariate `Dataset`, then symbolization is performed directly on the state 
-vectors. If `x` is a univariate signal, then a delay reconstruction with embedding lag `τ` 
-and embedding dimension `m` is used to construct state vectors, on which symbolization is 
-then performed.
-
-## Probability and entropy estimation 
-
-An unordered symbol frequency histogram is obtained by symbolizing the points in `x` by
-an amplitude-aware procedure, using 
-[`probabilities(::AbstractDataset, ::SymbolicAmplitudeAwarePermutation)`](@ref).
-Sum-normalizing this histogram yields a probability distribution over the amplitude-encoding
- symbols.
-
-After the symbolization histogram/distribution has been obtained, the order `α` generalized 
-entropy[^Rényi1960], to the given `base`, is computed from that sum-normalized symbol 
-distribution, using [`genentropy`](@ref).
-
-!!! hint "Generalized entropy order vs. permutation order"
-    Do not confuse the order of the generalized entropy (`α`) with the order `m` of the 
-    permutation entropy (`m`, which controls the symbol size). Permutation entropy is usually 
-    estimated with `α = 1`, but the implementation here allows the generalized entropy of any 
-    dimension to be computed from the symbol frequency distribution.
-
-[^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, 
-    Statistics and Probability*, pp 547 (1960)
-
-See also: [`SymbolicAmplitudeAwarePermutation`](@ref), [`genentropy`](@ref).
-"""
-# function genentropy(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePermutation; 
-#         α::Real = 1, A::Real = 0.5, base = 2) where {m, T}
-    
-#     ps = probabilities(x, est, A = A)
-#     genentropy(ps, α = α, base = base)
-# end
-
-# function genentropy(x::AbstractArray{T}, est::SymbolicAmplitudeAwarePermutation; 
-#         α::Real = 1, A::Real = 0.5, m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
-    
-#     ps = probabilities(x, est, A = A, m = m, τ = τ)
-#     genentropy(ps, α = α, base = base)
-# end
