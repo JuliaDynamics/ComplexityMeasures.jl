@@ -1,22 +1,22 @@
-export TimeScaleMODWT, genentropy, probabilities
+export TimeScaleMODWT
 import Wavelets
 import Wavelets: wavelet, maxdyadiclevel, modwt
 
 """
     TimeScaleMODWT <: WaveletProbabilitiesEstimator
 
-Apply the maximal overlap discrete wavelet transform (MODWT) to a 
-signal, then compute probabilities/entropy from the energies at different 
-wavelet scales. This implementation is based on Rosso et 
+Apply the maximal overlap discrete wavelet transform (MODWT) to a
+signal, then compute probabilities/entropy from the energies at different
+wavelet scales. This implementation is based on Rosso et
 al. (2001)[^Rosso2001].
 
     TimeScaleMODWT(wl::Wavelets.WT.OrthoWaveletClass = Wavelets.WT.Daubechies{12}())
 
 Construct a TimeScaleMODWT probabilities/entropy estimator with wavelet `wl`.
 
-## Example 
+## Example
 
-Manually picking a wavelet is done as follows. 
+Manually picking a wavelet is done as follows.
 
 ```jldoctest
 using Entropies, Wavelets
@@ -28,7 +28,7 @@ est = TimeScaleMODWT(wl)
 TimeScaleMODWT(Wavelets.WT.Daubechies{4}())
 ```
 
-If no wavelet provided, the default is `Wavelets.WL.Daubechies{12}())`. 
+If no wavelet provided, the default is `Wavelets.WL.Daubechies{12}())`.
 
 ```jldoctest
 using Entropies, Wavelets
@@ -83,12 +83,12 @@ function time_scale_density(x::AbstractVector{T}, wl::Wavelets.WT.OrthoWaveletCl
 end
 
 """
-# Wavelet-based time-scale probability estimation 
+# Wavelet-based time-scale probability estimation
 
     probabilities(x::AbstractVector{<:Real}, est::TimeScaleMODWT) → ps::Probabilities
 
-Compute the probability distribution of energies from a maximal overlap discrete wavelet 
-transform (MODWT) of `x`. The probability `ps[i]` is the relative/total energy for the 
+Compute the probability distribution of energies from a maximal overlap discrete wavelet
+transform (MODWT) of `x`. The probability `ps[i]` is the relative/total energy for the
 i-th wavelet scale.
 
 ```julia
@@ -116,10 +116,10 @@ end
 
     genentropy(x::AbstractVector{<:Real}, est::TimeScaleMODWT; α = 1, base = 2) → h::Real
 
-Compute the generalized order-`α` time-scale entropy of `x`, from a maximal overlap 
+Compute the generalized order-`α` time-scale entropy of `x`, from a maximal overlap
 discrete wavelet transform (MODWT) of `x`.
 
-## Example 
+## Example
 
 ```julia
 using Entropies, Wavelets
