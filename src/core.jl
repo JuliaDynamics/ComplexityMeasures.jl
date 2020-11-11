@@ -94,11 +94,6 @@ Compute the generalized order-`α` entropy of some probabilities
 returned by the [`probabilities`](@ref) function. Alternatively, compute entropy
 from pre-computed `Probabilities`.
 
-    genentropy(x::Vector_or_Dataset, est::ProbabilityEstimator; α = 1.0, base)
-
-A convenience syntax, which calls first `probabilities(x, est)`
-and then calculates the entropy of the result.
-
 ## Description
 
 Let ``p`` be an array of probabilities (summing to 1). Then the generalized (Rényi) entropy is
@@ -112,6 +107,12 @@ like e.g. the information entropy
 (``\\alpha = 1``, see [^Shannon1948]), the maximum entropy (``\\alpha=0``,
 also known as Hartley entropy), or the correlation entropy
 (``\\alpha = 2``, also known as collision entropy).
+
+    genentropy(x::Vector_or_Dataset, est; α = 1.0, base)
+
+A convenience syntax, which calls first `probabilities(x, est)`
+and then calculates the entropy of the result (and thus `est` can be a
+`ProbabilitiesEstimator` or simple `ε::Real`).
 
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
@@ -134,17 +135,20 @@ end
 genentropy(x::AbstractArray{<:Real}) =
     error("For single-argument input, do `genentropy(Probabilities(x))` instead.")
 
-function genentropy(x, est::ProbEst; α = 1.0, base = Base.MathConstants.e)
+function genentropy(x::Vector_or_Dataset, est; α = 1.0, base = Base.MathConstants.e)
     p = probabilities(x, est)
-    genentropy(p, α; base)
+    genentropy(p; α = α, base = base)
 end
 
 """
-    genentropy!(p, x, est; α = 1.0, base)
+    genentropy!(p, x, est::ProbabilitiesEstimator; α = 1.0, base)
 
-Similarly with `probabilities!` this is an in-place version of `genentropy`.
+Similarly with `probabilities!` this is an in-place version of `genentropy` that allows 
+pre-allocation of temporarily used containers.
+
+Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
-function genentropy!(p, x, est::ProbEst; α = 1.0, base = Base.MathConstants.e)
+function genentropy!(p, x, est; α = 1.0, base = Base.MathConstants.e)
     probabilities!(p, x, est)
-    genentropy(p, α; base)
+    genentropy(p; α = α, base = base)
 end

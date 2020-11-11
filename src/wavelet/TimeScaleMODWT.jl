@@ -1,43 +1,38 @@
-export TimeScaleMODWT, genentropy, probabilities
+export TimeScaleMODWT
 import Wavelets
 import Wavelets: wavelet, maxdyadiclevel, modwt
 
 """
     TimeScaleMODWT <: WaveletProbabilitiesEstimator
-
-Apply the maximal overlap discrete wavelet transform (MODWT) to a 
-signal, then compute probabilities/entropy from the energies at different 
-wavelet scales. This implementation is based on Rosso et 
-al. (2001)[^Rosso2001].
-
     TimeScaleMODWT(wl::Wavelets.WT.OrthoWaveletClass = Wavelets.WT.Daubechies{12}())
 
-Construct a TimeScaleMODWT probabilities/entropy estimator with wavelet `wl`.
+Apply the maximal overlap discrete wavelet transform (MODWT) to a
+signal, then compute probabilities/entropy from the energies at different
+wavelet scales. This implementation is based on Rosso et
+al. (2001)[^Rosso2001].
+Optionally specify a wavelet to be used.
 
-## Example 
+The probability `p[i]` is the relative/total energy for the i-th wavelet scale.
 
-Manually picking a wavelet is done as follows. 
+## Example
 
-```jldoctest
+Manually picking a wavelet is done as follows.
+
+```julia
 using Entropies, Wavelets
-wl = Wavelets.WT.Daubechies{4}()
-est = TimeScaleMODWT(wl)
+N = 200
+a = 10
+t = LinRange(0, 2*a*π, N)
+x = sin.(t .+  cos.(t/0.1)) .- 0.1;
 
-# output
+# Pick a wavelet (if no wavelet provided, defaults to Wavelets.WL.Daubechies{12}())
+wl = Wavelets.WT.Daubechies{12}()
 
-TimeScaleMODWT(Wavelets.WT.Daubechies{4}())
+# Compute the probabilities (relative energies) at the different wavelet scales
+probabilities(x, TimeScaleMODWT(wl))
 ```
 
-If no wavelet provided, the default is `Wavelets.WL.Daubechies{12}())`. 
-
-```jldoctest
-using Entropies, Wavelets
-est = TimeScaleMODWT()
-
-# output
-
-TimeScaleMODWT(Wavelets.WT.Daubechies{12}())
-```
+If no wavelet provided, the default is `Wavelets.WL.Daubechies{12}())`.
 
 [^Rosso2001]: Rosso, O. A., Blanco, S., Yordanova, J., Kolev, V., Figliola, A., Schürmann, M., & Başar, E. (2001). Wavelet entropy: a new tool for analysis of short duration brain electrical signals. Journal of neuroscience methods, 105(1), 65-75.
 """
@@ -82,64 +77,6 @@ function time_scale_density(x::AbstractVector{T}, wl::Wavelets.WT.OrthoWaveletCl
     Pⱼs = relative_wavelet_energies(W)
 end
 
-"""
-# Wavelet-based time-scale probability estimation 
-
-    probabilities(x::AbstractVector{<:Real}, est::TimeScaleMODWT) → ps::Probabilities
-
-Compute the probability distribution of energies from a maximal overlap discrete wavelet 
-transform (MODWT) of `x`. The probability `ps[i]` is the relative/total energy for the 
-i-th wavelet scale.
-
-```julia
-using Entropies, Wavelets
-N = 200
-a = 10
-t = LinRange(0, 2*a*π, N)
-x = sin.(t .+  cos.(t/0.1)) .- 0.1;
-
-# Pick a wavelet (if no wavelet provided, defaults to Wavelets.WL.Daubechies{12}())
-wl = Wavelets.WT.Daubechies{12}()
-
-# Compute the probabilities (relative energies) at the different wavelet scales
-Entropies.probabilities(x, TimeScaleMODWT(wl))
-```
-
-See also: [`TimeScaleMODWT`](@ref).
-"""
 function probabilities(x::AbstractVector{T}, est::TimeScaleMODWT) where T<:Real
     Probabilities(time_scale_density(x, est.wl))
-end
-
-"""
-# Wavelet-based time-scale entropy
-
-    genentropy(x::AbstractVector{<:Real}, est::TimeScaleMODWT; α = 1, base = 2) → h::Real
-
-Compute the generalized order-`α` time-scale entropy of `x`, from a maximal overlap 
-discrete wavelet transform (MODWT) of `x`.
-
-## Example 
-
-```julia
-using Entropies, Wavelets
-N = 200
-a = 10
-t = LinRange(0, 2*a*π, N)
-x = sin.(t .+  cos.(t/0.1)) .- 0.1;
-
-# Pick a wavelet (if no wavelet provided, defaults to Wavelets.WL.Daubechies{12}())
-wl = Wavelets.WT.Daubechies{12}()
-
-# Compute generalized (time-scale) entropy of order 1
-Entropies.genentropy(x, TimeScaleMODWT(wl))
-```
-
-See also: [`TimeScaleMODWT`](@ref).
-"""
-genentropy(x::AbstractVector{T}, est::WaveletProbabilitiesEstimator; α::Real) where T<:Real
-
-function genentropy(x::AbstractVector{T}, est::TimeScaleMODWT; α::Real = 1, base = 2) where T<:Real
-    ps = probabilities(x, est)
-    Entropies.genentropy(ps, α = α, base = base)
 end
