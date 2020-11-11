@@ -59,13 +59,6 @@ reconstruction step, compute and symbols directly from the ``L`` existing state 
     between your input data, the numerical value for the permutation entropy, and
     its interpretation.
 
-!!! hint "Generalized entropy order vs. permutation order"
-    Do not confuse the order of the generalized entropy (`α`) with the order `m` of the
-    permutation entropy (`m`, which controls the symbol size). Amplitude-adjusted 
-    permutation entropy is usually estimated with `α = 1`, but the implementation here 
-    allows the generalized entropy of any dimension to be computed from the symbol 
-    frequency distribution.
-
 ## Description
 
 ### Embedding, ordinal patterns and symbolization
@@ -118,6 +111,13 @@ Bandt and Pompe (2002), is just the limiting case as ``α \\to1``, that is
 ``
 H(m, \\tau) = - \\sum_j^R p(\\pi_j^{m, \\tau}) \\ln p(\\pi_j^{m, \\tau})
 ``.
+
+!!! hint "Generalized entropy order vs. permutation order"
+    Do not confuse the order of the generalized entropy (`α`) with the order `m` of the
+    permutation entropy (`m`, which controls the symbol size). Amplitude-aware
+    permutation entropy is usually estimated with `α = 1`, but the implementation here 
+    allows the generalized entropy of any dimension to be computed from the symbol 
+    frequency distribution.
 
 [^Azami2016]: Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy: Illustration in spike detection and signal segmentation. Computer methods and programs in biomedicine, 128, 40-51.
 
