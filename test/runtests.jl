@@ -60,8 +60,13 @@ end
         y = Dataset(rand(N, 5))
         z = rand(N)
 
-        @testset "Encoding" begin
+        @testset "Encoding and symbolization" begin
             @test encode_motif([2, 3, 1]) isa Int
+            n = 500
+            x = rand(n)
+            D = genembed(x, [0, -1, -2])
+            @test symbolize(x, SymbolicPermutation(m = 5, τ = 2)) isa Vector{<:Int}
+            @test symbolize(D, SymbolicPermutation(m = 5, τ = 2)) isa Vector{<:Int}
         end
         
         @testset "Pre-allocated" begin
