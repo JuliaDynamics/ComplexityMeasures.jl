@@ -1,6 +1,7 @@
 export 
     RectangularBinning,
     get_minima_and_edgelengths, 
+    minima_edgelengths,
     get_edgelengths, 
     get_minima,
     get_maxima,
@@ -292,3 +293,14 @@ get_edgelengths(pts, RectangularBinning([10, 8, 5, 4, 22]))
 function get_edgelengths end
 
 get_edgelengths(points, ϵ::RectangularBinning) = get_minima_and_edgelengths(points, ϵ)[2]
+
+# need this for type stability when getting minima and edgelength for a Dataset for _non0hist
+# otherwise, we're subtracting and dividing static vectors with regular vectors, which allocates
+# all over the place.
+import StaticArrays: SVector
+
+function minima_edgelengths(points::AbstractDataset{D, T}, binning_scheme::RectangularBinning) where {D, T<:Real}
+    mini, edgelengths = get_minima_and_edgelengths(points, binning_scheme)
+    return SVector{D, T}(mini), SVector{D, Float64}(float.(edgelengths))
+end
+get_edgelengths(points::AbstractDataset, ϵ::RectangularBinning) = minima_edgelengths(points, ϵ)[2]

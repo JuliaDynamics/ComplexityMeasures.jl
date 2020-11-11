@@ -1,4 +1,6 @@
-# Probabilities
+# Details on probability estimation
+
+Specifics on how probabilities may be estimated follow.
 
 ```@docs
 probabilities(x::Dataset, est::SymbolicPermutation)

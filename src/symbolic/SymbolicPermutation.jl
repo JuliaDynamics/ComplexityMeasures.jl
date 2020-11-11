@@ -95,6 +95,25 @@ H = - \\sum_j p(\\pi) \\ln p(\\pi_j).
     between your input data, the numerical value for the weighted permutation entropy, and 
     its interpretation.
 
+## Speeding up repeated computations 
+
+!!! tip 
+    A pre-allocated symbol array `s` can be provided to save some memory allocations if the 
+    probabilities are to be computed for multiple data sets. 
+
+    *Note: it is not the array that will hold the final probabilities that is pre-allocated, 
+    but the temporary integer array containing the symbolized data points. Thus, if 
+    provided, it is required that `length(x) == length(s)` if `x` is a Dataset, or 
+    `length(s) == length(x) - (m-1)τ` if `x` is a univariate signal that is to be embedded 
+    first*.
+
+    Use the following signatures.
+
+    ```julia
+    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicPermutation) → ps::Probabilities
+    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicPermutation;  m::Int = 2, τ::Int = 1) → ps::Probabilities
+    ```
+
 [^BandtPompe2002]: Bandt, Christoph, and Bernd Pompe. "Permutation entropy: a natural 
     complexity measure for time series." Physical review letters 88.17 (2002): 174102.
 [^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity 
@@ -167,7 +186,7 @@ function probabilities!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicP
     @inbounds for i = 1:length(x)
         s[i] = encode_motif(x[i], m)
     end
-    non0hist(s, normalize = true)
+    probabilities(s)
 end
 
 function probabilities!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 2, τ::Int = 1) where {T<:Real}
@@ -185,11 +204,11 @@ end
 """
 # Permutation-based symbol probabilities
 
-    probabilities(x::AbstractDataset, est::SymbolicPermutation) → Vector{<:Real} 
-    probabilities(x::AbstractVector, est::SymbolicPermutation;  m::Int = 2, τ::Int = 1) → Vector{<:Real} 
+    probabilities(x::AbstractDataset, est::SymbolicPermutation) → ps::Probabilities
+    probabilities(x::AbstractVector, est::SymbolicPermutation;  m::Int = 2, τ::Int = 1) → ps::Probabilities
 
-    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicPermutation) → Vector{<:Real} 
-    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicPermutation;  m::Int = 2, τ::Int = 1) → Vector{<:Real} 
+    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicPermutation) → ps::Probabilities
+    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicPermutation;  m::Int = 2, τ::Int = 1) → ps::Probabilities
 
 Compute the unordered probabilities of the occurrence of symbol sequences constructed from 
 the data `x`. 
@@ -221,16 +240,16 @@ function probabilities(x::AbstractVector{T}, est::SymbolicPermutation; m::Int = 
 end
 
 
-function genentropy!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation, α::Real = 1; 
+function genentropy!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation; α::Real = 1,
         base::Real = 2) where {m, T}
 
     length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
     ps = probabilities!(s, x, est)
 
-    genentropy(α, ps, base = base)
+    genentropy(ps, α = α, base = base)
 end
 
-function genentropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation, α::Real = 1; 
+function genentropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation; α::Real = 1, 
         base::Real = 2, m::Int = 3, τ::Int = 1) where {T<:Real}
     
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
@@ -239,17 +258,20 @@ function genentropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation, α:
     length(s) == N || error("Pre-allocated symbol vector `s`needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
     
     ps = probabilities!(s, x, est, m = m, τ = τ)
-    genentropy(α, ps, base = base)
+    genentropy(ps, α = α, base = base)
 end
 
 """
 # Permutation entropy 
 
-    genentropy(x::AbstractDataset, est::SymbolicPermutation, α::Real = 1; base = 2) → Real
-    genentropy(x::AbstractVector{<:Real}, est::SymbolicPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
+    genentropy(x::AbstractDataset, est::SymbolicPermutation; α::Real = 1, base = 2) → Real
+    genentropy(x::AbstractVector{<:Real}, est::SymbolicPermutation; 
+        α::Real = 1, m::Int = 3, τ::Int = 1, base = 2) → Real
 
-    genentropy!(s::Vector{Int}, x::AbstractDataset, est::SymbolicPermutation, α::Real = 1; base = 2) → Real
-    genentropy!(s::Vector{Int}, x::AbstractVector{<:Real}, est::SymbolicPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
+    genentropy!(s::Vector{Int}, x::AbstractDataset, est::SymbolicPermutation;
+        α::Real = 1, base = 2) → Real
+    genentropy!(s::Vector{Int}, x::AbstractVector{<:Real}, est::SymbolicPermutation; 
+        α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
 
 Compute the generalized order-`α` entropy over a permutation symbolization of `x`, using 
 symbol size/order `m`. 
@@ -284,16 +306,17 @@ distribution, using [`genentropy`](@ref).
 
 See also: [`SymbolicPermutation`](@ref), [`genentropy`](@ref).
 """
-function genentropy(x::AbstractDataset{N, T}, est::SymbolicPermutation, α::Real = 1; base::Real = 2) where {N, T}
+function genentropy(x::AbstractDataset{N, T}, est::SymbolicPermutation; α::Real = 1, base::Real = 2) where {N, T}
     s = zeros(Int, length(x))
-    genentropy!(s, x, est, α; base = base)
+    genentropy!(s, x, est; α = α, base = base)
 end
 
 
-function genentropy(x::AbstractArray{T}, est::SymbolicPermutation, α::Real = 1; 
-    m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
+function genentropy(x::AbstractArray{T}, est::SymbolicPermutation; α::Real = 1,
+        m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
+
     N = length(x)
     s = zeros(Int, N - (m-1)*τ)
     ps = probabilities!(s, x, est, m = m, τ = τ)
-    genentropy(α, ps; base = base)
+    genentropy(ps; α = α, base = base)
 end

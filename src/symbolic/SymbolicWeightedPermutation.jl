@@ -185,11 +185,11 @@ end
 """
 # Weighted permutation-based symbol probabilities
 
-    probabilities(x::AbstractDataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
-    probabilities(x::AbstractVector{<:Real}, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
+    probabilities(x::AbstractDataset, est::SymbolicWeightedPermutation) → ps::Probabilities
+    probabilities(x::AbstractVector{<:Real}, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → ps::Probabilities
 
-    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicWeightedPermutation) → Vector{<:Real}  
-    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → Vector{<:Real}
+    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicWeightedPermutation) → ps::Probabilities
+    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicWeightedPermutation; m::Int = 3, τ::Int = 1) → ps::Probabilities
 
 Compute the unordered probabilities of the occurrence of weighted symbol sequences 
 constructed from `x`. 
@@ -211,7 +211,7 @@ function probabilities(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutatio
     πs = symbolize(x, SymbolicPermutation()) 
     wts = weights_from_variance.(x.data, m)
 
-    probs(πs, wts, normalize = true)
+    Probabilities(probs(πs, wts, normalize = true))
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation; 
@@ -223,14 +223,16 @@ function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation;
     πs = symbolize(emb, SymbolicPermutation()) 
     wts = weights_from_variance.(emb.data, m)
     
-    probs(πs, wts, normalize = true)
+    Probabilities(probs(πs, wts, normalize = true))
 end
 
 """
 # Weighted permutation entropy 
 
-    genentropy(x::AbstractDataset, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) → Real
-    genentropy(x::AbstractVector{<:Real}, est::SymbolicWeightedPermutation, α::Real = 1; m::Int = 3, τ::Int = 1, base = 2) → Real
+    genentropy(x::AbstractDataset, est::SymbolicWeightedPermutation; 
+        α::Real = 1, base = 2) → Real
+    genentropy(x::AbstractVector{<:Real}, est::SymbolicWeightedPermutation; 
+        α::Real = 1, m::Int = 3, τ::Int = 1, base = 2) → Real
 
 Compute the generalized order `α` entropy based on a weighted permutation 
 symbolization of `x`, using symbol size/order `m` for the permutations.
@@ -260,15 +262,16 @@ distribution, using [`genentropy`](@ref).
 
 See also: [`SymbolicWeightedPermutation`](@ref), [`genentropy`](@ref).
 """
-function genentropy(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) where {m, T}
+function genentropy(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation;
+        α::Real = 1, base = 2) where {m, T}
     
     ps = probabilities(x, est)
-    genentropy(α, ps; base = base)
+    genentropy(ps, α = α, base = base)
 end
 
-function genentropy(x::AbstractArray{T}, est::SymbolicWeightedPermutation, α::Real = 1; 
-        m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
+function genentropy(x::AbstractArray{T}, est::SymbolicWeightedPermutation; 
+        α::Real = 1, m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
     
     ps = probabilities(x, est, m = m, τ = τ)
-    genentropy(α, ps; base = base)
+    genentropy(ps, α = α, base = base)
 end
