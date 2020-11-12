@@ -112,7 +112,7 @@ also known as Hartley entropy), or the correlation entropy
 
 A convenience syntax, which calls first `probabilities(x, est)`
 and then calculates the entropy of the result (and thus `est` can be a
-`ProbabilitiesEstimator` or simple `ε::Real`).
+`ProbabilitiesEstimator` or simply `ε::Real`).
 
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
@@ -143,7 +143,7 @@ end
 """
     genentropy!(p, x, est::ProbabilitiesEstimator; α = 1.0, base)
 
-Similarly with `probabilities!` this is an in-place version of `genentropy` that allows 
+Similarly with `probabilities!` this is an in-place version of `genentropy` that allows
 pre-allocation of temporarily used containers.
 
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
