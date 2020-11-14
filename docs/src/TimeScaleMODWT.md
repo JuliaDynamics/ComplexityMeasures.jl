@@ -20,7 +20,9 @@ y = sin.(t .+  cos.(t/0.5));
 z = sin.(rand(1:15, N) ./ rand(1:10, N))
 
 est = TimeScaleMODWT()
-h_x, h_y, h_z = genentropy(x, est), genentropy(y, est), genentropy(z, est)
+h_x = Entropies.genentropy(x, est)
+h_y = Entropies.genentropy(y, est)
+h_z = Entropies.genentropy(z, est)
 
 f = figure(figsize = (10,6))
 ax = subplot(311)
