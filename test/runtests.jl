@@ -42,10 +42,15 @@ end
     @test SymbolicPermutation() isa SymbolicPermutation
     @test SymbolicWeightedPermutation() isa SymbolicWeightedPermutation
     @test SymbolicAmplitudeAwarePermutation() isa SymbolicAmplitudeAwarePermutation
-
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
+    @test TransferOperator(RectangularBinning(3)) isa TransferOperator
+
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
+    @test Kraskov(k = 2, w = 1) isa Kraskov
+    @test Kraskov() isa Kraskov
+    @test KozachenkoLeonenko() isa KozachenkoLeonenko
+    @test KozachenkoLeonenko(w = 5) isa KozachenkoLeonenko
 
     @testset "Counting based" begin
         D = Dataset(rand(1:3, 5000, 3))
@@ -173,6 +178,26 @@ end
             @test genentropy(D, est, α=3, base = 2) isa Real # Higher-order entropy
             @test genentropy(D, est, α=3, base = 1) isa Real # Higher-order entropy
 
+        end
+    end
+
+    @testset "TransferOperator" begin
+        D = Dataset(rand(1000, 3))
+
+        binnings = [
+            RectangularBinning(3),
+            RectangularBinning(0.2),
+            RectangularBinning([2, 2, 3]),
+            RectangularBinning([0.2, 0.3, 0.3])
+        ]
+
+        @testset "Binning test $i" for i in 1:length(binnings)
+            @test transferoperator(D, binnings[i]) isa TransferOperatorApproximationRectangular
+            to = transferoperator(D, binnings[i]) isa TransferOperatorApproximationRectangular
+            @test invariantmeasure(to) isa InvariantMeasureEstimate
+            p, bins = binhist(to)
+            
+            @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
         end
     end
 
