@@ -44,13 +44,8 @@ end
     @test SymbolicAmplitudeAwarePermutation() isa SymbolicAmplitudeAwarePermutation
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
     @test TransferOperator(RectangularBinning(3)) isa TransferOperator
-
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
-    @test Kraskov(k = 2, w = 1) isa Kraskov
-    @test Kraskov() isa Kraskov
-    @test KozachenkoLeonenko() isa KozachenkoLeonenko
-    @test KozachenkoLeonenko(w = 5) isa KozachenkoLeonenko
 
     @testset "Counting based" begin
         D = Dataset(rand(1:3, 5000, 3))
@@ -193,10 +188,12 @@ end
 
         @testset "Binning test $i" for i in 1:length(binnings)
             @test transferoperator(D, binnings[i]) isa TransferOperatorApproximationRectangular
-            to = transferoperator(D, binnings[i]) isa TransferOperatorApproximationRectangular
+            to = transferoperator(D, binnings[i])
             @test invariantmeasure(to) isa InvariantMeasureEstimate
-            p, bins = binhist(to)
-            
+            iv = invariantmeasure(to) 
+            @test binhist(to) isa Tuple{Probabilities, Vector{<:SVector}}
+            @test binhist(iv) isa Tuple{Probabilities, Vector{<:SVector}}
+            @test binhist(D, TransferOperator(binnings[i])) isa Tuple{Probabilities, Vector{<:SVector}}
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
         end
     end
