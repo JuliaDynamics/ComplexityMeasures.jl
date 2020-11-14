@@ -2,14 +2,15 @@ using GroupSlices, DelayEmbeddings, SparseArrays
 
 export TransferOperator, 
     transferoperator, TransferOperatorApproximationRectangular,
-    InvariantMeasureEstimate, invariantmeasure
+    InvariantMeasureEstimate, invariantmeasure,
+    binhist
 
 """
     TransferOperator(r::RectangularBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by 
 the binning scheme `r`, then estimating the transfer (Perron-Frobenius) operator 
-over the bins[^Diego2019]. Assumes that the input data are sequential.
+over the bins. Assumes that the input data are sequential.
 
 The transfer operator ``P^{N}``is computed as an `N`-by-`N` matrix of transition 
 probabilities between the states defined by the partition elements, where `N` is the 
@@ -118,7 +119,7 @@ rectangular partition given by `ϵ`.
 ## Example 
 
 ```julia
-using DynamicalSystems, Plots
+using DynamicalSystems, Entropy
 D = 4
 ds = Systems.lorenz96(D; F = 32.0)
 N, dt = 20000, 0.1
@@ -243,16 +244,16 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
 end
 
 """ 
-    InvariantMeasureEstimate(to, ρ)
+    InvariantMeasureEstimate(to, ρ::Probabilities)
 
 The estimated invariant measure `ρ` associated with some transfer operator `to`.
 """ 
 struct InvariantMeasureEstimate{T}
     to::T
-    ρ::AbstractVector{<:Real}
+    ρ::Probabilities
 
     function InvariantMeasureEstimate(
-        to::TransferOperatorApproximationRectangular, ρ::AbstractVector{<:Real})
+        to::T, ρ::Probabilities) where T<:TransferOperatorApproximationRectangular
         new{T}(to, ρ)
     end
 end
@@ -267,7 +268,7 @@ Estimate the invariant measure associated with some pre-computed transfer operat
 ## Example 
 
 ```julia
-using DynamicalSystems, Plots
+using DynamicalSystems, Entropy
 D = 4
 ds = Systems.lorenz96(D; F = 32.0)
 N, dt = 20000, 0.1
@@ -282,11 +283,13 @@ See also: [`TransferOperatorApproximationRectangular`](@ref).
 """
 function invariantmeasure(to::TransferOperatorApproximationRectangular; 
         N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8)
+    
+    TO = to.to
     #=
     # Start with a random distribution `Ρ` (big rho). Normalise it so that it
     # sums to 1 and forms a true probability distribution over the partition elements.
     =#
-    Ρ = rand(Float64, 1, size(to, 1))
+    Ρ = rand(Float64, 1, size(TO, 1))
     Ρ = Ρ ./ sum(Ρ, dims = 2)
 
     #=
@@ -296,7 +299,7 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     # meaning that we iterate until Ρ doesn't change substantially between
     # iterations.
     =#
-    distribution = Ρ * to
+    distribution = Ρ * TO
 
     distance = norm(distribution - Ρ) / norm(Ρ)
 
@@ -312,7 +315,7 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
         Ρ = distribution
 
         # Apply the Markov matrix to the current state of the distribution
-        distribution = Ρ * to
+        distribution = Ρ * TO
 
         if (check_pts_counter <= num_checkpts &&
            counter == check_pts[check_pts_counter])
@@ -336,11 +339,11 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     end
 
     # Find partition elements with strictly positive measure.
-    δ = tolerance/size(to, 1)
+    δ = tolerance/size(TO, 1)
     inds_nonzero = findall(distribution .> δ)
 
     # Extract the elements of the invariant measure corresponding to these indices
-    return InvariantMeasureEstimate(to, distribution)
+    return InvariantMeasureEstimate(to, Probabilities(distribution))
 end
 
 
@@ -348,7 +351,7 @@ function probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinn
     to = transferoperator(x, est.binning)
     iv = invariantmeasure(to)
 
-    return Probabilities(iv.ρ)
+    return iv.ρ
 end
 
 
@@ -374,7 +377,7 @@ function binhist(iv::InvariantMeasureEstimate)
     return iv.ρ, iv.to.bins
 end
 
-function binhist(to::TransferOperator{RectangularBinning})
+function binhist(to::TransferOperatorApproximationRectangular)
     iv = invariantmeasure(to)
     return iv.ρ, to.bins
 end
