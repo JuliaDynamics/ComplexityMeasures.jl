@@ -221,7 +221,7 @@ end
         est_nn = KozachenkoLeonenko(w = 5)
         est_knn = Kraskov(k = 2, w = 1)
 
-        @test entropy(D, est_nn) isa Real
-        @test entropy(D, est_knn) isa Real
+        @test genentropy(D, est_nn) isa Real
+        @test genentropy(D, est_knn) isa Real
     end
 end
