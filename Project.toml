@@ -15,6 +15,7 @@ Wavelets = "29a6e085-ba6d-5f35-a997-948ac2efa89a"
 [compat]
 DelayEmbeddings = "1.10"
 Distances = "0.9"
+NearestNeighbors = "0.4"
 StaticArrays = "0.12"
 Wavelets = "0.9"
 julia = "1.5"
