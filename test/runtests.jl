@@ -50,19 +50,26 @@ end
     @test NaiveKernel(0.1) isa NaiveKernel
 
     @testset "Counting based" begin
-        D = Dataset(rand(1:3, 5000, 3))
+        D = Dataset(rand(1:3, 1000, 3))
         ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
         @test Entropies.genentropy(D, CountOccurrences(), α = 2, base = 2) isa Real
     end
 
     @testset "NaiveKernel" begin
-        D = Dataset(rand(1:3, 5000, 3))
-        ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
-        est = NaiveKernel(0.05)
+        N = 1000
+        pts = Dataset([rand(2) for i = 1:N]);
+        ϵ = 0.3
+        est_direct = NaiveKernel(ϵ, DirectDistance())
+        est_tree = NaiveKernel(ϵ, TreeDistance())
+        
+        @test probabilities(pts, est_tree) isa Probabilities
+        @test probabilities(pts, est_direct) isa Probabilities
+        p_tree = probabilities(pts, est_tree)
+        p_direct = probabilities(pts, est_direct)
+        @test all(p_tree .== p_direct) == true
 
-        @test Entropies.genentropy(D, est, base = 2) isa Real
-        @test Entropies.probabilities(D, est) isa Vector{<:Real}
-
+        @test Entropies.genentropy(pts, est_direct, base = 2) isa Real
+        @test Entropies.genentropy(pts, est_tree, base = 2) isa Real
     end
 
     @testset "Permutation entropy" begin
