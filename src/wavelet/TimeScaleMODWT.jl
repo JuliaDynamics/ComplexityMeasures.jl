@@ -85,8 +85,7 @@ end
 """
 # Wavelet-based time-scale probability estimation 
 
-    probabilities(x::AbstractVector{<:Real}, est::TimeScaleMODWT, α = 1; 
-        base = 2) → ps::AbstractVector{<:Real}
+    probabilities(x::AbstractVector{<:Real}, est::TimeScaleMODWT)
 
 Compute the probability distribution of energies from a maximal overlap discrete wavelet 
 transform (MODWT) of `x`. The probability `ps[i]` is the relative/total energy for the 
@@ -108,15 +107,14 @@ Entropies.probabilities(x, TimeScaleMODWT(wl))
 
 See also: [`TimeScaleMODWT`](@ref).
 """
-function probabilities(x::AbstractVector{T}, est::TimeScaleMODWT, α::Real = 1; 
-        base = 2) where T<:Real
+function probabilities(x::AbstractVector{T}, est::TimeScaleMODWT) where T<:Real
     time_scale_density(x, est.wl)
 end
 
 """
 # Wavelet-based time-scale entropy
 
-    genentropy(x::AbstractVector{<:Real}, est::TimeScaleMODWT, α = 1; base = 2) → h::Real
+    genentropy(x::AbstractVector{<:Real}, est::TimeScaleMODWT; α = 1, base = 2) → h::Real
 
 Compute the generalized order-`α` time-scale entropy of `x`, from a maximal overlap 
 discrete wavelet transform (MODWT) of `x`.
@@ -139,11 +137,11 @@ Entropies.genentropy(x, TimeScaleMODWT(wl))
 
 See also: [`TimeScaleMODWT`](@ref).
 """
-genentropy(x::AbstractVector{T}, est::WaveletProbabilitiesEstimator, α::Real) where T<:Real
+genentropy(x::AbstractVector{T}, est::WaveletProbabilitiesEstimator; α::Real) where T<:Real
 
 
-function genentropy(x::AbstractVector{T}, est::TimeScaleMODWT, α::Real = 1; 
-        base = 2) where T<:Real
+function genentropy(x::AbstractVector{T}, est::TimeScaleMODWT; α::Real = 1, 
+        base = Base.MathConstants.e) where T<:Real
     ps = probabilities(x, est)
     Entropies.genentropy(α, ps; base = base)
 end

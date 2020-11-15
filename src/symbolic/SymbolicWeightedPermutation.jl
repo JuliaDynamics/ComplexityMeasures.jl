@@ -260,14 +260,15 @@ distribution, using [`genentropy`](@ref).
 
 See also: [`SymbolicWeightedPermutation`](@ref), [`genentropy`](@ref).
 """
-function genentropy(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation, α::Real = 1; base = 2) where {m, T}
+function genentropy(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation, α::Real = 1; 
+        base = Base.MathConstants.e) where {m, T}
     
     ps = probabilities(x, est)
     genentropy(α, ps; base = base)
 end
 
 function genentropy(x::AbstractArray{T}, est::SymbolicWeightedPermutation, α::Real = 1; 
-        m::Int = 3, τ::Int = 1, base = 2) where {T<:Real}
+        m::Int = 3, τ::Int = 1, base = Base.MathConstants.e) where {T<:Real}
     
     ps = probabilities(x, est, m = m, τ = τ)
     genentropy(α, ps; base = base)

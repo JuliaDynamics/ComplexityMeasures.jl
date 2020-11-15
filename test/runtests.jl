@@ -199,7 +199,7 @@ end
 
             @test Entropies.time_scale_density(x, wl) isa AbstractVector{<:Real}
             @test probabilities(x, TimeScaleMODWT()) isa AbstractVector{<:Real}
-            @test genentropy(x, TimeScaleMODWT(), 1) isa Real
+            @test genentropy(x, TimeScaleMODWT(), α = 1, base = 2) isa Real
         end
     end
 end

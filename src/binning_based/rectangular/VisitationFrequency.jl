@@ -122,7 +122,9 @@ Entropies.genentropy(D, est, 1)
 ```
 See also: [`VisitationFrequency`](@ref), [`RectangularBinning`](@ref).
 """
-function genentropy(x::AbstractDataset, est::VisitationFrequency, α::Real = 1; base::Real = 2)
+function genentropy(x::AbstractDataset, est::VisitationFrequency, α::Real = 1; 
+        base::Real = Base.MathConstants.e)
+    
     α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
 
     ps = probabilities(x, est)
