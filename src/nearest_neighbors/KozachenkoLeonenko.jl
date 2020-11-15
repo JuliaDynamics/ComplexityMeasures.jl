@@ -3,13 +3,14 @@ export KozachenkoLeonenko, genentropy
 """
 ## Nearest neighbour(NN) based
 
-    KozachenkoLeonenko(; w::Int = 1) <: NearestNeighborEntropyEstimator
+    KozachenkoLeonenko(; w::Int = 0) <: NearestNeighborEntropyEstimator
 
-Entropy estimator based on nearest neighbors. This implementation is based on Kozachenko & Leonenko (1987)[^KozachenkoLeonenko1987],
+Entropy estimator based on nearest neighbors. This implementation is based on Kozachenko 
+& Leonenko (1987)[^KozachenkoLeonenko1987],
 as described in Charzyńska and Gambin (2016)[^Charzyńska2016].
 
-`w` is the number of nearest neighbors to exclude when searching for neighbours 
-(defaults to `0`, meaning that only the point itself is excluded).
+`w` is the Theiler window (defaults to `0`, meaning that only the point itself is excluded
+when searching for neighbours).
 
 !!! info
     This estimator is only available for entropy estimation. Probabilities 
