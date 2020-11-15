@@ -141,7 +141,7 @@ function genentropy(x::Vector_or_Dataset, est; α = 1.0, base = Base.MathConstan
 end
 
 """
-    genentropy!(p, x, est::ProbabilitiesEstimator; α = 1.0, base)
+    genentropy!(p, x, est::ProbabilitiesEstimator; α = 1.0, base = Base.MathConstants.e)
 
 Similarly with `probabilities!` this is an in-place version of `genentropy` that allows
 pre-allocation of temporarily used containers.
