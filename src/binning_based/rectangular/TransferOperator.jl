@@ -6,7 +6,7 @@ export TransferOperator,
     binhist
 
 """
-    TransferOperator(r::RectangularBinning)
+    TransferOperator(r::RectangularBinning) <: BinningProbabilitiesEstimator
 
 A probability estimator based on binning data into rectangular boxes dictated by 
 the binning scheme `r`, then estimating the transfer (Perron-Frobenius) operator 
