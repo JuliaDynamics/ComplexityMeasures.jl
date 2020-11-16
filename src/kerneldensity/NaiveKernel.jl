@@ -10,7 +10,7 @@ abstract type KernelEstimationMethod end
 """
     DirectDistance(metric::M = Euclidean()) <: KernelEstimationMethod
 
-Pairwise distances are evaluated directly using the provided metric.
+Pairwise distances are evaluated directly using the provided `metric`.
 """
 struct DirectDistance{M<:Metric} <: KernelEstimationMethod
     metric::M

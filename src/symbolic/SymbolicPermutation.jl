@@ -1,5 +1,5 @@
 export PermutationProbabilityEstimator, SymbolicPermutation
-export symbolize
+export symbolize, symbolize!
 
 """
 A probability estimator based on permutations.
@@ -156,17 +156,25 @@ end
 
 """
     symbolize(x::AbstractVector{T}, est::SymbolicPermutation) where {T} → Vector{Int}
-    symbolize(x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T} → Vector{Int}
+    symbolize!(s, x::AbstractVector{T}, est::SymbolicPermutation) where {T} → Vector{Int}
 
-
-If `x` is an `m`-dimensional dataset, then symbolize `x` by converting each `m`-dimensional 
-state vector as a unique integer in the range ``1, 2, \\ldots, m-1``, using 
-[`encode_motif`](@ref). 
-    
 If `x` is a univariate time series, first `x` create a delay reconstruction of `x`
 using embedding lag `est.τ` and embedding dimension `est.m`, then symbolizing the resulting 
 state vectors with [`encode_motif`](@ref). 
 
+Optionally, the in-place `symbolize!` can be used to put symbols in a pre-allocated 
+integer vector `s`, where `length(s) == length(x)-(est.m-1)*est.τ`.
+
+    symbolize(x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T} → Vector{Int}
+    symbolize!(s, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T} → Vector{Int}
+
+If `x` is an `m`-dimensional dataset, then motif lengths are determined by the dimension of 
+the input data, and `x` is symbolized by converting each `m`-dimensional 
+state vector as a unique integer in the range ``1, 2, \\ldots, m-1``, using 
+[`encode_motif`](@ref). 
+
+Optionally, the in-place `symbolize!` can be used to put symbols in a pre-allocated 
+integer vector `s`, where `length(s) == length(s)`.
 
 ## Examples
 
@@ -202,7 +210,6 @@ function symbolize(x::AbstractDataset{m, T}, est::PermutationProbabilityEstimato
 end
 
 function symbolize(x::AbstractVector{T}, est::PermutationProbabilityEstimator) where {T}
-    N = length(x)
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     x_emb = genembed(x, τs)
 
@@ -211,21 +218,15 @@ function symbolize(x::AbstractVector{T}, est::PermutationProbabilityEstimator) w
     return s
 end
 
-function fill_symbolvector!(s, x, sp, N::Int)
+function fill_symbolvector!(s, x, sp, m::Int)
     @inbounds for i = 1:length(x)
         sortperm!(sp, x[i])
-        s[i] = encode_motif(sp, N)
+        s[i] = encode_motif(sp, m)
     end
 end
 
-"""
-    symbolize!(s::AbstractVector{Int}, x::AbstractDataset, est::SymbolicPermutation) → Vector{Int}
-
-Symbolize the vectors in `x`, storing the symbols in the pre-allocated length-`L` integer
-container `s`, where `L = length(x)`. Motif lengths are determined by the dimension of 
-the input data.
-"""
 function symbolize!(s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
+    @assert length(s) == length(x)
     #=
     Loop over embedding vectors `E[i]`, find the indices `p_i` that sort each `E[i]`,
     then get the corresponding integers `k_i` that generated the
@@ -236,6 +237,12 @@ function symbolize!(s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::Symbo
     fill_symbolvector!(s, x, sp, m)
 
     return s
+end
+
+function symbolize!(s::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where T
+    τs = tuple([est.τ*i for i = 0:est.m-1]...)
+    x_emb = genembed(x, τs)
+    symbolize!(s, x_emb, est)
 end
 
 function probabilities!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
