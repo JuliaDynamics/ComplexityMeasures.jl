@@ -36,8 +36,8 @@ Base.IteratorSize(d::Probabilities) = Base.HasLength()
 @inline Base.sum(d::Probabilities{T}) where T = one(T)
 
 """
-An abstract type for entropy estimators (that don't explicitly estimate probabilities
-directly).
+An abstract type for entropy estimators that don't explicitly estimate probabilities, 
+but returns the value of the entropy directly.
 """
 abstract type EntropyEstimator end
 const EntEst = EntropyEstimator # shorthand
@@ -141,7 +141,7 @@ function genentropy(x::Vector_or_Dataset, est; α = 1.0, base = Base.MathConstan
 end
 
 """
-    genentropy!(p, x, est::ProbabilitiesEstimator; α = 1.0, base)
+    genentropy!(p, x, est::ProbabilitiesEstimator; α = 1.0, base = Base.MathConstants.e)
 
 Similarly with `probabilities!` this is an in-place version of `genentropy` that allows
 pre-allocation of temporarily used containers.

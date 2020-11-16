@@ -46,31 +46,82 @@ end
     @test TransferOperator(RectangularBinning(3)) isa TransferOperator
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
+    @test Kraskov(k = 2, w = 1) isa Kraskov
+    @test Kraskov() isa Kraskov
+    @test KozachenkoLeonenko() isa KozachenkoLeonenko
+    @test KozachenkoLeonenko(w = 5) isa KozachenkoLeonenko
+    @test NaiveKernel(0.1) isa NaiveKernel
 
     @testset "Counting based" begin
-        D = Dataset(rand(1:3, 5000, 3))
+        D = Dataset(rand(1:3, 1000, 3))
         ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
         @test Entropies.genentropy(D, CountOccurrences(), α = 2, base = 2) isa Real
     end
 
+    @testset "NaiveKernel" begin
+        N = 1000
+        pts = Dataset([rand(2) for i = 1:N]);
+        ϵ = 0.3
+        est_direct = NaiveKernel(ϵ, DirectDistance())
+        est_tree = NaiveKernel(ϵ, TreeDistance())
+        
+        @test probabilities(pts, est_tree) isa Probabilities
+        @test probabilities(pts, est_direct) isa Probabilities
+        p_tree = probabilities(pts, est_tree)
+        p_direct = probabilities(pts, est_direct)
+        @test all(p_tree .== p_direct) == true
+
+        @test Entropies.genentropy(pts, est_direct, base = 2) isa Real
+        @test Entropies.genentropy(pts, est_tree, base = 2) isa Real
+    end
+
     @testset "Permutation entropy" begin
-        est = SymbolicPermutation(m = 5, τ = 1)
-        N = 100
-        x = Dataset(repeat([1.1 2.2 3.3], N))
-        y = Dataset(rand(N, 5))
-        z = rand(N)
+        
 
         @testset "Encoding and symbolization" begin
             @test encode_motif([2, 3, 1]) isa Int
-            n = 500
-            w = rand(n)
-            D = genembed(w, [0, -1, -2])
-            @test symbolize(w, SymbolicPermutation(m = 5, τ = 2)) isa Vector{<:Int}
-            @test symbolize(D, SymbolicPermutation(m = 5, τ = 2)) isa Vector{<:Int}
+            @test 0 <= encode_motif([2, 3, 1]) <= factorial(3) - 1
+
+            est = SymbolicPermutation(m = 5, τ = 1)
+            N = 100
+            x = Dataset(repeat([1.1 2.2 3.3], N))
+            y = Dataset(rand(N, 5))
+            z = rand(N)
+
+            # Without pre-allocation
+            D = genembed(z, [0, -1, -2])
+            est = SymbolicPermutation(m = 5, τ = 2)
+
+            @test symbolize(z, est) isa Vector{<:Int}
+            @test symbolize(D, est) isa Vector{<:Int}
+            
+
+            # With pre-allocation
+            N = 100
+            x = rand(N)
+            est = SymbolicPermutation(m = 5, τ = 2)
+            s = fill(-1, N-(est.m-1)*est.τ)
+
+            # if symbolization has occurred, s must have been filled with integers in 
+            # the range 0:(m!-1)
+            @test all(symbolize!(s, x, est) .>= 0)
+            @test all(0 .<= symbolize!(s, x, est) .< factorial(est.m)) 
+            
+            m = 4
+            D = Dataset(rand(N, m))
+            s = fill(-1, length(D))
+            @test all(0 .<= symbolize!(s, D, est) .< factorial(m)) 
+
+
         end
         
         @testset "Pre-allocated" begin
+            est = SymbolicPermutation(m = 5, τ = 1)
+            N = 500
             s = zeros(Int, N);
+            x = Dataset(repeat([1.1 2.2 3.3], N))
+            y = Dataset(rand(N, 5))
+            z = rand(N)
 
             # Probability distributions
             p1 = probabilities!(s, x, est)
@@ -93,7 +144,11 @@ end
         end
         
         @testset "Not pre-allocated" begin
-
+            est = SymbolicPermutation(m = 5, τ = 1)
+            N = 500
+            x = Dataset(repeat([1.1 2.2 3.3], N))
+            y = Dataset(rand(N, 5))
+            
             # Probability distributions
             p1 = probabilities(x, est)
             p2 = probabilities(y, est)
@@ -176,28 +231,6 @@ end
         end
     end
 
-    @testset "TransferOperator" begin
-        D = Dataset(rand(1000, 3))
-
-        binnings = [
-            RectangularBinning(3),
-            RectangularBinning(0.2),
-            RectangularBinning([2, 2, 3]),
-            RectangularBinning([0.2, 0.3, 0.3])
-        ]
-
-        @testset "Binning test $i" for i in 1:length(binnings)
-            @test transferoperator(D, binnings[i]) isa TransferOperatorApproximationRectangular
-            to = transferoperator(D, binnings[i])
-            @test invariantmeasure(to) isa InvariantMeasureEstimate
-            iv = invariantmeasure(to) 
-            @test binhist(to) isa Tuple{Probabilities, Vector{<:SVector}}
-            @test binhist(iv) isa Tuple{Probabilities, Vector{<:SVector}}
-            @test binhist(D, TransferOperator(binnings[i])) isa Tuple{Probabilities, Vector{<:SVector}}
-            @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
-        end
-    end
-
     @testset "Wavelet" begin
         N = 200
         a = 10
@@ -225,8 +258,47 @@ end
             @test Entropies.relative_wavelet_energies(W, 1:2) isa AbstractVector{<:Real}
 
             @test Entropies.time_scale_density(x, wl) isa AbstractVector{<:Real}
+            @test genentropy(x, TimeScaleMODWT(), α = 1, base = 2) isa Real
             @test probabilities(x, TimeScaleMODWT()) isa Probabilities
-            @test genentropy(x, TimeScaleMODWT()) isa Real
+        end
+    end
+
+    @testset "Nearest neighbor based" begin 
+        m = 4
+        τ = 1
+        τs = tuple([τ*i for i = 0:m-1]...)
+        x = rand(250)
+        D = genembed(x, τs)
+
+        est_nn = KozachenkoLeonenko(w = 5)
+        est_knn = Kraskov(k = 2, w = 1)
+
+        @test genentropy(D, est_nn) isa Real
+        @test genentropy(D, est_knn) isa Real
+    end
+
+    @testset "TransferOperator" begin
+        D = Dataset(rand(1000, 3))
+
+        binnings = [
+            RectangularBinning(3),
+            RectangularBinning(0.2),
+            RectangularBinning([2, 2, 3]),
+            RectangularBinning([0.2, 0.3, 0.3])
+        ]
+
+        @testset "Binning test $i" for i in 1:length(binnings)
+            to = Entropies.transferoperator(D, binnings[i])
+            @test to isa Entropies.TransferOperatorApproximationRectangular
+
+            iv = invariantmeasure(to)
+            @test iv isa InvariantMeasure
+
+            p, bins = invariantmeasure(iv)
+            @test p isa Probabilities
+            @test bins isa Vector{<:SVector}
+            
+            @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
         end
     end
 end
