@@ -76,23 +76,48 @@ end
     end
 
     @testset "Permutation entropy" begin
-        est = SymbolicPermutation(m = 5, τ = 1)
-        N = 100
-        x = Dataset(repeat([1.1 2.2 3.3], N))
-        y = Dataset(rand(N, 5))
-        z = rand(N)
+        
 
         @testset "Encoding and symbolization" begin
             @test encode_motif([2, 3, 1]) isa Int
-            n = 500
-            w = rand(n)
-            D = genembed(w, [0, -1, -2])
-            @test symbolize(w, SymbolicPermutation(m = 5, τ = 2)) isa Vector{<:Int}
-            @test symbolize(D, SymbolicPermutation(m = 5, τ = 2)) isa Vector{<:Int}
+            @test 0 <= encode_motif([2, 3, 1]) <= factorial(3) - 1
+
+            est = SymbolicPermutation(m = 5, τ = 1)
+            N = 100
+            x = Dataset(repeat([1.1 2.2 3.3], N))
+            y = Dataset(rand(N, 5))
+            z = rand(N)
+
+            # Without pre-allocation
+            D = genembed(z, [0, -1, -2])
+            est = SymbolicPermutation(m = 5, τ = 2)
+
+            @test symbolize(z, est) isa Vector{<:Int}
+            @test symbolize(D, est) isa Vector{<:Int}
+            
+
+            # With pre-allocation
+            N = 100
+            x = rand(N)
+            est = SymbolicPermutation(m = 5, τ = 2)
+            s = fill(-1, N-(est.m-1)*est.τ)
+
+            # if symbolization has occurred, s must have been filled with integers in 
+            # the range 0:(m!-1)
+            @test all(symbolize!(s, x, est) .>= 0)
+            @test all(0 .<= symbolize!(s, x, est) .< factorial(est.m) - 1) 
+
+            s = fill(-1, length(D))
+            @test all(0 .<= symbolize!(s, D, est) .< factorial(est.m) - 1) 
+
+
         end
         
         @testset "Pre-allocated" begin
             s = zeros(Int, N);
+            x = Dataset(repeat([1.1 2.2 3.3], N))
+            y = Dataset(rand(N, 5))
+            z = rand(N)
 
             # Probability distributions
             p1 = probabilities!(s, x, est)
@@ -115,7 +140,9 @@ end
         end
         
         @testset "Not pre-allocated" begin
-
+            x = Dataset(repeat([1.1 2.2 3.3], N))
+            y = Dataset(rand(N, 5))
+            
             # Probability distributions
             p1 = probabilities(x, est)
             p2 = probabilities(y, est)
