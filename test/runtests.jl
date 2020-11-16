@@ -105,15 +105,19 @@ end
             # if symbolization has occurred, s must have been filled with integers in 
             # the range 0:(m!-1)
             @test all(symbolize!(s, x, est) .>= 0)
-            @test all(0 .<= symbolize!(s, x, est) .< factorial(est.m) - 1) 
-
+            @test all(0 .<= symbolize!(s, x, est) .< factorial(est.m)) 
+            
+            m = 4
+            D = Dataset(rand(N, m))
             s = fill(-1, length(D))
-            @test all(0 .<= symbolize!(s, D, est) .< factorial(est.m) - 1) 
+            @test all(0 .<= symbolize!(s, D, est) .< factorial(m)) 
 
 
         end
         
         @testset "Pre-allocated" begin
+            est = SymbolicPermutation(m = 5, τ = 1)
+            N = 500
             s = zeros(Int, N);
             x = Dataset(repeat([1.1 2.2 3.3], N))
             y = Dataset(rand(N, 5))
@@ -140,6 +144,8 @@ end
         end
         
         @testset "Not pre-allocated" begin
+            est = SymbolicPermutation(m = 5, τ = 1)
+            N = 500
             x = Dataset(repeat([1.1 2.2 3.3], N))
             y = Dataset(rand(N, 5))
             
