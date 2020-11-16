@@ -11,5 +11,4 @@ TransferOperatorApproximationRectangular
 transferoperator
 InvariantMeasureEstimate
 invariantmeasure
-binhist(::InvariantMeasureEstimate)
 ```
