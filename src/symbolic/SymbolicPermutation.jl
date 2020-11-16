@@ -226,6 +226,7 @@ function fill_symbolvector!(s, x, sp, m::Int)
 end
 
 function symbolize!(s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
+    @assert length(s) == length(x)
     #=
     Loop over embedding vectors `E[i]`, find the indices `p_i` that sort each `E[i]`,
     then get the corresponding integers `k_i` that generated the
@@ -241,10 +242,7 @@ end
 function symbolize!(s::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where T
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     x_emb = genembed(x, τs)
-    sp = zeros(Int, est.m) # pre-allocate a single symbol vector that can be overwritten.
-    fill_symbolvector!(s, x_emb, sp, est.m)
-
-    return s
+    symbolize!(s, x_emb, est)
 end
 
 function probabilities!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
