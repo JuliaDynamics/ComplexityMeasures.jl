@@ -1,7 +1,14 @@
 # Nearest neighbor estimators
 
+## Kraskov
+
 ```@docs
 Kraskov
+```
+
+## Kozachenko-Leonenko
+
+```@docs
 KozachenkoLeonenko
 ```
 
