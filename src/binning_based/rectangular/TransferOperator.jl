@@ -137,7 +137,7 @@ rectangular partition given by `ϵ`.
 ## Example 
 
 ```julia
-using DynamicalSystems, Plots
+using DynamicalSystems, Plots, Entropy
 D = 4
 ds = Systems.lorenz96(D; F = 32.0)
 N, dt = 20000, 0.1
@@ -264,8 +264,9 @@ end
 """ 
     InvariantMeasure(to, ρ)
 
-The estimated invariant measure `ρ` associated with some transfer operator `to`, 
-estimated using [`invariantmeasure`](@ref).
+Minimal return struct for [`invariantmeasure`](@ref) that contains the estimated invariant 
+measure `ρ`, as well as the transfer operator `to` from which it is computed (including 
+bin information).
 
 See also: [`invariantmeasure`](@ref).
 """ 
@@ -286,38 +287,74 @@ end
 import LinearAlgebra: norm
 """
     invariantmeasure(x::AbstractDataset, ϵ::RectangularBinning) → iv::InvariantMeasure
-    invariantmeasure(iv::InvariantMeasure) → (ρ::Probabilities, bins::Vector{<:SVector})
 
-Estimate a probability distribution over the bins covering the points in `x`, computed 
-by first approximation the transfer operator associated with the partition, then 
-estimating the invariant measure.
+Estimate an invariant measure over the points in `x` based on binning the data into 
+rectangular boxes dictated by the binning scheme `r`, then approximate the transfer 
+(Perron-Frobenius) operator over the bins. From the approximation to the transfer operator, 
+compute an invariant distribution over the bins. Assumes that the input data are sequential.
 
-approximated using [`transferoperator`](@ref).
+## Description 
+
+### Transfer operator approximation
+
+The transfer operator ``P^{N}``is computed as an `N`-by-`N` matrix of transition 
+probabilities between the states defined by the partition elements, where `N` is the 
+number of boxes in the partition that is visited by the orbit/points. 
+
+If  ``\\{x_t^{(D)} \\}_{n=1}^L`` are the ``L`` different ``D``-dimensional points over 
+which the transfer operator is approximated, ``\\{ C_{k=1}^N \\}`` are the ``N`` different 
+partition elements (as dictated by `ϵ`) that gets visited by the points, and
+ ``\\phi(x_t) = x_{t+1}``, then
+
+```math
+P_{ij} = \\dfrac
+{\\#\\{ x_n | \\phi(x_n) \\in C_j \\cap x_n \\in C_i \\}}
+{\\#\\{ x_m | x_m \\in C_i \\}},
+```
+
+where ``\\#`` denotes the cardinal. The element ``P_{ij}`` thus indicates how many points 
+that are initially in box ``C_i`` end up in box ``C_j`` when the points in ``C_i`` are 
+projected one step forward in time. Thus, the row ``P_{ik}^N`` where 
+``k \\in \\{1, 2, \\ldots, N \\}`` gives the probability 
+of jumping from the state defined by box ``C_i`` to any of the other ``N`` states. It 
+follows that ``\\sum_{k=1}^{N} P_{ik} = 1`` for all ``i``. Thus, ``P^N`` is a row/right 
+stochastic matrix.
+
+### Invariant measure estimation
 
 The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where 
-``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row eigenvector of the transfer 
-matrix ``P^{N}`` associated with eigenvalue 1. The distribution ``\\mathbf{\\rho}^N`` approximates 
-the invariant density of the system subject to the partition `r`, and can be taken as a 
-probability distribution over the partition elements.
+``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row 
+eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The distribution 
+``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to the 
+partition `r`, and can be taken as a probability distribution over the partition elements.
 
-In practice, ``\\mathbf{\\rho}^N`` is initialized as a length-`N` random distribution and applied 
-to ``P^{N}``. The resulting length-`N` distribution is then applied to ``P^{N}`` again. 
-This process repeats until the difference between the distributions over consecutive 
+In practice, ``\\mathbf{\\rho}^N`` is initialized as a length-`N` random distribution and 
+applied to ``P^{N}``. The resulting length-`N` distribution is then applied to ``P^{N}`` 
+again. This process repeats until the difference between the distributions over consecutive 
 iterations is below some threshold.
 
 ## Example 
 
 ```julia
-using DynamicalSystems, Plots
+using DynamicalSystems, Plots, Entropies
 D = 4
 ds = Systems.lorenz96(D; F = 32.0)
 N, dt = 20000, 0.1
 orbit = trajectory(ds, N*dt; dt = dt, Ttr = 10.0)
 
-# Estimate transfer operator over some coarse graining of the orbit.
-to = transferoperator(orbit, RectangularBinning(10))
-invariantmeasure(to)
+# Estimate the invariant measure over some coarse graining of the orbit.
+iv = invariantmeasure(orbit, RectangularBinning(15))
+
+# Get the probabilities and bins 
+invariantmeasure(iv)
 ```
+
+## Probabilities and bin information
+
+    invariantmeasure(iv::InvariantMeasure) → (ρ::Probabilities, bins::Vector{<:SVector})
+
+From a pre-computed invariant measure, return the probabilities and associated bins. 
+Analogous to [`binhist`](@ref).
 
 See also: [`InvariantMeasureEstimate`](@ref).
 """
