@@ -121,8 +121,8 @@ corresponds to the `i`-th column/row of the transfer operator `to`.
 
 See also: [`RectangularBinning`](@ref).
 """
-struct TransferOperatorApproximationRectangular
-    to
+struct TransferOperatorApproximationRectangular{T<:Real}
+    transfermatrix::AbstractArray{T, 2}
     ϵ::RectangularBinning
     mini
     edgelengths
@@ -263,18 +263,18 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
 end
 
 """ 
-    InvariantMeasureEstimate(to, ρ)
+    InvariantMeasure(to, ρ)
 
 The estimated invariant measure `ρ` associated with some transfer operator `to`, 
 estimated using [`invariantmeasure`](@ref).
 
 See also: [`invariantmeasure`](@ref).
 """ 
-struct InvariantMeasureEstimate{T}
+struct InvariantMeasure{T}
     to::T
     ρ::AbstractVector{<:Real}
 
-    function InvariantMeasureEstimate(
+    function InvariantMeasure(
         to::TransferOperatorApproximationRectangular, ρ::AbstractVector{<:Real})
         new{T}(to, ρ)
     end
@@ -322,7 +322,7 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     # Start with a random distribution `Ρ` (big rho). Normalise it so that it
     # sums to 1 and forms a true probability distribution over the partition elements.
     =#
-    Ρ = rand(Float64, 1, size(to, 1))
+    Ρ = rand(Float64, 1, size(to.transfermatrix, 1))
     Ρ = Ρ ./ sum(Ρ, dims = 2)
 
     #=
@@ -332,7 +332,7 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     # meaning that we iterate until Ρ doesn't change substantially between
     # iterations.
     =#
-    distribution = Ρ * to
+    distribution = Ρ * to.transfermatrix
 
     distance = norm(distribution - Ρ) / norm(Ρ)
 
@@ -348,7 +348,7 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
         Ρ = distribution
 
         # Apply the Markov matrix to the current state of the distribution
-        distribution = Ρ * to
+        distribution = Ρ * to.transfermatrix
 
         if (check_pts_counter <= num_checkpts &&
            counter == check_pts[check_pts_counter])
@@ -372,11 +372,11 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     end
 
     # Find partition elements with strictly positive measure.
-    δ = tolerance/size(to, 1)
+    δ = tolerance/size(to.transfermatrix, 1)
     inds_nonzero = findall(distribution .> δ)
 
     # Extract the elements of the invariant measure corresponding to these indices
-    return InvariantMeasureEstimate(to, distribution)
+    return InvariantMeasure(to, distribution)
 end
 
 
@@ -388,29 +388,29 @@ function probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinn
 end
 
 
-"""
-    binhist(iv::InvariantMeasureEstimate) → ρ, bins
-    binhist(to::TransferOperator{RectangularBinning}) → ρ, bins
-    binhist(x::AbstractDataset, est::TransferOperator{RectangularBinning})→ ρ, bins 
+# """
+#     binhist(iv::InvariantMeasureEstimate) → ρ, bins
+#     binhist(to::TransferOperator{RectangularBinning}) → ρ, bins
+#     binhist(x::AbstractDataset, est::TransferOperator{RectangularBinning})→ ρ, bins 
 
-Analogous to `binhist` for a rectangular binning, but here probabilities are estimated from 
-an approximation to the transfer operator subject to that binning.
+# Analogous to `binhist` for a rectangular binning, but here probabilities are estimated from 
+# an approximation to the transfer operator subject to that binning.
 
-See also: [`TransferOperatorApproximationRectangular`](@ref), 
-[`InvariantMeasureEstimate`](@ref), [`TransferOperator`](@ref).
-"""
-function binhist(iv::InvariantMeasureEstimate)
-    return iv.ρ, iv.to.bins
-end
+# See also: [`TransferOperatorApproximationRectangular`](@ref), 
+# [`InvariantMeasureEstimate`](@ref), [`TransferOperator`](@ref).
+# """
+# function binhist(iv::InvariantMeasureEstimate)
+#     return iv.ρ, iv.to.bins
+# end
 
-function binhist(to::TransferOperator{RectangularBinning})
-    iv = invariantmeasure(to)
-    return iv.ρ, to.bins
-end
+# function binhist(to::TransferOperator{RectangularBinning})
+#     iv = invariantmeasure(to)
+#     return iv.ρ, to.bins
+# end
 
-function binhist(x::AbstractDataset, est::TransferOperator{RectangularBinning})
-    to = transferoperator(x, est.binning)
-    iv = invariantmeasure(to)
+# function binhist(x::AbstractDataset, est::TransferOperator{RectangularBinning})
+#     to = transferoperator(x, est.binning)
+#     iv = invariantmeasure(to)
 
-    return iv.ρ, to.bins
-end
+#     return iv.ρ, to.bins
+# end
