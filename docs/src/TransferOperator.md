@@ -1,4 +1,4 @@
-# Transfer operator
+# Transfer operator (binning)
 
 ```@docs
 TransferOperator

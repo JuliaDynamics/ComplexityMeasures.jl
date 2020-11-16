@@ -2,25 +2,45 @@ using GroupSlices, DelayEmbeddings, SparseArrays
 
 export TransferOperator, 
     transferoperator, TransferOperatorApproximationRectangular,
-    InvariantMeasureEstimate, invariantmeasure
+    InvariantMeasureEstimate, invariantmeasure,
+    binhist
 
 """
     TransferOperator(r::RectangularBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by 
 the binning scheme `r`, then estimating the transfer (Perron-Frobenius) operator 
-over the bins[^Diego2019]. Assumes that the input data are sequential.
+over the bins. Assumes that the input data are sequential.
+
+## Description
 
 The transfer operator ``P^{N}``is computed as an `N`-by-`N` matrix of transition 
 probabilities between the states defined by the partition elements, where `N` is the 
-number of boxes in the partition that is visited by the orbit/points. The left invariant
-distribution ``\\rho^{N}``, where ``\\rho^{N}P^{N} = \\rho^{N}``, approximates the 
-invariant density of the system subject to the partition `r`. Thus, ``\\rho^{N}`` can 
-be taken as a probability distribution over the partition elements.
+number of boxes in the partition that is visited by the orbit/points. 
 
-This implementation follows the approach in Diego et al. (2019)[^Diego2019].
+If  ``\\{x_t^{(D)} \\}_{n=1}^L`` are the ``L`` different ``D``-dimensional points over 
+which the transfer operator is approximated, ``\\{ C_{k=1}^N \\}`` are the ``N`` different 
+partition elements (as dictated by `r`) that gets visited by the points, and
+ ``\\phi(x_t) = x_{t+1}``, then
 
-See also: [`RectangularBinning`](@ref).
+```math
+P_{ij} = \\dfrac
+{\\#\\{ x_n | \\phi(x_n) \\in C_j \\cap x_n \\in C_i \\}}
+{\\#\\{ x_m | x_m \\in C_i \\}},
+```
+
+where ``\\#`` denotes the cardinal. The element ``P_{ij}`` thus indicates how many points 
+that are initially in box ``C_i`` end up in box ``C_j`` when the points in ``C_i`` are 
+projected one step forward in time. Thus, the row ``P_{ik}^N`` where 
+``k \\in \\{1, 2, \\ldots, N \\}`` gives the probability 
+of jumping from the state defined by box ``C_i`` to any of the other ``N`` states. It 
+follows that ``\\sum_{k=1}^{N} P_{ik} = 1`` for all ``i``. Thus, ``P^N`` is a row/right 
+stochastic matrix.
+
+
+This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
+
+See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
 
 [^Diego2019]: Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
 """
@@ -245,7 +265,10 @@ end
 """ 
     InvariantMeasureEstimate(to, ρ)
 
-The estimated invariant measure `ρ` associated with some transfer operator `to`.
+The estimated invariant measure `ρ` associated with some transfer operator `to`, 
+estimated using [`invariantmeasure`](@ref).
+
+See also: [`invariantmeasure`](@ref).
 """ 
 struct InvariantMeasureEstimate{T}
     to::T
@@ -262,7 +285,19 @@ import LinearAlgebra: norm
 """
     invariantmeasure(to::TransferOperatorApproximationRectangular) → InvariantMeasureEstimate
 
-Estimate the invariant measure associated with some pre-computed transfer operator.
+Estimate the invariant measure associated with some pre-computed transfer operator ``P^N``,
+approximated using [`transferoperator`](@ref).
+
+The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where 
+``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row eigenvector of the transfer 
+matrix ``P^{N}`` associated with eigenvalue 1. The distribution ``\\mathbf{\\rho}^N`` approximates 
+the invariant density of the system subject to the partition `r`, and can be taken as a 
+probability distribution over the partition elements.
+
+In practice, ``\\mathbf{\\rho}^N`` is initialized as a length-`N` random distribution and applied 
+to ``P^{N}``. The resulting length-`N` distribution is then applied to ``P^{N}`` again. 
+This process repeats until the difference between the distributions over consecutive 
+iterations is below some threshold.
 
 ## Example 
 
@@ -278,7 +313,8 @@ to = transferoperator(orbit, RectangularBinning(10))
 invariantmeasure(to)
 ```
 
-See also: [`TransferOperatorApproximationRectangular`](@ref).
+See also: [`TransferOperatorApproximationRectangular`](@ref), [`transferoperator`](`ref`),
+[`InvariantMeasureEstimate`](@ref).
 """
 function invariantmeasure(to::TransferOperatorApproximationRectangular; 
         N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8)
@@ -352,13 +388,6 @@ function probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinn
 end
 
 
-function binhist(x::AbstractDataset, est::TransferOperator{RectangularBinning})
-    to = transferoperator(x, est.binning)
-    iv = invariantmeasure(to)
-
-    return iv.ρ, to.bins
-end
-
 """
     binhist(iv::InvariantMeasureEstimate) → ρ, bins
     binhist(to::TransferOperator{RectangularBinning}) → ρ, bins
@@ -376,5 +405,12 @@ end
 
 function binhist(to::TransferOperator{RectangularBinning})
     iv = invariantmeasure(to)
+    return iv.ρ, to.bins
+end
+
+function binhist(x::AbstractDataset, est::TransferOperator{RectangularBinning})
+    to = transferoperator(x, est.binning)
+    iv = invariantmeasure(to)
+
     return iv.ρ, to.bins
 end
