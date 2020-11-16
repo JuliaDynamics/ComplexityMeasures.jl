@@ -36,8 +36,8 @@ Base.IteratorSize(d::Probabilities) = Base.HasLength()
 @inline Base.sum(d::Probabilities{T}) where T = one(T)
 
 """
-An abstract type for entropy estimators (that don't explicitly estimate probabilities
-directly).
+An abstract type for entropy estimators that don't explicitly estimate probabilities, 
+but returns the value of the entropy directly.
 """
 abstract type EntropyEstimator end
 const EntEst = EntropyEstimator # shorthand

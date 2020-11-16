@@ -1,13 +1,7 @@
 import SpecialFunctions: digamma, gamma
 using NearestNeighbors
 
-"""
-    EntropyEstimator
 
-An abstract type for estimators that computes entropy directly from the input data,
-without the possibility to return the probabilities. 
-"""
-abstract type EntropyEstimator end 
 abstract type NearestNeighborEntropyEstimator <: EntropyEstimator end
 
 
