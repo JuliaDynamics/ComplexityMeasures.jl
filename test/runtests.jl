@@ -245,8 +245,11 @@ end
 
         @testset "Binning test $i" for i in 1:length(binnings)
             @test transferoperator(D, binnings[i]) isa TransferOperatorApproximationRectangular
-            to = transferoperator(D, binnings[i]) isa TransferOperatorApproximationRectangular
-            @test invariantmeasure(to) isa InvariantMeasureEstimate
+            to = transferoperator(D, binnings[i])
+            @test to isa TransferOperatorApproximationRectangular
+            iv = invariantmeasure(to)
+            @test iv isa InvariantMeasure
+            iv = invariantmeasure(to)
             p, bins = binhist(to)
             
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
