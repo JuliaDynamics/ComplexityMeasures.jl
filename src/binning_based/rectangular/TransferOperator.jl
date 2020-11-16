@@ -9,7 +9,7 @@ export
     TransferOperator(ϵ::RectangularBinning) <: BinningProbabilitiesEstimator
 
 A probability estimator based on binning data into rectangular boxes dictated by 
-the binning scheme `r`, then approxmating the transfer (Perron-Frobenius) operator 
+the binning scheme `ϵ`, then approxmating the transfer (Perron-Frobenius) operator 
 over the bins, the taking the invariant measure associated with that transfer operator 
 as the bin probabilities. Assumes that the input data are sequential.
 
@@ -23,7 +23,7 @@ number of boxes in the partition that is visited by the orbit/points.
 
 If  ``\\{x_t^{(D)} \\}_{n=1}^L`` are the ``L`` different ``D``-dimensional points over 
 which the transfer operator is approximated, ``\\{ C_{k=1}^N \\}`` are the ``N`` different 
-partition elements (as dictated by `r`) that gets visited by the points, and
+partition elements (as dictated by `ϵ`) that gets visited by the points, and
  ``\\phi(x_t) = x_{t+1}``, then
 
 ```math
@@ -46,7 +46,7 @@ The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where
 ``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row 
 eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The distribution 
 ``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to the 
-partition `r`, and can be taken as a probability distribution over the partition elements.
+partition `ϵ`, and can be taken as a probability distribution over the partition elements.
 
 In practice, the invariant measure ``\\mathbf{\\rho}^N`` is computed using 
 [`invariantmeasure`](@ref), which also approximates the transfer matrix. The invariant distribution
@@ -313,7 +313,7 @@ import LinearAlgebra: norm
     invariantmeasure(x::AbstractDataset, ϵ::RectangularBinning) → iv::InvariantMeasure
 
 Estimate an invariant measure over the points in `x` based on binning the data into 
-rectangular boxes dictated by the binning scheme `r`, then approximate the transfer 
+rectangular boxes dictated by the binning scheme `ϵ`, then approximate the transfer 
 (Perron-Frobenius) operator over the bins. From the approximation to the transfer operator, 
 compute an invariant distribution over the bins. Assumes that the input data are sequential.
 
@@ -364,7 +364,7 @@ See also: [`InvariantMeasure`](@ref).
 function invariantmeasure(to::TransferOperatorApproximationRectangular; 
         N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8)
     
-    TO = to.to
+    TO = to.transfermatrix
     #=
     # Start with a random distribution `Ρ` (big rho). Normalise it so that it
     # sums to 1 and forms a true probability distribution over the partition elements.
@@ -428,7 +428,7 @@ end
 
 
 function probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinning})
-    to = transferoperator(x, est.binning)
+    to = transferoperator(x, est.ϵ)
     iv = invariantmeasure(to)
 
     return iv.ρ
