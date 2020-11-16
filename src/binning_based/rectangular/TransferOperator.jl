@@ -1,9 +1,8 @@
 using GroupSlices, DelayEmbeddings, SparseArrays
 
-export TransferOperator, 
-    transferoperator, TransferOperatorApproximationRectangular,
-    InvariantMeasureEstimate, invariantmeasure,
-    binhist
+export 
+    TransferOperator, # the probabilities estimator
+    InvariantMeasure, invariantmeasure
 
 """
     TransferOperator(r::RectangularBinning)
@@ -58,7 +57,7 @@ function inds_in_terms_of_unique(x)
     N = length(x)
     Nu = length(U)
     inds = zeros(Int, N)
-    
+
     for j = 1:N
         xⱼ = view(x, j)
         for i = 1:Nu
@@ -272,20 +271,27 @@ See also: [`invariantmeasure`](@ref).
 """ 
 struct InvariantMeasure{T}
     to::T
-    ρ::AbstractVector{<:Real}
+    ρ::Probabilities
 
-    function InvariantMeasure(
-        to::TransferOperatorApproximationRectangular, ρ::AbstractVector{<:Real})
+    function InvariantMeasure(to::T, ρ) where T
         new{T}(to, ρ)
     end
+end
+
+function invariantmeasure(iv::InvariantMeasure)
+    return iv.ρ, iv.to.bins
 end
 
 
 import LinearAlgebra: norm
 """
-    invariantmeasure(to::TransferOperatorApproximationRectangular) → InvariantMeasureEstimate
+    invariantmeasure(x::AbstractDataset, ϵ::RectangularBinning) → iv::InvariantMeasure
+    invariantmeasure(iv::InvariantMeasure) → (ρ::Probabilities, bins::Vector{<:SVector})
 
-Estimate the invariant measure associated with some pre-computed transfer operator ``P^N``,
+Estimate a probability distribution over the bins covering the points in `x`, computed 
+by first approximation the transfer operator associated with the partition, then 
+estimating the invariant measure.
+
 approximated using [`transferoperator`](@ref).
 
 The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where 
@@ -313,8 +319,7 @@ to = transferoperator(orbit, RectangularBinning(10))
 invariantmeasure(to)
 ```
 
-See also: [`TransferOperatorApproximationRectangular`](@ref), [`transferoperator`](`ref`),
-[`InvariantMeasureEstimate`](@ref).
+See also: [`InvariantMeasureEstimate`](@ref).
 """
 function invariantmeasure(to::TransferOperatorApproximationRectangular; 
         N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8)
@@ -376,7 +381,7 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     inds_nonzero = findall(distribution .> δ)
 
     # Extract the elements of the invariant measure corresponding to these indices
-    return InvariantMeasure(to, distribution)
+    return InvariantMeasure(to, Probabilities(distribution))
 end
 
 
@@ -384,7 +389,7 @@ function probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinn
     to = transferoperator(x, est.binning)
     iv = invariantmeasure(to)
 
-    return Probabilities(iv.ρ)
+    return iv.ρ
 end
 
 
