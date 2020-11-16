@@ -7,6 +7,7 @@ version = "0.9.2"
 [deps]
 DelayEmbeddings = "5732040d-69e3-5649-938a-b6b4f237613f"
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+GroupSlices = "d853e229-7c7c-56e9-b6be-9a1acc5f13d9"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 GroupSlices = "d853e229-7c7c-56e9-b6be-9a1acc5f13d9"
 NearestNeighbors = "b8a86587-4115-5ab1-83bc-aa920d37bbce"

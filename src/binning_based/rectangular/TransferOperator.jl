@@ -2,14 +2,18 @@ using GroupSlices, DelayEmbeddings, SparseArrays
 
 export 
     TransferOperator, # the probabilities estimator
-    InvariantMeasure, invariantmeasure
+    InvariantMeasure, invariantmeasure,
+    transfermatrix
 
 """
-    TransferOperator(r::RectangularBinning)
+    TransferOperator(ϵ::RectangularBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by 
-the binning scheme `r`, then estimating the transfer (Perron-Frobenius) operator 
-over the bins. Assumes that the input data are sequential.
+the binning scheme `r`, then approxmating the transfer (Perron-Frobenius) operator 
+over the bins, the taking the invariant measure associated with that transfer operator 
+as the bin probabilities. Assumes that the input data are sequential.
+
+This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
 
 ## Description
 
@@ -36,18 +40,38 @@ of jumping from the state defined by box ``C_i`` to any of the other ``N`` state
 follows that ``\\sum_{k=1}^{N} P_{ik} = 1`` for all ``i``. Thus, ``P^N`` is a row/right 
 stochastic matrix.
 
+### Invariant measure estimation from transfer operator
 
-This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
+The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where 
+``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row 
+eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The distribution 
+``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to the 
+partition `r`, and can be taken as a probability distribution over the partition elements.
+
+In practice, the invariant measure ``\\mathbf{\\rho}^N`` is computed using 
+[`invariantmeasure`](@ref), which also approximates the transfer matrix. The invariant distribution
+is initialized as a length-`N` random distribution which is then applied to ``P^{N}``. 
+The resulting length-`N` distribution is then applied to ``P^{N}`` again. This process 
+repeats until the difference between the distributions over consecutive iterations is 
+below some threshold. 
+
+## Probability and entropy estimation
+
+- `probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinning})` estimates 
+    probabilities for the bins defined by the provided binning (`est.ϵ`)
+- `genentropy(x::AbstractDataset, est::TransferOperator{RectangularBinning})` does the same, 
+    but computes generalized entropy using the probabilities.
+
 
 See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
 
 [^Diego2019]: Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
 """
 struct TransferOperator{R} <: BinningProbabilitiesEstimator
-    binning::R
+    ϵ::R
     
-    function TransferOperator(binning::R) where R <: RectangularBinning
-        new{R}(binning)
+    function TransferOperator(ϵ::R) where R <: RectangularBinning
+        new{R}(ϵ)
     end
 end
 
@@ -293,45 +317,7 @@ rectangular boxes dictated by the binning scheme `r`, then approximate the trans
 (Perron-Frobenius) operator over the bins. From the approximation to the transfer operator, 
 compute an invariant distribution over the bins. Assumes that the input data are sequential.
 
-## Description 
-
-### Transfer operator approximation
-
-The transfer operator ``P^{N}``is computed as an `N`-by-`N` matrix of transition 
-probabilities between the states defined by the partition elements, where `N` is the 
-number of boxes in the partition that is visited by the orbit/points. 
-
-If  ``\\{x_t^{(D)} \\}_{n=1}^L`` are the ``L`` different ``D``-dimensional points over 
-which the transfer operator is approximated, ``\\{ C_{k=1}^N \\}`` are the ``N`` different 
-partition elements (as dictated by `ϵ`) that gets visited by the points, and
- ``\\phi(x_t) = x_{t+1}``, then
-
-```math
-P_{ij} = \\dfrac
-{\\#\\{ x_n | \\phi(x_n) \\in C_j \\cap x_n \\in C_i \\}}
-{\\#\\{ x_m | x_m \\in C_i \\}},
-```
-
-where ``\\#`` denotes the cardinal. The element ``P_{ij}`` thus indicates how many points 
-that are initially in box ``C_i`` end up in box ``C_j`` when the points in ``C_i`` are 
-projected one step forward in time. Thus, the row ``P_{ik}^N`` where 
-``k \\in \\{1, 2, \\ldots, N \\}`` gives the probability 
-of jumping from the state defined by box ``C_i`` to any of the other ``N`` states. It 
-follows that ``\\sum_{k=1}^{N} P_{ik} = 1`` for all ``i``. Thus, ``P^N`` is a row/right 
-stochastic matrix.
-
-### Invariant measure estimation
-
-The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where 
-``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row 
-eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The distribution 
-``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to the 
-partition `r`, and can be taken as a probability distribution over the partition elements.
-
-In practice, ``\\mathbf{\\rho}^N`` is initialized as a length-`N` random distribution and 
-applied to ``P^{N}``. The resulting length-`N` distribution is then applied to ``P^{N}`` 
-again. This process repeats until the difference between the distributions over consecutive 
-iterations is below some threshold.
+Details on the estimation procedure is found the [`TransferOperator`](@ref) docstring.
 
 ## Example 
 
@@ -354,9 +340,26 @@ invariantmeasure(iv)
     invariantmeasure(iv::InvariantMeasure) → (ρ::Probabilities, bins::Vector{<:SVector})
 
 From a pre-computed invariant measure, return the probabilities and associated bins. 
-Analogous to [`binhist`](@ref).
+The element `ρ[i]` is the probability of visitation to the box `bins[i]`. Analogous to 
+[`binhist`](@ref). 
 
-See also: [`InvariantMeasureEstimate`](@ref).
+
+!!! hint "Transfer operator approach vs. naive histogram approach"
+
+    Why bother with the transfer operator instead of using regular histograms to obtain 
+    probabilities? 
+    
+    In fact, the naive histogram approach and the 
+    transfer operator approach are equivalent in the limit of long enough time series 
+    (as ``n \\to \\intfy``), which is guaranteed by the ergodic theorem. There is a crucial
+    difference, however:
+    
+    The naive histogram approach only gives the long-term probabilities that 
+    orbits visit a certain region of the state space. The transfer operator encodes that 
+    information too, but comes with the added benefit of knowing the *transition 
+    probabilities* between states (see [`transfermatrix`](@ref)). 
+
+See also: [`InvariantMeasure`](@ref).
 """
 function invariantmeasure(to::TransferOperatorApproximationRectangular; 
         N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8)
@@ -427,6 +430,20 @@ function probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinn
     iv = invariantmeasure(to)
 
     return iv.ρ
+end
+
+"""
+    transfermatrix(iv::InvariantMeasure) → (M::AbstractArray{<:Real, 2}, bins::Vector{<:SVector})
+
+Return the transfer matrix/operator and corresponding bins. Here, `bins[i]` corresponds 
+to the i-th row/column of the transfer matrix. Thus, the entry `M[i, j]` is the 
+probability of jumping from the state defined by `bins[i]` to the state defined by 
+`bins[j]`.
+
+See also: [`TransferOperator`](@ref).
+"""
+function transfermatrix(iv::InvariantMeasure)
+    return iv.to.transfermatrix, iv.to.bins
 end
 
 

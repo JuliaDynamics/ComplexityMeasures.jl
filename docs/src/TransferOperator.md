@@ -7,8 +7,7 @@ TransferOperator
 ## Utility methods/types
 
 ```@docs
-TransferOperatorApproximationRectangular
-transferoperator
-InvariantMeasureEstimate
+InvariantMeasure
 invariantmeasure
+transfermatrix
 ```
