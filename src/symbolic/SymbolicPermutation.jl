@@ -218,10 +218,10 @@ function symbolize(x::AbstractVector{T}, est::PermutationProbabilityEstimator) w
     return s
 end
 
-function fill_symbolvector!(s, x, sp, N::Int)
+function fill_symbolvector!(s, x, sp, m::Int)
     @inbounds for i = 1:length(x)
         sortperm!(sp, x[i])
-        s[i] = encode_motif(sp, N)
+        s[i] = encode_motif(sp, m)
     end
 end
 
