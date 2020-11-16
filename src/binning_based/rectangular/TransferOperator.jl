@@ -447,31 +447,3 @@ See also: [`TransferOperator`](@ref).
 function transfermatrix(iv::InvariantMeasure)
     return iv.to.transfermatrix, iv.to.bins
 end
-
-
-# """
-#     binhist(iv::InvariantMeasureEstimate) → ρ, bins
-#     binhist(to::TransferOperator{RectangularBinning}) → ρ, bins
-#     binhist(x::AbstractDataset, est::TransferOperator{RectangularBinning})→ ρ, bins 
-
-# Analogous to `binhist` for a rectangular binning, but here probabilities are estimated from 
-# an approximation to the transfer operator subject to that binning.
-
-# See also: [`TransferOperatorApproximationRectangular`](@ref), 
-# [`InvariantMeasureEstimate`](@ref), [`TransferOperator`](@ref).
-# """
-# function binhist(iv::InvariantMeasureEstimate)
-#     return iv.ρ, iv.to.bins
-# end
-
-# function binhist(to::TransferOperator{RectangularBinning})
-#     iv = invariantmeasure(to)
-#     return iv.ρ, to.bins
-# end
-
-# function binhist(x::AbstractDataset, est::TransferOperator{RectangularBinning})
-#     to = transferoperator(x, est.binning)
-#     iv = invariantmeasure(to)
-
-#     return iv.ρ, to.bins
-# end
