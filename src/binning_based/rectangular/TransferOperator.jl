@@ -129,7 +129,8 @@ end
 inds_in_terms_of_unique(x::Dataset) = inds_in_terms_of_unique(x.data)
 
 """
-    TransferOperatorApproximationRectangular(to, ϵ::RectangularBinning, mini, edgelengths, bins)
+    TransferOperatorApproximationRectangular(to, ϵ::RectangularBinning, mini, edgelengths, 
+        bins, sort_idxs)
 
 The `N`-by-`N` matrix `to` is an approximation to the transfer operator, subject to the 
 partition `ϵ`, computed over some set of sequentially ordered points. 
@@ -142,6 +143,9 @@ Only bins actually visited by the points are considered, and `bins` give the coo
 of these bins. The element `bins[i]` correspond to the `i`-th state of the system, which 
 corresponds to the `i`-th column/row of the transfer operator `to`.
 
+`sort_idxs` contains the indices that would sort the input points. `visitors` is a 
+vector of vectors, where `visitors[i]` contains the indices of the (sorted) 
+points that visits `bins[i]`.
 See also: [`RectangularBinning`](@ref).
 """
 struct TransferOperatorApproximationRectangular{T<:Real}
@@ -150,6 +154,8 @@ struct TransferOperatorApproximationRectangular{T<:Real}
     mini
     edgelengths
     bins
+    sort_idxs::Vector{Int}
+    visitors::Vector{Vector{Int}}
 end
 
 """
@@ -181,6 +187,7 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
 
     # The L points visits a total of L bins, which are the following bins: 
     visited_bins = Entropies.encode_as_bin(pts, mini, edgelengths)
+    sort_idxs = sortperm(visited_bins)
     sort!(visited_bins)
     
     # There are N=length(unique(visited_bins)) unique bins.
@@ -282,7 +289,8 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
     unique!(visited_bins)
     bins = [β .* edgelengths .+ mini for β in visited_bins]
 
-    TransferOperatorApproximationRectangular(TO, ϵ, mini, edgelengths, bins)
+    TransferOperatorApproximationRectangular(TO, ϵ, mini, edgelengths, bins, 
+        sort_idxs, visitors)
 end
 
 """ 
@@ -426,6 +434,10 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     return InvariantMeasure(to, Probabilities(distribution))
 end
 
+function invariantmeasure(x::AbstractDataset, ϵ::RectangularBinning)
+    to = transferoperator(x, ϵ)
+    invariantmeasure(to)
+end
 
 function probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinning})
     to = transferoperator(x, est.ϵ)
