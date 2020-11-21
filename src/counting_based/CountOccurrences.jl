@@ -11,11 +11,6 @@ Sum-normalize histograms to obtain probability distributions.
 """
 struct CountOccurrences <: ProbabilitiesEstimator end
 
-"""
-    probabilities(x::AbstractDataset, est::CountOccurrences) → ps::Probabilities
-
-Estimate probabilities by counting repetitions among the elements of `x`.
-"""
 function probabilities(x::AbstractDataset, est::CountOccurrences)
     probabilities(x)
 end
