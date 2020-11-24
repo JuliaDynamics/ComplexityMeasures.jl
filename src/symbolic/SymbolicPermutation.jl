@@ -15,10 +15,19 @@ Symbolic, permutation-based probabilities/entropy estimators.
 Uses embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` by default. The minimum 
 dimension ``m`` is 2 (there are no sorting permutations of single-element state vectors).
 
-The keyword `lt` (less-than) accepts a function that decides which of two state vector 
-elements are smaller. If two elements are equal, the default behaviour is to randomly 
-assign one of them as the largest (`lt = Entropies.isless_rand`). To get the behaviour 
-described in Bandt and Pompe (2002), use `lt = Base.isless`).
+## Repeated values during symbolization
+
+In the original implementation of permutation entropy [^BandtPompe2002], equal values are 
+ordered after their order of appearance, but this can lead to erroneous temporal 
+correlations, especially for data with low-amplitude resolution [^Zunino2017]. Here, we 
+resolve this issue by letting the user provide a custom "less-than" function. The keyword 
+`lt` accepts a function that decides which of two state vector elements are smaller. If two 
+elements are equal, the default behaviour is to randomly assign one of them as the largest 
+(`lt = Entropies.isless_rand`). For data with low amplitude resolution, computing 
+probabilities multiple times using the random approach may reduce these erroneous 
+effects.
+
+To get the behaviour described in Bandt and Pompe (2002), use `lt = Base.isless`).
 
 ## Properties of original signal preserved
 
@@ -220,7 +229,7 @@ dimension to be computed from the symbol frequency distribution.*
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Azami2016]: Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy: Illustration in spike detection and signal segmentation. Computer methods and programs in biomedicine, 128, 40-51.
 [^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity measure for time series incorporating amplitude information." Physical Review E 87.2 (2013): 022911.
-
+[^Zunino2017]: Zunino, L., Olivares, F., Scholkmann, F., & Rosso, O. A. (2017). Permutation entropy based time series analysis: Equalities in the input signal can lead to false conclusions. Physics Letters A, 381(22), 1883-1892.
 """
 struct SymbolicPermutation <: PermutationProbabilityEstimator
     τ
