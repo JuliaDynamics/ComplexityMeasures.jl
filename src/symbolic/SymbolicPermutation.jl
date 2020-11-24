@@ -1,5 +1,4 @@
-export PermutationProbabilityEstimator, SymbolicPermutation
-export symbolize, symbolize!
+export SymbolicPermutation
 
 """
 A probability estimator based on permutations.

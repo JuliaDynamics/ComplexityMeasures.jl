@@ -1,5 +1,3 @@
-export encode_motif
-
 """ 
     encode_motif(x, m::Int = length(x)) → s::Int
 

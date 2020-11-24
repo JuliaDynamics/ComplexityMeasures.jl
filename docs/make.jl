@@ -42,7 +42,8 @@ PAGES = [
         "NearestNeighbors.md",
         "NaiveKernel.md",
         "TimeScaleMODWT.md"
-    ]
+    ],
+    "Non-exported" => "nonexported.md"
 ]
 
 makedocs(
