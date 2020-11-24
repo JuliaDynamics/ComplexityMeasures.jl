@@ -8,81 +8,91 @@ abstract type PermutationProbabilityEstimator <: SymbolicProbabilityEstimator en
 
 """
     SymbolicPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
+    SymbolicWeightedPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
+    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
 
-A symbolic, permutation based probabilities/entropy estimator. 
+Symbolic, permutation-based probabilities/entropy estimators.
+
+By default, embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` is used when
+embedding a time series for symbolization. The minimum dimension ``m`` is 2 (there are
+no sorting permutations of single-element state vectors).
+
+The keyword `lt` (less-than) accepts a function that decides which of two elements are 
+smaller. If two state vector elements are equal, the default behaviour is to randomly 
+assign one of them as the largest (`lt = Entropies.isless_rand`). To get the behaviour 
+described in Bandt and Pompe (2002), use `lt = Base.isless`).
 
 ## Properties of original signal preserved
 
-Permutations of a signal preserve ordinal patterns (sorting information). This
-implementation is based on Bandt & Pompe et al. (2002)[^BandtPompe2002] and 
-Berger et al. (2019) [^Berger2019].
+- **`SymbolicPermutation`**: Preserve ordinal patterns of state vectors (sorting information). This
+    implementation is based on Bandt & Pompe et al. (2002)[^BandtPompe2002] and 
+    Berger et al. (2019) [^Berger2019].
+- **`SymbolicWeightedPermutation`**: Preserves not only ordinal patterns of state vectors 
+    (sorting information), but also encodes amplitude information by tracking 
+    the variance of the state vectors. This implementation is based on Fadlallah et 
+    al. (2013)[^Fadlallah2013].
+- **`SymbolicAmplitudeAwarePermutation`**: Preserves not only ordinal patterns about state 
+    vectors (sorting information), but also encodes amplitude information by weighting 
+    absolute amplitudes of state vectors and relative differences between state vector 
+    elements (see description below for explanation of the weighting parameter `A`). 
+    This implementation is based on Azami & Escudero (2016) [^Azami2016].
 
-## Estimation
+
+## Probability estimation
 
 ### Univariate time series
 
 To estimate probabilities or entropies from univariate time series, use the following methods:
 
-- `probabilities(x::AbstractVector, est::SymbolicPermutation)`. Constructs state vectors 
-    from `x` using embedding lag `τ` and embedding dimension `m`. The ordinal patterns of the 
-    state vectors are then symbolized, and probabilities are taken as the relative 
-    frequency of symbols.
-- `genentropy(x::AbstractVector, est::SymbolicPermutation; α=1, base = 2)` computes
-    probabilities by calling `probabilities(x::AbstractVector, est::SymbolicPermutation)`,
+- `probabilities(x::AbstractVector, est::SymbolicProbabilityEstimator)`. Constructs state vectors 
+    from `x` using embedding lag `τ` and embedding dimension `m`, symbolizes state vectors,
+    and computes probabilities as (weighted) relative frequency of symbols.
+- `genentropy(x::AbstractVector, est::SymbolicProbabilityEstimator; α=1, base = 2)` computes
+    probabilities by calling `probabilities(x::AbstractVector, est)`,
     then computer the order-`α` generalized entropy to the given base.
 
-See below for in-place versions below allow you to provide a pre-allocated symbol array `s`
-for faster repeated computations of input data of the same length.
+#### Speeding up repeated computations
 
-!!! info "Default embedding dimension and embedding lag"
-    By default, embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` is used when
-    embedding a time series for symbolization. You should probably make a more informed
-    decision about embedding parameters when computing the permutation entropy of a real
-    time series. In all cases, ``m`` must be at least 2 (there are
-    no permutations of a single-element state vector, so need ``m \\geq 2``).
+A pre-allocated integer symbol array `s` can be provided to save some memory 
+allocations if the probabilities are to be computed for multiple data sets.
+
+*Note: it is not the array that will hold the final probabilities that is pre-allocated,
+but the temporary integer array containing the symbolized data points. Thus, if
+provided, it is required that `length(x) == length(s)` if `x` is a Dataset, or
+`length(s) == length(x) - (m-1)τ` if `x` is a univariate signal that is to be embedded
+first*.
+
+Use the following signatures (only works for `SymbolicPermutation`).
+
+```julia
+probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicPermutation) → ps::Probabilities
+probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicPermutation) → ps::Probabilities
+```
 
 ### Multivariate datasets
 
-Although not dealt with in the original Bandt & Pompe (2002) paper, numerically speaking, 
-permutation entropy can also be computed for multivariate datasets with dimension ≥ 2. Such
-datasets may be, for example, preembedded time series. Then, just skip the delay 
-reconstruction step, compute and symbols directly from the ``L`` existing state vectors 
-``\\{\\mathbf{x}_1, \\mathbf{x}_2, \\ldots, \\mathbf{x_L}\\}``.
+Although not dealt with in the original paper describing the estimators, numerically speaking, 
+permutation entropies can also be computed for multivariate datasets with dimension ≥ 2 
+(but see caveat below). Such datasets may be, for example, preembedded time series. Then, 
+just skip the delay reconstruction step, compute and symbols directly from the ``L`` 
+existing state vectors ``\\{\\mathbf{x}_1, \\mathbf{x}_2, \\ldots, \\mathbf{x_L}\\}``.
 
-- `probabilities(x::Dataset, est::SymbolicPermutation)`. Compute ordinal patterns of the 
+- `probabilities(x::Dataset, est::SymbolicProbabilityEstimator)`. Compute ordinal patterns of the 
     state vectors of `x` directly (without doing any embedding), symbolize those patterns,
-    and compute probabilities as relative frequencies of symbols.
-- `genentropy(x::Dataset, est::SymbolicPermutation)`. Computes probabilities from 
-    symbol frequencies using `probabilities(x::Dataset, est::SymbolicPermutation)`,
+    and compute probabilities as (weighted) relative frequencies of symbols.
+- `genentropy(x::Dataset, est::SymbolicProbabilityEstimator)`. Computes probabilities from 
+    symbol frequencies using `probabilities(x::Dataset, est::SymbolicProbabilityEstimator)`,
     then computes the order-`α` generalized (permutation) entropy to the given base.
 
-!!! warn "Dynamical interpretation"
-    A dynamical interpretation of the permutation entropy does not necessarily hold if
-    computing it on generic multivariate datasets. Method signatures for `Dataset`s are
-    provided for convenience, and should only be applied if you understand the relation
-    between your input data, the numerical value for the permutation entropy, and
-    its interpretation.
-
-## Speeding up repeated computations
-
-!!! tip
-    A pre-allocated integer symbol array `s` can be provided to save some memory 
-    allocations if the probabilities are to be computed for multiple data sets.
-
-    *Note: it is not the array that will hold the final probabilities that is pre-allocated,
-    but the temporary integer array containing the symbolized data points. Thus, if
-    provided, it is required that `length(x) == length(s)` if `x` is a Dataset, or
-    `length(s) == length(x) - (m-1)τ` if `x` is a univariate signal that is to be embedded
-    first*.
-
-    Use the following signatures.
-
-    ```julia
-    probabilities!(s::Vector{Int}, x::AbstractVector, est::SymbolicPermutation) → ps::Probabilities
-    probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicPermutation) → ps::Probabilities
-    ```
+**Caveat**: A dynamical interpretation of the permutation entropy does not necessarily 
+hold if computing it on generic multivariate datasets. Method signatures for `Dataset`s are
+provided for convenience, and should only be applied if you understand the relation
+between your input data, the numerical value for the permutation entropy, and
+its interpretation.
 
 ## Description
+
+All symbolic estimators use the same underlying approach to estimating probabilities.
 
 ### Embedding, ordinal patterns and symbolization
 
@@ -107,6 +117,8 @@ denote the set of symbols ``\\Pi = \\{ s_i \\}_{i\\in \\{ 1, \\ldots, R\\}}``.
 
 ### Probability computation
 
+#### `SymbolicPermutation`
+
 The probability of a given motif is its frequency of occurrence, normalized by the total
 number of motifs (with notation from [^Fadlallah2013]),
 
@@ -116,6 +128,74 @@ p(\\pi_i^{m, \\tau}) = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i} \\left(\
 
 where the function ``\\mathbf{1}_A(u)`` is the indicator function of a set ``A``. That
     is, ``\\mathbf{1}_A(u) = 1`` if ``u \\in A``, and ``\\mathbf{1}_A(u) = 0`` otherwise.
+
+#### `SymbolicAmplitudeAwarePermutation`
+
+
+Amplitude-aware permutation entropy is computed analogously to regular permutation entropy
+but probabilities are weighted by amplitude information as follows.
+
+```math
+p(\\pi_i^{m, \\tau}) = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i} \\left( \\mathbf{x}_k^{m, \\tau} \\right) \\, a_k}{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) \\in \\Pi} \\left( \\mathbf{x}_k^{m, \\tau} \\right) \\,a_k} = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i} \\left( \\mathbf{x}_k^{m, \\tau} \\right) \\, a_k}{\\sum_{k=1}^N a_k}.
+```
+
+The weights encoding amplitude information about state vector ``\\mathbf{x}_i = (x_1^i, x_2^i, \\ldots, x_m^i)`` are 
+
+```math
+a_i = \\dfrac{A}{m} \\sum_{k=1}^m |x_k^i | + \\dfrac{1-A}{d-1} \\sum_{k=2}^d |x_{k}^i - x_{k-1}^i|,
+```
+
+with ``0 \\leq A \\leq 1``. When ``A=0`` , only internal differences between the elements of 
+``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector 
+elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is used.
+
+#### `SymbolicWeightedPermutation`
+
+
+Weighted permutation entropy is also computed analogously to regular permutation entropy, but
+adds weights that encode amplitude information too:
+
+```math
+p(\\pi_i^{m, \\tau}) = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i} 
+\\left( \\mathbf{x}_k^{m, \\tau} \\right) 
+\\, w_k}{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) \\in \\Pi} 
+\\left( \\mathbf{x}_k^{m, \\tau} \\right) \\,w_k} = \\dfrac{\\sum_{k=1}^N 
+\\mathbf{1}_{u:S(u) = s_i} 
+\\left( \\mathbf{x}_k^{m, \\tau} \\right) \\, w_k}{\\sum_{k=1}^N w_k}.
+```
+
+The weighted permutation entropy is equivalent to regular permutation entropy when weights
+are positive and identical (``w_j = \\beta \\,\\,\\, \\forall \\,\\,\\, j \\leq N`` and
+``\\beta > 0)``. Weights are dictated by the variance of the state vectors.
+
+Let the aritmetic mean of state vector ``\\mathbf{x}_i`` be denoted
+by
+
+```math
+\\mathbf{\\hat{x}}_j^{m, \\tau} = \\frac{1}{m} \\sum_{k=1}^m x_{j + (k+1)\\tau}.
+```
+
+Weights are then computed as
+
+```math
+w_j = \\dfrac{1}{m}\\sum_{k=1}^m (x_{j+(k+1)\\tau} - \\mathbf{\\hat{x}}_j^{m, \\tau})^2.
+```
+
+!!! question "Implementation details"
+    *Note: in equation 7, section III, of the original paper, the authors write*
+
+    ```math
+    w_j = \\dfrac{1}{m}\\sum_{k=1}^m (x_{j-(k-1)\\tau} - \\mathbf{\\hat{x}}_j^{m, \\tau})^2.
+    ```
+    *But given the formula they give for the arithmetic mean, this is **not** the variance
+    of ``\\mathbf{x}_i``, because the indices are mixed: ``x_{j+(k-1)\\tau}`` in the weights
+    formula, vs. ``x_{j+(k+1)\\tau}`` in the arithmetic mean formula. This seems to imply
+    that amplitude information about previous delay vectors
+    are mixed with mean amplitude information about current vectors. The authors also mix the
+    terms "vector" and "neighboring vector" (but uses the same notation for both), making it
+    hard to interpret whether the sign switch is a typo or intended. Here, we use the notation
+    above, which actually computes the variance for ``\\mathbf{x}_i``*.
+
 
 ### Entropy computation
 
@@ -143,7 +223,8 @@ H(m, \\tau) = - \\sum_j^R p(\\pi_j^{m, \\tau}) \\ln p(\\pi_j^{m, \\tau})
     measure for time series incorporating amplitude information." Physical
     Review E 87.2 (2013): 022911.
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
-
+[^Azami2016]: Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy: Illustration in spike detection and signal segmentation. Computer methods and programs in biomedicine, 128, 40-51.
+[^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity measure for time series incorporating amplitude information." Physical Review E 87.2 (2013): 022911.
 """
 struct SymbolicPermutation <: PermutationProbabilityEstimator
     τ
