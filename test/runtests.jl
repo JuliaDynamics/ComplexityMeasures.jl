@@ -213,16 +213,27 @@ end
 
     @testset "Permutation, custom sorting" begin
 
+        @testset "isless_rand" begin
+            # because permutations are partially random, we sort many times and check that 
+            # we get *a* (not *the one*) correct answer every time
+            for i = 1:50
+                s = sortperm([1, 2, 3, 2], lt = Entropies.isless_rand)
+                @test s == [1, 2, 4, 3] || s == [1, 4, 2, 3]
+            end
+        end
+
+
         m = 4
         τ = 1
         τs = tuple([τ*i for i = 0:m-1]...)
-        x = rand(1:3, 100)
-        D = genembed(x, τs)
+        ts = rand(1:3, 100)
+        D = genembed(ts, τs)
+
 
         @testset "SymbolicPermutation" begin
             est_isless = SymbolicPermutation(m = 5, τ = 1, lt = Base.isless)
             est_isless_rand = SymbolicPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
-            @test symbolize(x, est_isless) isa Vector{<:Int}
+            @test symbolize(ts, est_isless) isa Vector{<:Int}
             @test symbolize(D, est_isless_rand) isa Vector{<:Int}
             @test probabilities(D, est_isless) isa Probabilities
             @test probabilities(D, est_isless_rand) isa Probabilities
@@ -231,14 +242,14 @@ end
         @testset "SymbolicWeightedPermutation" begin
             est_isless = SymbolicWeightedPermutation(m = 5, τ = 1, lt = Base.isless)
             est_isless_rand = SymbolicWeightedPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
-            @test probabilities(x, est_isless) isa Probabilities
+            @test probabilities(ts, est_isless) isa Probabilities
             @test probabilities(D, est_isless) isa Probabilities
         end
 
         @testset "SymbolicAmplitudeAwarePermutation" begin
             est_isless = SymbolicAmplitudeAwarePermutation(m = 5, τ = 1, lt = Base.isless)
             est_isless_rand = SymbolicAmplitudeAwarePermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
-            @test probabilities(x, est_isless) isa Probabilities
+            @test probabilities(ts, est_isless) isa Probabilities
             @test probabilities(D, est_isless) isa Probabilities
         end
     end
