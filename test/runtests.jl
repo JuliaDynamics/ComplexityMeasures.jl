@@ -87,8 +87,8 @@ end
         
 
         @testset "Encoding and symbolization" begin
-            @test encode_motif([2, 3, 1]) isa Int
-            @test 0 <= encode_motif([2, 3, 1]) <= factorial(3) - 1
+            @test Entropies.encode_motif([2, 3, 1]) isa Int
+            @test 0 <= Entropies.encode_motif([2, 3, 1]) <= factorial(3) - 1
 
             est = SymbolicPermutation(m = 5, τ = 1)
             N = 100
@@ -100,8 +100,8 @@ end
             D = genembed(z, [0, -1, -2])
             est = SymbolicPermutation(m = 5, τ = 2)
 
-            @test symbolize(z, est) isa Vector{<:Int}
-            @test symbolize(D, est) isa Vector{<:Int}
+            @test Entropies.symbolize(z, est) isa Vector{<:Int}
+            @test Entropies.symbolize(D, est) isa Vector{<:Int}
             
 
             # With pre-allocation
@@ -112,13 +112,13 @@ end
 
             # if symbolization has occurred, s must have been filled with integers in 
             # the range 0:(m!-1)
-            @test all(symbolize!(s, x, est) .>= 0)
-            @test all(0 .<= symbolize!(s, x, est) .< factorial(est.m)) 
+            @test all(Entropies.symbolize!(s, x, est) .>= 0)
+            @test all(0 .<= Entropies.symbolize!(s, x, est) .< factorial(est.m)) 
             
             m = 4
             D = Dataset(rand(N, m))
             s = fill(-1, length(D))
-            @test all(0 .<= symbolize!(s, D, est) .< factorial(m)) 
+            @test all(0 .<= Entropies.symbolize!(s, D, est) .< factorial(m)) 
         end
         
         @testset "Pre-allocated" begin
@@ -233,8 +233,8 @@ end
         @testset "SymbolicPermutation" begin
             est_isless = SymbolicPermutation(m = 5, τ = 1, lt = Base.isless)
             est_isless_rand = SymbolicPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
-            @test symbolize(ts, est_isless) isa Vector{<:Int}
-            @test symbolize(D, est_isless_rand) isa Vector{<:Int}
+            @test Entropies.symbolize(ts, est_isless) isa Vector{<:Int}
+            @test Entropies.symbolize(D, est_isless_rand) isa Vector{<:Int}
             @test probabilities(D, est_isless) isa Probabilities
             @test probabilities(D, est_isless_rand) isa Probabilities
         end
@@ -259,8 +259,8 @@ end
         D = Dataset(rand(100, 3))
 
         @testset "Counting visits" begin 
-            @test marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
-            @test joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
+            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
+            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
         end
         
         binnings = [
