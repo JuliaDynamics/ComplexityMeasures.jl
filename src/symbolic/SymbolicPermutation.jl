@@ -7,36 +7,33 @@ A probability estimator based on permutations.
 abstract type PermutationProbabilityEstimator <: SymbolicProbabilityEstimator end
 
 """
-    SymbolicPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
-    SymbolicWeightedPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
-    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
+    SymbolicPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: ProbabilityEstimator
+    SymbolicWeightedPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: ProbabilityEstimator
+    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand) <: ProbabilityEstimator
 
 Symbolic, permutation-based probabilities/entropy estimators.
 
-By default, embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` is used when
-embedding a time series for symbolization. The minimum dimension ``m`` is 2 (there are
-no sorting permutations of single-element state vectors).
+Uses embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` be default. The minimum 
+dimension ``m`` is 2 (there are no sorting permutations of single-element state vectors).
 
-The keyword `lt` (less-than) accepts a function that decides which of two elements are 
-smaller. If two state vector elements are equal, the default behaviour is to randomly 
+The keyword `lt` (less-than) accepts a function that decides which of two state vector 
+elements are smaller. If two elements are equal, the default behaviour is to randomly 
 assign one of them as the largest (`lt = Entropies.isless_rand`). To get the behaviour 
 described in Bandt and Pompe (2002), use `lt = Base.isless`).
 
 ## Properties of original signal preserved
 
-- **`SymbolicPermutation`**: Preserve ordinal patterns of state vectors (sorting information). This
+- **`SymbolicPermutation`**: Preserves ordinal patterns of state vectors (sorting information). This
     implementation is based on Bandt & Pompe et al. (2002)[^BandtPompe2002] and 
     Berger et al. (2019) [^Berger2019].
-- **`SymbolicWeightedPermutation`**: Preserves not only ordinal patterns of state vectors 
-    (sorting information), but also encodes amplitude information by tracking 
-    the variance of the state vectors. This implementation is based on Fadlallah et 
-    al. (2013)[^Fadlallah2013].
-- **`SymbolicAmplitudeAwarePermutation`**: Preserves not only ordinal patterns about state 
-    vectors (sorting information), but also encodes amplitude information by weighting 
-    absolute amplitudes of state vectors and relative differences between state vector 
-    elements (see description below for explanation of the weighting parameter `A`). 
-    This implementation is based on Azami & Escudero (2016) [^Azami2016].
-
+- **`SymbolicWeightedPermutation`**: Like `SymbolicPermutation`, but also encodes amplitude 
+    information by tracking the variance of the state vectors. This implementation is based 
+    on Fadlallah et al. (2013)[^Fadlallah2013].
+- **`SymbolicAmplitudeAwarePermutation`**: Like `SymbolicPermutation`, but also encodes 
+    amplitude information by considering a weighted combination of *absolute amplitudes* 
+    of state vectors, and *relative differences between elements* of state vectors. See 
+    description below for explanation of the weighting parameter `A`. This implementation 
+    is based on Azami & Escudero (2016) [^Azami2016].
 
 ## Probability estimation
 
@@ -84,11 +81,11 @@ existing state vectors ``\\{\\mathbf{x}_1, \\mathbf{x}_2, \\ldots, \\mathbf{x_L}
     symbol frequencies using `probabilities(x::Dataset, est::SymbolicProbabilityEstimator)`,
     then computes the order-`α` generalized (permutation) entropy to the given base.
 
-**Caveat**: A dynamical interpretation of the permutation entropy does not necessarily 
+*Caveat: A dynamical interpretation of the permutation entropy does not necessarily 
 hold if computing it on generic multivariate datasets. Method signatures for `Dataset`s are
 provided for convenience, and should only be applied if you understand the relation
 between your input data, the numerical value for the permutation entropy, and
-its interpretation.
+its interpretation.*
 
 ## Description
 
@@ -225,6 +222,7 @@ H(m, \\tau) = - \\sum_j^R p(\\pi_j^{m, \\tau}) \\ln p(\\pi_j^{m, \\tau})
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Azami2016]: Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy: Illustration in spike detection and signal segmentation. Computer methods and programs in biomedicine, 128, 40-51.
 [^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity measure for time series incorporating amplitude information." Physical Review E 87.2 (2013): 022911.
+
 """
 struct SymbolicPermutation <: PermutationProbabilityEstimator
     τ
