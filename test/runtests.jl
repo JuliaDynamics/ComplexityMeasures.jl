@@ -39,9 +39,17 @@ end
 
 @testset "Probability/entropy estimators" begin
     @test CountOccurrences() isa CountOccurrences
+
     @test SymbolicPermutation() isa SymbolicPermutation
+    @test SymbolicPermutation(lt = Base.isless) isa SymbolicPermutation
+    @test SymbolicPermutation(lt = Entropies.isless_rand) isa SymbolicPermutation
     @test SymbolicWeightedPermutation() isa SymbolicWeightedPermutation
+    @test SymbolicWeightedPermutation(lt = Base.isless) isa SymbolicWeightedPermutation
+    @test SymbolicWeightedPermutation(lt = Entropies.isless_rand) isa SymbolicWeightedPermutation
     @test SymbolicAmplitudeAwarePermutation() isa SymbolicAmplitudeAwarePermutation
+    @test SymbolicAmplitudeAwarePermutation(lt = Base.isless) isa SymbolicAmplitudeAwarePermutation
+    @test SymbolicAmplitudeAwarePermutation(lt = Entropies.isless_rand) isa SymbolicAmplitudeAwarePermutation
+
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
@@ -111,8 +119,6 @@ end
             D = Dataset(rand(N, m))
             s = fill(-1, length(D))
             @test all(0 .<= symbolize!(s, D, est) .< factorial(m)) 
-
-
         end
         
         @testset "Pre-allocated" begin
@@ -203,6 +209,38 @@ end
         e1 = genentropy(D, est)
         e2 = genentropy(x, est)
         @test e1 ≈ e2
+    end
+
+    @testset "Permutation, custom sorting" begin
+
+        m = 4
+        τ = 1
+        τs = tuple([τ*i for i = 0:m-1]...)
+        x = rand(1:3, 100)
+        D = genembed(x, τs)
+
+        @testset "SymbolicPermutation" begin
+            est_isless = SymbolicPermutation(m = 5, τ = 1, lt = Base.isless)
+            est_isless_rand = SymbolicPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
+            @test symbolize(x, est_isless) isa Vector{<:Int}
+            @test symbolize(D, est_isless_rand) isa Vector{<:Int}
+            @test probabilities(D, est_isless) isa Probabilities
+            @test probabilities(D, est_isless_rand) isa Probabilities
+        end
+
+        @testset "SymbolicWeightedPermutation" begin
+            est_isless = SymbolicWeightedPermutation(m = 5, τ = 1, lt = Base.isless)
+            est_isless_rand = SymbolicWeightedPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
+            @test probabilities(x, est_isless) isa Probabilities
+            @test probabilities(D, est_isless) isa Probabilities
+        end
+
+        @testset "SymbolicAmplitudeAwarePermutation" begin
+            est_isless = SymbolicAmplitudeAwarePermutation(m = 5, τ = 1, lt = Base.isless)
+            est_isless_rand = SymbolicAmplitudeAwarePermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
+            @test probabilities(x, est_isless) isa Probabilities
+            @test probabilities(D, est_isless) isa Probabilities
+        end
     end
 
 

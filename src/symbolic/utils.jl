@@ -32,3 +32,13 @@ function encode_motif(x, m::Int = length(x))
     
     return n
 end
+
+function isless_rand(a, b)
+    if a == b
+        rand(Bool)
+    elseif a < b
+        true
+    else
+        false
+    end
+end

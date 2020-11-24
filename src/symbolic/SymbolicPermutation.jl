@@ -7,7 +7,7 @@ A probability estimator based on permutations.
 abstract type PermutationProbabilityEstimator <: SymbolicProbabilityEstimator end
 
 """
-    SymbolicPermutation(; τ = 1, m = 3) <: PermutationProbabilityEstimator
+    SymbolicPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
 
 A symbolic, permutation based probabilities/entropy estimator. 
 
@@ -148,9 +148,10 @@ H(m, \\tau) = - \\sum_j^R p(\\pi_j^{m, \\tau}) \\ln p(\\pi_j^{m, \\tau})
 struct SymbolicPermutation <: PermutationProbabilityEstimator
     τ
     m
-    function SymbolicPermutation(; τ::Int = 1, m::Int = 3)
+    lt::Function
+    function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::Function=isless_rand)
         m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-        new(τ, m)
+        new(τ, m, lt)
     end
 end
 
@@ -218,9 +219,9 @@ function symbolize(x::AbstractVector{T}, est::PermutationProbabilityEstimator) w
     return s
 end
 
-function fill_symbolvector!(s, x, sp, m::Int)
+function fill_symbolvector!(s, x, sp, m::Int; lt::Function = isless_rand)
     @inbounds for i = 1:length(x)
-        sortperm!(sp, x[i])
+        sortperm!(sp, x[i], lt = lt)
         s[i] = encode_motif(sp, m)
     end
 end
@@ -234,7 +235,7 @@ function symbolize!(s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::Symbo
     `E[i]`.
     =#
     sp = zeros(Int, m) # pre-allocate a single symbol vector that can be overwritten.
-    fill_symbolvector!(s, x, sp, m)
+    fill_symbolvector!(s, x, sp, m, lt = est.lt)
 
     return s
 end

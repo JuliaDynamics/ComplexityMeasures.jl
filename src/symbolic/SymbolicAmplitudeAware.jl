@@ -1,7 +1,7 @@
 export SymbolicAmplitudeAwarePermutation
 
 """
-    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5) <: PermutationProbabilityEstimator
+    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
 
 
 A symbolic, amplitude-aware permutation based probabilities/entropy estimator.
@@ -125,11 +125,13 @@ H(m, \\tau) = - \\sum_j^R p(\\pi_j^{m, \\tau}) \\ln p(\\pi_j^{m, \\tau})
 struct SymbolicAmplitudeAwarePermutation <: PermutationProbabilityEstimator
     τ
     m
-    A
-    function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5)
+    A::Real
+    lt::Function
+    function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5, 
+            lt::Function = isless_rand)
         2 ≤ m || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
         0 ≤ A ≤ 1 || error("Weighting factor A must be on interval [0, 1]. Got A=$A.")
-        new(τ, m, A)
+        new(τ, m, A, isless_rand)
     end
 end
 
@@ -149,7 +151,7 @@ function probabilities(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePerm
     πs = symbolize(x, SymbolicPermutation(m = m)) # motif length controlled by dimension of input data
     wts = AAPE.(x.data, A = est.A, m = est.m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(probs(πs, wts, normalize = true, lt = est.lt))
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutation) where {T<:Real}
@@ -158,5 +160,5 @@ function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutat
     πs = symbolize(emb, SymbolicPermutation(m = est.m))  # motif length controlled by estimator m
     wts = AAPE.(emb.data, A = est.A, m = est.m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(probs(πs, wts, normalize = true, lt = est.lt))
 end

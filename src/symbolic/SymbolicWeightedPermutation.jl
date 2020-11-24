@@ -4,7 +4,7 @@ import Statistics: mean
 export SymbolicWeightedPermutation
 
 """
-    SymbolicWeightedPermutation(; τ = 1, m = 3) <: PermutationProbabilityEstimator
+    SymbolicWeightedPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
 
 A symbolic, weighted permutation based probabilities/entropy estimator.
 
@@ -157,9 +157,10 @@ See also: [`SymbolicPermutation`](@ref), [`SymbolicAmplitudeAwarePermutation`](@
 struct SymbolicWeightedPermutation
     τ
     m
-    function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3)
+    lt::Function
+    function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::Function = isless_rand)
         m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-        new(τ, m)
+        new(τ, m, lt)
     end
 end
 
@@ -169,10 +170,11 @@ end
 
 
 """ Compute probabilities of symbols `Π`, given weights `wts`. """
-function probs(Π::AbstractVector, wts::AbstractVector; normalize = true)
+function probs(Π::AbstractVector, wts::AbstractVector; normalize = true, 
+        lt::Function = isless_rand)
     length(Π) == length(wts) || error("Need length(Π) == length(wts)")
     N = length(Π)
-    idxs = sortperm(Π, alg = QuickSort)
+    idxs = sortperm(Π, alg = QuickSort, lt = lt)
     sΠ = Π[idxs]   # sorted symbols
     sw = wts[idxs] # sorted weights
 
@@ -215,7 +217,7 @@ function probabilities(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutatio
     πs = symbolize(x, SymbolicPermutation(m = m))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(probs(πs, wts, normalize = true, lt = est.lt))
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) where {T<:Real}
@@ -224,5 +226,5 @@ function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) w
     πs = symbolize(emb, SymbolicPermutation(m = est.m)) # motif length controlled by estimator m
     wts = weights_from_variance.(emb.data, est.m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(probs(πs, wts, normalize = true, lt = est.lt))
 end
