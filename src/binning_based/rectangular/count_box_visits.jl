@@ -1,8 +1,6 @@
 import DelayEmbeddings: AbstractDataset, minima, maxima
 import StaticArrays: SVector, MVector
 
-export joint_visits, marginal_visits, encode_as_bin 
-
 """
     encode_as_bin(point, reference_point, edgelengths) → Vector{Int}
 

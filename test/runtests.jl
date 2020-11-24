@@ -87,8 +87,8 @@ end
         
 
         @testset "Encoding and symbolization" begin
-            @test encode_motif([2, 3, 1]) isa Int
-            @test 0 <= encode_motif([2, 3, 1]) <= factorial(3) - 1
+            @test Entropies.encode_motif([2, 3, 1]) isa Int
+            @test 0 <= Entropies.encode_motif([2, 3, 1]) <= factorial(3) - 1
 
             est = SymbolicPermutation(m = 5, τ = 1)
             N = 100
@@ -259,8 +259,8 @@ end
         D = Dataset(rand(100, 3))
 
         @testset "Counting visits" begin 
-            @test marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
-            @test joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
+            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
+            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
         end
         
         binnings = [
