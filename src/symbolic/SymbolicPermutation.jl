@@ -206,11 +206,11 @@ Bandt and Pompe (2002), is just the limiting case as ``α \\to1``, that is
 H(m, \\tau) = - \\sum_j^R p(\\pi_j^{m, \\tau}) \\ln p(\\pi_j^{m, \\tau})
 ``.
 
-!!! hint "Generalized entropy order vs. permutation order"
-    Do not confuse the order of the generalized entropy (`α`) with the order `m` of the
-    permutation entropy (`m`, which controls the symbol size). Permutation entropy is usually
-    estimated with `α = 1`, but the implementation here allows the generalized entropy of any
-    dimension to be computed from the symbol frequency distribution.
+*Note: Do not confuse the order of the 
+generalized entropy (`α`) with the order `m` of the
+permutation entropy (which controls the symbol size). Permutation entropy is usually
+estimated with `α = 1`, but the implementation here allows the generalized entropy of any
+dimension to be computed from the symbol frequency distribution.*
 
 [^BandtPompe2002]: Bandt, Christoph, and Bernd Pompe. "Permutation entropy: a natural
     complexity measure for time series." Physical review letters 88.17 (2002): 174102.
