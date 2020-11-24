@@ -13,7 +13,7 @@ abstract type PermutationProbabilityEstimator <: SymbolicProbabilityEstimator en
 
 Symbolic, permutation-based probabilities/entropy estimators.
 
-Uses embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` be default. The minimum 
+Uses embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` by default. The minimum 
 dimension ``m`` is 2 (there are no sorting permutations of single-element state vectors).
 
 The keyword `lt` (less-than) accepts a function that decides which of two state vector 
@@ -178,20 +178,19 @@ Weights are then computed as
 w_j = \\dfrac{1}{m}\\sum_{k=1}^m (x_{j+(k+1)\\tau} - \\mathbf{\\hat{x}}_j^{m, \\tau})^2.
 ```
 
-!!! question "Implementation details"
-    *Note: in equation 7, section III, of the original paper, the authors write*
+*Note: in equation 7, section III, of the original paper, the authors write*
 
-    ```math
-    w_j = \\dfrac{1}{m}\\sum_{k=1}^m (x_{j-(k-1)\\tau} - \\mathbf{\\hat{x}}_j^{m, \\tau})^2.
-    ```
-    *But given the formula they give for the arithmetic mean, this is **not** the variance
-    of ``\\mathbf{x}_i``, because the indices are mixed: ``x_{j+(k-1)\\tau}`` in the weights
-    formula, vs. ``x_{j+(k+1)\\tau}`` in the arithmetic mean formula. This seems to imply
-    that amplitude information about previous delay vectors
-    are mixed with mean amplitude information about current vectors. The authors also mix the
-    terms "vector" and "neighboring vector" (but uses the same notation for both), making it
-    hard to interpret whether the sign switch is a typo or intended. Here, we use the notation
-    above, which actually computes the variance for ``\\mathbf{x}_i``*.
+```math
+w_j = \\dfrac{1}{m}\\sum_{k=1}^m (x_{j-(k-1)\\tau} - \\mathbf{\\hat{x}}_j^{m, \\tau})^2.
+```
+*But given the formula they give for the arithmetic mean, this is **not** the variance
+of ``\\mathbf{x}_i``, because the indices are mixed: ``x_{j+(k-1)\\tau}`` in the weights
+formula, vs. ``x_{j+(k+1)\\tau}`` in the arithmetic mean formula. This seems to imply
+that amplitude information about previous delay vectors
+are mixed with mean amplitude information about current vectors. The authors also mix the
+terms "vector" and "neighboring vector" (but uses the same notation for both), making it
+hard to interpret whether the sign switch is a typo or intended. Here, we use the notation
+above, which actually computes the variance for ``\\mathbf{x}_i``*.
 
 
 ### Entropy computation

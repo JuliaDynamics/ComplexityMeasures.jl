@@ -38,9 +38,10 @@ PAGES = [
     "Estimators" => [
         "CountOccurrences.md",
         "VisitationFrequency.md",
-        "SymbolicPermutation.md",
-        "SymbolicWeightedPermutation.md",
-        "SymbolicAmplitudeAwarePermutation.md",
+        "Permutation.md",
+        #"SymbolicPermutation.md",
+        #"SymbolicWeightedPermutation.md",
+        #"SymbolicAmplitudeAwarePermutation.md",
         "NearestNeighbors.md",
         "NaiveKernel.md",
         "TimeScaleMODWT.md"
