@@ -39,9 +39,6 @@ PAGES = [
         "CountOccurrences.md",
         "VisitationFrequency.md",
         "Permutation.md",
-        #"SymbolicPermutation.md",
-        #"SymbolicWeightedPermutation.md",
-        #"SymbolicAmplitudeAwarePermutation.md",
         "NearestNeighbors.md",
         "NaiveKernel.md",
         "TimeScaleMODWT.md"
