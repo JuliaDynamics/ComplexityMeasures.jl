@@ -39,9 +39,17 @@ end
 
 @testset "Probability/entropy estimators" begin
     @test CountOccurrences() isa CountOccurrences
+
     @test SymbolicPermutation() isa SymbolicPermutation
+    @test SymbolicPermutation(lt = Base.isless) isa SymbolicPermutation
+    @test SymbolicPermutation(lt = Entropies.isless_rand) isa SymbolicPermutation
     @test SymbolicWeightedPermutation() isa SymbolicWeightedPermutation
+    @test SymbolicWeightedPermutation(lt = Base.isless) isa SymbolicWeightedPermutation
+    @test SymbolicWeightedPermutation(lt = Entropies.isless_rand) isa SymbolicWeightedPermutation
     @test SymbolicAmplitudeAwarePermutation() isa SymbolicAmplitudeAwarePermutation
+    @test SymbolicAmplitudeAwarePermutation(lt = Base.isless) isa SymbolicAmplitudeAwarePermutation
+    @test SymbolicAmplitudeAwarePermutation(lt = Entropies.isless_rand) isa SymbolicAmplitudeAwarePermutation
+
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
@@ -92,8 +100,8 @@ end
             D = genembed(z, [0, -1, -2])
             est = SymbolicPermutation(m = 5, τ = 2)
 
-            @test symbolize(z, est) isa Vector{<:Int}
-            @test symbolize(D, est) isa Vector{<:Int}
+            @test Entropies.symbolize(z, est) isa Vector{<:Int}
+            @test Entropies.symbolize(D, est) isa Vector{<:Int}
             
 
             # With pre-allocation
@@ -104,15 +112,13 @@ end
 
             # if symbolization has occurred, s must have been filled with integers in 
             # the range 0:(m!-1)
-            @test all(symbolize!(s, x, est) .>= 0)
-            @test all(0 .<= symbolize!(s, x, est) .< factorial(est.m)) 
+            @test all(Entropies.symbolize!(s, x, est) .>= 0)
+            @test all(0 .<= Entropies.symbolize!(s, x, est) .< factorial(est.m)) 
             
             m = 4
             D = Dataset(rand(N, m))
             s = fill(-1, length(D))
-            @test all(0 .<= symbolize!(s, D, est) .< factorial(m)) 
-
-
+            @test all(0 .<= Entropies.symbolize!(s, D, est) .< factorial(m)) 
         end
         
         @testset "Pre-allocated" begin
@@ -203,6 +209,49 @@ end
         e1 = genentropy(D, est)
         e2 = genentropy(x, est)
         @test e1 ≈ e2
+    end
+
+    @testset "Permutation, custom sorting" begin
+
+        @testset "isless_rand" begin
+            # because permutations are partially random, we sort many times and check that 
+            # we get *a* (not *the one*) correct answer every time
+            for i = 1:50
+                s = sortperm([1, 2, 3, 2], lt = Entropies.isless_rand)
+                @test s == [1, 2, 4, 3] || s == [1, 4, 2, 3]
+            end
+        end
+
+
+        m = 4
+        τ = 1
+        τs = tuple([τ*i for i = 0:m-1]...)
+        ts = rand(1:3, 100)
+        D = genembed(ts, τs)
+
+
+        @testset "SymbolicPermutation" begin
+            est_isless = SymbolicPermutation(m = 5, τ = 1, lt = Base.isless)
+            est_isless_rand = SymbolicPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
+            @test Entropies.symbolize(ts, est_isless) isa Vector{<:Int}
+            @test Entropies.symbolize(D, est_isless_rand) isa Vector{<:Int}
+            @test probabilities(D, est_isless) isa Probabilities
+            @test probabilities(D, est_isless_rand) isa Probabilities
+        end
+
+        @testset "SymbolicWeightedPermutation" begin
+            est_isless = SymbolicWeightedPermutation(m = 5, τ = 1, lt = Base.isless)
+            est_isless_rand = SymbolicWeightedPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
+            @test probabilities(ts, est_isless) isa Probabilities
+            @test probabilities(D, est_isless) isa Probabilities
+        end
+
+        @testset "SymbolicAmplitudeAwarePermutation" begin
+            est_isless = SymbolicAmplitudeAwarePermutation(m = 5, τ = 1, lt = Base.isless)
+            est_isless_rand = SymbolicAmplitudeAwarePermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
+            @test probabilities(ts, est_isless) isa Probabilities
+            @test probabilities(D, est_isless) isa Probabilities
+        end
     end
 
 

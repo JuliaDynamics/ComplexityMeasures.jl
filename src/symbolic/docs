@@ -1,8 +1,3 @@
-# Permutation (symbolic)
-
-```@docs
-SymbolicPermutation
-```
 
 ## Example
 
@@ -12,7 +7,7 @@ logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example
-using DynamicalSystems, PyPlot, Entropies
+using Entropies, DynamicalSystems, PyPlot
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4
@@ -26,16 +21,23 @@ hs_wtperm = Float64[]
 hs_ampperm = Float64[]
 
 base = Base.MathConstants.e
+
+lt = Base.isless
+est = SymbolicPermutation(m = m, τ = τ, lt = lt)
+est_aa = SymbolicAmplitudeAwarePermutation(m = m, τ = τ, lt = lt)
+est_wt = SymbolicWeightedPermutation(m = m, τ = τ, lt = lt)
+
 for r in rs
     ds.p[1] = r
     push!(lyaps, lyapunov(ds, N_lyap))
 
     x = trajectory(ds, N_ent) # time series
-    hperm = Entropies.genentropy(x, SymbolicPermutation(m = m, τ = τ), base = base)
-    hwtperm = Entropies.genentropy(x, SymbolicWeightedPermutation(m = m, τ = τ), base = base)
-    hampperm = Entropies.genentropy(x, SymbolicAmplitudeAwarePermutation(m = m, τ = τ), base = base)
 
-    push!(hs_perm, hperm); push!(hs_wtperm, hwtperm); push!(hs_ampperm, hampperm)
+    hperm = Entropies.genentropy(x, est, base = base)
+    hampperm = Entropies.genentropy(x, est_aa, base = base)
+    hwtperm = Entropies.genentropy(x, SymbolicWeightedPermutation(m = m, τ = τ), base = base)
+
+    push!(hs_perm, hperm); push!(hs_ampperm, hampperm); push!(hs_wtperm, hwtperm);   
 end
 
 f = figure(figsize = (6, 8))
@@ -60,12 +62,3 @@ savefig("permentropy.png")
 ```
 
 ![](permentropy.png)
-
-## Utility methods
-
-Some convenience functions for symbolization are provided.
-
-```@docs
-symbolize
-encode_motif
-```
