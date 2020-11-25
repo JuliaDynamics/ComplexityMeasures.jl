@@ -367,7 +367,7 @@ function probabilities(x::AbstractVector{T}, est::SymbolicPermutation) where {T<
 end
 
 function genentropy!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation; 
-        α::Real = 1, base::Real = 2) where {m, T}
+        α::Real = 1, base::Real = MathConstants.e) where {m, T}
     length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
     ps = probabilities!(s, x, est)
 
@@ -375,7 +375,7 @@ function genentropy!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPerm
 end
 
 function genentropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation; 
-        α::Real = 1, base::Real = 2) where {T<:Real}
+        α::Real = 1, base::Real = MathConstants.e) where {T<:Real}
 
     L = length(x)
     N = L - (est.m-1)*est.τ
