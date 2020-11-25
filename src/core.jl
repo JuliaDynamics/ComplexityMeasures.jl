@@ -13,10 +13,9 @@ const Vector_or_Dataset = Union{AbstractVector, Dataset}
 A simple wrapper type around an `x::AbstractVector` which ensures that `p` sums to 1.
 Behaves identically to `Vector`.
 """
-struct Probabilities{T}
+struct Probabilities{T} <: AbstractVector{T}
     p::Vector{T}
-    function Probabilities(x::AbstractVector)
-        T = eltype(x)
+    function Probabilities(x::AbstractVector{T}) where T
         s = sum(x)
         if s ≠ 1
             x = x ./ s
@@ -32,6 +31,7 @@ end
 Base.IteratorSize(d::Probabilities) = Base.HasLength()
 @inline Base.iterate(d::Probabilities, i = 1) = iterate(d.p, i)
 @inline Base.getindex(d::Probabilities, i) = d.p[i]
+@inline Base.setindex!(d::Probabilities, v, i) = (d.p[i] = v)
 @inline Base.:*(d::Probabilities, x::Number) = d.p * x
 @inline Base.sum(d::Probabilities{T}) where T = one(T)
 
