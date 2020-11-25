@@ -52,7 +52,7 @@ jobs:
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1'
-      - run: |- #newline, but no newline at the end
+      - run: |-
         - julia --project=docs/ -e 'using Pkg;
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
