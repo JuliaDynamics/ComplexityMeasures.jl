@@ -52,18 +52,18 @@ jobs:
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1'
-      - run:
+      - run: |- #newline, but no newline at the end
         - julia --project=docs/ -e 'using Pkg;
-            Pkg.develop(PackageSpec(path=pwd()));
-            Pkg.instantiate()';
-        - julia --project=docs/ -e 'using Pkg;
-            Pkg.develop(PackageSpec(path=pwd()));
-            Pkg.instantiate();
-            ENV["PYTHON"] = "";
-            Pkg.build("PyCall");
-            using Conda;
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()'
+        - julia --project=docs/ -e 'using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()
+            ENV["PYTHON"] = ""
+            Pkg.build("PyCall")
+            using Conda
             Conda.add("scipy")'
-      - run: | 
+      - run: |- 
           julia --project=docs -e '
             using Documenter: doctest
             using Entropies
