@@ -66,8 +66,8 @@ jobs:
             using Conda; Conda.add("scipy")'
       - run:
           julia --project=docs -e '
-            using Documenter: doctest
-            using Entropies
+            using Documenter: doctest;
+            using Entropies;
             doctest(Entropies)'
       - run: julia --project=docs docs/make.jl
         env:
