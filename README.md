@@ -1,6 +1,8 @@
 # Entropies.jl
 
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliadynamics.github.io/Entropies.jl/dev/) [![Build Status](https://travis-ci.com/juliadynamics/Entropies.jl.svg?branch=master)](https://travis-ci.com/juliadynamics/Entropies.jl) [![codecov](https://codecov.io/gh/juliadynamics/Entropies.jl/branch/master/graph/badge.svg?token=6XlPGg5nRG)](undefined)
+![Master](https://github.com/juliadynamics/Entropies.jl/workflows/Julia/badge.svg?branch=master)
+![Documentation](https://github.com/juliadynamics/Entropies.jl/workflows/Documentation/badge.svg)
+[![codecov](https://codecov.io/gh/juliadynamics/Entropies.jl/branch/master/graph/badge.svg?token=6XlPGg5nRG)](undefined)
 
 
 
