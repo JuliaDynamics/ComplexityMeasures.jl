@@ -1,6 +1,6 @@
 # Entropies.jl
 
-![CI](https://github.com/juliadynamics/Entropies.jl/workflows/CI/badge.svg)
+[![CI](https://github.com/juliadynamics/Entropies.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/Entropies.jl/actions)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliadynamics.github.io/Entropies.jl/dev/)
 [![codecov](https://codecov.io/gh/JuliaDynamics/Entropies.jl/branch/master/graph/badge.svg?token=6XlPGg5nRG)](https://codecov.io/gh/JuliaDynamics/Entropies.jl)
 
