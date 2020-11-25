@@ -52,7 +52,7 @@ jobs:
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1'
-      - run: |
+      - run:
         - julia --project=docs/ -e '
             using Pkg; 
             Pkg.develop(PackageSpec(path=pwd()));
@@ -64,7 +64,7 @@ jobs:
             ENV["PYTHON"] = "";
             Pkg.build("PyCall");
             using Conda; Conda.add("scipy")'
-      - run: |
+      - run:
           julia --project=docs -e '
             using Documenter: doctest
             using Entropies
