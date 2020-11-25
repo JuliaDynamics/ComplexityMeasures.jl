@@ -54,14 +54,14 @@ jobs:
           version: '1'
       - run: |-
         - julia --project=docs/ -e 'using Pkg;
-            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.develop(PackageSpec(path=pwd()));
             Pkg.instantiate()'
-        - julia --project=docs/ -e 'using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()
-            ENV["PYTHON"] = ""
-            Pkg.build("PyCall")
-            using Conda
+        - julia --project=docs/ -e 'using Pkg;
+            Pkg.develop(PackageSpec(path=pwd()));
+            Pkg.instantiate();
+            ENV["PYTHON"] = "";
+            Pkg.build("PyCall");
+            using Conda;
             Conda.add("scipy")'
       - run: |- 
           julia --project=docs -e '
