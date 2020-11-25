@@ -52,22 +52,23 @@ jobs:
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1'
-      - run:
+      - run: | # the | is the yaml *literal* block style indicator (newline treated as newline)
         - julia --project=docs/ -e '
-            using Pkg; 
-            Pkg.develop(PackageSpec(path=pwd()));
-            Pkg.instantiate();'
+            using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()'
         - julia --project=docs/ -e '
-            using Pkg; 
-            Pkg.develop(PackageSpec(path=pwd()));
-            Pkg.instantiate();
-            ENV["PYTHON"] = "";
-            Pkg.build("PyCall");
-            using Conda; Conda.add("scipy")'
-      - run:
+            using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()
+            ENV["PYTHON"] = ""
+            Pkg.build("PyCall")
+            using Conda
+            Conda.add("scipy")'
+      - run: | 
           julia --project=docs -e '
-            using Documenter: doctest;
-            using Entropies;
+            using Documenter: doctest
+            using Entropies
             doctest(Entropies)'
       - run: julia --project=docs docs/make.jl
         env:
