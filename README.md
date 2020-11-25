@@ -1,7 +1,7 @@
 # Entropies.jl
 
-![Master](https://github.com/juliadynamics/Entropies.jl/workflows/Julia/badge.svg?branch=master)
-![Documentation](https://github.com/juliadynamics/Entropies.jl/workflows/Documentation/badge.svg)
+
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliadynamics.github.io/Entropies.jl/dev/)
 [![codecov](https://codecov.io/gh/juliadynamics/Entropies.jl/branch/master/graph/badge.svg?token=6XlPGg5nRG)](undefined)
 
 
