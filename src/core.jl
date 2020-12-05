@@ -36,7 +36,7 @@ Base.IteratorSize(d::Probabilities) = Base.HasLength()
 @inline Base.sum(d::Probabilities{T}) where T = one(T)
 
 """
-An abstract type for entropy estimators that don't explicitly estimate probabilities, 
+An abstract type for entropy estimators that don't explicitly estimate probabilities,
 but returns the value of the entropy directly.
 """
 abstract type EntropyEstimator end
@@ -119,8 +119,18 @@ and then calculates the entropy of the result (and thus `est` can be a
 """
 function genentropy end
 
-function genentropy(p::Probabilities; α = 1.0, base = Base.MathConstants.e)
+function genentropy(prob::Probabilities; α = 1.0, base = Base.MathConstants.e)
     α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
+    haszero = any(iszero, prob)
+    p = if haszero
+        i0 = findall(iszero, prob.p)
+        # We copy because if someone initialized Probabilities with 0s, I would guess
+        # they would want to index the zeros as well. Not so costly anyways.
+        deleteat!(copy(prob.p), i0)
+    else
+        prob.p
+    end
+
     if α ≈ 0
         return log(base, length(p)) #Hartley entropy, max-entropy
     elseif α ≈ 1
