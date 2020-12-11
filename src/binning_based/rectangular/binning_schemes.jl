@@ -1,11 +1,4 @@
-export 
-    RectangularBinning,
-    get_minima_and_edgelengths, 
-    minima_edgelengths,
-    get_edgelengths, 
-    get_minima,
-    get_maxima,
-    get_minmaxes
+export RectangularBinning
 
 import DelayEmbeddings: Dataset, minima, maxima
 import StaticArrays: SVector, MVector

@@ -38,14 +38,13 @@ PAGES = [
     "Estimators" => [
         "CountOccurrences.md",
         "VisitationFrequency.md",
-        "SymbolicPermutation.md",
-        "SymbolicWeightedPermutation.md",
-        "SymbolicAmplitudeAwarePermutation.md",
         "TransferOperator.md",
+        "Permutation.md",
         "NearestNeighbors.md",
         "NaiveKernel.md",
         "TimeScaleMODWT.md"
-    ]
+    ],
+    "Non-exported" => "nonexported.md"
 ]
 
 makedocs(

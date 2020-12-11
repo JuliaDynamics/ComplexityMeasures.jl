@@ -13,10 +13,9 @@ const Vector_or_Dataset = Union{AbstractVector, Dataset}
 A simple wrapper type around an `x::AbstractVector` which ensures that `p` sums to 1.
 Behaves identically to `Vector`.
 """
-struct Probabilities{T}
+struct Probabilities{T} <: AbstractVector{T}
     p::Vector{T}
-    function Probabilities(x::AbstractVector)
-        T = eltype(x)
+    function Probabilities(x::AbstractVector{T}) where T
         s = sum(x)
         if s ≠ 1
             x = x ./ s
@@ -32,11 +31,12 @@ end
 Base.IteratorSize(d::Probabilities) = Base.HasLength()
 @inline Base.iterate(d::Probabilities, i = 1) = iterate(d.p, i)
 @inline Base.getindex(d::Probabilities, i) = d.p[i]
+@inline Base.setindex!(d::Probabilities, v, i) = (d.p[i] = v)
 @inline Base.:*(d::Probabilities, x::Number) = d.p * x
 @inline Base.sum(d::Probabilities{T}) where T = one(T)
 
 """
-An abstract type for entropy estimators that don't explicitly estimate probabilities, 
+An abstract type for entropy estimators that don't explicitly estimate probabilities,
 but returns the value of the entropy directly.
 """
 abstract type EntropyEstimator end
@@ -119,8 +119,18 @@ and then calculates the entropy of the result (and thus `est` can be a
 """
 function genentropy end
 
-function genentropy(p::Probabilities; α = 1.0, base = Base.MathConstants.e)
+function genentropy(prob::Probabilities; α = 1.0, base = Base.MathConstants.e)
     α < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
+    haszero = any(iszero, prob)
+    p = if haszero
+        i0 = findall(iszero, prob.p)
+        # We copy because if someone initialized Probabilities with 0s, I would guess
+        # they would want to index the zeros as well. Not so costly anyways.
+        deleteat!(copy(prob.p), i0)
+    else
+        prob.p
+    end
+
     if α ≈ 0
         return log(base, length(p)) #Hartley entropy, max-entropy
     elseif α ≈ 1
