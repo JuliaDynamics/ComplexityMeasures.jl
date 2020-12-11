@@ -1,4 +1,5 @@
-using GroupSlices, DelayEmbeddings, SparseArrays
+using DelayEmbeddings, SparseArrays
+include("GroupSlices.jl")
 
 export 
     TransferOperator, # the probabilities estimator
@@ -188,18 +189,20 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
     # The L points visits a total of L bins, which are the following bins: 
     visited_bins = Entropies.encode_as_bin(pts, mini, edgelengths)
     sort_idxs = sortperm(visited_bins)
-    sort!(visited_bins)
+
+    # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
+    #sort!(visited_bins)
     
     # There are N=length(unique(visited_bins)) unique bins.
     # Which of the unqiue bins does each of the L points visit? 
-    visits_whichbin = inds_in_terms_of_unique(visited_bins, true)
+    visits_whichbin = inds_in_terms_of_unique(visited_bins, false) # set to true when sorting is fixed
 
     # `visitors` lists the indices of the points visiting each of the N unique bins.
-    slices = groupslices(visited_bins)
-    visitors = groupinds(slices) 
+    slices = GroupSlices.groupslices(visited_bins)
+    visitors = GroupSlices.groupinds(slices) 
     
     # first_visited_by == [x[1] for x in visitors]
-    first_visited_by = firstinds(slices)
+    first_visited_by = GroupSlices.firstinds(slices)
     L = length(first_visited_by)
 
     I = Int32[]
