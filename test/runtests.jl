@@ -1,10 +1,10 @@
 using Test
 using Entropies
-using DelayEmbeddings 
+using DelayEmbeddings
 using Wavelets
-using StaticArrays 
+using StaticArrays
 
-@testset "Histogram estimation" begin 
+@testset "Histogram estimation" begin
     x = rand(1:10, 100)
     D = Dataset([rand(1:10, 3) for i = 1:100])
     D2 = [(rand(1:10), rand(1:10, rand(1:10)) for i = 1:100)]
@@ -28,13 +28,13 @@ end
 
 end
 
-@testset "Generalized entropy" begin 
+@testset "Generalized entropy" begin
     x = rand(1000)
     xn = x ./ sum(x)
     xp = Probabilities(xn)
-    @test genentropy(xp, α = 2) isa Real
-    @test genentropy(xp, α = 1) isa Real
-    @test_throws MethodError genentropy(xn, α = 2) isa Real
+    @test genentropy(xp, q = 2) isa Real
+    @test genentropy(xp, q = 1) isa Real
+    @test_throws MethodError genentropy(xn, q = 2) isa Real
 end
 
 @testset "Probability/entropy estimators" begin
@@ -63,7 +63,7 @@ end
     @testset "Counting based" begin
         D = Dataset(rand(1:3, 1000, 3))
         ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
-        @test Entropies.genentropy(D, CountOccurrences(), α = 2, base = 2) isa Real
+        @test Entropies.genentropy(D, CountOccurrences(), q = 2, base = 2) isa Real
     end
 
     @testset "NaiveKernel" begin
@@ -72,7 +72,7 @@ end
         ϵ = 0.3
         est_direct = NaiveKernel(ϵ, DirectDistance())
         est_tree = NaiveKernel(ϵ, TreeDistance())
-        
+
         @test probabilities(pts, est_tree) isa Probabilities
         @test probabilities(pts, est_direct) isa Probabilities
         p_tree = probabilities(pts, est_tree)
@@ -84,7 +84,7 @@ end
     end
 
     @testset "Permutation entropy" begin
-        
+
 
         @testset "Encoding and symbolization" begin
             @test Entropies.encode_motif([2, 3, 1]) isa Int
@@ -102,7 +102,7 @@ end
 
             @test Entropies.symbolize(z, est) isa Vector{<:Int}
             @test Entropies.symbolize(D, est) isa Vector{<:Int}
-            
+
 
             # With pre-allocation
             N = 100
@@ -110,17 +110,17 @@ end
             est = SymbolicPermutation(m = 5, τ = 2)
             s = fill(-1, N-(est.m-1)*est.τ)
 
-            # if symbolization has occurred, s must have been filled with integers in 
+            # if symbolization has occurred, s must have been filled with integers in
             # the range 0:(m!-1)
             @test all(Entropies.symbolize!(s, x, est) .>= 0)
-            @test all(0 .<= Entropies.symbolize!(s, x, est) .< factorial(est.m)) 
-            
+            @test all(0 .<= Entropies.symbolize!(s, x, est) .< factorial(est.m))
+
             m = 4
             D = Dataset(rand(N, m))
             s = fill(-1, length(D))
-            @test all(0 .<= Entropies.symbolize!(s, D, est) .< factorial(m)) 
+            @test all(0 .<= Entropies.symbolize!(s, D, est) .< factorial(m))
         end
-        
+
         @testset "Pre-allocated" begin
             est = SymbolicPermutation(m = 5, τ = 1)
             N = 500
@@ -136,10 +136,10 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropies
-            @test genentropy!(s, x, est, α = 1) ≈ 0  # Regular order-1 entropy
-            @test genentropy!(s, y, est, α = 1) >= 0 # Regular order-1 entropy
-            @test genentropy!(s, x, est, α = 2) ≈ 0  # Higher-order entropy
-            @test genentropy!(s, y, est, α = 2) >= 0 # Higher-order entropy
+            @test genentropy!(s, x, est, q = 1) ≈ 0  # Regular order-1 entropy
+            @test genentropy!(s, y, est, q = 1) >= 0 # Regular order-1 entropy
+            @test genentropy!(s, x, est, q = 2) ≈ 0  # Higher-order entropy
+            @test genentropy!(s, y, est, q = 2) >= 0 # Higher-order entropy
 
             # For a time series
             sz = zeros(Int, N - (est.m-1)*est.τ)
@@ -148,13 +148,13 @@ end
             @test genentropy!(sz, z, est) isa Real
             @test genentropy(z, est) isa Real
         end
-        
+
         @testset "Not pre-allocated" begin
             est = SymbolicPermutation(m = 5, τ = 1)
             N = 500
             x = Dataset(repeat([1.1 2.2 3.3], N))
             y = Dataset(rand(N, 5))
-            
+
             # Probability distributions
             p1 = probabilities(x, est)
             p2 = probabilities(y, est)
@@ -162,14 +162,14 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropy
-            @test genentropy(x, est, α = 1) ≈ 0  # Regular order-1 entropy
-            @test genentropy(y, est, α = 2) >= 0 # Higher-order entropy
+            @test genentropy(x, est, q = 1) ≈ 0  # Regular order-1 entropy
+            @test genentropy(y, est, q = 2) >= 0 # Higher-order entropy
         end
     end
 
 
 
-    @testset "Weighted permutation entropy" begin 
+    @testset "Weighted permutation entropy" begin
         m = 4
         τ = 1
         τs = tuple([τ*i for i = 0:m-1]...)
@@ -190,7 +190,7 @@ end
         @test e1 ≈ e2
     end
 
-    @testset "Amplitude-aware permutation entropy" begin 
+    @testset "Amplitude-aware permutation entropy" begin
         m = 4
         τ = 1
         τs = tuple([τ*i for i = 0:m-1]...)
@@ -214,7 +214,7 @@ end
     @testset "Permutation, custom sorting" begin
 
         @testset "isless_rand" begin
-            # because permutations are partially random, we sort many times and check that 
+            # because permutations are partially random, we sort many times and check that
             # we get *a* (not *the one*) correct answer every time
             for i = 1:50
                 s = sortperm([1, 2, 3, 2], lt = Entropies.isless_rand)
@@ -258,11 +258,11 @@ end
     @testset "VisitationFrequency" begin
         D = Dataset(rand(100, 3))
 
-        @testset "Counting visits" begin 
+        @testset "Counting visits" begin
             @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
             @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
         end
-        
+
         binnings = [
             RectangularBinning(3),
             RectangularBinning(0.2),
@@ -273,9 +273,9 @@ end
         @testset "Binning test $i" for i in 1:length(binnings)
             est = VisitationFrequency(binnings[i])
             @test probabilities(D, est) isa Probabilities
-            @test genentropy(D, est, α=1, base = 3) isa Real # Regular order-1 entropy
-            @test genentropy(D, est, α=3, base = 2) isa Real # Higher-order entropy
-            @test genentropy(D, est, α=3, base = 1) isa Real # Higher-order entropy
+            @test genentropy(D, est, q=1, base = 3) isa Real # Regular order-1 entropy
+            @test genentropy(D, est, q=3, base = 2) isa Real # Higher-order entropy
+            @test genentropy(D, est, q=3, base = 1) isa Real # Higher-order entropy
 
         end
     end
@@ -297,22 +297,22 @@ end
             Nlevels = maxmodwttransformlevels(x)
             @test Entropies.energy_at_scale(W, 1) isa Real
             @test Entropies.energy_at_time(W, 1) isa Real
-            
+
             @test_throws ErrorException Entropies.energy_at_scale(W, 0)
             @test_throws ErrorException Entropies.energy_at_scale(W, Nlevels + 2)
             @test_throws ErrorException Entropies.energy_at_time(W, 0)
             @test_throws ErrorException Entropies.energy_at_time(W, N+1)
 
-            @test Entropies.relative_wavelet_energy(W, 1) isa Real 
+            @test Entropies.relative_wavelet_energy(W, 1) isa Real
             @test Entropies.relative_wavelet_energies(W, 1:2) isa AbstractVector{<:Real}
 
             @test Entropies.time_scale_density(x, wl) isa AbstractVector{<:Real}
-            @test genentropy(x, TimeScaleMODWT(), α = 1, base = 2) isa Real
+            @test genentropy(x, TimeScaleMODWT(), q = 1, base = 2) isa Real
             @test probabilities(x, TimeScaleMODWT()) isa Probabilities
         end
     end
 
-    @testset "Nearest neighbor based" begin 
+    @testset "Nearest neighbor based" begin
         m = 4
         τ = 1
         τs = tuple([τ*i for i = 0:m-1]...)
@@ -346,7 +346,7 @@ end
             p, bins = invariantmeasure(iv)
             @test p isa Probabilities
             @test bins isa Vector{<:SVector}
-            
+
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
         end
     end
