@@ -88,7 +88,7 @@ Only works for certain estimators. See for example [`SymbolicPermutation`](@ref)
 function probabilities! end
 
 """
-    genentropy(p::Probabilities; q = 1.0, base = Base.MathConstants.e)
+    genentropy(p::Probabilities; q = 1.0, base = MathConstants.e)
 
 Compute the generalized order-`q` entropy of some probabilities
 returned by the [`probabilities`](@ref) function. Alternatively, compute entropy
@@ -119,7 +119,7 @@ and then calculates the entropy of the result (and thus `est` can be a
 """
 function genentropy end
 
-function genentropy(prob::Probabilities; q = 1.0, α = nothing, base = Base.MathConstants.e)
+function genentropy(prob::Probabilities; q = 1.0, α = nothing, base = MathConstants.e)
     if α ≠ nothing
         @warn "Keyword `α` is deprecated in favor of `q`."
         q = α
@@ -149,20 +149,28 @@ end
 genentropy(x::AbstractArray{<:Real}) =
     error("For single-argument input, do `genentropy(Probabilities(x))` instead.")
 
-function genentropy(x::Vector_or_Dataset, est; q = 1.0, base = Base.MathConstants.e)
+function genentropy(x::Vector_or_Dataset, est; q = 1.0, α = nothing, base = MathConstants.e)
+    if α ≠ nothing
+        @warn "Keyword `α` is deprecated in favor of `q`."
+        q = α
+    end
     p = probabilities(x, est)
     genentropy(p; q = q, base = base)
 end
 
 """
-    genentropy!(p, x, est::ProbabilitiesEstimator; q = 1.0, base = Base.MathConstants.e)
+    genentropy!(p, x, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
 
 Similarly with `probabilities!` this is an in-place version of `genentropy` that allows
 pre-allocation of temporarily used containers.
 
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
-function genentropy!(p, x, est; q = 1.0, base = Base.MathConstants.e)
+function genentropy!(p, x, est; q = 1.0, α = nothing, base = MathConstants.e)
+    if α ≠ nothing
+        @warn "Keyword `α` is deprecated in favor of `q`."
+        q = α
+    end
     probabilities!(p, x, est)
     genentropy(p; q = q, base = base)
 end
