@@ -5,7 +5,7 @@ export KozachenkoLeonenko, genentropy
 
     KozachenkoLeonenko(; w::Int = 0) <: NearestNeighborEntropyEstimator
 
-Entropy estimator based on nearest neighbors. This implementation is based on Kozachenko 
+Entropy estimator based on nearest neighbors. This implementation is based on Kozachenko
 & Leonenko (1987)[^KozachenkoLeonenko1987],
 as described in Charzyńska and Gambin (2016)[^Charzyńska2016].
 
@@ -13,19 +13,15 @@ as described in Charzyńska and Gambin (2016)[^Charzyńska2016].
 when searching for neighbours).
 
 !!! info
-    This estimator is only available for entropy estimation. Probabilities 
+    This estimator is only available for entropy estimation. Probabilities
     cannot be obtained directly.
 
 [^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy estimator with applications in systems biology. Entropy, 18(1), 13.
 [^KozachenkoLeonenko1987]: Kozachenko, L. F., & Leonenko, N. N. (1987). Sample estimate of the entropy of a random vector. Problemy Peredachi Informatsii, 23(2), 9-16.
 """
-struct KozachenkoLeonenko <: NearestNeighborEntropyEstimator
-    k::Int
-    w::Int
-    
-    function KozachenkoLeonenko(;k::Int = 1, w::Int = 0)
-        new(k, w)
-    end
+Base.@kwdef struct KozachenkoLeonenko <: NearestNeighborEntropyEstimator
+    k::Int = 1
+    w::Int = 0
 end
 
 function genentropy(x::AbstractDataset{D, T}, est::KozachenkoLeonenko; base::Real = MathConstants.e) where {D, T}
@@ -34,4 +30,3 @@ function genentropy(x::AbstractDataset{D, T}, est::KozachenkoLeonenko; base::Rea
     h = D/N*sum(log.(base, ρs)) + log(base, V(D)) +  MathConstants.eulergamma + log(base, N - 1)
     return h
 end
-

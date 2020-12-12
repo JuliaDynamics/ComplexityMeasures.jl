@@ -6,7 +6,7 @@ export probabilities, probabilities!
 export genentropy, genentropy!
 export Dataset, dimension
 
-const Vector_or_Dataset = Union{AbstractVector, Dataset}
+const Vector_or_Dataset = Union{AbstractVector, AbstractDataset}
 
 """
     Probabilities(x) → p
