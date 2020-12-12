@@ -109,8 +109,8 @@ end
 
 # TODO: This needs to be expanded to allow `est::RectangularBinning(vector)`
 """
-    binhist(x::Dataset, ε::Real) → p, bins
-    binhist(x::Dataset, ε::RectangularBinning) → p, bins
+    binhist(x::AbstractDataset, ε::Real) → p, bins
+    binhist(x::AbstractDataset, ε::RectangularBinning) → p, bins
 
 Hyper-optimized histogram calculation for `x` with rectangular binning `ε`.
 Returns the probabilities `p` of each bin of the histogram as well as the bins.

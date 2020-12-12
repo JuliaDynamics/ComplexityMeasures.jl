@@ -23,7 +23,7 @@ struct Kraskov <: NearestNeighborEntropyEstimator
     end
 end
 
-function genentropy(x::Dataset{D, T}, est::Kraskov; base::Real = MathConstants.e) where {D, T}
+function genentropy(x::AbstractDataset{D, T}, est::Kraskov; base::Real = MathConstants.e) where {D, T}
     N = length(x)
     ρs = get_ρs(x, est)
     h = -digamma(est.k) + digamma(N) + log(base, V(D)) + D/N*sum(log.(base, ρs))
