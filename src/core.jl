@@ -37,7 +37,7 @@ Base.IteratorSize(d::Probabilities) = Base.HasLength()
 
 """
 An abstract type for entropy estimators that don't explicitly estimate probabilities,
-but returns the value of the entropy directly.
+but return the value of the entropy directly.
 """
 abstract type EntropyEstimator end
 const EntEst = EntropyEstimator # shorthand
@@ -94,6 +94,12 @@ Compute the generalized order-`q` entropy of some probabilities
 returned by the [`probabilities`](@ref) function. Alternatively, compute entropy
 from pre-computed `Probabilities`.
 
+    genentropy(x::Vector_or_Dataset, est; q = 1.0, base)
+
+A convenience syntax, which calls first `probabilities(x, est)`
+and then calculates the entropy of the result (and thus `est` can be a
+`ProbabilitiesEstimator` or simply `ε::Real`).
+
 ## Description
 
 Let ``p`` be an array of probabilities (summing to 1). Then the generalized (Rényi) entropy is
@@ -107,12 +113,6 @@ like e.g. the information entropy
 (``q = 1``, see [^Shannon1948]), the maximum entropy (``q=0``,
 also known as Hartley entropy), or the correlation entropy
 (``q = 2``, also known as collision entropy).
-
-    genentropy(x::Vector_or_Dataset, est; q = 1.0, base)
-
-A convenience syntax, which calls first `probabilities(x, est)`
-and then calculates the entropy of the result (and thus `est` can be a
-`ProbabilitiesEstimator` or simply `ε::Real`).
 
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)

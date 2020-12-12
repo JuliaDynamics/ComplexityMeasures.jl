@@ -1,8 +1,6 @@
 export KozachenkoLeonenko, genentropy
 
 """
-## Nearest neighbour(NN) based
-
     KozachenkoLeonenko(; w::Int = 0) <: NearestNeighborEntropyEstimator
 
 Entropy estimator based on nearest neighbors. This implementation is based on Kozachenko
