@@ -6,3 +6,4 @@ include("count_box_visits.jl")
 include("histogram_estimation.jl")
 
 include("VisitationFrequency.jl")
+include("TransferOperator.jl")
