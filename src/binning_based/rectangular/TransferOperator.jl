@@ -127,7 +127,7 @@ function inds_in_terms_of_unique(x, sorted::Bool)
     end
 end
 
-inds_in_terms_of_unique(x::Dataset) = inds_in_terms_of_unique(x.data)
+inds_in_terms_of_unique(x::AbstractDataset) = inds_in_terms_of_unique(x.data)
 
 """
     TransferOperatorApproximationRectangular(to, ϵ::RectangularBinning, mini, edgelengths, 

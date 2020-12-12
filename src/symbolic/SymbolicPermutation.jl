@@ -12,19 +12,19 @@ abstract type PermutationProbabilityEstimator <: SymbolicProbabilityEstimator en
 
 Symbolic, permutation-based probabilities/entropy estimators.
 
-Uses embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` by default. The minimum 
+Uses embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` by default. The minimum
 dimension ``m`` is 2 (there are no sorting permutations of single-element state vectors).
 
 ## Repeated values during symbolization
 
-In the original implementation of permutation entropy [^BandtPompe2002], equal values are 
-ordered after their order of appearance, but this can lead to erroneous temporal 
-correlations, especially for data with low-amplitude resolution [^Zunino2017]. Here, we 
-resolve this issue by letting the user provide a custom "less-than" function. The keyword 
-`lt` accepts a function that decides which of two state vector elements are smaller. If two 
-elements are equal, the default behaviour is to randomly assign one of them as the largest 
-(`lt = Entropies.isless_rand`). For data with low amplitude resolution, computing 
-probabilities multiple times using the random approach may reduce these erroneous 
+In the original implementation of permutation entropy [^BandtPompe2002], equal values are
+ordered after their order of appearance, but this can lead to erroneous temporal
+correlations, especially for data with low-amplitude resolution [^Zunino2017]. Here, we
+resolve this issue by letting the user provide a custom "less-than" function. The keyword
+`lt` accepts a function that decides which of two state vector elements are smaller. If two
+elements are equal, the default behaviour is to randomly assign one of them as the largest
+(`lt = Entropies.isless_rand`). For data with low amplitude resolution, computing
+probabilities multiple times using the random approach may reduce these erroneous
 effects.
 
 To get the behaviour described in Bandt and Pompe (2002), use `lt = Base.isless`).
@@ -32,15 +32,15 @@ To get the behaviour described in Bandt and Pompe (2002), use `lt = Base.isless`
 ## Properties of original signal preserved
 
 - **`SymbolicPermutation`**: Preserves ordinal patterns of state vectors (sorting information). This
-    implementation is based on Bandt & Pompe et al. (2002)[^BandtPompe2002] and 
+    implementation is based on Bandt & Pompe et al. (2002)[^BandtPompe2002] and
     Berger et al. (2019) [^Berger2019].
-- **`SymbolicWeightedPermutation`**: Like `SymbolicPermutation`, but also encodes amplitude 
-    information by tracking the variance of the state vectors. This implementation is based 
+- **`SymbolicWeightedPermutation`**: Like `SymbolicPermutation`, but also encodes amplitude
+    information by tracking the variance of the state vectors. This implementation is based
     on Fadlallah et al. (2013)[^Fadlallah2013].
-- **`SymbolicAmplitudeAwarePermutation`**: Like `SymbolicPermutation`, but also encodes 
-    amplitude information by considering a weighted combination of *absolute amplitudes* 
-    of state vectors, and *relative differences between elements* of state vectors. See 
-    description below for explanation of the weighting parameter `A`. This implementation 
+- **`SymbolicAmplitudeAwarePermutation`**: Like `SymbolicPermutation`, but also encodes
+    amplitude information by considering a weighted combination of *absolute amplitudes*
+    of state vectors, and *relative differences between elements* of state vectors. See
+    description below for explanation of the weighting parameter `A`. This implementation
     is based on Azami & Escudero (2016) [^Azami2016].
 
 ## Probability estimation
@@ -49,7 +49,7 @@ To get the behaviour described in Bandt and Pompe (2002), use `lt = Base.isless`
 
 To estimate probabilities or entropies from univariate time series, use the following methods:
 
-- `probabilities(x::AbstractVector, est::SymbolicProbabilityEstimator)`. Constructs state vectors 
+- `probabilities(x::AbstractVector, est::SymbolicProbabilityEstimator)`. Constructs state vectors
     from `x` using embedding lag `τ` and embedding dimension `m`, symbolizes state vectors,
     and computes probabilities as (weighted) relative frequency of symbols.
 - `genentropy(x::AbstractVector, est::SymbolicProbabilityEstimator; α=1, base = 2)` computes
@@ -58,7 +58,7 @@ To estimate probabilities or entropies from univariate time series, use the foll
 
 #### Speeding up repeated computations
 
-A pre-allocated integer symbol array `s` can be provided to save some memory 
+A pre-allocated integer symbol array `s` can be provided to save some memory
 allocations if the probabilities are to be computed for multiple data sets.
 
 *Note: it is not the array that will hold the final probabilities that is pre-allocated,
@@ -76,20 +76,20 @@ probabilities!(s::Vector{Int}, x::AbstractDataset, est::SymbolicPermutation) →
 
 ### Multivariate datasets
 
-Although not dealt with in the original paper describing the estimators, numerically speaking, 
-permutation entropies can also be computed for multivariate datasets with dimension ≥ 2 
-(but see caveat below). Such datasets may be, for example, preembedded time series. Then, 
-just skip the delay reconstruction step, compute and symbols directly from the ``L`` 
+Although not dealt with in the original paper describing the estimators, numerically speaking,
+permutation entropies can also be computed for multivariate datasets with dimension ≥ 2
+(but see caveat below). Such datasets may be, for example, preembedded time series. Then,
+just skip the delay reconstruction step, compute and symbols directly from the ``L``
 existing state vectors ``\\{\\mathbf{x}_1, \\mathbf{x}_2, \\ldots, \\mathbf{x_L}\\}``.
 
-- `probabilities(x::Dataset, est::SymbolicProbabilityEstimator)`. Compute ordinal patterns of the 
+- `probabilities(x::AbstractDataset, est::SymbolicProbabilityEstimator)`. Compute ordinal patterns of the
     state vectors of `x` directly (without doing any embedding), symbolize those patterns,
     and compute probabilities as (weighted) relative frequencies of symbols.
-- `genentropy(x::Dataset, est::SymbolicProbabilityEstimator)`. Computes probabilities from 
-    symbol frequencies using `probabilities(x::Dataset, est::SymbolicProbabilityEstimator)`,
+- `genentropy(x::AbstractDataset, est::SymbolicProbabilityEstimator)`. Computes probabilities from
+    symbol frequencies using `probabilities(x::AbstractDataset, est::SymbolicProbabilityEstimator)`,
     then computes the order-`α` generalized (permutation) entropy to the given base.
 
-*Caveat: A dynamical interpretation of the permutation entropy does not necessarily 
+*Caveat: A dynamical interpretation of the permutation entropy does not necessarily
 hold if computing it on generic multivariate datasets. Method signatures for `Dataset`s are
 provided for convenience, and should only be applied if you understand the relation
 between your input data, the numerical value for the permutation entropy, and
@@ -144,14 +144,14 @@ but probabilities are weighted by amplitude information as follows.
 p(\\pi_i^{m, \\tau}) = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i} \\left( \\mathbf{x}_k^{m, \\tau} \\right) \\, a_k}{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) \\in \\Pi} \\left( \\mathbf{x}_k^{m, \\tau} \\right) \\,a_k} = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i} \\left( \\mathbf{x}_k^{m, \\tau} \\right) \\, a_k}{\\sum_{k=1}^N a_k}.
 ```
 
-The weights encoding amplitude information about state vector ``\\mathbf{x}_i = (x_1^i, x_2^i, \\ldots, x_m^i)`` are 
+The weights encoding amplitude information about state vector ``\\mathbf{x}_i = (x_1^i, x_2^i, \\ldots, x_m^i)`` are
 
 ```math
 a_i = \\dfrac{A}{m} \\sum_{k=1}^m |x_k^i | + \\dfrac{1-A}{d-1} \\sum_{k=2}^d |x_{k}^i - x_{k-1}^i|,
 ```
 
-with ``0 \\leq A \\leq 1``. When ``A=0`` , only internal differences between the elements of 
-``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector 
+with ``0 \\leq A \\leq 1``. When ``A=0`` , only internal differences between the elements of
+``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector
 elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is used.
 
 #### `SymbolicWeightedPermutation`
@@ -161,11 +161,11 @@ Weighted permutation entropy is also computed analogously to regular permutation
 adds weights that encode amplitude information too:
 
 ```math
-p(\\pi_i^{m, \\tau}) = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i} 
-\\left( \\mathbf{x}_k^{m, \\tau} \\right) 
-\\, w_k}{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) \\in \\Pi} 
-\\left( \\mathbf{x}_k^{m, \\tau} \\right) \\,w_k} = \\dfrac{\\sum_{k=1}^N 
-\\mathbf{1}_{u:S(u) = s_i} 
+p(\\pi_i^{m, \\tau}) = \\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i}
+\\left( \\mathbf{x}_k^{m, \\tau} \\right)
+\\, w_k}{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) \\in \\Pi}
+\\left( \\mathbf{x}_k^{m, \\tau} \\right) \\,w_k} = \\dfrac{\\sum_{k=1}^N
+\\mathbf{1}_{u:S(u) = s_i}
 \\left( \\mathbf{x}_k^{m, \\tau} \\right) \\, w_k}{\\sum_{k=1}^N w_k}.
 ```
 
@@ -203,18 +203,18 @@ above, which actually computes the variance for ``\\mathbf{x}_i``*.
 
 ### Entropy computation
 
-The generalized order-`α` Renyi entropy[^Rényi1960] can be computed over the probability 
-distribution of symbols as 
+The generalized order-`α` Renyi entropy[^Rényi1960] can be computed over the probability
+distribution of symbols as
 ``
-H(m, \\tau, \\alpha) = \\dfrac{\\alpha}{1-\\alpha} \\log 
+H(m, \\tau, \\alpha) = \\dfrac{\\alpha}{1-\\alpha} \\log
 \\left( \\sum_{j=1}^R p_j^\\alpha \\right)
-``. Permutation entropy, as described in 
+``. Permutation entropy, as described in
 Bandt and Pompe (2002), is just the limiting case as ``α \\to1``, that is
 ``
 H(m, \\tau) = - \\sum_j^R p(\\pi_j^{m, \\tau}) \\ln p(\\pi_j^{m, \\tau})
 ``.
 
-*Note: Do not confuse the order of the 
+*Note: Do not confuse the order of the
 generalized entropy (`α`) with the order `m` of the
 permutation entropy (which controls the symbol size). Permutation entropy is usually
 estimated with `α = 1`, but the implementation here allows the generalized entropy of any
@@ -246,26 +246,26 @@ end
     symbolize!(s, x::AbstractVector{T}, est::SymbolicPermutation) where {T} → Vector{Int}
 
 If `x` is a univariate time series, first `x` create a delay reconstruction of `x`
-using embedding lag `est.τ` and embedding dimension `est.m`, then symbolizing the resulting 
-state vectors with [`encode_motif`](@ref). 
+using embedding lag `est.τ` and embedding dimension `est.m`, then symbolizing the resulting
+state vectors with [`encode_motif`](@ref).
 
-Optionally, the in-place `symbolize!` can be used to put symbols in a pre-allocated 
+Optionally, the in-place `symbolize!` can be used to put symbols in a pre-allocated
 integer vector `s`, where `length(s) == length(x)-(est.m-1)*est.τ`.
 
     symbolize(x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T} → Vector{Int}
     symbolize!(s, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T} → Vector{Int}
 
-If `x` is an `m`-dimensional dataset, then motif lengths are determined by the dimension of 
-the input data, and `x` is symbolized by converting each `m`-dimensional 
-state vector as a unique integer in the range ``1, 2, \\ldots, m-1``, using 
-[`encode_motif`](@ref). 
+If `x` is an `m`-dimensional dataset, then motif lengths are determined by the dimension of
+the input data, and `x` is symbolized by converting each `m`-dimensional
+state vector as a unique integer in the range ``1, 2, \\ldots, m-1``, using
+[`encode_motif`](@ref).
 
-Optionally, the in-place `symbolize!` can be used to put symbols in a pre-allocated 
+Optionally, the in-place `symbolize!` can be used to put symbols in a pre-allocated
 integer vector `s`, where `length(s) == length(s)`.
 
 ## Examples
 
-Symbolize a 7-dimensional dataset. Motif lengths (or order of the permutations) are 
+Symbolize a 7-dimensional dataset. Motif lengths (or order of the permutations) are
 inferred to be 7.
 
 ```julia
@@ -284,7 +284,7 @@ x = rand(n)
 s = symbolize(x, SymbolicPermutation(m = 5, τ = 2))
 ```
 
-The integer vector `s` now has length `n-(m-1)*τ = 4992`, and each `s[i]` contains 
+The integer vector `s` now has length `n-(m-1)*τ = 4992`, and each `s[i]` contains
 the integer symbol for the ordinal pattern of state vector `x[i]`.
 
 [^Berger2019]: Berger, Sebastian, et al. "Teaching Ordinal Patterns to a Computer: Efficient Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
@@ -332,7 +332,7 @@ function symbolize!(s::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicP
     symbolize!(s, x_emb, est)
 end
 
-function probabilities!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
+function probabilities!(s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
     length(s) == length(x) || throw(ArgumentError("Need length(s) == length(x), got `length(s)=$(length(s))` and `length(x)==$(length(x))`."))
     m >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series embed it using `genembed` first.")
 
@@ -342,7 +342,7 @@ function probabilities!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicP
     probabilities(s)
 end
 
-function probabilities!(s::Vector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
+function probabilities!(s::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
     L = length(x)
     N = L - (est.m-1)*est.τ
     length(s) == N || error("Pre-allocated symbol vector `s`needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
@@ -366,17 +366,29 @@ function probabilities(x::AbstractVector{T}, est::SymbolicPermutation) where {T<
     probabilities!(s, x_emb, est)
 end
 
-function genentropy!(s::Vector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation; 
-        α::Real = 1, base::Real = MathConstants.e) where {m, T}
+function genentropy!(
+    s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation;
+    q = 1.0, α = nothing, base::Real = MathConstants.e
+    ) where {m, T}
+
+    if α ≠ nothing
+        @warn "Keyword `α` is deprecated in favor of `q`."
+        q = α
+    end
     length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
     ps = probabilities!(s, x, est)
 
     genentropy(ps, α = α, base = base)
 end
 
-function genentropy!(s::Vector{Int}, x::Vector{T}, est::SymbolicPermutation; 
-        α::Real = 1, base::Real = MathConstants.e) where {T<:Real}
-
+function genentropy!(
+        s::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation;
+        q::Real = 1.0, α = nothing, base::Real = MathConstants.e
+    ) where {T<:Real}
+    if α ≠ nothing
+        @warn "Keyword `α` is deprecated in favor of `q`."
+        q = α
+    end
     L = length(x)
     N = L - (est.m-1)*est.τ
     length(s) == N || error("Pre-allocated symbol vector `s` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")

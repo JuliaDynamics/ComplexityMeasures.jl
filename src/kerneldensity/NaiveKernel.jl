@@ -131,7 +131,7 @@ function get_pts_within_radius(x::AbstractDataset{D, T}, est::NaiveKernel{M}) wh
 end
 
 
-function probabilities(x::Dataset, est::NaiveKernel)
+function probabilities(x::AbstractDataset, est::NaiveKernel)
     N = length(x)
     p = get_pts_within_radius(x, est)
     return Probabilities(p ./= sum(p))

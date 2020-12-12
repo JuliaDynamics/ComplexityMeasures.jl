@@ -28,7 +28,7 @@ struct KozachenkoLeonenko <: NearestNeighborEntropyEstimator
     end
 end
 
-function genentropy(x::Dataset{D, T}, est::KozachenkoLeonenko; base::Real = MathConstants.e) where {D, T}
+function genentropy(x::AbstractDataset{D, T}, est::KozachenkoLeonenko; base::Real = MathConstants.e) where {D, T}
     N = length(x)
     ρs = get_ρs(x, est)
     h = D/N*sum(log.(base, ρs)) + log(base, V(D)) +  MathConstants.eulergamma + log(base, N - 1)
