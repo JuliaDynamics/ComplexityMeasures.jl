@@ -38,6 +38,7 @@ PAGES = [
     "Estimators" => [
         "CountOccurrences.md",
         "VisitationFrequency.md",
+        "TransferOperator.md",
         "Permutation.md",
         "NearestNeighbors.md",
         "NaiveKernel.md",

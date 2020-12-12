@@ -51,13 +51,13 @@ end
     @test SymbolicAmplitudeAwarePermutation(lt = Entropies.isless_rand) isa SymbolicAmplitudeAwarePermutation
 
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
+    @test TransferOperator(RectangularBinning(3)) isa TransferOperator
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
     @test Kraskov(k = 2, w = 1) isa Kraskov
     @test Kraskov() isa Kraskov
     @test KozachenkoLeonenko() isa KozachenkoLeonenko
     @test KozachenkoLeonenko(w = 5) isa KozachenkoLeonenko
-
     @test NaiveKernel(0.1) isa NaiveKernel
 
     @testset "Counting based" begin
@@ -324,5 +324,30 @@ end
 
         @test genentropy(D, est_nn) isa Real
         @test genentropy(D, est_knn) isa Real
+    end
+
+    @testset "TransferOperator" begin
+        D = Dataset(rand(1000, 3))
+
+        binnings = [
+            RectangularBinning(3),
+            RectangularBinning(0.2),
+            RectangularBinning([2, 2, 3]),
+            RectangularBinning([0.2, 0.3, 0.3])
+        ]
+
+        @testset "Binning test $i" for i in 1:length(binnings)
+            to = Entropies.transferoperator(D, binnings[i])
+            @test to isa Entropies.TransferOperatorApproximationRectangular
+
+            iv = invariantmeasure(to)
+            @test iv isa InvariantMeasure
+
+            p, bins = invariantmeasure(iv)
+            @test p isa Probabilities
+            @test bins isa Vector{<:SVector}
+            
+            @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
+        end
     end
 end
