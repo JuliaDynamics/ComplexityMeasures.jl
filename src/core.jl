@@ -71,6 +71,9 @@ This allows computation of probabilities (histograms) of high-dimensional
 datasets and with small box sizes `ε` without memory overflow and with maximum performance.
 To obtain the bin information along with `p`, use [`binhist`](@ref).
 
+    probabilities(x::Vector_or_Dataset, n::Integer) → p::Probabilities
+Same as the above method, but now each dimension of the data is binned into `n::Int` equal
+sized bins instead of bins of length `ε::AbstractFloat`.
 
     probabilities(x::Vector_or_Dataset) → p::Probabilities
 Directly count probabilities from the elements of `x` without any discretization,

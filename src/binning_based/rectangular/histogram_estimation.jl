@@ -76,9 +76,13 @@ function binhist(x::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:
     return hist, b
 end
 
+# Proper dispatch for when an integer is given.
+probabilities(data, n::Integer) =
+probabilities(Dataset(data), VisitationFrequency(RectangularBinning(n)))
+
 # The following is originally from ChaosTools.jl
-probabilities(data::AbstractDataset, ε::Real) = _non0hist(data, ε)[1]
-function _non0hist(data::AbstractDataset{D, T}, ε::Real) where {D, T<:Real}
+probabilities(data::AbstractDataset, ε::AbstractFloat) = _non0hist(data, ε)[1]
+function _non0hist(data::AbstractDataset{D, T}, ε::AbstractFloat) where {D, T<:Real}
     mini = minima(data)
     L = length(data)
     hist = Vector{Float64}()
