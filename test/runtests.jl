@@ -15,6 +15,8 @@ using StaticArrays
     @test Entropies._non0hist(x) |> sum ≈ 1.0
     @test Entropies._non0hist(D) |> sum ≈ 1.0
     @test Entropies._non0hist(D2)|> sum ≈ 1.0
+    x = rand(100)
+    @test genentropy(x, 100) ≠ NaN
 end
 
 @testset "Shorthand" begin
@@ -25,7 +27,6 @@ end
     @test Entropies.binhist(D, RectangularBinning(5)) isa Tuple{Probabilities, Vector{<:SVector}}
     @test Entropies.binhist(D, RectangularBinning([5, 3, 4, 2, 2])) isa Tuple{Probabilities, Vector{<:SVector}}
     @test Entropies.binhist(D, RectangularBinning([0.5, 0.3, 0.4, 0.2, 0.2])) isa Tuple{Probabilities, Vector{<:SVector}}
-
 end
 
 @testset "Generalized entropy" begin
