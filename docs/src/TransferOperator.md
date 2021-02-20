@@ -22,9 +22,11 @@ InvariantMeasure
 invariantmeasure
 ```
 
-## Transition information
+### Transition information
 
 ```@docs
+transferoperator
+TransferOperatorApproximation
 transitioninfo
 TransitionInfo
 ```
