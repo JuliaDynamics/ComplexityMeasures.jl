@@ -2,15 +2,20 @@ name = "Entropies"
 uuid = "ed8fcbec-b94c-44b6-89df-898894ad9591"
 authors = "Kristian Agasøster Haaga <kahaaga@gmail.com>, George Datseries <datseris.george@gmail.com>"
 repo = "https://github.com/juliadynamics/Entropies.jl.git"
-version = "1.0.0"
+version = "0.11.1"
 
 [deps]
 DelayEmbeddings = "5732040d-69e3-5649-938a-b6b4f237613f"
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+DocumenterTools = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
+DynamicalSystems = "61744808-ddfa-5f27-97ff-6e42cc95d634"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 NearestNeighbors = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+Simplices = "d5428e67-3037-59ba-9ab1-57a04f0a3b6a"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
@@ -28,8 +33,7 @@ Wavelets = "^0.9"
 julia = "1.5"
 
 [extras]
-Simplices = "d5428e67-3037-59ba-9ab1-57a04f0a3b6a"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "Simplices"]
+test = ["Test"]
