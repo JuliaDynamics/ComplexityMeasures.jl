@@ -212,7 +212,7 @@ function (tog::TransferOperatorGenerator{T})(;boundary_condition = :circular,
     # row/column of the transfer operator
     unique!(visited_bins)
     bins = [β .* edgelengths .+ mini for β in visited_bins]
-    params = (bins = bins)
+    params = (bins = bins, )
 
     TransferOperatorApproximation(tog, M, params)
 end
@@ -223,3 +223,18 @@ function transferoperator(pts, method::TransferOperator{<:RectangularBinning};
     tog = transopergenerator(pts, method)
     tog(boundary_condition = boundary_condition)
 end
+
+"""
+    transfermatrix(iv::InvariantMeasure) → (M::AbstractArray{<:Real, 2}, bins::Vector{<:SVector})
+
+Return the transfer matrix/operator and corresponding bins. Here, `bins[i]` corresponds 
+to the i-th row/column of the transfer matrix. Thus, the entry `M[i, j]` is the 
+probability of jumping from the state defined by `bins[i]` to the state defined by 
+`bins[j]`.
+
+See also: [`TransferOperator`](@ref).
+"""
+function transfermatrix(to::TransferOperatorApproximation{<:TransferOperator{RectangularBinning}})
+    return to.transfermatrix, to.bins
+end
+

@@ -34,7 +34,7 @@ function transopergenerator(pts, method::TransferOperator{<:SimplexExact})
     # the last vertex also can be mapped forward one step in time.
     triang = DelaunayTriangulation(invariant_pts[1:end-1])
 
-    init = (invariant_pts = invariant_pts, triang = triang)
+    init = (invariant_pts = invariant_pts, triang = triang, )
 
     TransferOperatorGenerator(method, pts, init)
 end

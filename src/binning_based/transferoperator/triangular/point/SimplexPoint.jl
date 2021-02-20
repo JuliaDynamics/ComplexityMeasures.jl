@@ -118,7 +118,7 @@ function (tog::TransferOperatorGenerator{T})(; tol = 1e-8, randomsampling::Bool 
     # Need to normalise, because all we have up until now is counts
     # of how many points inside the image simplex falls into
     # the simplices.
-    params = (tol = tol, randomsampling = randomsampling, n = n)
+    params = (tol = tol, randomsampling = randomsampling, n = n, )
     M_normalized = transpose(M) ./ n_coeffs
     return TransferOperatorApproximation(tog, M_normalized, params)
 
