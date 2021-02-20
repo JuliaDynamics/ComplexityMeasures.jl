@@ -1,9 +1,4 @@
-if VERSION >= v"0.7.0-"
-    # Adding Pkg in test/REQUIRE would be an error in 0.6.  Using
-    # Project.toml still has some gotchas.  So:
-    Pkg = Base.require(Base.PkgId(Base.UUID(0x44cfe95a1eb252eab672e2afdf69b78f), "Pkg"))
-end
-
+using Pkg
 ENV["PYTHON"] = ""
 Pkg.build("PyCall")
 
@@ -14,6 +9,8 @@ using Test
 using Wavelets
 using Entropies
 using Simplices
+using DelayEmbeddings
+using StaticArrays
 
 @testset "Histogram estimation" begin
     x = rand(1:10, 100)

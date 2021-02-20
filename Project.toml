@@ -11,6 +11,7 @@ Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 NearestNeighbors = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+Simplices = "d5428e67-3037-59ba-9ab1-57a04f0a3b6a"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
@@ -34,6 +35,7 @@ PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 Simplices = "d5428e67-3037-59ba-9ab1-57a04f0a3b6a"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [targets]
-test = ["Test", "Conda", "PyCall", "Simplices", "StatsBase"]
+test = ["Test", "Conda", "PyCall", "Simplices", "StatsBase", "Pkg"]
