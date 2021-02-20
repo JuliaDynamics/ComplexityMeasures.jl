@@ -2,6 +2,8 @@
 
 ```@docs
 TransferOperator
+SimplexExact
+SimplexPoint
 ```
 
 ## Utility methods/types

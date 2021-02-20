@@ -1,5 +1,8 @@
 export VisitationFrequency, probabilities
-import DelayEmbeddings: Dataset, AbstractDataset
+import DelayEmbeddings: AbstractDataset
+
+include("count_box_visits.jl")
+include("histogram_estimation.jl")
 
 """
     VisitationFrequency(r::RectangularBinning) <: BinningProbabilitiesEstimator
