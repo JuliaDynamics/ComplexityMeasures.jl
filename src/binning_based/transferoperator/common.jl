@@ -354,7 +354,7 @@ function invariantmeasure(pts, method::TransferOperator{<:R}; kwargs...) where R
 end
 
 probabilities(iv::InvariantMeasure) = iv.ρ
-probabilities(iv::TransferOperatorApproximation) = probabilities(invariantmeasure(iv.ρ))
+probabilities(iv::TransferOperatorApproximation) = probabilities(invariantmeasure(iv))
 
 function probabilities(pts, method::TransferOperator{<:R}; kwargs...) where R
     to_approximation = transferoperator(pts, method; kwargs...)
