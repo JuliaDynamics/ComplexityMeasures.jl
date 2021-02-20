@@ -87,5 +87,5 @@ end
 
 function transitioninfo(to::TransferOperatorApproximation{<:TransferOperator{R}}) where R<:SimplexExact
     return TransitionInfo(to.transfermatrix, 
-        (pts = to.generator.init.invariant_pts, triang = to.generator.init.triang,))
+        (pts = to.generator.init.invariant_pts, triang = to.generator.init.triang, ))
 end

@@ -224,20 +224,10 @@ function transferoperator(pts, method::TransferOperator{<:RectangularBinning};
     tog(boundary_condition = boundary_condition)
 end
 
-"""
-    transitioninfo(to::TransferOperatorApproximation) → TransitionInfo
-    transitioninfo(to::InvariantMeasure) → TransitionInfo
 
-Convenience method to get the transfer matrix/operator and corresponding bins. Here, 
-`bins[i]` corresponds to the i-th row/column of the transfer matrix. Thus, the entry 
-`M[i, j]` is the probability of jumping from the state defined by `bins[i]` to the state defined by 
-`bins[j]`.
-
-See also: [`TransitionInfo`](@ref), [`TransferOperatorApproximation`](@ref).
-"""
 function transitioninfo(to::TransferOperatorApproximation{<:TransferOperator{<:RectangularBinning}})
     return TransitionInfo(to.transfermatrix, 
-        (bins = to.params.bins, edgelengths = to.params.edgelengths))
+        (bins = to.params.bins, edgelengths = to.params.edgelengths, ))
 end
 
 transitioninfo(iv::InvariantMeasure) = transitioninfo(iv.to)
