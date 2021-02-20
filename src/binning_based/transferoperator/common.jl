@@ -137,7 +137,11 @@ function Base.show(io::IO, DT::TransferOperatorGenerator{E, X, A}) where {E, X, 
     println(io, summary)
 end
 
+""" 
+    transferoperator(points, estimator::TransferOperator) → TransferOperatorApproximation
 
+Approximate the transfer operator over `points` using the provided estimator.
+"""
 function transferoperator end
 
 """
@@ -325,7 +329,7 @@ The element `ρ[i]` is the probability of visitation to the box `bins[i]`. Analo
     The naive histogram approach only gives the long-term probabilities that 
     orbits visit a certain region of the state space. The transfer operator encodes that 
     information too, but comes with the added benefit of knowing the *transition 
-    probabilities* between states (see [`transfermatrix`](@ref)). 
+    probabilities* between states (see [`transitioninfo`](@ref)). 
 
 See also: [`InvariantMeasure`](@ref).
 """
