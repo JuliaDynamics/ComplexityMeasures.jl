@@ -11,10 +11,8 @@ using Conda
 Conda.add("scipy")
 
 using Test
-using Entropies
-using DelayEmbeddings
 using Wavelets
-using StaticArrays
+using Entropies
 using Simplices
 
 @testset "Histogram estimation" begin
