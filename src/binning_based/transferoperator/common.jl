@@ -74,7 +74,24 @@ below some threshold.
 
 
 See also: [`RectangularBinning`](@ref), [`SimplexPoint`](@ref), [`SimplexExact`](@ref), 
-[`invariantmeasure`](@ref), 
+[`invariantmeasure`](@ref)
+
+## Examples
+
+Here, we create three different transfer operator-based estimators.
+
+```@example
+# A rectangular binning is suited for datasets with a large number of points
+est_rect = TransferOperator(RectangularBinning(5))
+
+# A triangulated binning, using approximate simplex intersections, is also possible for 
+# datasets with not too many points (say, <1000 points).
+est_point = TransferOperator(SimplexPoint())
+
+# For datasets with few points, say <100 points, exact simplex intersections may also 
+# be computationally feasible.
+est_exact = TransferOperator(SimplexExact())
+```
 
 [^Diego2019]: Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
 """
