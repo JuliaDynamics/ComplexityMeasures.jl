@@ -354,9 +354,13 @@ end
         @testset "Rectagular binning test $i" for i in 1:length(binnings)
             est = TransferOperator(binnings[i])
             to = Entropies.transferoperator(D, est)
+
+            @test transitioninfo(to) isa Entropies.TransitionInfo
             @test to isa Entropies.TransferOperatorApproximation
 
             iv = invariantmeasure(to)
+            @test transitioninfo(iv) isa Entropies.TransitionInfo
+
             @test iv isa InvariantMeasure
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
         end
@@ -369,11 +373,19 @@ end
 
             to_point = transferoperator(D, est_point)
             to_exact = transferoperator(D, est_exact)
+
+            @test transitioninfo(to_exact) isa Entropies.TransitionInfo
+            @test transitioninfo(to_point) isa Entropies.TransitionInfo
+
             @test to_point isa Entropies.TransferOperatorApproximation
             @test to_exact isa Entropies.TransferOperatorApproximation
 
-            @test invariantmeasure(to_point) isa Entropies.InvariantMeasure
-            @test invariantmeasure(to_exact) isa Entropies.InvariantMeasure
+            iv_point = invariantmeasure(to_point)
+            iv_exact = invariantmeasure(to_exact)
+            @test iv_point isa Entropies.InvariantMeasure
+            @test iv_exact isa Entropies.InvariantMeasure
+            @test transitioninfo(iv_point) isa Entropies.TransitionInfo
+            @test transitioninfo(iv_exact) isa Entropies.TransitionInfo
             @test probabilities(to_point) isa Probabilities
             @test probabilities(to_exact) isa Probabilities
 

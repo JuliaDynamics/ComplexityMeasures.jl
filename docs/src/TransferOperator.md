@@ -20,5 +20,11 @@ For rectangular binnings, use [`RectangularBinning`](@ref).
 ```@docs
 InvariantMeasure
 invariantmeasure
-transfermatrix
+```
+
+## Transition information
+
+```@docs
+transitioninfo
+TransitionInfo
 ```

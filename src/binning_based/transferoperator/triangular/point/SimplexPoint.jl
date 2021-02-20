@@ -130,3 +130,8 @@ function transferoperator(pts, method::TransferOperator{<:SimplexPoint};
     tog = transopergenerator(pts, method)
     tog(tol = tol, randomsampling = randomsampling, n = n)
 end
+
+function transitioninfo(to::TransferOperatorApproximation{<:TransferOperator{R}}) where R<:SimplexPoint
+    return TransitionInfo(to.transfermatrix, 
+        (pts = to.generator.init.invariant_pts, triang = to.generator.init.triang,))
+end

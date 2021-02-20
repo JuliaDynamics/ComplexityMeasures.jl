@@ -6,9 +6,11 @@ export
     transferoperator, 
     TransferOperator,
     TransferOperatorApproximation,
+    TransferMatrix,
     invariantmeasure, 
     InvariantMeasure,
-    transfermatrix
+    transitioninfo,
+    TransitionInfo
 
 """
     TransferOperator(ϵ::Union{RectangularBinning, SimplexPoint, SimplexExact}) <: BinningProbabilitiesEstimator
@@ -148,30 +150,6 @@ function transferoperator(pts, method::TransferOperator)
     to()    
 end
 
-""" 
-    InvariantMeasure(to, ρ)
-
-Minimal return struct for [`invariantmeasure`](@ref) that contains the estimated invariant 
-measure `ρ`, as well as the transfer operator `to` from which it is computed (including 
-bin information).
-
-See also: [`invariantmeasure`](@ref).
-""" 
-struct InvariantMeasure{T, P<:Probabilities}
-    to::T
-    ρ::P
-
-    function InvariantMeasure(to::T, ρ::P) where {T, P}
-        new{T, P}(to, ρ)
-    end
-end
-
-
-function Base.show(io::IO, DT::InvariantMeasure{T, P}) where {T, P}
-    summary = "InvariantMeasure{transfer operator approximation: $T, probabilities: $P}"
-    println(io, summary)
-end
-
 """
     TransferOperatorApproximation(generator, transfermatrix, params)
 
@@ -218,20 +196,69 @@ end
 
 
 """
-    transfermatrix(iv::InvariantMeasure) → (M::AbstractArray{<:Real, 2}, bins::Vector{<:SVector})
+    TransitionInfo(transfermatrix, bins)
 
-Return the transfer matrix/operator and corresponding bins. Here, `bins[i]` corresponds 
-to the i-th row/column of the transfer matrix. Thus, the entry `M[i, j]` is the 
-probability of jumping from the state defined by `bins[i]` to the state defined by 
-`bins[j]`.
+Structure that holds the `transfermatrix` of transition probabilities obtained from a 
+transfer operator approximation, as well as the `bins` of the partition.
 
-See also: [`TransferOperator`](@ref).
+- If `transfermatrix` was obtained using a rectangular binning, then `bins` is a 
+    two-element named tuple with fields `bins` (the left-most coordinates of the bins) and 
+    `edgelengths` (the edge lengths along each coordinate axis).
+- If `transfermatrix` was obtained using a triangulated binning, then `bins` is a 
+    two-element named tuple with fields `pts` (the points of the triangulation), and 
+    `triang`, the indices of the vertices of all simplices. Here, `pts[triang[i]]` is a 
+    vector of vertices for the `i`-th simplex of the triangulation.
+
+`bins[i]` corresponds to the i-th row/column of `transfermatrix.` Thus, the entry 
+`transfermatrix[i, j]` is the probability of jumping from the state defined by `bins[i]` 
+to the state defined by `bins[j]`.
+
+See also [`transitioninfo`](@ref).
 """
-function transfermatrix(iv::InvariantMeasure)
-    return iv.to.transfermatrix, iv.to.bins
+struct TransitionInfo{T, B}
+    transfermatrix::T
+    bins::B
 end
 
 
+function Base.show(io::IO, info::TransitionInfo{T, B}) where {T, B}
+    summary = "TransitionInfo{transfermatrix: $T, bins: $B}"
+    println(io, summary)
+end
+
+"""
+    transitioninfo(to::TransferOperatorApproximation) → TransitionInfo
+    transitioninfo(to::InvariantMeasure) → TransitionInfo
+
+Convenience method to get the transfer matrix/operator and the corresponding bins from 
+pre-computed quantities. 
+
+See also: [`TransitionInfo`](@ref), [`TransferOperatorApproximation`](@ref).
+"""
+function transitioninfo end
+
+""" 
+    InvariantMeasure(to, ρ)
+
+Minimal return struct for [`invariantmeasure`](@ref) that contains the estimated invariant 
+measure `ρ`, as well as the transfer operator `to` from which it is computed (including 
+bin information).
+
+See also: [`invariantmeasure`](@ref).
+""" 
+struct InvariantMeasure{T, P<:Probabilities}
+    to::T
+    ρ::P
+
+    function InvariantMeasure(to::T, ρ::P) where {T, P}
+        new{T, P}(to, ρ)
+    end
+end
+
+function Base.show(io::IO, DT::InvariantMeasure{T, P}) where {T, P}
+    summary = "InvariantMeasure{transfer operator approximation: $T, probabilities: $P}"
+    println(io, summary)
+end
 
 import LinearAlgebra: norm
 """

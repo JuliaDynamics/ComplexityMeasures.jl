@@ -82,3 +82,9 @@ function transferoperator(pts, method::TransferOperator{<:SimplexExact}; tol::Re
     tog = transopergenerator(pts, method)
     tog(tol = tol)
 end
+
+
+function transitioninfo(to::TransferOperatorApproximation{<:TransferOperator{R}}) where R<:SimplexExact
+    return TransitionInfo(to.transfermatrix, 
+        (pts = to.generator.init.invariant_pts, triang = to.generator.init.triang,))
+end
