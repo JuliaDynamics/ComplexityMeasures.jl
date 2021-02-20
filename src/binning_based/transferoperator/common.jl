@@ -17,15 +17,15 @@ A probability estimator based on binning data into rectangular boxes
 (when `ϵ` is a [`RectangularBinning`](@ref)) or simplices (when `ϵ` is a 
 [`SimplexExact`](@ref) or `ϵ` is a [`SimplexPoint`](@ref)). 
 
-Input data are assumed to be sequential.
+To use triangulation-based estimators, run `using Simplices` after `using Entropies`.
 
 The transfer (Perron-Frobenius) operator is approximated over the bins, using different 
 methods depending on the type of partition chosen. The invariant measure associated with 
 the approximated transfer operator is taken the bin probabilities. 
 
-This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
+# Description (rectangular binning)
 
-# Description
+This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
 
 The transfer operator ``P^{N}``is computed as an `N`-by-`N` matrix of transition 
 probabilities between the states defined by the partition elements, where `N` is the 
@@ -49,6 +49,9 @@ projected one step forward in time. Thus, the row ``P_{ik}^N`` where
 of jumping from the state defined by box ``C_i`` to any of the other ``N`` states. It 
 follows that ``\\sum_{k=1}^{N} P_{ik} = 1`` for all ``i``. Thus, ``P^N`` is a row/right 
 stochastic matrix.
+
+For a detailed description of the triangulation estimators, see 
+Diego et al. (2019)[^Diego2019].
 
 ### Invariant measure estimation from transfer operator
 
@@ -81,11 +84,14 @@ See also: [`RectangularBinning`](@ref), [`SimplexPoint`](@ref), [`SimplexExact`]
 Here, we create three different transfer operator-based estimators.
 
 ```@example
+using Entropies
 # A rectangular binning is suited for datasets with a large number of points
 est_rect = TransferOperator(RectangularBinning(5))
 
 # A triangulated binning, using approximate simplex intersections, is also possible for 
-# datasets with not too many points (say, <1000 points).
+# datasets with not too many points (say, <1000 points). If so, we must first import 
+# the Simplices.jl package.
+using Simplices
 est_point = TransferOperator(SimplexPoint())
 
 # For datasets with few points, say <100 points, exact simplex intersections may also 
