@@ -53,6 +53,8 @@ end
 
 inds_in_terms_of_unique(x::AbstractDataset) = inds_in_terms_of_unique(x.data)
 
+# TODO: transferoperatorgenerator for rectangualrbinning!
+
 """
     transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning) → TransferOperatorApproximationRectangular
 
@@ -74,11 +76,11 @@ transferoperator(orbit, RectangularBinning(10))
 
 See also: [`RectangularBinning`](@ref).
 """
-function transferoperator(pts::AbstractDataset{D, T}, to::TransferOperator{RectangularBinning};
+function transferoperator(pts::AbstractDataset{D, T}, to::TransferOperator{<:RectangularBinning};
         boundary_condition = :circular) where {D, T<:Real}
     
     L = length(pts)
-    mini, edgelengths = Entropies.minima_edgelengths(pts, ϵ)
+    mini, edgelengths = Entropies.minima_edgelengths(pts, to.ϵ)
 
     # The L points visits a total of L bins, which are the following bins: 
     visited_bins = Entropies.encode_as_bin(pts, mini, edgelengths)
@@ -185,7 +187,7 @@ function transferoperator(pts::AbstractDataset{D, T}, to::TransferOperator{Recta
     # row/column of the transfer operator
     unique!(visited_bins)
     bins = [β .* edgelengths .+ mini for β in visited_bins]
-    params = (ϵ = ϵ, mini = mini, edgelengths = edgelengths, bins = bins, 
+    params = (mini = mini, edgelengths = edgelengths, bins = bins, 
         sort_idxs = sort_idxs, visitors)
 
     TransferOperatorApproximation(to, M, params)

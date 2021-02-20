@@ -175,13 +175,13 @@ When `R <: SimplexExact`, parameters stored are the simplex intersection toleran
 
 See also: [`RectangularBinning`](@ref), [`SimplexPoint`](@ref), [`SimplexExact`](@ref).
 """
-struct TransferOperatorApproximation{G<:TransferOperator{<:BinningProbabilitiesEstimator}, T<:Real}
+struct TransferOperatorApproximation{G<:TransferOperator, T}
     generator::TransferOperatorGenerator{G}
-    transfermatrix::AbstractArray{T, 2}
+    transfermatrix::T
     params
 end
 
-function Base.show(io::IO, DT::TransferOperatorApproximation{G, T}) where {G <: TransferOperator{R}, T} where R 
+function Base.show(io::IO, DT::TransferOperatorApproximation{G, T}) where {G <: TransferOperator, T}
     summary = "TransferOperatorApproximation{$G, $T}"
     println(io, summary)
 end

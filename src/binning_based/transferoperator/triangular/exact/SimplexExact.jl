@@ -4,7 +4,7 @@ import Entropies.invariantmeasure
 
 
 """
-    SimplexExact <: TriangulationBasedTransferOperator
+    SimplexExact
 
 A transfer operator estimator using a triangulation partition and exact 
 simplex intersections[^Diego2019]. 
@@ -17,7 +17,7 @@ simplex intersections, this estimator is slow compared to [`SimplexPoint`](@ref)
 
 [^Diego2019]: Diego, David, Kristian Agasøster Haaga, and Bjarte Hannisdal. "Transfer entropy computation using the Perron-Frobenius operator." Physical Review E 99.4 (2019): 042212.
 """
-struct SimplexExact <: BinningProbabilitiesEstimator
+struct SimplexExact
     bc::String
     
     function SimplexExact(bc::String = "circular")
