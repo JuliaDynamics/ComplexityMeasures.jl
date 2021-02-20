@@ -351,6 +351,14 @@ end
             RectangularBinning([0.2, 0.3, 0.3]),
         ]
 
+        @testset "Methods" begin
+            @testset "Rectagular binning test $i" for i in 1:length(binnings)
+                @test binnings[i] isa RectangularBinning
+            end
+            @test SimplexPoint() isa Entropies.TriangularBinning
+            @test SimplexExact() isa Entropies.TriangularBinning
+        end
+
         @testset "Rectagular binning test $i" for i in 1:length(binnings)
             est = TransferOperator(binnings[i])
             to = Entropies.transferoperator(D, est)

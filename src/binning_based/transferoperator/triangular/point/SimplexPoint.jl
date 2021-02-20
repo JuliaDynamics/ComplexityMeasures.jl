@@ -4,17 +4,18 @@ import StaticArrays: SizedVector, SizedMatrix, MMatrix
 include("helper_functions.jl")
 
 """
-    SimplexPoint
+    SimplexPoint <: TriangularBinning
 
 A transfer operator estimator using a triangulated partition, and using 
 approximate simplex intersections to compute transition probabilities [^Diego2019]. 
 
-To use this estimator, the Simplices.jl package must be brought into scope by doing 
-`using Simplices` after running `using Entropies`.
+!!! hint
+    To use this estimator, the Simplices.jl package must be brought into scope by doing 
+    `using Simplices` after running `using Entropies`.
 
 [^Diego2019]: Diego, David, Kristian Agasøster Haaga, and Bjarte Hannisdal. "Transfer entropy computation using the Perron-Frobenius operator." Physical Review E 99.4 (2019): 042212.
 """
-struct SimplexPoint
+struct SimplexPoint <: TriangularBinning
     bc::String
     
     function SimplexPoint(bc::String = "circular")
