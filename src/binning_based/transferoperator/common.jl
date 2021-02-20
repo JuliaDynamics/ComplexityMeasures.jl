@@ -72,9 +72,9 @@ below some threshold.
 
 ## Probability and entropy estimation
 
-- `probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinning})` estimates 
+- `probabilities(x::AbstractDataset, est::TransferOperator)` estimates 
     probabilities for the bins defined by the provided binning (`est.ϵ`)
-- `genentropy(x::AbstractDataset, est::TransferOperator{RectangularBinning})` does the same, 
+- `genentropy(x::AbstractDataset, est::TransferOperator)` does the same, 
     but computes generalized entropy using the probabilities.
 
 
@@ -238,7 +238,7 @@ See also: [`TransitionInfo`](@ref), [`TransferOperatorApproximation`](@ref).
 function transitioninfo end
 
 """ 
-    InvariantMeasure(to, ρ)
+    InvariantMeasure(to::TransferOperatorApproximation, ρ::Probabilities)
 
 Minimal return struct for [`invariantmeasure`](@ref) that contains the estimated invariant 
 measure `ρ`, as well as the transfer operator `to` from which it is computed (including 
@@ -246,7 +246,7 @@ bin information).
 
 See also: [`invariantmeasure`](@ref).
 """ 
-struct InvariantMeasure{T, P<:Probabilities}
+struct InvariantMeasure{T<:TransferOperatorApproximation, P<:Probabilities}
     to::T
     ρ::P
 
