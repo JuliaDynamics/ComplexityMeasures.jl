@@ -3,6 +3,7 @@ using Entropies
 using DelayEmbeddings
 using Wavelets
 using StaticArrays
+using Simplices
 
 @testset "Histogram estimation" begin
     x = rand(1:10, 100)
@@ -344,16 +345,12 @@ end
         ]
 
         @testset "Rectagular binning test $i" for i in 1:length(binnings)
-            to = Entropies.transferoperator(D, binnings[i])
+            est = TransferOperator(binnings[i])
+            to = Entropies.transferoperator(D, est)
             @test to isa Entropies.TransferOperatorApproximation
 
             iv = invariantmeasure(to)
             @test iv isa InvariantMeasure
-
-            p, bins = invariantmeasure(iv)
-            @test p isa Probabilities
-            @test bins isa Vector{<:SVector}
-
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
         end
 
