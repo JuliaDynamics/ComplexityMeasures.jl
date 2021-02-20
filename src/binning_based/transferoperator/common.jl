@@ -85,20 +85,34 @@ See also: [`RectangularBinning`](@ref), [`SimplexPoint`](@ref), [`SimplexExact`]
 
 Here, we create three different transfer operator-based estimators.
 
+A rectangular binning is suited for datasets with a large number of points.
+
 ```@example
 using Entropies
-# A rectangular binning is suited for datasets with a large number of points
+pts = Dataset(rand(2000, 3))
 est_rect = TransferOperator(RectangularBinning(5))
+genentropy(pts, est_rect)
+```
 
-# A triangulated binning, using approximate simplex intersections, is also possible for 
-# datasets with not too many points (say, <1000 points). If so, we must first import 
-# the Simplices.jl package.
-using Simplices
+A triangulated binning, using approximate simplex intersections, is also possible for 
+datasets with not too many points (say, <1000 points). If so, we must first import 
+the Simplices.jl package.
+
+```@example
+using Entropies, Simplices
+pts = Dataset(rand(200, 3))
 est_point = TransferOperator(SimplexPoint())
+genentropy(pts, est_point)
+```
 
-# For datasets with few points, say <100 points, exact simplex intersections may also 
-# be computationally feasible.
+For datasets with few points, say <100 points, exact simplex intersections may also 
+be computationally feasible.
+
+```@example
+using Entropies, Simplices
 est_exact = TransferOperator(SimplexExact())
+pts = Dataset(rand(40, 3))
+genentropy(pts, est_exact)
 ```
 
 [^Diego2019]: Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
