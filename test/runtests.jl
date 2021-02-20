@@ -1,3 +1,5 @@
+include("install_dependencies.jl")
+
 using Test
 using Entropies
 using DelayEmbeddings
