@@ -14,8 +14,7 @@ module Entropies
     function __init__()
         @require Simplices="d5428e67-3037-59ba-9ab1-57a04f0a3b6a" begin
             using .Simplices
-            include("binning_based/transferoperator/triangular/exact/SimplexExact.jl")
-            include("binning_based/transferoperator/triangular/point/SimplexPoint.jl")
+            include("binning_based/transferoperator/triangular/triangular.jl")
         end
     end
 end

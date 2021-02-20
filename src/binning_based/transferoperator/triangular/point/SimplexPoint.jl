@@ -124,7 +124,9 @@ function (tog::TransferOperatorGenerator{T})(; tol = 1e-8, randomsampling::Bool 
 
 end
 
-function transferoperator(pts, method::TransferOperator{<:SimplexPoint}; tol = 1e-8, randomsampling::Bool = false, n::Int = 100)
+function transferoperator(pts, method::TransferOperator{<:SimplexPoint}; 
+        tol = 1e-8, randomsampling::Bool = false, n::Int = 100,)
+    
     tog = transopergenerator(pts, method)
     tog(tol = tol, randomsampling = randomsampling, n = n)
 end

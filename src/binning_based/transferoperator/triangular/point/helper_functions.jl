@@ -1,10 +1,6 @@
 import LinearAlgebra: det 
 import StaticArrays: SizedMatrix
 
-include("../delaunay_triangulations/DelaunayTriangulations.jl")
-import .DelaunayTriangulations: DelaunayTriangulation
-
-
 """ Re-zeros the array `a`. """
 function rezero!(a)
     @inbounds for i in eachindex(a)

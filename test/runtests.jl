@@ -52,7 +52,13 @@ end
     @test SymbolicAmplitudeAwarePermutation(lt = Entropies.isless_rand) isa SymbolicAmplitudeAwarePermutation
 
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
+
+    # Transfer operator related
     @test TransferOperator(RectangularBinning(3)) isa TransferOperator
+    @test TransferOperator(SimplexPoint()) isa TransferOperator
+    @test TransferOperator(SimplexExact()) isa TransferOperator
+
+
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
     @test Kraskov(k = 2, w = 1) isa Kraskov
@@ -334,12 +340,12 @@ end
             RectangularBinning(3),
             RectangularBinning(0.2),
             RectangularBinning([2, 2, 3]),
-            RectangularBinning([0.2, 0.3, 0.3])
+            RectangularBinning([0.2, 0.3, 0.3]),
         ]
 
-        @testset "Binning test $i" for i in 1:length(binnings)
+        @testset "Rectagular binning test $i" for i in 1:length(binnings)
             to = Entropies.transferoperator(D, binnings[i])
-            @test to isa Entropies.TransferOperatorApproximationRectangular
+            @test to isa Entropies.TransferOperatorApproximation
 
             iv = invariantmeasure(to)
             @test iv isa InvariantMeasure
@@ -349,6 +355,28 @@ end
             @test bins isa Vector{<:SVector}
 
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
+        end
+
+        @testset "Triangulation binning" begin 
+            D = Dataset(rand(18, 3))
+            
+            est_point = TransferOperator(SimplexPoint())
+            est_exact = TransferOperator(SimplexExact())
+
+            to_point = transferoperator(D, est_point)
+            to_exact = transferoperator(D, est_exact)
+            @test to_point isa Entropies.TransferOperatorApproximation
+            @test to_exact isa Entropies.TransferOperatorApproximation
+
+            @test invariantmeasure(to_point) isa Entropies.InvariantMeasure
+            @test invariantmeasure(to_exact) isa Entropies.InvariantMeasure
+            @test probabilities(to_point) isa Probabilities
+            @test probabilities(to_exact) isa Probabilities
+
+            @test invariantmeasure(D, est_point) isa InvariantMeasure
+            @test invariantmeasure(D, est_exact) isa InvariantMeasure
+            @test probabilities(D, est_point) isa Probabilities
+            @test probabilities(D, est_exact) isa Probabilities
         end
     end
 end

@@ -4,7 +4,8 @@ import LinearAlgebra: norm
 
 export 
     transferoperator, 
-    TransferOperator, 
+    TransferOperator,
+    TransferOperatorApproximation,
     invariantmeasure, 
     InvariantMeasure,
     transfermatrix
@@ -92,8 +93,8 @@ struct TransferOperatorGenerator{E <: TransferOperator, X, A}
 end
 
 
-function Base.show(io::IO, DT::TransferOperatorGenerator{E, X, A}) where {E <: TransferOperator{R}, X, A} where R
-    summary = "Transfer approximation from $R estimator"
+function Base.show(io::IO, DT::TransferOperatorGenerator{E, X, A}) where {E, X, A}
+    summary = "TransferOperatorGenerator{method: $E, pts: $X, init: $A}"
     println(io, summary)
 end
 
@@ -133,13 +134,19 @@ bin information).
 
 See also: [`invariantmeasure`](@ref).
 """ 
-struct InvariantMeasure{T}
+struct InvariantMeasure{T, P<:Probabilities}
     to::T
-    ρ::Probabilities
+    ρ::P
 
-    function InvariantMeasure(to::T, ρ) where T
-        new{T}(to, ρ)
+    function InvariantMeasure(to::T, ρ::P) where {T, P}
+        new{T, P}(to, ρ)
     end
+end
+
+
+function Base.show(io::IO, DT::InvariantMeasure{T, P}) where {T, P}
+    summary = "InvariantMeasure{transfer operator approximation: $T, probabilities: $P}"
+    println(io, summary)
 end
 
 """
@@ -181,8 +188,8 @@ struct TransferOperatorApproximation{G<:TransferOperator, T}
     params
 end
 
-function Base.show(io::IO, DT::TransferOperatorApproximation{G, T}) where {G <: TransferOperator, T}
-    summary = "TransferOperatorApproximation{$G, $T}"
+function Base.show(io::IO, DT::TransferOperatorApproximation{G, T}) where {G, T}
+    summary = "TransferOperatorApproximation{generator: $G, transfer matrix: $T}"
     println(io, summary)
 end
 
@@ -321,4 +328,18 @@ function invariantmeasure(to::TransferOperatorApproximation;
 
     # Extract the elements of the invariant measure corresponding to these indices
     return InvariantMeasure(to, Probabilities(distribution))
+end
+
+
+function invariantmeasure(pts, method::TransferOperator{<:R}; kwargs...) where R
+    to_approximation = transferoperator(pts, method; kwargs...)
+    invariantmeasure(to_approximation)
+end
+
+probabilities(iv::InvariantMeasure) = iv.ρ
+probabilities(iv::TransferOperatorApproximation) = probabilities(invariantmeasure(iv.ρ))
+
+function probabilities(pts, method::TransferOperator{<:R}; kwargs...) where R
+    to_approximation = transferoperator(pts, method; kwargs...)
+    invariantmeasure(to_approximation).ρ
 end

@@ -53,37 +53,13 @@ end
 
 inds_in_terms_of_unique(x::AbstractDataset) = inds_in_terms_of_unique(x.data)
 
-# TODO: transferoperatorgenerator for rectangualrbinning!
-
-"""
-    transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning) → TransferOperatorApproximationRectangular
-
-Estimate the transfer operator given a set of sequentially ordered points subject to a 
-rectangular partition given by `ϵ`.
-
-## Example 
-
-```julia
-using DynamicalSystems, Plots, Entropy
-D = 4
-ds = Systems.lorenz96(D; F = 32.0)
-N, dt = 20000, 0.1
-orbit = trajectory(ds, N*dt; dt = dt, Ttr = 10.0)
-
-# Estimate transfer operator over some coarse graining of the orbit.
-transferoperator(orbit, RectangularBinning(10))
-```
-
-See also: [`RectangularBinning`](@ref).
-"""
-function transferoperator(pts::AbstractDataset{D, T}, to::TransferOperator{<:RectangularBinning};
-        boundary_condition = :circular) where {D, T<:Real}
-    
+function transopergenerator(pts, method::TransferOperator{<:RectangularBinning})
+     
     L = length(pts)
-    mini, edgelengths = Entropies.minima_edgelengths(pts, to.ϵ)
+    mini, edgelengths = minima_edgelengths(pts, method.ϵ)
 
     # The L points visits a total of L bins, which are the following bins: 
-    visited_bins = Entropies.encode_as_bin(pts, mini, edgelengths)
+    visited_bins = encode_as_bin(pts, mini, edgelengths)
     sort_idxs = sortperm(visited_bins)
 
     # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
@@ -99,7 +75,58 @@ function transferoperator(pts::AbstractDataset{D, T}, to::TransferOperator{<:Rec
     
     # first_visited_by == [x[1] for x in visitors]
     first_visited_by = GroupSlices.firstinds(slices)
-    L = length(first_visited_by)
+
+    init = (mini = mini,  
+        edgelengths = edgelengths,
+        visited_bins = visited_bins,
+        sort_idxs = sort_idxs,
+        visits_whichbin = visits_whichbin,
+        visitors = visitors,
+        first_visited_by = first_visited_by
+        )
+
+    TransferOperatorGenerator(method, pts, init)
+end
+
+# """
+#     transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning) → TransferOperatorApproximationRectangular
+
+# Estimate the transfer operator given a set of sequentially ordered points subject to a 
+# rectangular partition given by `ϵ`.
+
+# ## Example 
+
+# ```julia
+# using DynamicalSystems, Plots, Entropy
+# D = 4
+# ds = Systems.lorenz96(D; F = 32.0)
+# N, dt = 20000, 0.1
+# orbit = trajectory(ds, N*dt; dt = dt, Ttr = 10.0)
+
+# # Estimate transfer operator over some coarse graining of the orbit.
+# transferoperator(orbit, RectangularBinning(10))
+# ```
+
+# See also: [`RectangularBinning`](@ref).
+# """
+function (tog::TransferOperatorGenerator{T})(;boundary_condition = :circular,
+        ) where T <: TransferOperator{<:RectangularBinning};
+    
+    visitors, 
+    first_visited_by, 
+    visits_whichbin,
+    visited_bins,
+    edgelengths,
+    mini = getfield.(
+        Ref(tog.init), 
+            (:visitors, 
+            :first_visited_by, 
+            :visits_whichbin,
+            :visited_bins,
+            :edgelengths,
+            :mini
+            ),
+        )
 
     I = Int32[]
     J = Int32[]
@@ -111,17 +138,15 @@ function transferoperator(pts::AbstractDataset{D, T}, to::TransferOperator{<:Rec
     n_visitsᵢ::Int = 0
     
     if boundary_condition == :circular
-        #warn("Using circular boundary condition")
         append!(visits_whichbin, [1])
     elseif boundary_condition == :random
-        #warn("Using random circular boundary condition")
         append!(visits_whichbin, [rand(1:length(visits_whichbin))])
     else
         error("Boundary condition $(boundary_condition) not implemented")
     end
     
     # Loop over the visited bins bᵢ
-    for i in 1:L
+    for i in 1:length(first_visited_by)
         # How many times is this bin visited?
         n_visitsᵢ = length(visitors[i])
 
@@ -187,24 +212,14 @@ function transferoperator(pts::AbstractDataset{D, T}, to::TransferOperator{<:Rec
     # row/column of the transfer operator
     unique!(visited_bins)
     bins = [β .* edgelengths .+ mini for β in visited_bins]
-    params = (mini = mini, edgelengths = edgelengths, bins = bins, 
-        sort_idxs = sort_idxs, visitors)
+    params = (bins = bins)
 
-    TransferOperatorApproximation(to, M, params)
+    TransferOperatorApproximation(tog, M, params)
 end
 
-function invariantmeasure(iv::InvariantMeasure)
-    return iv.ρ, iv.to.bins
-end
-
-function invariantmeasure(x::AbstractDataset, ϵ::TransferOperator{<:RectangularBinning})
-    to = transferoperator(x, ϵ)
-    invariantmeasure(to)
-end
-
-function probabilities(x::AbstractDataset, est::TransferOperator{<:RectangularBinning})
-    to = transferoperator(x, est.ϵ)
-    iv = invariantmeasure(to)
-
-    return iv.ρ
+function transferoperator(pts, method::TransferOperator{<:RectangularBinning}; 
+        boundary_condition = :circular,
+        )
+    tog = transopergenerator(pts, method)
+    tog(boundary_condition = boundary_condition)
 end
