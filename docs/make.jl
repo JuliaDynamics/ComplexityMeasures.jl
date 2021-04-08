@@ -11,6 +11,7 @@ using Entropies
 using PyPlot
 using DynamicalSystems
 using Wavelets
+using Simplices 
 
 # %% JuliaDynamics theme.
 # download the themes

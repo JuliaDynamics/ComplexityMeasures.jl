@@ -1,7 +1,15 @@
+using Pkg
+ENV["PYTHON"] = ""
+Pkg.build("PyCall")
+
+using Conda
+Conda.add("scipy")
+
 using Test
-using Entropies
-using DelayEmbeddings
 using Wavelets
+using Entropies
+using Simplices
+using DelayEmbeddings
 using StaticArrays
 
 @testset "Histogram estimation" begin
@@ -52,7 +60,13 @@ end
     @test SymbolicAmplitudeAwarePermutation(lt = Entropies.isless_rand) isa SymbolicAmplitudeAwarePermutation
 
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
+
+    # Transfer operator related
     @test TransferOperator(RectangularBinning(3)) isa TransferOperator
+    @test TransferOperator(SimplexPoint()) isa TransferOperator
+    @test TransferOperator(SimplexExact()) isa TransferOperator
+
+
     @test TimeScaleMODWT() isa TimeScaleMODWT
     @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
     @test Kraskov(k = 2, w = 1) isa Kraskov
@@ -334,21 +348,59 @@ end
             RectangularBinning(3),
             RectangularBinning(0.2),
             RectangularBinning([2, 2, 3]),
-            RectangularBinning([0.2, 0.3, 0.3])
+            RectangularBinning([0.2, 0.3, 0.3]),
         ]
 
-        @testset "Binning test $i" for i in 1:length(binnings)
-            to = Entropies.transferoperator(D, binnings[i])
-            @test to isa Entropies.TransferOperatorApproximationRectangular
+        @testset "Methods" begin
+            @testset "Rectagular binning test $i" for i in 1:length(binnings)
+                @test binnings[i] isa RectangularBinning
+            end
+            @test SimplexPoint() isa Entropies.TriangularBinning
+            @test SimplexExact() isa Entropies.TriangularBinning
+        end
+
+        @testset "Rectagular binning test $i" for i in 1:length(binnings)
+            est = TransferOperator(binnings[i])
+            to = Entropies.transferoperator(D, est)
+
+            @test transitioninfo(to) isa Entropies.TransitionInfo
+            @test to isa Entropies.TransferOperatorApproximation
 
             iv = invariantmeasure(to)
+            @test transitioninfo(iv) isa Entropies.TransitionInfo
+
             @test iv isa InvariantMeasure
-
-            p, bins = invariantmeasure(iv)
-            @test p isa Probabilities
-            @test bins isa Vector{<:SVector}
-
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
+        end
+
+        @testset "Triangulation binning" begin 
+            D = Dataset(rand(18, 3))
+            
+            est_point = TransferOperator(SimplexPoint())
+            est_exact = TransferOperator(SimplexExact())
+
+            to_point = transferoperator(D, est_point)
+            to_exact = transferoperator(D, est_exact)
+
+            @test transitioninfo(to_exact) isa Entropies.TransitionInfo
+            @test transitioninfo(to_point) isa Entropies.TransitionInfo
+
+            @test to_point isa Entropies.TransferOperatorApproximation
+            @test to_exact isa Entropies.TransferOperatorApproximation
+
+            iv_point = invariantmeasure(to_point)
+            iv_exact = invariantmeasure(to_exact)
+            @test iv_point isa Entropies.InvariantMeasure
+            @test iv_exact isa Entropies.InvariantMeasure
+            @test transitioninfo(iv_point) isa Entropies.TransitionInfo
+            @test transitioninfo(iv_exact) isa Entropies.TransitionInfo
+            @test probabilities(to_point) isa Probabilities
+            @test probabilities(to_exact) isa Probabilities
+
+            @test invariantmeasure(D, est_point) isa InvariantMeasure
+            @test invariantmeasure(D, est_exact) isa InvariantMeasure
+            @test probabilities(D, est_point) isa Probabilities
+            @test probabilities(D, est_exact) isa Probabilities
         end
     end
 end
