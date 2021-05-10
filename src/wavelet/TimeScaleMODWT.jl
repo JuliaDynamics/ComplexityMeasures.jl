@@ -32,8 +32,6 @@ wl = Wavelets.WT.Daubechies{12}()
 probabilities(x, TimeScaleMODWT(wl))
 ```
 
-If no wavelet provided, the default is `Wavelets.WL.Daubechies{12}())`.
-
 [^Rosso2001]: Rosso, O. A., Blanco, S., Yordanova, J., Kolev, V., Figliola, A., Schürmann, M., & Başar, E. (2001). Wavelet entropy: a new tool for analysis of short duration brain electrical signals. Journal of neuroscience methods, 105(1), 65-75.
 """
 struct TimeScaleMODWT <: WaveletProbabilitiesEstimator
