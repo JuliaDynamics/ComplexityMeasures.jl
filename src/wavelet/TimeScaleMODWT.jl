@@ -54,7 +54,7 @@ function time_scale_density(x, wl = WT.Daubechies{12}())
 end
 
 function relative_wavelet_energies(W::AbstractMatrix, js = 1:size(W, 2))
-    if !all(j ∉ 1:size(W, 2) for j in js)
+    if any(j ∉ 1:size(W, 2) for j in js)
         error("scales $(js) contains scales not present in wavelet coefficient "*
               "matrix with scales j ∈ 1:$(size(W, 2))")
     end
