@@ -54,9 +54,9 @@ function time_scale_density(x, wl = WT.Daubechies{12}())
 end
 
 function relative_wavelet_energies(W::AbstractMatrix, js = 1:size(W, 2))
-    if !all(1 .<= js .<= size(W, 2))
+    if !all(j ∉ 1:size(W, 2) for j in js)
         error("scales $(js) contains scales not present in wavelet coefficient "*
-              "matrix with scales j=1:$(size(W, 2))")
+              "matrix with scales j ∈ 1:$(size(W, 2))")
     end
     total_energy = sum(W .^ 2)
     return [energy_at_scale(W, j) / total_energy for j in js]
@@ -64,11 +64,11 @@ end
 
 function energy_at_scale(W::AbstractArray{T, 2}, j::Int) where T<:Real
     1 <= j <= size(W, 2) || error("Scale j does not exist in wave coefficient matrix W. Available scales are j=1:$(size(W, 2))")
-    Eⱼ = sum(W[:, j] .^ 2)
+    Eⱼ = sum(w*w for w in @view(W[:, j]))
 end
 
 # This function is not used anywhere currently
 function energy_at_time(W::AbstractArray{T, 2}, t::Int) where T<:Real
     1 <= t <= size(W, 1) || error("Time t does not exist in wave coefficient matrix W. Available times are t=1:$(size(W, 1))")
-    Eⱼ = sum(W[t, :] .^ 2)
+    Eₜ = sum(w*w for w in @view(W[t, :]))
 end
