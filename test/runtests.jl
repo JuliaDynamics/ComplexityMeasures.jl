@@ -290,11 +290,8 @@ end
         @testset "TimeScaleMODWT" begin
             wl = WT.Daubechies{4}()
             est = TimeScaleMODWT(wl)
-
-            @test Entropies.get_modwt(x) isa AbstractArray{<:Real, 2}
-            @test Entropies.get_modwt(x, wl) isa AbstractArray{<:Real, 2}
-
-            W = Entropies.get_modwt(x)
+            W = Entropies.get_modwt(x, wl)
+            @test W isa AbstractArray{<:Real, 2}
             Nlevels = maxmodwttransformlevels(x)
             @test Entropies.energy_at_scale(W, 1) isa Real
             @test Entropies.energy_at_time(W, 1) isa Real
@@ -304,7 +301,6 @@ end
             @test_throws ErrorException Entropies.energy_at_time(W, 0)
             @test_throws ErrorException Entropies.energy_at_time(W, N+1)
 
-            @test Entropies.relative_wavelet_energy(W, 1) isa Real
             @test Entropies.relative_wavelet_energies(W, 1:2) isa AbstractVector{<:Real}
 
             @test Entropies.time_scale_density(x, wl) isa AbstractVector{<:Real}

@@ -46,11 +46,15 @@ function probabilities(x, est::TimeScaleMODWT)
     Probabilities(time_scale_density(x, est.wl))
 end
 
-function time_scale_density(x, wl = WT.Daubechies{12}())
+function time_scale_density(x, wl::Wavelets.WT.OrthoWaveletClass)
+    W = get_modwt(x, wl)
+    ps = relative_wavelet_energies(W)
+end
+# maximum overlap discrete wavelet transform
+function get_modwt(x, wl)
     orthofilter = wavelet(wl)
     nscales = maxdyadiclevel(x)
     W = modwt(x, orthofilter, nscales)
-    ps = relative_wavelet_energies(W)
 end
 
 function relative_wavelet_energies(W::AbstractMatrix, js = 1:size(W, 2))
