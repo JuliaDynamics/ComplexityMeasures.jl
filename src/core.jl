@@ -1,5 +1,5 @@
 using DelayEmbeddings
-import DelayEmbeddings: AbstractDataset, Dataset, dimension
+using DelayEmbeddings: AbstractDataset, Dataset, dimension
 export ProbabilitiesEstimator, Probabilities
 export EntropyEstimator
 export probabilities, probabilities!
