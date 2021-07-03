@@ -1,35 +1,31 @@
 export NaiveKernel, TreeDistance, DirectDistance, probabilities
 
 import Distances: Metric, Euclidean, evaluate
-import NearestNeighbors: NNTree, KDTree, inrange
+import NearestNeighbors: KDTree, inrange
 import DelayEmbeddings: AbstractDataset
 
 """ Abstract type for different estimation methods of kernel densities """
 abstract type KernelEstimationMethod end
 
 """
-    DirectDistance(metric::M = Euclidean()) <: KernelEstimationMethod
+    DirectDistance(metric = Euclidean()) <: KernelEstimationMethod
 
 Pairwise distances are evaluated directly using the provided `metric`.
 """
 struct DirectDistance{M<:Metric} <: KernelEstimationMethod
     metric::M
-    function DirectDistance(metric::M = Euclidean()) where M
-        new{M}(metric)
-    end
 end
+DirectDistance() = DirectDistance(Euclidean())
 
 """
-    TreeDistance(metric::M = Euclidean()) <: KernelEstimationMethod
+    TreeDistance(metric = Euclidean()) <: KernelEstimationMethod
 
-Pairwise distances are evaluated using a tree-based approach with the provided `metric`.
+Pairwise distances are evaluated using a KDTree with the provided `metric`.
 """
 struct TreeDistance{M<:Metric} <: KernelEstimationMethod
     metric::M
-    function TreeDistance(metric::M = Euclidean()) where M
-        new{M}(metric)
-    end
 end
+TreeDistance() = TreeDistance(Euclidean())
 
 """
     NaiveKernel(ϵ::Real, method::KernelEstimationMethod = TreeDistance()) <: ProbabilitiesEstimator
