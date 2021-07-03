@@ -1,7 +1,7 @@
 export KozachenkoLeonenko, genentropy
 
 """
-    KozachenkoLeonenko(; w::Int = 0) <: NearestNeighborEntropyEstimator
+    KozachenkoLeonenko(; w::Int = 0) <: EntropyEstimator
 
 Entropy estimator based on nearest neighbors. This implementation is based on Kozachenko
 & Leonenko (1987)[^KozachenkoLeonenko1987],
@@ -24,7 +24,8 @@ end
 
 function genentropy(x::AbstractDataset{D, T}, est::KozachenkoLeonenko; base::Real = MathConstants.e) where {D, T}
     N = length(x)
-    ρs = get_ρs(x, est)
-    h = D/N*sum(log.(base, ρs)) + log(base, V(D)) +  MathConstants.eulergamma + log(base, N - 1)
+    ρs = maximum_neighbor_distances(x, est)
+    h = D/N*sum(log.(base, ρs)) + log(base, ball_volume(D)) +
+        MathConstants.eulergamma + log(base, N - 1)
     return h
 end

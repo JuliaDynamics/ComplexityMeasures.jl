@@ -13,10 +13,10 @@ counting how many other points occupy the space spanned by
 a hypersphere of radius `ϵ` around ``\\mathbf{x}``, according to:
 
 ```math
-P_i( \\mathbf{x}, \\epsilon) \\approx \\dfrac{1}{N} \\sum_{s \\neq i } K\\left( \\dfrac{||\\mathbf{x}_i - \\mathbf{x}_s ||}{\\epsilon} \\right),
+P_i( X, \\epsilon) \\approx \\dfrac{1}{N} \\sum_{s \\neq i } B(||X_i - X_j|| < \\epsilon),
 ```
 
-where ``K(z) = 1`` if ``z < 1`` and zero otherwise. Probabilities are then normalized.
+where ``B`` gives 1 if the argument is `true`. Probabilities are then normalized.
 
 The search structure `ss` is any search structure supported by Neighborhood.jl.
 
