@@ -28,7 +28,7 @@ end
 TreeDistance() = TreeDistance(Euclidean())
 
 """
-    NaiveKernel(ϵ::Real, method::KernelEstimationMethod = TreeDistance()) <: ProbabilitiesEstimator
+    NaiveKernel(ϵ::Real, ss = KDTree; w = 0) <: ProbabilitiesEstimator
 
 Estimate probabilities/entropy using a "naive" kernel density estimation approach (KDE), as 
 discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
@@ -43,50 +43,44 @@ P_i( \\mathbf{x}, \\epsilon) \\approx \\dfrac{1}{N} \\sum_{s \\neq i } K\\left( 
 
 where ``K(z) = 1`` if ``z < 1`` and zero otherwise. Probabilities are then normalized.
 
-## Methods 
+The search structure `ss` comes from Neighborhood.jl and can be either: 
+- `KDTree`: Tree-based evaluation of distances. Faster, but more memory allocation.
+- `BruteForce`: Direct evaluation of all distances. Extremely slow.
 
-- Tree-based evaluation of distances using [`TreeDistance`](@ref). Faster, but more
-    memory allocation.
-- Direct evaluation of distances using [`DirectDistance`](@ref). Slower, but less 
-    memory allocation. Also works for complex numbers.
-
-## Estimation
-
-Probabilities or entropies can be estimated from `Dataset`s.
-
-- `probabilities(x::AbstractDataset, est::NaiveKernel)`. Associates a probability `p` to 
-    each point in `x`.
-- `genentropy(x::AbstractDataset, est::NaiveKernel)`.  Associate probability `p` to each 
-    point in `x`, then compute the generalized entropy from those probabilities.
-
-## Examples
-
-```julia
-using Entropy, DelayEmbeddings
-pts = Dataset([rand(5) for i = 1:10000]);
-ϵ = 0.2
-est_direct = NaiveKernel(ϵ, DirectDistance())
-est_tree = NaiveKernel(ϵ, TreeDistance())
-
-p_direct = probabilities(pts, est_direct)
-p_tree = probabilities(pts, est_tree)
-
-# Check that both methods give the same probabilities
-all(p_direct .== p_tree)
-```
-
-See also: [`DirectDistance`](@ref), [`TreeDistance`](@ref).
+The keyword `w` stands for the [Theiler window](@ref), and excludes indices ``s``
+that are within ``|i - s| ≤ w`` from the given point ``\\mathbf{x}_i``.
 
 [^PrichardTheiler1995]: Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis. Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
 """
 struct NaiveKernel{KM<:KernelEstimationMethod} <: ProbabilitiesEstimator
-    ϵ::Real
+    ϵ::Float64
     method::KM
-    
     function NaiveKernel(ϵ::Real, method::KM = TreeDistance()) where KM <: KernelEstimationMethod
-        ϵ > 0 || error("Radius ϵ must be larger than zero, otherwise no radius around the points is defined!")
+        ϵ > 0 || error("Radius ϵ must be larger than zero!")
         new{KM}(ϵ, method)
     end
+end
+
+function probabilities(x::AbstractDataset, est::NaiveKernel)
+    p = get_pts_within_radius(x, est)
+    return Probabilities(p ./= sum(p))
+end
+
+function get_pts_within_radius(x::AbstractDataset, est::NaiveKernel{<:TreeDistance})
+    N = length(x)
+    tree = KDTree(x, est.method.metric)
+    p = zeros(eltype(x), N)
+
+    # Count number of points within radius of ϵ for each point in `x`
+    tree_distance!(p, tree, x.data, est.ϵ, false, N)
+    
+    return p
+end
+function get_pts_within_radius(x::AbstractDataset{D, T}, est::NaiveKernel{M}) where {D, T, M<:DirectDistance}
+    N = length(x)
+    p = zeros(T, N)
+    direct_distance!(p, x, est.method.metric, est.ϵ, N)
+    return p
 end
 
 function tree_distance!(p, tree, x, ϵ, sort::Bool, N)
@@ -100,16 +94,6 @@ function tree_distance!(p, tree, x, ϵ, sort::Bool, N)
     return p
 end
 
-function get_pts_within_radius(x::AbstractDataset{D, T}, est::NaiveKernel{<:M}) where {D, T, M<:TreeDistance}
-    N = length(x)
-    tree = KDTree(x, est.method.metric)
-    p = zeros(T, N)
-
-    # Count number of points within radius of ϵ for each point in `x`
-    tree_distance!(p, tree, x.data, est.ϵ, false, N)
-    
-    return p
-end
 
 function direct_distance!(p, x, metric, ϵ, N) where {D, T}
     @inbounds for i in 1:N
@@ -119,16 +103,6 @@ function direct_distance!(p, x, metric, ϵ, N) where {D, T}
     return p
 end
 
-function get_pts_within_radius(x::AbstractDataset{D, T}, est::NaiveKernel{M}) where {D, T, M<:DirectDistance}
-    N = length(x)
-    p = zeros(T, N)
-    direct_distance!(p, x, est.method.metric, est.ϵ, N)
-    return p
-end
 
 
-function probabilities(x::AbstractDataset, est::NaiveKernel)
-    N = length(x)
-    p = get_pts_within_radius(x, est)
-    return Probabilities(p ./= sum(p))
-end
+
