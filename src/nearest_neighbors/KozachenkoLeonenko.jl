@@ -1,7 +1,7 @@
 export KozachenkoLeonenko, genentropy
 
 """
-    KozachenkoLeonenko(; w::Int = 0) <: EntropyEstimator
+    KozachenkoLeonenko(; k::Int = 1, w::Int = 0) <: EntropyEstimator
 
 Entropy estimator based on nearest neighbors. This implementation is based on Kozachenko
 & Leonenko (1987)[^KozachenkoLeonenko1987],

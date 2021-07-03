@@ -3,7 +3,7 @@ export Kraskov, genentropy
 """
 ## k-th nearest neighbour(kNN) based
     
-    Kraskov(k::Int = 1, w::Int = 0) <: EntropyEstimator
+    Kraskov(; k::Int = 1, w::Int = 0) <: EntropyEstimator
 
 Entropy estimator based on `k`-th nearest neighbor searches[^Kraskov2004].
 `w` is the [Theiler window](@ref).
