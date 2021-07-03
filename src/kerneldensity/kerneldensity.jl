@@ -1,5 +1,6 @@
 export NaiveKernel
-using Neighborhood: Theiler, KDTree, bulkisearch, Euclidean, searchstructure
+using Neighborhood: Theiler, KDTree, bulkisearch, searchstructure
+using Distances: Metric, Euclidean
 
 """
     NaiveKernel(ϵ::Real, ss = KDTree; w = 0, metric = Euclidean()) <: ProbabilitiesEstimator
@@ -38,7 +39,7 @@ end
 function probabilities(x::DelayEmbeddings.AbstractDataset, est::NaiveKernel)
     theiler = Theiler(est.w)
     ss = searchstructure(est.method, x.data, est.metric)
-    idxs = Neighborhood.bulkisearch(ss, x.data, WithinRange(ϵ), theiler)
+    idxs = bulkisearch(ss, x.data, WithinRange(est.ϵ), theiler)
     p = Float64.(length.(idxs))
     return Probabilities(p)
 end

@@ -3,6 +3,7 @@ using Entropies
 using DelayEmbeddings
 using Wavelets
 using StaticArrays
+using Neighborhood: KDTree, BruteForce
 
 @testset "Histogram estimation" begin
     x = rand(1:10, 100)
@@ -71,8 +72,8 @@ end
         N = 1000
         pts = Dataset([rand(2) for i = 1:N]);
         ϵ = 0.3
-        est_direct = NaiveKernel(ϵ, DirectDistance())
-        est_tree = NaiveKernel(ϵ, TreeDistance())
+        est_direct = NaiveKernel(ϵ, KDTree)
+        est_tree = NaiveKernel(ϵ, BruteForce)
 
         @test probabilities(pts, est_tree) isa Probabilities
         @test probabilities(pts, est_direct) isa Probabilities
