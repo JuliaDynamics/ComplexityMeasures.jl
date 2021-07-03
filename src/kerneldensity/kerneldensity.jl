@@ -13,7 +13,7 @@ counting how many other points occupy the space spanned by
 a hypersphere of radius `ϵ` around ``\\mathbf{x}``, according to:
 
 ```math
-P_i( X, \\epsilon) \\approx \\dfrac{1}{N} \\sum_{s \\neq i } B(||X_i - X_j|| < \\epsilon),
+P_i( X, \\epsilon) \\approx \\dfrac{1}{N} \\sum_{s} B(||X_i - X_j|| < \\epsilon),
 ```
 
 where ``B`` gives 1 if the argument is `true`. Probabilities are then normalized.
@@ -21,7 +21,7 @@ where ``B`` gives 1 if the argument is `true`. Probabilities are then normalized
 The search structure `ss` is any search structure supported by Neighborhood.jl.
 
 The keyword `w` stands for the [Theiler window](@ref), and excludes indices ``s``
-that are within ``|i - s| ≤ w`` from the given point ``\\mathbf{x}_i``.
+that are within ``|i - s| ≤ w`` from the given point ``X_i``.
 
 [^PrichardTheiler1995]: Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis. Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
 """
