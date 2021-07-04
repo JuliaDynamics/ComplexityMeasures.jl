@@ -1,6 +1,6 @@
-export NaiveKernel
-using Neighborhood: Theiler, KDTree, bulkisearch, searchstructure
+using Neighborhood: Theiler, KDTree, BruteForce, bulkisearch, searchstructure
 using Distances: Metric, Euclidean
+export NaiveKernel, KDTree, BruteForce
 
 """
     NaiveKernel(ϵ::Real, ss = KDTree; w = 0, metric = Euclidean()) <: ProbabilitiesEstimator
@@ -18,7 +18,8 @@ P_i( X, \\epsilon) \\approx \\dfrac{1}{N} \\sum_{s} B(||X_i - X_j|| < \\epsilon)
 
 where ``B`` gives 1 if the argument is `true`. Probabilities are then normalized.
 
-The search structure `ss` is any search structure supported by Neighborhood.jl.
+The search structure `ss` is any search structure supported by Neighborhood.jl,
+e.g. `KDTree` or `BruteForce`.
 
 The keyword `w` stands for the [Theiler window](@ref), and excludes indices ``s``
 that are within ``|i - s| ≤ w`` from the given point ``X_i``.
