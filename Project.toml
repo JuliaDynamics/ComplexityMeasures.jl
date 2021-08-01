@@ -2,7 +2,7 @@ name = "Entropies"
 uuid = "ed8fcbec-b94c-44b6-89df-898894ad9591"
 authors = "Kristian Agasøster Haaga <kahaaga@gmail.com>, George Datseries <datseris.george@gmail.com>"
 repo = "https://github.com/juliadynamics/Entropies.jl.git"
-version = "0.12.1"
+version = "1.0.0"
 
 [deps]
 DelayEmbeddings = "5732040d-69e3-5649-938a-b6b4f237613f"
@@ -16,7 +16,7 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Wavelets = "29a6e085-ba6d-5f35-a997-948ac2efa89a"
 
 [compat]
-DelayEmbeddings = "1.10"
+DelayEmbeddings = "2"
 Distances = "0.9, 0.10"
 Neighborhood = "0.1, 0.2"
 SpecialFunctions = "0.10, 1.0"
