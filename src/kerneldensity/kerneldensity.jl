@@ -18,8 +18,10 @@ P_i( X, \\epsilon) \\approx \\dfrac{1}{N} \\sum_{s} B(||X_i - X_j|| < \\epsilon)
 
 where ``B`` gives 1 if the argument is `true`. Probabilities are then normalized.
 
-The search structure `ss` is any search structure supported by Neighborhood.jl,
-e.g. `KDTree` or `BruteForce`.
+The search structure `ss` is any search structure supported by Neighborhood.jl.
+Specifically, use `KDTree` to use a tree-based neighbor search, or `BruteForce` for
+the direct distances between all points. KDTrees heavily outperform direct distances
+when the dimensionality of the data is much smaller than the data length.
 
 The keyword `w` stands for the [Theiler window](@ref), and excludes indices ``s``
 that are within ``|i - s| ≤ w`` from the given point ``X_i``.
