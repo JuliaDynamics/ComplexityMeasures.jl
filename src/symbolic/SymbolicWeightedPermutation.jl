@@ -8,14 +8,14 @@ export SymbolicWeightedPermutation
 
 See docstring for [`SymbolicPermutation`](@ref).
 """
-struct SymbolicWeightedPermutation
-    τ
-    m
-    lt::Function
-    function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::Function = isless_rand)
-        m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-        new(τ, m, lt)
-    end
+struct SymbolicWeightedPermutation{F} <: PermutationProbabilityEstimator
+    τ::Int
+    m::Int
+    lt::F
+end
+function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::F = isless_rand) where {F <: Function}
+    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+    SymbolicWeightedPermutation{F}(τ, m, lt)
 end
 
 function weights_from_variance(x, m::Int)
@@ -28,7 +28,7 @@ function probabilities(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutatio
     πs = symbolize(x, SymbolicPermutation(m = m, lt = est.lt))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(symprobs(πs, wts, normalize = true))
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) where {T<:Real}
@@ -37,5 +37,5 @@ function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) w
     πs = symbolize(emb, SymbolicPermutation(m = est.m, lt = est.lt)) # motif length controlled by estimator m
     wts = weights_from_variance.(emb.data, est.m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(symprobs(πs, wts, normalize = true))
 end

@@ -42,7 +42,7 @@ function isless_rand(a, b)
 end
 
 """ Compute probabilities of symbols `Π`, given weights `wts`. """
-function probs(Π::AbstractVector, wts::AbstractVector; normalize = true)
+function symprobs(Π::AbstractVector, wts::AbstractVector; normalize = true)
     length(Π) == length(wts) || error("Need length(Π) == length(wts)")
     N = length(Π)
     idxs = sortperm(Π)

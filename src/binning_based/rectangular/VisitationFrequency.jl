@@ -1,12 +1,10 @@
 export VisitationFrequency, probabilities
-import DelayEmbeddings: Dataset, AbstractDataset
 
 """
     VisitationFrequency(r::RectangularBinning) <: BinningProbabilitiesEstimator
 
 A probability estimator based on binning data into rectangular boxes dictated by
 the binning scheme `r`.
-
 
 ## Example
 
@@ -15,18 +13,14 @@ the binning scheme `r`.
 b = RectangularBinning(5)
 
 # A probabilities estimator that, when applied a dataset, computes visitation frequencies
-# over the boxes of the binning, constructed as describedon the previous line.
+# over the boxes of the binning
 est = VisitationFrequency(b)
 ```
 
 See also: [`RectangularBinning`](@ref).
 """
-struct VisitationFrequency <: BinningProbabilitiesEstimator
-    binning::RectangularBinning
-
-    function VisitationFrequency(r::RectangularBinning)
-        new(r)
-    end
+struct VisitationFrequency{RB<:RectangularBinning} <: BinningProbabilitiesEstimator
+    binning::RB
 end
 
 function probabilities(x::AbstractDataset, est::VisitationFrequency)

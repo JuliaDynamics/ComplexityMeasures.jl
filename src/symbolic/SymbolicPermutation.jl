@@ -11,9 +11,8 @@ abstract type PermutationProbabilityEstimator <: SymbolicProbabilityEstimator en
     SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand) <: ProbabilityEstimator
 
 Symbolic, permutation-based probabilities/entropy estimators.
-
-Uses embedding dimension ``m = 3`` with embedding lag ``\\tau = 1`` by default. The minimum
-dimension ``m`` is 2 (there are no sorting permutations of single-element state vectors).
+`m` is the permutation order (or the symbol size or the embedding dimension) and 
+`τ` is the delay time (or lag).
 
 ## Repeated values during symbolization
 
@@ -200,26 +199,6 @@ terms "vector" and "neighboring vector" (but uses the same notation for both), m
 hard to interpret whether the sign switch is a typo or intended. Here, we use the notation
 above, which actually computes the variance for ``\\mathbf{x}_i``*.
 
-
-### Entropy computation
-
-The generalized order-`α` Renyi entropy[^Rényi1960] can be computed over the probability
-distribution of symbols as
-``
-H(m, \\tau, \\alpha) = \\dfrac{\\alpha}{1-\\alpha} \\log
-\\left( \\sum_{j=1}^R p_j^\\alpha \\right)
-``. Permutation entropy, as described in
-Bandt and Pompe (2002), is just the limiting case as ``α \\to1``, that is
-``
-H(m, \\tau) = - \\sum_j^R p(\\pi_j^{m, \\tau}) \\ln p(\\pi_j^{m, \\tau})
-``.
-
-*Note: Do not confuse the order of the
-generalized entropy (`α`) with the order `m` of the
-permutation entropy (which controls the symbol size). Permutation entropy is usually
-estimated with `α = 1`, but the implementation here allows the generalized entropy of any
-dimension to be computed from the symbol frequency distribution.*
-
 [^BandtPompe2002]: Bandt, Christoph, and Bernd Pompe. "Permutation entropy: a natural
     complexity measure for time series." Physical review letters 88.17 (2002): 174102.
 [^Berger2019]: Berger, Sebastian, et al. "Teaching Ordinal Patterns to a Computer: Efficient Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
@@ -231,14 +210,14 @@ dimension to be computed from the symbol frequency distribution.*
 [^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity measure for time series incorporating amplitude information." Physical Review E 87.2 (2013): 022911.
 [^Zunino2017]: Zunino, L., Olivares, F., Scholkmann, F., & Rosso, O. A. (2017). Permutation entropy based time series analysis: Equalities in the input signal can lead to false conclusions. Physics Letters A, 381(22), 1883-1892.
 """
-struct SymbolicPermutation <: PermutationProbabilityEstimator
-    τ
-    m
-    lt::Function
-    function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::Function=isless_rand)
-        m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-        new(τ, m, lt)
-    end
+struct SymbolicPermutation{F} <: PermutationProbabilityEstimator
+    τ::Int
+    m::Int
+    lt::F
+end
+function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F <: Function}
+    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+    SymbolicPermutation{F}(τ, m, lt)
 end
 
 """
