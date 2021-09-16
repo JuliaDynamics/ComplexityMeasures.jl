@@ -8,10 +8,10 @@ export SymbolicWeightedPermutation
 
 See docstring for [`SymbolicPermutation`](@ref).
 """
-struct SymbolicWeightedPermutation
-    τ
-    m
-    lt::Function
+struct SymbolicWeightedPermutation{F} <: PermutationProbabilityEstimator
+    τ::Int
+    m::Int
+    lt::F
     function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::Function = isless_rand)
         m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
         new(τ, m, lt)

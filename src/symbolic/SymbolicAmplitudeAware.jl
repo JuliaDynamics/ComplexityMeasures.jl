@@ -5,16 +5,16 @@ export SymbolicAmplitudeAwarePermutation
 
 See docstring for [`SymbolicPermutation`](@ref).
 """
-struct SymbolicAmplitudeAwarePermutation <: PermutationProbabilityEstimator
-    τ
-    m
-    A::Real
-    lt::Function
+struct SymbolicAmplitudeAwarePermutation{T, F} <: PermutationProbabilityEstimator
+    τ::Int
+    m::Int
+    A::T
+    lt::F
     function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5, 
             lt::Function = isless_rand)
         2 ≤ m || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
         0 ≤ A ≤ 1 || error("Weighting factor A must be on interval [0, 1]. Got A=$A.")
-        new(τ, m, A, isless_rand)
+        new(τ, m, A, lt)
     end
 end
 

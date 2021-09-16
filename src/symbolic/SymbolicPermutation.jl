@@ -231,10 +231,10 @@ dimension to be computed from the symbol frequency distribution.*
 [^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity measure for time series incorporating amplitude information." Physical Review E 87.2 (2013): 022911.
 [^Zunino2017]: Zunino, L., Olivares, F., Scholkmann, F., & Rosso, O. A. (2017). Permutation entropy based time series analysis: Equalities in the input signal can lead to false conclusions. Physics Letters A, 381(22), 1883-1892.
 """
-struct SymbolicPermutation <: PermutationProbabilityEstimator
-    τ
-    m
-    lt::Function
+struct SymbolicPermutation{F} <: PermutationProbabilityEstimator
+    τ::Int
+    m::Int
+    lt::F
     function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::Function=isless_rand)
         m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
         new(τ, m, lt)
