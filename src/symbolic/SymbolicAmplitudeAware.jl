@@ -5,10 +5,10 @@ export SymbolicAmplitudeAwarePermutation
 
 See docstring for [`SymbolicPermutation`](@ref).
 """
-struct SymbolicAmplitudeAwarePermutation{T, F} <: PermutationProbabilityEstimator
+struct SymbolicAmplitudeAwarePermutation{F} <: PermutationProbabilityEstimator
     τ::Int
     m::Int
-    A::T
+    A::Float64
     lt::F
     function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5, 
             lt::Function = isless_rand)

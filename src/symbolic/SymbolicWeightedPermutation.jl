@@ -28,7 +28,7 @@ function probabilities(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutatio
     πs = symbolize(x, SymbolicPermutation(m = m, lt = est.lt))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(symprobs(πs, wts, normalize = true))
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) where {T<:Real}
@@ -37,5 +37,5 @@ function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) w
     πs = symbolize(emb, SymbolicPermutation(m = est.m, lt = est.lt)) # motif length controlled by estimator m
     wts = weights_from_variance.(emb.data, est.m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(symprobs(πs, wts, normalize = true))
 end
