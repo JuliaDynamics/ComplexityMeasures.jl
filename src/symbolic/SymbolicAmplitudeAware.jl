@@ -34,7 +34,7 @@ function probabilities(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePerm
     πs = symbolize(x, SymbolicPermutation(m = m, lt = est.lt)) # motif length controlled by dimension of input data
     wts = AAPE.(x.data, A = est.A, m = est.m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(symprobs(πs, wts, normalize = true))
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutation) where {T<:Real}
@@ -42,6 +42,6 @@ function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutat
     emb = genembed(x, τs)
     πs = symbolize(emb, SymbolicPermutation(m = est.m, lt = est.lt))  # motif length controlled by estimator m
     wts = AAPE.(emb.data, A = est.A, m = est.m)
-    p = probs(πs, wts, normalize = true)
+    p = symprobs(πs, wts, normalize = true)
     Probabilities(p)
 end

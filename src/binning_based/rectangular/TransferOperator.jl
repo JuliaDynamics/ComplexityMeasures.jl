@@ -11,8 +11,8 @@ export
 
 A probability estimator based on binning data into rectangular boxes dictated by 
 the binning scheme `ϵ`, then approxmating the transfer (Perron-Frobenius) operator 
-over the bins, the taking the invariant measure associated with that transfer operator 
-as the bin probabilities. Assumes that the input data are sequential.
+over the bins, then taking the invariant measure associated with that transfer operator 
+as the bin probabilities. Assumes that the input data are sequential (time-ordered).
 
 This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
 
@@ -70,10 +70,6 @@ See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
 """
 struct TransferOperator{R} <: BinningProbabilitiesEstimator
     ϵ::R
-    
-    function TransferOperator(ϵ::R) where R <: RectangularBinning
-        new{R}(ϵ)
-    end
 end
 
 # If x is not sorted, we need to look at all pairwise comparisons
@@ -158,6 +154,7 @@ struct TransferOperatorApproximationRectangular{T<:Real}
     sort_idxs::Vector{Int}
     visitors::Vector{Vector{Int}}
 end
+# TODO: The above is type unstable!
 
 """
     transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning) → TransferOperatorApproximationRectangular
@@ -308,10 +305,6 @@ See also: [`invariantmeasure`](@ref).
 struct InvariantMeasure{T}
     to::T
     ρ::Probabilities
-
-    function InvariantMeasure(to::T, ρ) where T
-        new{T}(to, ρ)
-    end
 end
 
 function invariantmeasure(iv::InvariantMeasure)
@@ -442,10 +435,9 @@ function invariantmeasure(x::AbstractDataset, ϵ::RectangularBinning)
     invariantmeasure(to)
 end
 
-function probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinning})
+function probabilities(x::AbstractDataset, est::TransferOperator)
     to = transferoperator(x, est.ϵ)
     iv = invariantmeasure(to)
-
     return iv.ρ
 end
 
