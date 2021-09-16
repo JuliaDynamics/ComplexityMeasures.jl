@@ -12,10 +12,10 @@ struct SymbolicWeightedPermutation{F} <: PermutationProbabilityEstimator
     τ::Int
     m::Int
     lt::F
-    function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::Function = isless_rand)
-        m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-        new(τ, m, lt)
-    end
+end
+function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::F = isless_rand) where {F <: Function}
+    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+    SymbolicWeightedPermutation{F}(τ, m, lt)
 end
 
 function weights_from_variance(x, m::Int)

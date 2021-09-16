@@ -214,10 +214,10 @@ struct SymbolicPermutation{F} <: PermutationProbabilityEstimator
     τ::Int
     m::Int
     lt::F
-    function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::Function=isless_rand)
-        m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-        new(τ, m, lt)
-    end
+end
+function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F <: Function}
+    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+    SymbolicPermutation{F}(τ, m, lt)
 end
 
 """

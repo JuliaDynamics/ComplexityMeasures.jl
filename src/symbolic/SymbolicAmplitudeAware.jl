@@ -10,12 +10,12 @@ struct SymbolicAmplitudeAwarePermutation{F} <: PermutationProbabilityEstimator
     m::Int
     A::Float64
     lt::F
-    function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5, 
-            lt::Function = isless_rand)
-        2 ≤ m || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-        0 ≤ A ≤ 1 || error("Weighting factor A must be on interval [0, 1]. Got A=$A.")
-        new(τ, m, A, lt)
-    end
+end
+function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5, 
+        lt::F = isless_rand) where {F <: Function}
+    2 ≤ m || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+    0 ≤ A ≤ 1 || error("Weighting factor A must be on interval [0, 1]. Got A=$A.")
+    SymbolicAmplitudeAwarePermutation{F}(τ, m, A, lt)
 end
 
 """
