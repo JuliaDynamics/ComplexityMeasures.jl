@@ -1,6 +1,9 @@
 # CHANGELOG
 Changelog is kept with respect to version 0.11 of Entropies.jl.
 
+## 1.1
+* Introduce convenience function `permentropy`.
+
 ## 1.0
 No actual changes, just first major version release.
 
