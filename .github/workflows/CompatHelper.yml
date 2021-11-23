@@ -1,15 +1,24 @@
-name: TagBot
+name: CompatHelper
+
 on:
-  issue_comment:
-    types:
-      - created
-  workflow_dispatch:
+  schedule:
+    - cron: '00 * * * *'
+
 jobs:
-  TagBot:
-    if: github.event_name == 'workflow_dispatch' || github.actor == 'JuliaTagBot'
-    runs-on: ubuntu-latest
+  CompatHelper:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: [1]
+        julia-arch: [x86]
+        os: [ubuntu-latest]
     steps:
-      - uses: JuliaRegistries/TagBot@v1
+      - uses: julia-actions/setup-julia@latest
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ssh: ${{ secrets.DOCUMENTER_KEY }}
+          version: ${{ matrix.julia-version }}
+      - name: Pkg.add("CompatHelper")
+        run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
+      - name: CompatHelper.main()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: julia -e 'using CompatHelper; CompatHelper.main()'
