@@ -288,9 +288,10 @@ end
         t = LinRange(0, 2*a*π, N)
         x = sin.(t .+  cos.(t/0.1)) .- 0.1;
 
-        @testset "TimeScaleMODWT" begin
+        @testset "Wavelet internals" begin
             wl = WT.Daubechies{4}()
-            est = TimeScaleMODWT(wl)
+            W = Entropies.get_modwt(x)
+            @test size(W, 2) == floor(Int, log2(length(x)))
 
             @test Entropies.get_modwt(x) isa AbstractArray{<:Real, 2}
             @test Entropies.get_modwt(x, wl) isa AbstractArray{<:Real, 2}
@@ -307,6 +308,12 @@ end
 
             @test Entropies.relative_wavelet_energy(W, 1) isa Real
             @test Entropies.relative_wavelet_energies(W, 1:2) isa AbstractVector{<:Real}
+
+        end
+
+        @testset "TimeScaleMODWT" begin
+            wl = WT.Daubechies{4}()
+            est = TimeScaleMODWT(wl)
 
             @test Entropies.time_scale_density(x, wl) isa AbstractVector{<:Real}
             @test genentropy(x, TimeScaleMODWT(), q = 1, base = 2) isa Real

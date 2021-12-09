@@ -43,8 +43,10 @@ end
 
 function get_modwt(x::AbstractVector{T}, wl::Wavelets.WT.OrthoWaveletClass = Wavelets.WT.Daubechies{12}()) where T<:Real
     orthofilter = wavelet(wl)
-    nscales = Wavelets.maxmodwttransformlevels(x)
-    W = modwt(x, orthofilter, nscales)
+    nscales = Wavelets.WT.maxmodwttransformlevels(x)
+    # The detail coefficients are the first 1:nscales columns; the last column is the 
+    # scaling coefficients, which we don't need.
+    W = modwt(x, orthofilter, nscales)[:, 1:end-1]
 end
 
 function energy_at_scale(W::AbstractArray{T, 2}, j::Int) where T<:Real
