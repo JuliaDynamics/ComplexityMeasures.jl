@@ -43,7 +43,7 @@ end
 
 function get_modwt(x::AbstractVector{T}, wl::Wavelets.WT.OrthoWaveletClass = Wavelets.WT.Daubechies{12}()) where T<:Real
     orthofilter = wavelet(wl)
-    nscales = maxdyadiclevel(x)
+    nscales = Wavelets.maxmodwttransformlevels(x)
     W = modwt(x, orthofilter, nscales)
 end
 
