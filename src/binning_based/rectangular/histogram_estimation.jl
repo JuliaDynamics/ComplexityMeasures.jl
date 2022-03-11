@@ -76,9 +76,12 @@ function binhist(x::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:
     return hist, b
 end
 
-# Proper dispatch for when an integer is given.
+# Convenience dispatch for when an integer is given.
 probabilities(data, n::Integer) =
 probabilities(Dataset(data), VisitationFrequency(RectangularBinning(n)))
+
+# Convenience dispatch for when a float is given.
+probabilities(data, ε::AbstractFloat) = probabilities(Dataset(data), ε)
 
 # The following is originally from ChaosTools.jl
 probabilities(data::AbstractDataset, ε::AbstractFloat) = _non0hist(data, ε)[1]
@@ -91,7 +94,7 @@ function _non0hist(data::AbstractDataset{D, T}, ε::AbstractFloat) where {D, T<:
 
     # Map each datapoint to its bin edge and sort the resulting list:
     bins = map(point -> floor.(Int, (point - mini)/ε), data)
-    sort!(bins, alg=QuickSort)
+    sort!(bins; alg=QuickSort)
 
     # Fill the histogram by counting consecutive equal bins:
     prev_bin, count = bins[1], 0
