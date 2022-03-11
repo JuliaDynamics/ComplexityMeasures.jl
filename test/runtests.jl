@@ -18,6 +18,7 @@ using Neighborhood: KDTree, BruteForce
     @test Entropies._non0hist(D2)|> sum ≈ 1.0
     x = rand(100)
     @test genentropy(x, 100) ≠ NaN
+    @test genentropy(x, 0.1) ≠ NaN
 end
 
 @testset "Shorthand" begin
