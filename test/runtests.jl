@@ -289,10 +289,12 @@ end
         x = sin.(t .+  cos.(t/0.1)) .- 0.1;
 
         @testset "Wavelet internals" begin
-            wl = WT.Daubechies{4}()
-            W = Entropies.get_modwt(x)
+            wl = WT.Haar()
+            W = Entropies.get_modwt(x, wl)
             @test size(W, 2) == floor(Int, log2(length(x)))
-
+            # Test that we can resonstruct original signal from decomposition.
+            # Note: this only works for the Haar wavelet.
+            @test all(abs.(([sum(W[t, :]) for t = 1:N] .- x) .< 1e-8))
             @test Entropies.get_modwt(x) isa AbstractArray{<:Real, 2}
             @test Entropies.get_modwt(x, wl) isa AbstractArray{<:Real, 2}
 
