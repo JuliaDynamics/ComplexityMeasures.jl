@@ -22,6 +22,6 @@ end
 function genentropy(x::AbstractDataset{D, T}, est::Kraskov; base::Real = MathConstants.e) where {D, T}
     N = length(x)
     ρs = maximum_neighbor_distances(x, est)
-    h = -digamma(est.k) + digamma(N) + log(base, ball_volume(D)) + D/N*sum(log.(base, ρs))
+    h = -digamma(est.k) + digamma(N) + log(base, ball_volume(D)) + D/N*sum(log.(base, ρs .* 2))
     return h
 end
