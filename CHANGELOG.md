@@ -1,5 +1,7 @@
 # CHANGELOG
 Changelog is kept with respect to version 0.11 of Entropies.jl.
+## 1.2
+* Bug fix in `Kraskov` estimator.
 
 ## 1.1
 * Introduce convenience function `permentropy`.
