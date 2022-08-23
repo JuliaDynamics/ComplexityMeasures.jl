@@ -262,8 +262,8 @@ end
         D = Dataset(rand(100, 3))
 
         @testset "Counting visits" begin
-            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
-            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
+            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{<:AbstractVector{Int}}
+            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{<:AbstractVector{Int}}
         end
 
         binnings = [
