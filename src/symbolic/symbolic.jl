@@ -5,6 +5,7 @@ A probability estimator based on symbolization.
 """
 abstract type SymbolicProbabilityEstimator <: ProbabilitiesEstimator end
 
+include("interface.jl")
 include("utils.jl")
 include("SymbolicPermutation.jl")
 include("SymbolicWeightedPermutation.jl")
