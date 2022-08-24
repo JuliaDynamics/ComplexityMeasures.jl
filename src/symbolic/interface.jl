@@ -22,7 +22,7 @@ state vector as a unique integer in the range ``1, 2, \\ldots, m-1``, using
 [`encode_motif`](@ref).
 
 Optionally, the in-place `symbolize!` can be used to put symbols in a pre-allocated
-integer vector `s`, where `length(s) == length(s)`.
+integer vector `s`, where `length(s) == length(x)`.
 
 ## Examples
 
