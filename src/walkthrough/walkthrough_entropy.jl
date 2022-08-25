@@ -6,7 +6,6 @@ export WalkthroughEntropy
 
 The walkthrough entropy method (Stoop et al., 2021)[^Stoop2021].
 
-
 Does not work with `genentropy`, but combination with `entropygenerator`, we can use
 this estimator to compute walkthrough entropy for multiple `n` with a single initialization
 step (instead of initializing once per `n`).
@@ -62,7 +61,6 @@ function visitations_per_position(x, unique_symbols)
     return 𝐧
 end
 
-
 function entropygenerator(x, method::WalkthroughEntropy, rng = Random.default_rng())
     # 𝐔: unique elements in `x`
     # 𝐍: the corresponding frequencies (𝐍[i] = # times 𝐔[i] occurs).
@@ -79,58 +77,6 @@ function entropygenerator(x, method::WalkthroughEntropy, rng = Random.default_rn
     )
 
     return EntropyGenerator(method, x, init, rng)
-end
-
-# NB: this function, and the following function, don't actually work when n is large - the
-# factorial blows up. I've just implemented them for the sake of understanding the formulas.
-function outer_weight(n::Int, 𝐍)
-    factorial(BigInt(n)) / prod(factorial.(BigInt.(𝐍)))
-end
-
-# Also doesn't work in practice, because factorial(N - n) blows up.
-function inner_weight(n::Int, N::Int, 𝐍, 𝐧ₙ)
-    s = length(𝐍)
-
-    denominator_elements = zeros(s)
-
-    for j = 1:s
-        # The total number of occurrences for the j-th state.
-        Nⱼ = 𝐍[j]
-
-        # The number of times the j-th state has been visited up to position `n`
-        nⱼ = 𝐧ₙ[j]
-
-        denominator_elements[j] = factorial(BigInt(Nⱼ - nⱼ))
-    end
-    return factorial(BigInt(N) - BigInt(n)) / prod(denominator_elements)
-end
-
-"""
-    walkthrough_prob(x, n::Int)
-
-The walk-through probability (Stoop et al., 2021)[^Stoop2021] for a symbol sequence `x`
-(can be a string, or categorical sequence (e.g. integer vector or `Dataset` of state
-vectors).
-
-- `n`: The position within the sequence, where `n ∈ [1, 2, …, N]` and `N` is the total
-    number of elements in the sequence.
-
-[^Stoop2021]: Stoop, R. L., Stoop, N., Kanders, K., & Stoop, R. (2021). Excess entropies suggest the physiology of neurons to be primed for higher-level computation. Physical Review Letters, 127(14), 148101.
-"""
-function walkthrough_prob(x, n::Int, 𝐍, 𝐧)
-    𝐧ₙ = 𝐧[n]
-    N = length(x)
-
-    𝐏 = 𝐍 ./ N
-
-    # First weight is simple.
-    w1 = outer_weight(n, 𝐍)
-    w2 = inner_weight(n, N, 𝐍, 𝐧ₙ)
-
-    c2 = [(pⱼ^nⱼ) * w2 for (pⱼ, nⱼ) in zip(𝐏, 𝐧ₙ)]
-    c3 = [pⱼ^(𝐧[end][j] - 𝐧[n][j]) for (j, pⱼ) in enumerate(𝐏)]
-
-    return w1 * prod(c2) * prod(c3)
 end
 
 function conditional_walkprob(n::Int, N::Int, 𝐍, 𝐧)
