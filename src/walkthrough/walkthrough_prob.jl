@@ -23,7 +23,8 @@ function inner_weight(n::Int, N::Int, 𝐍, 𝐧ₙ)
 end
 
 """
-    walkthrough_prob(x, n::Int)
+    walkthrough_prob(x, n::Int, 𝐍, 𝐧)
+    walkthrough_prob(x, n::Int, g::EntropyGenerator{WalkthroughEntropy})
 
 The walk-through probability (Stoop et al., 2021)[^Stoop2021] for a symbol sequence `x`
 (can be a string, or categorical sequence (e.g. integer vector or `Dataset` of state
@@ -31,6 +32,9 @@ vectors).
 
 - `n`: The position within the sequence, where `n ∈ [1, 2, …, N]` and `N` is the total
     number of elements in the sequence.
+- `𝐍`: a vector of counts (frequencies) for each unique state in `x`.
+- `𝐧`: a vector of vectors, where inner vectors all have `length(unique(x))` elements,
+    where `𝐧[i][j]` counts the number of times unique state `j` has appeared in `x[1:i]`.
 
 [^Stoop2021]: Stoop, R. L., Stoop, N., Kanders, K., & Stoop, R. (2021). Excess entropies suggest the physiology of neurons to be primed for higher-level computation. Physical Review Letters, 127(14), 148101.
 """
@@ -48,4 +52,8 @@ function walkthrough_prob(x, n::Int, 𝐍, 𝐧)
     c3 = [pⱼ^(𝐧[end][j] - 𝐧[n][j]) for (j, pⱼ) in enumerate(𝐏)]
 
     return w1 * prod(c2) * prod(c3)
+end
+
+function walkthrough_prob(x, n, g::EntropyGenerator{<:WalkthroughEntropy})
+    walkthrough_prob(x, n, g.init.𝐍, g.init.𝐧)
 end
