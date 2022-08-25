@@ -1,5 +1,7 @@
 module Entropies
     include("core.jl")
+    include("api.jl")
+    include("utils.jl")
     include("histogram_estimation.jl")
     include("counting_based/CountOccurrences.jl")
     include("symbolic/symbolic.jl")
@@ -7,4 +9,5 @@ module Entropies
     include("kerneldensity/kerneldensity.jl")
     include("wavelet/wavelet.jl")
     include("nearest_neighbors/nearest_neighbors.jl")
+    include("excess/walkthrough_entropy.jl")
 end

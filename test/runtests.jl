@@ -262,8 +262,8 @@ end
         D = Dataset(rand(100, 3))
 
         @testset "Counting visits" begin
-            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
-            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
+            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{<:AbstractVector}
+            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{<:AbstractVector}
         end
 
         binnings = [
@@ -352,5 +352,14 @@ end
 
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
         end
+    end
+
+    @testset "Walkthrough entropy" begin
+        x = "ab"^10
+        @test WalkthroughEntropy() isa WalkthroughEntropy
+        @test walkthrough_entropy(x, 5) isa Float64
+        eg = entropygenerator(x, WalkthroughEntropy())
+        @test eg isa EntropyGenerator
+        @test [eg(n) for n in 1:length(x)] isa Vector{Float64}
     end
 end

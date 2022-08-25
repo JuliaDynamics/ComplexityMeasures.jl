@@ -36,6 +36,12 @@ ProbabilitiesEstimator
 Entropies.genentropy
 ```
 
+## Reusable entropy generator
+
+```@docs
+entropygenerator
+```
+
 ## Fast histograms
 
 ```@docs

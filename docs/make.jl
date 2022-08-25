@@ -42,7 +42,8 @@ PAGES = [
         "Permutation.md",
         "NearestNeighbors.md",
         "NaiveKernel.md",
-        "TimeScaleMODWT.md"
+        "TimeScaleMODWT.md",
+        "Walkthrough.md"
     ],
     "Non-exported" => "nonexported.md"
 ]
