@@ -145,6 +145,8 @@ function conditional_walkprob(n::Int, N::Int, 𝐍, 𝐧)
     end
 end
 
+# TODO: normalization does nothing at the moment, but is only needed for excess entropy,
+# so this doesn't affect the walkthrough entropy. See comment inside function.
 function _walkthrough_entropy(n::Int, N::Int, 𝐍, 𝐧; length_normalize = false,
         base = MathConstants.e)
 
@@ -153,8 +155,8 @@ function _walkthrough_entropy(n::Int, N::Int, 𝐍, 𝐧; length_normalize = fal
         p = conditional_walkprob(n, N, 𝐍, 𝐧)
         return -log(base, p)
     else
-         # P(𝐧|𝐍)
-         p = conditional_walkprob(n, N, 𝐍, 𝐧)
+        # P(𝐧|𝐍)
+        p = conditional_walkprob(n, N, 𝐍, 𝐧)
 
         # NB: Not sure about the normalization step.
         # Why?
@@ -169,11 +171,9 @@ function _walkthrough_entropy(n::Int, N::Int, 𝐍, 𝐧; length_normalize = fal
         # formula is used). However, 𝔼(𝐧) is in general not an integer vector, because 𝐩 is
         # a probability vector, so the integer-vector product n𝐩 yields a vector of floats.
         #
-        # I'm not exactly sure what they do in the original implementation, but here I'll
-        # just
-        #𝐄𝐧 = [ceil(StatsBase.mean(nᵢ)) for nᵢ in 𝐧]
-        p𝐄 = conditional_walkprob(n, N, 𝐍, 𝐧)
-        -log(base, p / N)
+        #𝐄𝐧 = [ceil(Int, StatsBase.mean(nᵢ)) for nᵢ in 𝐧]
+        #p𝐄 = conditional_walkprob(n, N, 𝐍, 𝐧)
+        -log(base, p)
     end
 end
 
