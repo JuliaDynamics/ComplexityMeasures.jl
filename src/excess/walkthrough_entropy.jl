@@ -221,9 +221,18 @@ julia> walkthrough_entropy(x, 5)
 
 [^Stoop2021]: Stoop, R. L., Stoop, N., Kanders, K., & Stoop, R. (2021). Excess entropies suggest the physiology of neurons to be primed for higher-level computation. Physical Review Letters, 127(14), 148101.
 """
-function walkthrough_entropy(x, n::Int; base = MathConstants.e)
+function walkthrough_entropy(x, n::J, base = MathConstants.e) where {J <: Integer}
     g = entropygenerator(x, WalkthroughEntropy())
     # The length-normalized walkthrough entropy is the excess entropy, so here we never
     # normalize.
     return g(n; base = base, length_normalize = false)
+end
+
+function walkthrough_entropy(x, n::AbstractVector{J};
+        base = MathConstants.e) where {J <: Integer}
+
+    g = entropygenerator(x, WalkthroughEntropy())
+    # The length-normalized walkthrough entropy is the excess entropy, so here we never
+    # normalize.
+    return [g(nᵢ; base = base, length_normalize = false) for nᵢ in n]
 end
