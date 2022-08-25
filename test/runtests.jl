@@ -358,9 +358,9 @@ end
         x = "abc"^5
         eg = entropygenerator(x, WalkthroughEntropy())
         eg.init.𝐍
-        wp = walkthrough_prob(x, 3, eg)
-        ow = outer_weight(3, eg.init.𝐍)
-        iw = inner_weight(3, length(x), eg.init.𝐍, eg.init.𝐧[3])
+        wp = Entropies.walkthrough_prob(x, 3, eg)
+        ow = Entropies.outer_weight(3, eg.init.𝐍)
+        iw = Entropies.inner_weight(3, length(x), eg.init.𝐍, eg.init.𝐧[3])
         @test wp |> typeof <: BigFloat
         @test ow |> typeof <: BigFloat
         @test iw |> typeof <: BigFloat
