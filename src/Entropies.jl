@@ -8,6 +8,6 @@ module Entropies
     include("kerneldensity/kerneldensity.jl")
     include("wavelet/wavelet.jl")
     include("nearest_neighbors/nearest_neighbors.jl")
-    include("excess/walkthrough_entropy.jl")
+    include("walkthrough/walkthrough_entropy.jl")
     include("dispersion/dispersion_entropy.jl")
 end
