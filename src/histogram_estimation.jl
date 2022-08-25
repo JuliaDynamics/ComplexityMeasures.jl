@@ -1,7 +1,11 @@
+using DelayEmbeddings
+
 export binhist
 
 probabilities(x) = _non0hist(x)
-function _non0hist(x)
+
+# Frequencies are needed elsewhere in the package too, so keep in its own method.
+function _non0hist_frequencies(x)
     L = length(x)
 
     hist = Vector{Float64}()
@@ -25,13 +29,21 @@ function _non0hist(x)
 
     # Shrink histogram capacity to fit its size:
     sizehint!(hist, length(hist))
-    return Probabilities(hist ./ L)
+    return hist
 end
+
+function _non0hist(x, N)
+    hist = _non0hist_frequencies(x)
+    return Probabilities(hist ./ N)
+end
+
+function _non0hist(x)
+    return _non0hist(x, length(x))
+end
+
 _non0hist(x::AbstractDataset) = _non0hist(x.data)
 probabilities(x::AbstractDataset) = _non0hist(x.data)
-
-
-using DelayEmbeddings
+_non0hist(x::AbstractDataset, N) = _non0hist(x.data, N)
 
 # Get both unique elements and their counts
 function vec_countmap(x, T = BigInt)

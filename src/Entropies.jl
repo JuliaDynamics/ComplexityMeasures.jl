@@ -9,4 +9,5 @@ module Entropies
     include("wavelet/wavelet.jl")
     include("nearest_neighbors/nearest_neighbors.jl")
     include("excess/walkthrough_entropy.jl")
+    include("dispersion/dispersion_entropy.jl")
 end

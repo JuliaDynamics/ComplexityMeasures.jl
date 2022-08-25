@@ -40,6 +40,7 @@ PAGES = [
         "VisitationFrequency.md",
         "TransferOperator.md",
         "Permutation.md",
+        "DispersionEntropy.md",
         "NearestNeighbors.md",
         "NaiveKernel.md",
         "TimeScaleMODWT.md",

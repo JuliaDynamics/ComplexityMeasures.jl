@@ -262,8 +262,8 @@ end
         D = Dataset(rand(100, 3))
 
         @testset "Counting visits" begin
-            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{<:AbstractVector}
-            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{<:AbstractVector}
+            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{<:AbstractVector{Int}}
+            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{<:AbstractVector{Int}}
         end
 
         binnings = [
@@ -361,5 +361,28 @@ end
         eg = entropygenerator(x, WalkthroughEntropy())
         @test eg isa EntropyGenerator
         @test [eg(n) for n in 1:length(x)] isa Vector{Float64}
+    end
+    
+    @testset "Dispersion entropy" begin
+        # Li et al. (2018) recommends using at least 1000 data points when estimating
+        # dispersion entropy.
+        x = rand(1000)
+        n_categories = 4
+        m = 4
+        τ = 1
+        s = GaussianSymbolization(n_categories = n_categories)
+
+        # Symbols should be in the set [1, 2, …, n_categories].
+        symbols = Entropies.symbolize(x, s)
+        @test all([s ∈ collect(1:n_categories) for s in symbols])
+
+        # Dispersion patterns should have a normalized histogram that sums to 1.0.
+        dispersion_patterns = DelayEmbeddings.embed(symbols, m, τ)
+        hist = Entropies.dispersion_histogram(dispersion_patterns, length(x), m, τ)
+        @test sum(hist) ≈ 1.0
+
+        de = dispersion_entropy(x, s, m = 4, τ = 1)
+        @test typeof(de) <: Real
+        @test de >= 0.0
     end
 end
