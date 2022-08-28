@@ -376,4 +376,22 @@ end
         @test typeof(de) <: Real
         @test de >= 0.0
     end
+
+    @testset "Sample entropy" begin
+        # A signal with periodicity
+        x = repeat(rand(10), 200)
+
+        # Uniform noise
+        y = rand(2000)
+
+        # Regular signals should have lower SampEn than irregular signals (for fixed r)
+        sx = sample_entropy(x, r = 0.25, m = 2)
+        sy = sample_entropy(y, r = 0.25, m = 2)
+
+        @test sx isa Float64
+        @test sy isa Float64
+        @test sx < sy
+
+
+    end
 end
