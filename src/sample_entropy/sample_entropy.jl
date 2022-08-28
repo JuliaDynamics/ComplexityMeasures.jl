@@ -15,20 +15,19 @@ SampEn(m, r) = \\lim_{N \\to \\infty} [-\\ln \\dfrac{A^{m+1}(r)}{B^m(r)}].
 
 ## Estimation
 
-To estimate ``SampEn(m,r)``,
-we first construct from `x` the `N-m-1` possible `m`-dimensional
+To estimate ``SampEn(m,r)``, first construct from `x` the `N-m-1` possible `m`-dimensional
 embedding vectors ``{\\bf x}_i^m = (x(i), x(i+1), \\ldots, x(i+m-1))``. Next, compute
 ``B^{m}(r) = \\sum_{i = 1}^{N-m} B_i^{m}(r)``, where ``B_i^{m}(r)`` is the
 number of vectors within radius `r` of ``{\\bf x}_i`` (without self-inclusion).
 
-Finally, the procedure is repeated, but with embedding vectors of dimension `m + 1`, and
+Finally, repeat the procedure, but with embedding vectors of dimension `m + 1`, and
 compute ``A^{m+1}(r) = \\sum_{i = 1}^{N-m} A_i^{m+1}(r)``, where ``A_i^{m+1}(r)`` is the
 number of vectors within radius `r` of ``{\\bf x}_i^{m+1}``.
 
-We then estimate the sample entropy to the given `base` as
+Sample entropy, to the given `base`, is then estimated as
 
 ```math
-SampEn(m,r) = -\\log{\\dfrac{A^{m+1}(r)}{B^{m}(r)}}.
+SampEn(m,r) = -\\log_{base}{\\dfrac{A^{m+1}(r)}{B^{m}(r)}}.
 ```
 
 ## Data requirements
@@ -39,9 +38,6 @@ too short, it is possible that no radius-`r` neighbors are found, so that
 returned.
 
 ## Examples
-
-Sample entropy is lower for more regular signals, and higher for more irregular signals,
-for example:
 
 ```jldoctest; setup = :(using Entropies)
 julia> x = repeat([0.84, 0.52, 0.46, 0.6], 3);
