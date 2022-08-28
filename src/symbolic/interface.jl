@@ -62,15 +62,15 @@ scheme `s`.
 ```jldoctest; setup = :(using Entropies)
 julia> x = [0.1, 0.4, 0.7, -2.1, 8.0, 0.9, -5.2];
 
-julia> Entropies.symbolize(x, GaussianSymbolization(n_categories = 5))
+julia> Entropies.symbolize(x, GaussianSymbolization(5))
 7-element Vector{Int64}:
+ 3
+ 3
+ 3
  2
- 3
- 3
- 1
  5
  3
- 0
+ 1
 ```
 
 See also: [`GaussianSymbolization`](@ref).
