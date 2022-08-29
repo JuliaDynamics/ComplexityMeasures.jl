@@ -387,11 +387,11 @@ end
         # Regular signals should have lower SampEn than irregular signals (for fixed r)
         sx = sample_entropy(x, r = 0.25, m = 2)
         sy = sample_entropy(y, r = 0.25, m = 2)
+        sx_norm = sample_entropy(x, r = 0.25, m = 2, normalize = true)
 
         @test sx isa Float64
         @test sy isa Float64
         @test sx < sy
-
-
+        @test 0.0 <= sx_norm <= 1.0
     end
 end

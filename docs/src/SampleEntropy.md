@@ -18,9 +18,9 @@ x_periodic .= (x_periodic .- mean(x_periodic)) ./ std(x_periodic)
 rs = 10 .^ range(-1, 0, length = 30)
 base = 2
 m = 2
-hs_𝒰 = [sample_entropy(x_𝒰, m = m, r = r, base = base) for r in rs]
-hs_𝒩 = [sample_entropy(x_𝒩, m = m, r = r, base = base) for r in rs]
-hs_periodic = [sample_entropy(x_periodic, m = m, r = r, base = base) for r in rs]
+hs_𝒰 = [sample_entropy(x_𝒰, m = m, r = r) for r in rs]
+hs_𝒩 = [sample_entropy(x_𝒩, m = m, r = r) for r in rs]
+hs_periodic = [sample_entropy(x_periodic, m = m, r = r) for r in rs]
 
 f = figure(figsize = (4, 4))
 subplot(111)
