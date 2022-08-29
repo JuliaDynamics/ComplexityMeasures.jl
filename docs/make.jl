@@ -43,7 +43,8 @@ PAGES = [
         "DispersionEntropy.md",
         "NearestNeighbors.md",
         "NaiveKernel.md",
-        "TimeScaleMODWT.md"
+        "TimeScaleMODWT.md",
+        "ApproximateEntropy.md"
     ],
     "Non-exported" => "nonexported.md"
 ]

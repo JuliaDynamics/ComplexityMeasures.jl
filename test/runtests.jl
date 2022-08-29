@@ -3,6 +3,7 @@ using Entropies
 using DelayEmbeddings
 using Wavelets
 using StaticArrays
+using StatsBase
 using Neighborhood: KDTree, BruteForce
 
 @testset "Histogram estimation" begin
@@ -375,5 +376,23 @@ end
         de = dispersion_entropy(x, s, m = 4, τ = 1)
         @test typeof(de) <: Real
         @test de >= 0.0
+    end
+
+    @testset "Approximate entropy" begin
+        x = rand(100)
+        N = length(x)
+        r = StatsBase.std(x)
+        m = 2 # embedding dimension
+        base = MathConstants.e
+
+        # Counting function
+        ϕᵐ = Entropies.ϕmr_tree(x, m, r, N, base = base)
+        ϕᵐ⁺¹ =  Entropies.ϕmr_tree(x, m + 1, r, N, base = base)
+        @test ϕᵐ isa T where T <: Real
+        @test ϕᵐ⁺¹ isa T where T <: Real
+
+        # Approximate entropy
+        ap_en = approx_entropy(x, m = m, r = r, base = base)
+        @test ap_en isa T where T <: Real
     end
 end
