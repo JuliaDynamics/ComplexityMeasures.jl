@@ -5,7 +5,7 @@ sample_entropy
 ```
 
 ```@example
-using PyPlot, Distributions
+using Entropies, PyPlot, Distributions
 N = 2000
 x_𝒰 = rand(N)
 x_𝒩 = rand(Normal(0, 3), N)
@@ -22,7 +22,7 @@ hs_𝒰 = [sample_entropy(x_𝒰, m = m, r = r, base = base) for r in rs]
 hs_𝒩 = [sample_entropy(x_𝒩, m = m, r = r, base = base) for r in rs]
 hs_periodic = [sample_entropy(x_periodic, m = m, r = r, base = base) for r in rs]
 
-f = figure(figsize = (5,6))
+f = figure(figsize = (4, 4))
 subplot(111)
 plot(rs, hs_𝒰, label = "Uniform noise, U(0, 1)")
 plot(rs, hs_𝒩, label = "Gaussian noise, N(0, 1)")
@@ -32,7 +32,7 @@ ylabel("h")
 legend()
 xscale("log")
 tight_layout()
-PyPlot.savefig("sample_entropy.png")
+PyPlot.savefig("sample_entropy.png") # hide
 ```
 
-![](sample_entropy.png)
+![Sample entropy](sample_entropy.png)
