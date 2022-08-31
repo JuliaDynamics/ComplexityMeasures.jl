@@ -376,4 +376,26 @@ end
         @test typeof(de) <: Real
         @test de >= 0.0
     end
+
+    @testset "Symbolic 2D" begin
+        x = [1 2 1; 8 3 4; 6 7 5]
+        est = SymbolicPermutation2D(m = 2)
+
+        # Generic tests
+        ps = probabilities(x, est)
+        @test ps isa Probabilities
+
+        probgen = probabilitygenerator(x, est)
+        @test probgen isa ProbabilityGenerator
+        @test probgen(x) isa Probabilities
+
+        hgen = entropygenerator(x, est)
+        @test hgen isa EntropyGenerator
+        @test hgen(x, normalize = true) isa T where T <: Real
+        @test hgen(x, normalize = false) isa T where T <: Real
+
+        # test case from Ribeiro et al, 2012
+        h = genentropy(x, est, base = MathConstants.e)
+        @test round(h, digits = 2) ≈ 0.33
+    end
 end
