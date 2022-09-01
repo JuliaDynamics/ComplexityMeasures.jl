@@ -10,7 +10,7 @@ include("utils.jl")
 include("SymbolicPermutation.jl")
 include("SymbolicWeightedPermutation.jl")
 include("SymbolicAmplitudeAware.jl")
-include("2d/symbolic_2d.jl")
+include("higher_dim/symbolic_higherdim.jl")
 
 """
     permentropy(x; τ = 1, m = 3, base = MathConstants.e)

@@ -377,9 +377,11 @@ end
         @test de >= 0.0
     end
 
-    @testset "Symbolic 2D" begin
+    @testset "Permutation stencil 2D" begin
         x = [1 2 1; 8 3 4; 6 7 5]
-        est = SymbolicPermutation2D(m = 2)
+        # Re-create the Ribeiro et al, 2012 using stencil instead of specifying m
+        stencil = [true true; true true]
+        est = PermutationStencil(stencil)
 
         # Generic tests
         ps = probabilities(x, est)
@@ -388,11 +390,13 @@ end
         probgen = probabilitygenerator(x, est)
         @test probgen isa ProbabilityGenerator
         @test probgen(x) isa Probabilities
+        @test_throws ArgumentError probgen()
 
         hgen = entropygenerator(x, est)
         @test hgen isa EntropyGenerator
         @test hgen(x, normalize = true) isa T where T <: Real
         @test hgen(x, normalize = false) isa T where T <: Real
+        @test_throws ArgumentError hgen()
 
         # test case from Ribeiro et al, 2012
         h = genentropy(x, est, base = MathConstants.e)
