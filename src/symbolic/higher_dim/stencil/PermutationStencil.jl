@@ -142,7 +142,7 @@ struct PermutationStencil{N} <: ProbabilitiesEstimator
 
     # Square blocks of size `blocksize*blocksize*...` in `N` dimensions.
     function PermutationStencil(blocksize::Int, N::Int = 2)
-        return PermutationStencil(ones(Int, tuple(repeat([m], N)...)))
+        return PermutationStencil(ones(Int, tuple(repeat([blocksize], N)...)))
     end
 end
 
@@ -172,5 +172,4 @@ function entropygenerator(x::AbstractArray{T, N}, method::PermutationStencil{N},
     return EntropyGenerator(method, pg, x, init, rng)
 end
 
-D = 2
-m = 2
+include("stencil_2d.jl")
