@@ -1,4 +1,4 @@
-
+export disequilibriumgenerator
 
 function probabilitygenerator(x::AbstractArray{T, 2}, method::PermutationStencil{2},
         rng = Random.default_rng()) where T
@@ -112,4 +112,26 @@ function genentropy(x::AbstractArray{T, 2}, est::PermutationStencil{2};
         q = 1, base = MathConstants.e, normalize = true) where {T}
     eg = entropygenerator(x, est)
     eg(x, base = base, q = q, normalize = normalize)
+end
+
+
+function _qmax(dx, dy; base = MathConstants.e)
+    dxb, dyb = BigInt(dx), BigInt(dy)
+    f = factorial(dxb*dyb)
+    qmax = -0.5 * (
+            (f + 1)/f * log(base, f + 1) -
+            2 * log(base, 2 * f) + log(base, f)
+        )
+    return convert(Float64, qmax)
+end
+
+function disequilibrium(x::AbstractArray{T, 2}, est::PermutationStencil{2};
+        base = MathConstants.e) where T
+
+    dy, dx = size(est.stencil)
+    diseq_gen = disequilibriumgenerator(x, est)
+    𝐏 = diseq_gen.probability_generator(x)
+    N = length(𝐏)
+    𝐏ₑ = [1/N for i = 1:N]
+    return _compute_q(𝐏, 𝐏ₑ, base = base) / _qmax(dx, dy, base = base)
 end
