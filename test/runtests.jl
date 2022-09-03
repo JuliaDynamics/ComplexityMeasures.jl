@@ -376,4 +376,9 @@ end
         @test typeof(de) <: Real
         @test de >= 0.0
     end
+
+    @testset "Tsallis" begin
+        p = Probabilities(repeat([1/5], 5))
+        @assert round(tsallisentropy(p, q = -1/2, k = 1), digits = 2) ≈ 6.79
+    end
 end
