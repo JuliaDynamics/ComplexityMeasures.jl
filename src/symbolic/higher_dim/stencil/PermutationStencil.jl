@@ -141,7 +141,7 @@ struct PermutationStencil{N} <: ProbabilitiesEstimator
     end
 
     # Square blocks of size `blocksize*blocksize*...` in `N` dimensions.
-    function PermutationStencil(blocksize::Int, N::Int = 2)
+    function PermutationStencil(blocksize::Int, N::Int)
         return PermutationStencil(ones(Int, tuple(repeat([blocksize], N)...)))
     end
 end
