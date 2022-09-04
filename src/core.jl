@@ -6,7 +6,7 @@ export probabilities, probabilities!
 export genentropy, genentropy!
 export Dataset, dimension
 
-const Vector_or_Dataset = Union{AbstractVector, AbstractDataset}
+const Array_or_Dataset = Union{AbstractArray, AbstractDataset}
 
 """
     Probabilities(x) → p
@@ -49,7 +49,7 @@ abstract type ProbabilitiesEstimator end
 const ProbEst = ProbabilitiesEstimator # shorthand
 
 """
-    probabilities(x::Vector_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
+    probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
 
 Calculate probabilities representing `x` based on the provided
 estimator and return them as a [`Probabilities`](@ref) container (`Vector`-like).
@@ -58,7 +58,7 @@ documentation of the individual estimators for more.
 
 The configuration options are always given as arguments to the chosen estimator.
 
-    probabilities(x::Vector_or_Dataset, ε::AbstractFloat) → p::Probabilities
+    probabilities(x::Array_or_Dataset, ε::AbstractFloat) → p::Probabilities
 
 Convenience syntax which provides probabilities for `x` based on rectangular binning
 (i.e. performing a histogram). In short, the state space is divided into boxes of length
@@ -71,11 +71,11 @@ This allows computation of probabilities (histograms) of high-dimensional
 datasets and with small box sizes `ε` without memory overflow and with maximum performance.
 To obtain the bin information along with `p`, use [`binhist`](@ref).
 
-    probabilities(x::Vector_or_Dataset, n::Integer) → p::Probabilities
+    probabilities(x::Array_or_Dataset, n::Integer) → p::Probabilities
 Same as the above method, but now each dimension of the data is binned into `n::Int` equal
 sized bins instead of bins of length `ε::AbstractFloat`.
 
-    probabilities(x::Vector_or_Dataset) → p::Probabilities
+    probabilities(x::Array_or_Dataset) → p::Probabilities
 Directly count probabilities from the elements of `x` without any discretization,
 binning, or other processing (mostly useful when `x` contains categorical or integer data).
 """
@@ -97,7 +97,7 @@ Compute the generalized order-`q` entropy of some probabilities
 returned by the [`probabilities`](@ref) function. Alternatively, compute entropy
 from pre-computed `Probabilities`.
 
-    genentropy(x::Vector_or_Dataset, est; q = 1.0, base)
+    genentropy(x::Array_or_Dataset, est; q = 1.0, base)
 
 A convenience syntax, which calls first `probabilities(x, est)`
 and then calculates the entropy of the result (and thus `est` can be a
@@ -152,7 +152,7 @@ end
 genentropy(x::AbstractArray{<:Real}) =
     error("For single-argument input, do `genentropy(Probabilities(x))` instead.")
 
-function genentropy(x::Vector_or_Dataset, est; q = 1.0, α = nothing, base = MathConstants.e)
+function genentropy(x::Array_or_Dataset, est; q = 1.0, α = nothing, base = MathConstants.e)
     if α ≠ nothing
         @warn "Keyword `α` is deprecated in favor of `q`."
         q = α
