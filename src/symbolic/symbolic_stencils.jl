@@ -60,6 +60,9 @@ function SpatiotemporalPermutation(
     else
         # collect maximum offsets in each dimension for limiting ranges
         maxoffsets = [maximum(s[i] for s in stencil) for i in 1:D]
+        # Safety check
+        minoffsets = [minimum(s[i] for s in stencil) for i in 1:D]
+        @assert all(≥(0), minoffsets) "Offsets in stencil must be ≥ 0!"
         ranges = Iterators.product([1:(arraysize[i]-maxoffsets[i]) for i in 1:D]...)
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
@@ -76,11 +79,12 @@ function pixels_in_stencil(pixel, spatperm::SpatiotemporalPermutation{D,false}) 
 end
 
 function pixels_in_stencil(pixel, spatperm::SpatiotemporalPermutation{D,true}) where {D}
-    arraysize = spatperm.arraysize
     @inbounds for i in eachindex(spatperm.stencil)
         # It's annoying that we have to change to tuple and then to CartesianIndex
         # because iteration over cartesian indices is not allowed. But oh well.
-        spatperm.viewer[i] = CartesianIndex{D}(mod1.(Tuple(spatperm.stencil[i] + pixel), arraysize))
+        spatperm.viewer[i] = CartesianIndex{D}(
+            mod1.(Tuple(spatperm.stencil[i] + pixel), spatperm.arraysize)
+        )
     end
     return spatperm.viewer
 end
@@ -98,13 +102,3 @@ function Entropies.probabilities!(s::AbstractVector{Int}, x, est::Spatiotemporal
     end
     return probabilities(s)
 end
-
-# %%
-stencil = CartesianIndex.([(0,1), (0,1), (1,1)])
-x = rand(50, 50)
-est = SpatiotemporalPermutation(stencil, x, false)
-p = probabilities(x, est)
-
-using BenchmarkTools
-s = zeros(Int, length(est.valid))
-@btime probabilities!($s, $x, $est)
