@@ -86,14 +86,12 @@ end
         @test Entropies.genentropy(pts, est_tree, base = 2) isa Real
     end
 
-    @testset "Permutation entropy" begin
-
-
-        @testset "Encoding and symbolization" begin
+    @testset "Symbolization" begin
+        @testset "Ordinal patterns" begin
             @test Entropies.encode_motif([2, 3, 1]) isa Int
             @test 0 <= Entropies.encode_motif([2, 3, 1]) <= factorial(3) - 1
 
-            est = SymbolicPermutation(m = 5, τ = 1)
+            scheme = OrdinalPattern(m = 5, τ = 1)
             N = 100
             x = Dataset(repeat([1.1 2.2 3.3], N))
             y = Dataset(rand(N, 5))
@@ -101,28 +99,48 @@ end
 
             # Without pre-allocation
             D = genembed(z, [0, -1, -2])
-            est = SymbolicPermutation(m = 5, τ = 2)
+            scheme = OrdinalPattern(m = 5, τ = 2)
 
-            @test Entropies.symbolize(z, est) isa Vector{<:Int}
-            @test Entropies.symbolize(D, est) isa Vector{<:Int}
+            @test Entropies.symbolize(z, scheme) isa Vector{<:Int}
+            @test Entropies.symbolize(D, scheme) isa Vector{<:Int}
 
 
             # With pre-allocation
             N = 100
             x = rand(N)
-            est = SymbolicPermutation(m = 5, τ = 2)
-            s = fill(-1, N-(est.m-1)*est.τ)
+            scheme = OrdinalPattern(m = 5, τ = 2)
+            s = fill(-1, N-(scheme.m-1)*scheme.τ)
 
             # if symbolization has occurred, s must have been filled with integers in
             # the range 0:(m!-1)
-            @test all(Entropies.symbolize!(s, x, est) .>= 0)
-            @test all(0 .<= Entropies.symbolize!(s, x, est) .< factorial(est.m))
+            @test all(Entropies.symbolize!(s, x, scheme) .>= 0)
+            @test all(0 .<= Entropies.symbolize!(s, x, scheme) .< factorial(scheme.m))
 
             m = 4
             D = Dataset(rand(N, m))
             s = fill(-1, length(D))
-            @test all(0 .<= Entropies.symbolize!(s, D, est) .< factorial(m))
+            @test all(0 .<= Entropies.symbolize!(s, D, scheme) .< factorial(m))
         end
+
+        @testset "Gaussian symbolization" begin
+             # Li et al. (2018) recommends using at least 1000 data points when estimating
+            # dispersion entropy.
+            x = rand(1000)
+            n_categories = 4
+            m = 4
+            τ = 1
+            s = GaussianSymbolization(n_categories = n_categories)
+
+            # Symbols should be in the set [1, 2, …, n_categories].
+            symbols = Entropies.symbolize(x, s)
+            @test all([s ∈ collect(1:n_categories) for s in symbols])
+        end
+
+    end
+
+    @testset "Permutation entropy" begin
+
+
 
         @testset "Pre-allocated" begin
             est = SymbolicPermutation(m = 5, τ = 1)
@@ -236,8 +254,6 @@ end
         @testset "SymbolicPermutation" begin
             est_isless = SymbolicPermutation(m = 5, τ = 1, lt = Base.isless)
             est_isless_rand = SymbolicPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
-            @test Entropies.symbolize(ts, est_isless) isa Vector{<:Int}
-            @test Entropies.symbolize(D, est_isless_rand) isa Vector{<:Int}
             @test probabilities(D, est_isless) isa Probabilities
             @test probabilities(D, est_isless_rand) isa Probabilities
         end

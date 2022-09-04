@@ -1,5 +1,6 @@
 module Entropies
     include("core.jl")
+    include("symbolization/symbolize.jl")
     include("histogram_estimation.jl")
     include("counting_based/CountOccurrences.jl")
     include("symbolic/symbolic.jl")
