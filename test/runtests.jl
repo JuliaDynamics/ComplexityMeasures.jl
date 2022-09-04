@@ -377,3 +377,5 @@ end
         @test de >= 0.0
     end
 end
+
+include("spatial_permutation_tests.jl")

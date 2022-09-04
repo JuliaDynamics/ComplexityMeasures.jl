@@ -1,5 +1,7 @@
+export SpatialSymbolicPermutation
+
 """
-    SpatiotemporalPermutation(stencil, x, periodic = true)
+    SpatialSymbolicPermutation(stencil, x, periodic = true)
 A symbolic, permutation-based probabilities/entropy estimator for spatiotemporal systems.
 The data are a high-dimensional array `x`, such as 2D [^Ribeiro2012] or 3D [^Schlemmer2018].
 This approach is also known as _Spatiotemporal Permutation Entropy_.
@@ -14,7 +16,7 @@ are allowed. For example
 data = [rand(50, 50) for _ in 1:50]
 x = data[1] # first "time slice" of a spatial system evolution
 stencil = CartesianIndex.([(0,1), (0,1), (1,1)])
-est = SpatiotemporalPermutation(stencil, x)
+est = SpatialSymbolicPermutation(stencil, x)
 ```
 Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
 (directions here correspond to the way Julia prints matrices by default).
@@ -42,13 +44,13 @@ array. If `periodic = false`, pixels whose stencil exceeds the array bounds are 
     Schlemmer et al. (2012). Spatiotemporal Permutation Entropy as a Measure for
     Complexity of Cardiac Arrhythmia. https://doi.org/10.3389/fphy.2018.00039
 """
-struct SpatiotemporalPermutation{D,P,V} <: ProbabilitiesEstimator
+struct SpatialSymbolicPermutation{D,P,V} <: ProbabilitiesEstimator
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
     valid::V
 end
-function SpatiotemporalPermutation(
+function SpatialSymbolicPermutation(
         stencil::Vector{CartesianIndex{D}}, x::AbstractArray, p::Bool = true
     ) where {D}
     # Ensure that no offset is part of the stencil
@@ -66,19 +68,19 @@ function SpatiotemporalPermutation(
         ranges = Iterators.product([1:(arraysize[i]-maxoffsets[i]) for i in 1:D]...)
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
-    SpatiotemporalPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid)
+    SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid)
 end
 
 # This source code is a modification of the code of Agents.jl that finds neighbors
 # in grid-like spaces. It's the code of `nearby_positions` in `grid_general.jl`.
-function pixels_in_stencil(pixel, spatperm::SpatiotemporalPermutation{D,false}) where {D}
+function pixels_in_stencil(pixel, spatperm::SpatialSymbolicPermutation{D,false}) where {D}
     @inbounds for i in eachindex(spatperm.stencil)
         spatperm.viewer[i] = spatperm.stencil[i] + pixel
     end
     return spatperm.viewer
 end
 
-function pixels_in_stencil(pixel, spatperm::SpatiotemporalPermutation{D,true}) where {D}
+function pixels_in_stencil(pixel, spatperm::SpatialSymbolicPermutation{D,true}) where {D}
     @inbounds for i in eachindex(spatperm.stencil)
         # It's annoying that we have to change to tuple and then to CartesianIndex
         # because iteration over cartesian indices is not allowed. But oh well.
@@ -89,12 +91,14 @@ function pixels_in_stencil(pixel, spatperm::SpatiotemporalPermutation{D,true}) w
     return spatperm.viewer
 end
 
-function Entropies.probabilities(x, est::SpatiotemporalPermutation)
+function Entropies.probabilities(x, est::SpatialSymbolicPermutation)
+    # TODO: This can be literally a call to symbolize and then
+    # calling probabilities on it. Should do once the symbolize refactoring is done.
     s = zeros(Int, length(est.valid))
     probabilities!(s, x, est)
 end
 
-function Entropies.probabilities!(s::AbstractVector{Int}, x, est::SpatiotemporalPermutation)
+function Entropies.probabilities!(s::AbstractVector{Int}, x, est::SpatialSymbolicPermutation)
     m = length(est.stencil)
     for (i, pixel) in enumerate(est.valid)
         pixels = pixels_in_stencil(pixel, est)
