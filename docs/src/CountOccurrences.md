@@ -1,5 +1,0 @@
-# CountOccurrences (counting)
-
-```@docs
-CountOccurrences
-```

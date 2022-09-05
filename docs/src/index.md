@@ -1,14 +1,16 @@
 # Entropies.jl
 
-This package provides probability and entropy estimators used for entropy computations in the [CausalityTools.jl](https://github.com/JuliaDynamics/CausalityTools.jl) and [DynamicalSystems.jl](https://github.com/JuliaDynamics/DynamicalSystems.jl) packages.
+This package provides estimators for probabilities, entropies, and complexity measures for timeseries, nonlinear dynamics and complex systems. It is used in the [CausalityTools.jl](https://github.com/JuliaDynamics/CausalityTools.jl) and [DynamicalSystems.jl](https://github.com/JuliaDynamics/DynamicalSystems.jl) packages.
 
-Most of the code in this package assumes that your data is represented by the `Dataset`-type from [`DelayEmbeddings.jl`](https://github.com/JuliaDynamics/DelayEmbeddings.jl), where each observation is a D-dimensional data point represented by a static vector. See the [`DynamicalSystems.jl` documentation](https://juliadynamics.github.io/DynamicalSystems.jl/dev/) for more info. Univariate timeseries given as
+## Input data
+
+This package assumes that your data is represented by the `Dataset`-type from [`DelayEmbeddings.jl`](https://github.com/JuliaDynamics/DelayEmbeddings.jl), where each observation is a D-dimensional data point. See the [`DynamicalSystems.jl` documentation](https://juliadynamics.github.io/DynamicalSystems.jl/dev/) for more info. Univariate timeseries given as
 `AbstractVector{<:Real}` also work with some estimators, but are treated differently
 based on which method for probability/entropy estimation is applied.
 
 ## API
 
-The main **API** of this package is contained in two functions:
+The main **API** of this package is contained in three functions:
 
 * [`probabilities`](@ref) which computes probability distributions of given datasets
 * [`genentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
@@ -16,12 +18,7 @@ The main **API** of this package is contained in two functions:
 * [`tsallisentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
     pre-computed [`Probabilities`](@ref), to calculate Tsallis entropies.
 
-These functions dispatch on subtypes of [`ProbabilitiesEstimator`](@ref), which are:
-
-```@example
-using Entropies, InteractiveUtils
-subtypes(ProbabilitiesEstimator)
-```
+These functions dispatch estimators listed [here](@ref estimators).
 
 ## Probabilities
 
@@ -32,15 +29,21 @@ probabilities!
 ProbabilitiesEstimator
 ```
 
-## Generalized entropy
+## Rényi (generalized) entropy
 
 ```@docs
 Entropies.genentropy
+```
+
+## Tsallis entropy
+
+```@docs
 Entropies.tsallisentropy
 ```
 
-## Fast histograms
+## Complexity measures
+
+Some methods in the literature estimate quantities that are "entropy-like", in the sense that they don't explicitly compute a probabilitity distribution.
 
 ```@docs
-Entropies.binhist
 ```
