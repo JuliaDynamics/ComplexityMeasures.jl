@@ -392,7 +392,11 @@ end
         @test ϕᵐ⁺¹ isa T where T <: Real
 
         # Approximate entropy
+        est = ApproximateEntropy(r = 0.1, m = 2)
+        @test genentropy(x, est; base = base) isa T where T <: Real
         ap_en = approx_entropy(x, m = m, r = r, base = base)
         @test ap_en isa T where T <: Real
+
+        @test_throws ArgumentError genentropy(Dataset(rand(100, 3)), est)
     end
 end

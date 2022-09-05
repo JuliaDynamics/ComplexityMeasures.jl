@@ -3,23 +3,55 @@ using Neighborhood
 using StatsBase
 using Distances
 
+export ApproximateEntropy
 export approx_entropy
 
 """
-    approx_entropy(x, m = 3, r = 0.5 * StatsBase.std(x), base = MathConstants.e) → ApEn
+    ApproximateEntropy(; r = 0.1, m::Int = 2)
 
-Compute the approximate entropy (ApEn; Pincus, 1991)[^Pincus1991] of the scalar-valued
-time series `x`, using embedding dimension (pattern length) `m` and tolerance radius `r`,
-using logarithms to the given `base`.
+Compute the approximate entropy (ApEn; Pincus, 1991)[^Pincus1991] of a scalar-valued
+time series, using embedding dimension (pattern length) `m` and tolerance radius `r`.
+
+The tolerance radius `r` should be determined from the input data, for example as
+some fraction of the standard deviation of the input.
+
+!!! info
+    This estimator is only available for entropy estimation.
+    Probabilities cannot be obtained directly.
 
 [^Pincus1991]: Pincus, S. M. (1991). Approximate entropy as a measure of system complexity. Proceedings of the National Academy of Sciences, 88(6), 2297-2301.
 """
-function approx_entropy(x; m = 2, r = 0.2 * StatsBase.std(x), base = MathConstants.e)
-    m >= 1 || throw(ArgumentError("m must be >= 1. Got m=$m."))
+Base.@kwdef struct ApproximateEntropy <: EntropyEstimator
+    r::Real = 0.1
+    m::Int = 2
+end
+
+function genentropy(x::AbstractVector, est::ApproximateEntropy; base = MathConstants.e)
+    est.m >= 1 || throw(ArgumentError("m must be >= 1. Got m=$(est.m)."))
     N = length(x)
-    ϕᵐ = ϕmr_tree(x, m, r, N, base = base)
-    ϕᵐ⁺¹ = ϕmr_tree(x, m + 1, r, N, base = base)
+    ϕᵐ = ϕmr_tree(x, est.m, est.r, N, base = base)
+    ϕᵐ⁺¹ = ϕmr_tree(x, est.m + 1, est.r, N, base = base)
     return ϕᵐ - ϕᵐ⁺¹
+end
+
+function genentropy(x::AbstractDataset, est::ApproximateEntropy)
+    throw(
+        ArgumentError("Approximate entropy is currently not defined for multivariate data.")
+    )
+end
+
+
+"""
+    approx_entropy(x::AbstractVector ; m = 2, r = 0.2*StatsBase.std(x), base = MathConstants.e)
+Shorthand for `genentropy(x, ApproximateEntropy(m = m, r = r); base = base)` which
+calculates the approximate entropy of for dimension `m` with tolerance radius `r`.
+
+If `r` is not specified, `r` is estimated to a recommended value based on the standard
+deviation of `x`.
+"""
+function approx_entropy(x; m = 2, r = 0.2*StatsBase.std(x), base = MathConstants.e)
+    est = ApproximateEntropy(r, m)
+    genentropy(x, est; base = base)
 end
 
 """
@@ -33,7 +65,6 @@ u = \\{{\\bf u}_n \\}_{n = 1}^{N - k + 1} =
 ```
 
 and use a tree-and-nearest-neighbor search approach to compute
-
 
 ```math
 \\phi^k(r) = \\dfrac{1}{N - k + 1} \\sum_{i}^{N - k + 1} \\log_{b}{(C_i^k(r))},

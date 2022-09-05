@@ -1,6 +1,7 @@
 # Approximate entropy
 
 ```@docs
+ApproximateEntropy
 approx_entropy
 ```
 
