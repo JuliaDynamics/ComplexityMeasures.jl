@@ -354,6 +354,28 @@ end
         end
     end
 
+    @testset begin "Walktrough probability"
+        x = "abc"^5
+        eg = entropygenerator(x, WalkthroughEntropy())
+        eg.init.𝐍
+        wp = Entropies.walkthrough_prob(x, 3, eg)
+        ow = Entropies.outer_weight(3, eg.init.𝐍)
+        iw = Entropies.inner_weight(3, length(x), eg.init.𝐍, eg.init.𝐧[3])
+        @test wp |> typeof <: BigFloat
+        @test ow |> typeof <: BigFloat
+        @test iw |> typeof <: BigFloat
+    end
+
+    @testset "Walkthrough entropy" begin
+
+        x = "ab"^10
+        @test WalkthroughEntropy() isa WalkthroughEntropy
+        @test walkthrough_entropy(x, 5) isa Float64
+        eg = entropygenerator(x, WalkthroughEntropy())
+        @test eg isa EntropyGenerator
+        @test [eg(n) for n in 1:length(x)] isa Vector{Float64}
+    end
+
     @testset "Dispersion entropy" begin
         # Li et al. (2018) recommends using at least 1000 data points when estimating
         # dispersion entropy.

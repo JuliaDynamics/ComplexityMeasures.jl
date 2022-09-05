@@ -39,6 +39,12 @@ Entropies.genentropy
 Entropies.tsallisentropy
 ```
 
+## Reusable entropy generator
+
+```@docs
+entropygenerator
+```
+
 ## Fast histograms
 
 ```@docs
