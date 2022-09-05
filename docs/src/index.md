@@ -40,10 +40,3 @@ Entropies.genentropy
 ```@docs
 Entropies.tsallisentropy
 ```
-
-## Complexity measures
-
-Some methods in the literature estimate quantities that are "entropy-like", in the sense that they don't explicitly compute a probabilitity distribution.
-
-```@docs
-```
