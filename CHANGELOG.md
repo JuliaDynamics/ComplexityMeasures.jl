@@ -1,5 +1,12 @@
 # CHANGELOG
+
 Changelog is kept with respect to version 0.11 of Entropies.jl.
+
+## 1.3 
+* Introduce Tsallis entropy.
+
+## 1.2
+* Added dispersion entropy.
 
 ## 1.1
 * Introduce convenience function `permentropy`.
