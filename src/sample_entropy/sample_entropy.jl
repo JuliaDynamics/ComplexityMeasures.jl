@@ -3,6 +3,7 @@ using NearestNeighbors
 using StatsBase
 
 export sample_entropy
+export SampleEntropy
 
 # See comment in https://github.com/JuliaDynamics/Entropies.jl/pull/71 for why
 # inrangecount is used and not NeighborHood.bulkisearch.
@@ -35,21 +36,22 @@ function computeprobs(x; k::Int, m::Int, r, metric = Chebyshev())
 end
 
 """
-    sample_entropy(x; m = 2, r = StatsBase.std(x), metric = Chebyshev(),
-        normalize = false) → SampEn::Float64
+    SampleEntropy(; r = 0.1, m::Int = 2, normalize = false)
 
 Estimate the sample entropy (Richman & Moorman, 2000)[^Richman2000]
 
 ```math
-SampEn(m, r) = \\lim_{N \\to \\infty} [-\\ln \\dfrac{A^{m+1}(r)}{B^m(r)}].
+SampEn(m, r) = \\lim_{N \\to \\infty} \\left[ -\\ln \\dfrac{A^{m+1}(r)}{B^m(r)} \\right].
 ```
 
 If `normalize == true`, then the sample entropy is normalized to `[0, 1]`,
 based on the possible range of values it can take (details in Richman & Moorman, 2000).
+Always uses the natural logarithm, so `base` is ignored.
 
 ## Estimation
 
-To estimate ``SampEn(m,r)``, first construct from `x` the `N-m-1` possible `m`-dimensional
+Assume the input data is a time series `y`.
+To estimate ``SampEn(m,r)``, first construct from `y` the `N-m-1` possible `m`-dimensional
 embedding vectors ``{\\bf x}_i^m = (x(i), x(i+1), \\ldots, x(i+m-1))``. Next, compute
 ``B^{m}(r) = \\sum_{i = 1}^{N-m} B_i^{m}(r)``, where ``B_i^{m}(r)`` is the
 number of vectors within radius `r` of ``{\\bf x}_i`` (without self-inclusion).
@@ -71,18 +73,25 @@ too short, it is possible that no radius-`r` neighbors are found, so that
 `SampEn(m,r) = log(0)`. If logarithms of zeros are encountered, `0.0` is
 returned.
 
-## Examples
-
-```jldoctest; setup = :(using Entropies)
-julia> x = repeat([0.84, 0.52, 0.46], 1000);
-julia> hx = sample_entropy(x, m = 2, r = 0.3)
-(0.21833796796344462, 0.3727646139487059)
-```
+!!! info
+    This estimator is only available for entropy estimation.
+    Probabilities cannot be obtained directly.
 
 [^Richman2000]: Richman, J. S., & Moorman, J. R. (2000). Physiological time-series analysis using approximate entropy and sample entropy. American Journal of Physiology-Heart and Circulatory Physiology, 278(6), H2039-H2049.
 """
-function sample_entropy(x; m = 2, r = 0.2 * StatsBase.std(x), metric = Chebyshev(),
-        normalize = false)
+Base.@kwdef struct SampleEntropy <: EntropyEstimator
+    r::Real = 0.1
+    m::Int = 2
+    metric = Chebyshev()
+    normalize::Bool = false
+end
+
+function scale(x, min_range, max_range, min_target, max_target)
+    (x - min_range)/(max_range - min_range) * (max_target - min_target) + min_target
+end
+
+function genentropy(x::AbstractVector{T}, est::SampleEntropy; base = nothing) where T <: Real
+    m, r, metric, normalize = est.m, est.r, est.metric, est.normalize
     Aᵐ⁺¹ = computeprobs(x; k = m + 1, m = m, r = r, metric = metric)
     Bᵐ = computeprobs(x; k = m, m = m, r = r, metric = metric)
 
@@ -114,6 +123,30 @@ function sample_entropy(x; m = 2, r = 0.2 * StatsBase.std(x), metric = Chebyshev
     return sampen
 end
 
-function scale(x, min_range, max_range, min_target, max_target)
-    (x - min_range)/(max_range - min_range) * (max_target - min_target) + min_target
+function genentropy(x::AbstractDataset, est::SampleEntropy; base = nothing)
+    throw(
+        ArgumentError("Sample entropy is currently not defined for multivariate data.")
+    )
+end
+
+"""
+    sample_entropy(x; m = 2, r = StatsBase.std(x), normalize = false) → SampEn::Float64
+
+Shorthand for `genentropy(x, SampleEntropy(m = m, r = r, normalize = normalize))` which
+calculates the sample entropy for dimension `m` with tolerance radius `r`, normalizing
+the estimate to `[0, 1]` if `normalize == true`.
+
+## Examples
+
+```jldoctest; setup = :(using Entropies)
+julia> x = repeat([0.84, 0.52, 0.46], 1000);
+julia> hx = sample_entropy(x, m = 2, r = 0.3)
+(0.21833796796344462, 0.3727646139487059)
+```
+"""
+function sample_entropy(x; m = 2, r = 0.2 * StatsBase.std(x), metric = Chebyshev(),
+        normalize = false)
+
+    est = SampleEntropy(m = m, r = r, normalize = normalize, metric = metric)
+    return genentropy(x, est)
 end

@@ -384,6 +384,10 @@ end
         # Uniform noise
         y = rand(2000)
 
+        est = SampleEntropy(r = 0.1, m = 2, normalize = true)
+        @test genentropy(x, est; base = 2) isa T where T <: Real
+        @test_throws ArgumentError genentropy(Dataset(rand(100, 3)), est)
+
         # Regular signals should have lower SampEn than irregular signals (for fixed r)
         sx = sample_entropy(x, r = 0.25, m = 2)
         sy = sample_entropy(y, r = 0.25, m = 2)

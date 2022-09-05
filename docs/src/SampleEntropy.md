@@ -1,8 +1,11 @@
 # Sample entropy
 
 ```@docs
+SampleEntropy
 sample_entropy
 ```
+
+## Example
 
 ```@example
 using Entropies, PyPlot, Distributions
