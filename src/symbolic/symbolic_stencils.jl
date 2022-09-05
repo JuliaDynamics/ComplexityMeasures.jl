@@ -10,8 +10,7 @@ This approach is also known as _Spatiotemporal Permutation Entropy_.
 A _stencil_ defines what local area around each pixel to
 consider, and compute the ordinal pattern within the stencil. Stencils are given as
 vectors of `CartesianIndex` which encode the _offsets_ of the pixes to include in the
-stencil, with respect to the current pixel. For simplicity, only zero or positive offsets
-are allowed. For example
+stencil, with respect to the current pixel. For example
 ```julia
 data = [rand(50, 50) for _ in 1:50]
 x = data[1] # first "time slice" of a spatial system evolution
@@ -63,9 +62,10 @@ function SpatialSymbolicPermutation(
         # collect maximum offsets in each dimension for limiting ranges
         maxoffsets = [maximum(s[i] for s in stencil) for i in 1:D]
         # Safety check
-        minoffsets = [minimum(s[i] for s in stencil) for i in 1:D]
-        @assert all(≥(0), minoffsets) "Offsets in stencil must be ≥ 0!"
-        ranges = Iterators.product([1:(arraysize[i]-maxoffsets[i]) for i in 1:D]...)
+        minoffsets = [min(0, minimum(s[i] for s in stencil)) for i in 1:D]
+        ranges = Iterators.product(
+            [(1-minoffsets[i]):(arraysize[i]-maxoffsets[i]) for i in 1:D]...
+        )
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
     SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid)
