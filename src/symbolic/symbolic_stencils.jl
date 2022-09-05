@@ -40,7 +40,7 @@ array. If `periodic = false`, pixels whose stencil exceeds the array bounds are 
     for two-dimensional patterns. https://doi.org/10.1371/journal.pone.0040689
 
 [^Schlemmer2018]:
-    Schlemmer et al. (2012). Spatiotemporal Permutation Entropy as a Measure for
+    Schlemmer et al. (2018). Spatiotemporal Permutation Entropy as a Measure for
     Complexity of Cardiac Arrhythmia. https://doi.org/10.3389/fphy.2018.00039
 """
 struct SpatialSymbolicPermutation{D,P,V} <: ProbabilitiesEstimator
