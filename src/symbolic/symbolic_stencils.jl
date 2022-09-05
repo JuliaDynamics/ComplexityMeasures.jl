@@ -92,8 +92,8 @@ function pixels_in_stencil(pixel, spatperm::SpatialSymbolicPermutation{D,true}) 
 end
 
 function Entropies.probabilities(x, est::SpatialSymbolicPermutation)
-    # TODO: This can be literally a call to symbolize and then
-    # calling probabilities on it. Should do once the symbolize refactoring is done.
+    # TODO: This can be literally a call to `symbolize` and then
+    # calling probabilities on it. Should do once the `symbolize` refactoring is done.
     s = zeros(Int, length(est.valid))
     probabilities!(s, x, est)
 end
