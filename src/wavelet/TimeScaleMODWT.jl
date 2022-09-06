@@ -3,8 +3,7 @@ import Wavelets
 import Wavelets: wavelet, maxdyadiclevel, modwt
 
 """
-    TimeScaleMODWT <: WaveletProbabilitiesEstimator
-    TimeScaleMODWT(wl::Wavelets.WT.OrthoWaveletClass = Wavelets.WT.Daubechies{12}())
+    TimeScaleMODWT([wavelet]) <: WaveletProbabilitiesEstimator
 
 Apply the maximal overlap discrete wavelet transform (MODWT) to a
 signal, then compute probabilities/entropy from the energies at different
@@ -12,27 +11,18 @@ wavelet scales. This implementation is based on Rosso et
 al. (2001)[^Rosso2001].
 Optionally specify a wavelet to be used.
 
-The probability `p[i]` is the relative/total energy for the i-th wavelet scale.
+The probability `p[i]` is the relative/total energy for the `i`-th wavelet scale.
+To obtain a better understand of what these probabilities mean, we prepared
+a notebook you can [view online](
+https://github.com/kahaaga/waveletentropy_example/blob/main/wavelet_entropy_example.ipynb)
 
-## Example
+By default the wavelet `Wavelets.WT.Daubechies{12}()`
+is used. Otherwise, you may choose a wavelet from the `Wavelets` package
+(it myst subtype `OrthoWaveletClass`).
 
-Manually picking a wavelet is done as follows.
-
-```julia
-using Entropies, Wavelets
-N = 200
-a = 10
-t = LinRange(0, 2*a*π, N)
-x = sin.(t .+  cos.(t/0.1)) .- 0.1;
-
-# Pick a wavelet (if no wavelet provided, defaults to Wavelets.WL.Daubechies{12}())
-wl = Wavelets.WT.Daubechies{12}()
-
-# Compute the probabilities (relative energies) at the different wavelet scales
-probabilities(x, TimeScaleMODWT(wl))
-```
-
-[^Rosso2001]: Rosso, O. A., Blanco, S., Yordanova, J., Kolev, V., Figliola, A., Schürmann, M., & Başar, E. (2001). Wavelet entropy: a new tool for analysis of short duration brain electrical signals. Journal of neuroscience methods, 105(1), 65-75.
+[^Rosso2001]:
+    Rosso et al. (2001). Wavelet entropy: a new tool for analysis of short duration
+    brain electrical signals. Journal of neuroscience methods, 105(1), 65-75.
 """
 struct TimeScaleMODWT <: WaveletProbabilitiesEstimator
     wl::Wavelets.WT.OrthoWaveletClass
@@ -46,16 +36,17 @@ end
 
 function time_scale_density(x, wl::Wavelets.WT.OrthoWaveletClass)
     W = get_modwt(x, wl)
-    ps = relative_wavelet_energies(W)
+    return relative_wavelet_energies(W)
 end
 # maximum overlap discrete wavelet transform
 function get_modwt(x, wl)
     orthofilter = wavelet(wl)
     nscales = maxdyadiclevel(x)
-    W = modwt(x, orthofilter, nscales)
+    return WaveletsW.modwt(x, orthofilter, nscales)
 end
 
-function relative_wavelet_energies(W::AbstractMatrix, js = 1:size(W, 2))
+function relative_wavelet_energies(W::AbstractMatrix)
+    js = 1:size(W, 2)
     if any(j ∉ 1:size(W, 2) for j in js)
         error("scales $(js) contains scales not present in wavelet coefficient "*
               "matrix with scales j ∈ 1:$(size(W, 2))")
