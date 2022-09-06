@@ -60,8 +60,6 @@ end
 
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
     @test TransferOperator(RectangularBinning(3)) isa TransferOperator
-    @test TimeScaleMODWT() isa TimeScaleMODWT
-    @test TimeScaleMODWT(Wavelets.WT.Daubechies{8}()) isa TimeScaleMODWT
     @test Kraskov(k = 2, w = 1) isa Kraskov
     @test Kraskov() isa Kraskov
     @test KozachenkoLeonenko() isa KozachenkoLeonenko
