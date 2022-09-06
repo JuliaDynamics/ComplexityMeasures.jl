@@ -22,8 +22,8 @@ end
     @test Entropies._non0hist(D) |> sum ≈ 1.0
     @test Entropies._non0hist(D2)|> sum ≈ 1.0
     x = rand(100)
-    @test genentropy(x, 100) ≠ NaN
-    @test genentropy(x, 0.1) ≠ NaN
+    @test entropy_renyi(x, 100) ≠ NaN
+    @test entropy_renyi(x, 0.1) ≠ NaN
 end
 
 @testset "Shorthand" begin
@@ -40,9 +40,9 @@ end
     x = rand(1000)
     xn = x ./ sum(x)
     xp = Probabilities(xn)
-    @test genentropy(xp, q = 2) isa Real
-    @test genentropy(xp, q = 1) isa Real
-    @test_throws MethodError genentropy(xn, q = 2) isa Real
+    @test entropy_renyi(xp, q = 2) isa Real
+    @test entropy_renyi(xp, q = 1) isa Real
+    @test_throws MethodError entropy_renyi(xn, q = 2) isa Real
 end
 
 @testset "Probability/entropy estimators" begin
@@ -65,7 +65,7 @@ end
     @testset "Counting based" begin
         D = Dataset(rand(1:3, 1000, 3))
         ts = [(rand(1:4), rand(1:4), rand(1:4)) for i = 1:3000]
-        @test Entropies.genentropy(D, CountOccurrences(), q = 2, base = 2) isa Real
+        @test Entropies.entropy_renyi(D, CountOccurrences(), q = 2, base = 2) isa Real
     end
 
     @testset "NaiveKernel" begin
@@ -81,8 +81,8 @@ end
         p_direct = probabilities(pts, est_direct)
         @test all(p_tree .== p_direct) == true
 
-        @test Entropies.genentropy(pts, est_direct, base = 2) isa Real
-        @test Entropies.genentropy(pts, est_tree, base = 2) isa Real
+        @test Entropies.entropy_renyi(pts, est_direct, base = 2) isa Real
+        @test Entropies.entropy_renyi(pts, est_tree, base = 2) isa Real
     end
 
     @testset "Symbolization" begin
@@ -156,17 +156,17 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropies
-            @test genentropy!(s, x, est, q = 1) ≈ 0  # Regular order-1 entropy
-            @test genentropy!(s, y, est, q = 1) >= 0 # Regular order-1 entropy
-            @test genentropy!(s, x, est, q = 2) ≈ 0  # Higher-order entropy
-            @test genentropy!(s, y, est, q = 2) >= 0 # Higher-order entropy
+            @test entropy_renyi!(s, x, est, q = 1) ≈ 0  # Regular order-1 entropy
+            @test entropy_renyi!(s, y, est, q = 1) >= 0 # Regular order-1 entropy
+            @test entropy_renyi!(s, x, est, q = 2) ≈ 0  # Higher-order entropy
+            @test entropy_renyi!(s, y, est, q = 2) >= 0 # Higher-order entropy
 
             # For a time series
             sz = zeros(Int, N - (est.m-1)*est.τ)
             @test probabilities!(sz, z, est) isa Probabilities
             @test probabilities(z, est) isa Probabilities
-            @test genentropy!(sz, z, est) isa Real
-            @test genentropy(z, est) isa Real
+            @test entropy_renyi!(sz, z, est) isa Real
+            @test entropy_renyi(z, est) isa Real
         end
 
         @testset "Not pre-allocated" begin
@@ -182,8 +182,8 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropy
-            @test genentropy(x, est, q = 1) ≈ 0  # Regular order-1 entropy
-            @test genentropy(y, est, q = 2) >= 0 # Higher-order entropy
+            @test entropy_renyi(x, est, q = 1) ≈ 0  # Regular order-1 entropy
+            @test entropy_renyi(y, est, q = 2) >= 0 # Higher-order entropy
         end
     end
 
@@ -205,8 +205,8 @@ end
         @test all(p1.p .≈ p2.p)
 
         # Entropy
-        e1 = genentropy(D, est)
-        e2 = genentropy(x, est)
+        e1 = entropy_renyi(D, est)
+        e2 = entropy_renyi(x, est)
         @test e1 ≈ e2
     end
 
@@ -226,8 +226,8 @@ end
         @test all(p1.p .≈ p2.p)
 
         # Entropy
-        e1 = genentropy(D, est)
-        e2 = genentropy(x, est)
+        e1 = entropy_renyi(D, est)
+        e2 = entropy_renyi(x, est)
         @test e1 ≈ e2
     end
 
@@ -291,9 +291,9 @@ end
         @testset "Binning test $i" for i in 1:length(binnings)
             est = VisitationFrequency(binnings[i])
             @test probabilities(D, est) isa Probabilities
-            @test genentropy(D, est, q=1, base = 3) isa Real # Regular order-1 entropy
-            @test genentropy(D, est, q=3, base = 2) isa Real # Higher-order entropy
-            @test genentropy(D, est, q=3, base = 1) isa Real # Higher-order entropy
+            @test entropy_renyi(D, est, q=1, base = 3) isa Real # Regular order-1 entropy
+            @test entropy_renyi(D, est, q=3, base = 2) isa Real # Higher-order entropy
+            @test entropy_renyi(D, est, q=3, base = 1) isa Real # Higher-order entropy
 
         end
     end
@@ -348,7 +348,7 @@ end
 
     @testset "Tsallis" begin
         p = Probabilities(repeat([1/5], 5))
-        @assert round(tsallisentropy(p, q = -1/2, k = 1), digits = 2) ≈ 6.79
+        @assert round(entropy_tsallis(p, q = -1/2, k = 1), digits = 2) ≈ 6.79
     end
 end
 

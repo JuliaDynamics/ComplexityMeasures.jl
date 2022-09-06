@@ -57,5 +57,5 @@ function dispersion_entropy(x::AbstractVector,
     N = length(x)
 
     hist = dispersion_histogram(dispersion_patterns, N, m, τ)
-    genentropy(hist, q = q, base = base)
+    entropy_renyi(hist, q = q, base = base)
 end

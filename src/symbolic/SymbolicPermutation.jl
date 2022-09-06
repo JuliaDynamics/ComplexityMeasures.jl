@@ -51,7 +51,7 @@ To estimate probabilities or entropies from univariate time series, use the foll
 - `probabilities(x::AbstractVector, est::SymbolicProbabilityEstimator)`. Constructs state vectors
     from `x` using embedding lag `τ` and embedding dimension `m`, symbolizes state vectors,
     and computes probabilities as (weighted) relative frequency of symbols.
-- `genentropy(x::AbstractVector, est::SymbolicProbabilityEstimator; α=1, base = 2)` computes
+- `entropy_renyi(x::AbstractVector, est::SymbolicProbabilityEstimator; α=1, base = 2)` computes
     probabilities by calling `probabilities(x::AbstractVector, est)`,
     then computer the order-`α` generalized entropy to the given base.
 
@@ -84,7 +84,7 @@ existing state vectors ``\\{\\mathbf{x}_1, \\mathbf{x}_2, \\ldots, \\mathbf{x_L}
 - `probabilities(x::AbstractDataset, est::SymbolicProbabilityEstimator)`. Compute ordinal patterns of the
     state vectors of `x` directly (without doing any embedding), symbolize those patterns,
     and compute probabilities as (weighted) relative frequencies of symbols.
-- `genentropy(x::AbstractDataset, est::SymbolicProbabilityEstimator)`. Computes probabilities from
+- `entropy_renyi(x::AbstractDataset, est::SymbolicProbabilityEstimator)`. Computes probabilities from
     symbol frequencies using `probabilities(x::AbstractDataset, est::SymbolicProbabilityEstimator)`,
     then computes the order-`α` generalized (permutation) entropy to the given base.
 
@@ -254,7 +254,7 @@ function probabilities(x::AbstractVector{T}, est::SymbolicPermutation) where {T<
     probabilities!(s, x_emb, est)
 end
 
-function genentropy!(
+function entropy_renyi!(
     s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation;
     q = 1.0, α = nothing, base::Real = MathConstants.e
     ) where {m, T}
@@ -266,10 +266,10 @@ function genentropy!(
     length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
     ps = probabilities!(s, x, est)
 
-    genentropy(ps, α = α, base = base)
+    entropy_renyi(ps, α = α, base = base)
 end
 
-function genentropy!(
+function entropy_renyi!(
         s::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation;
         q::Real = 1.0, α = nothing, base::Real = MathConstants.e
     ) where {T<:Real}
@@ -282,5 +282,5 @@ function genentropy!(
     length(s) == N || error("Pre-allocated symbol vector `s` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
 
     ps = probabilities!(s, x, est)
-    genentropy(ps, α = α, base = base)
+    entropy_renyi(ps, α = α, base = base)
 end

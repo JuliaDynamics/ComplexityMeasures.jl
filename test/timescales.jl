@@ -12,6 +12,6 @@ using Entropies, Test
         ps = probabilities(x, est)
         @test length(ps) == 8
         @test ps isa Probabilities
-        @test genentropy(x, WaveletOverlap(), q = 1, base = 2) isa Real
+        @test entropy_renyi(x, WaveletOverlap(), q = 1, base = 2) isa Real
     end
 end

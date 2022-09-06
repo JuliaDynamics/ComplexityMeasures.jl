@@ -25,11 +25,11 @@ within the stencil dictates the order that pixels are compared with.
 The pixel without any offset is always first in the order.
 
 After having defined `est`, one calculates the permutation entropy of ordinal patterns
-by calling [`genentropy`](@ref) with `est`, and with the array data.
+by calling [`entropy_renyi`](@ref) with `est`, and with the array data.
 To apply this to timeseries of spatial data, simply loop over the call, e.g.:
 ```julia
-entropy = genentropy(x, est)
-entropy_vs_time = genentropy.(data, est) # broadcasting with `.`
+entropy = entropy_renyi(x, est)
+entropy_vs_time = entropy_renyi.(data, est) # broadcasting with `.`
 ```
 
 The argument `periodic` decides whether the stencil should wrap around at the end of the

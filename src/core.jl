@@ -1,9 +1,8 @@
 using DelayEmbeddings
 using DelayEmbeddings: AbstractDataset, Dataset, dimension
 export ProbabilitiesEstimator, Probabilities
-export EntropyEstimator
 export probabilities, probabilities!
-export genentropy, genentropy!
+export entropy_renyi, entropy_renyi!
 export Dataset, dimension
 
 const Array_or_Dataset = Union{<:AbstractArray, <:AbstractDataset}
@@ -34,13 +33,6 @@ Base.IteratorSize(d::Probabilities) = Base.HasLength()
 @inline Base.setindex!(d::Probabilities, v, i) = (d.p[i] = v)
 @inline Base.:*(d::Probabilities, x::Number) = d.p * x
 @inline Base.sum(d::Probabilities{T}) where T = one(T)
-
-"""
-An abstract type for entropy estimators that don't explicitly estimate probabilities,
-but return the value of the entropy directly.
-"""
-abstract type EntropyEstimator end
-const EntEst = EntropyEstimator # shorthand
 
 """
 An abstract type for probabilities estimators.
@@ -91,13 +83,13 @@ Only works for certain estimators. See for example [`SymbolicPermutation`](@ref)
 function probabilities! end
 
 """
-    genentropy(p::Probabilities; q = 1.0, base = MathConstants.e)
+    entropy_renyi(p::Probabilities; q = 1.0, base = MathConstants.e)
 
 Compute the generalized order-`q` entropy of some probabilities
 returned by the [`probabilities`](@ref) function. Alternatively, compute entropy
 from pre-computed `Probabilities`.
 
-    genentropy(x::Array_or_Dataset, est; q = 1.0, base)
+    entropy_renyi(x::Array_or_Dataset, est; q = 1.0, base)
 
 A convenience syntax, which calls first `probabilities(x, est)`
 and then calculates the entropy of the result (and thus `est` can be a
@@ -120,9 +112,9 @@ also known as Hartley entropy), or the correlation entropy
 [^Rényi1960]: A. Rényi, *Proceedings of the fourth Berkeley Symposium on Mathematics, Statistics and Probability*, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
-function genentropy end
+function entropy_renyi end
 
-function genentropy(prob::Probabilities; q = 1.0, α = nothing, base = MathConstants.e)
+function entropy_renyi(prob::Probabilities; q = 1.0, α = nothing, base = MathConstants.e)
     if α ≠ nothing
         @warn "Keyword `α` is deprecated in favor of `q`."
         q = α
@@ -149,31 +141,31 @@ function genentropy(prob::Probabilities; q = 1.0, α = nothing, base = MathConst
     end
 end
 
-genentropy(::AbstractArray{<:Real}) =
-    error("For single-argument input, do `genentropy(Probabilities(x))` instead.")
+entropy_renyi(::AbstractArray{<:Real}) =
+    error("For single-argument input, do `entropy_renyi(Probabilities(x))` instead.")
 
-function genentropy(x::Array_or_Dataset, est; q = 1.0, α = nothing, base = MathConstants.e)
+function entropy_renyi(x::Array_or_Dataset, est; q = 1.0, α = nothing, base = MathConstants.e)
     if α ≠ nothing
         @warn "Keyword `α` is deprecated in favor of `q`."
         q = α
     end
     p = probabilities(x, est)
-    genentropy(p; q = q, base = base)
+    entropy_renyi(p; q = q, base = base)
 end
 
 """
-    genentropy!(p, x, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
+    entropy_renyi!(p, x, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
 
-Similarly with `probabilities!` this is an in-place version of `genentropy` that allows
+Similarly with `probabilities!` this is an in-place version of `entropy_renyi` that allows
 pre-allocation of temporarily used containers.
 
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
-function genentropy!(p, x, est; q = 1.0, α = nothing, base = MathConstants.e)
+function entropy_renyi!(p, x, est; q = 1.0, α = nothing, base = MathConstants.e)
     if α ≠ nothing
         @warn "Keyword `α` is deprecated in favor of `q`."
         q = α
     end
     probabilities!(p, x, est)
-    genentropy(p; q = q, base = base)
+    entropy_renyi(p; q = q, base = base)
 end
