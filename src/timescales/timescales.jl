@@ -1,1 +1,1 @@
-include("TimeScaleMODWT.jl")
+include("wavelet_overlap.jl")

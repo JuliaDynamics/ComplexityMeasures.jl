@@ -5,6 +5,11 @@ using Wavelets
 using StaticArrays
 using Neighborhood: KDTree, BruteForce
 
+# This is how the tests should look like in the end:
+@testset "Entopies.jl tests" begin
+    include("timescales.jl")
+end
+
 @testset "Histogram estimation" begin
     x = rand(1:10, 100)
     D = Dataset([rand(1:10, 3) for i = 1:100])
@@ -280,22 +285,6 @@ end
             @test genentropy(D, est, q=3, base = 2) isa Real # Higher-order entropy
             @test genentropy(D, est, q=3, base = 1) isa Real # Higher-order entropy
 
-        end
-    end
-
-    @testset "Timescales" begin
-        N = 200
-        a = 10
-        t = LinRange(0, 2*a*π, N)
-        x = sin.(t .+  cos.(t/0.1)) .- 0.1;
-
-        @testset "TimeScaleMODWT" begin
-            wl = Entropies.Wavelets.WT.Daubechies{4}()
-            est = TimeScaleMODWT(wl)
-            ps = probabilities(x, est)
-            @test length(ps) == 8
-            @test ps isa Probabilities
-            @test genentropy(x, TimeScaleMODWT(), q = 1, base = 2) isa Real
         end
     end
 
