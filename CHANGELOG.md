@@ -1,6 +1,9 @@
 # CHANGELOG
 Changelog is kept with respect to version 0.11 of Entropies.jl.
 
+## main
+* New probability estimator `SpatialSymbolicPermutation` suitable for computing spatial permutation entropies
+
 ## 1.1
 * Introduce convenience function `permentropy`.
 * Several type instabilities fixed.
