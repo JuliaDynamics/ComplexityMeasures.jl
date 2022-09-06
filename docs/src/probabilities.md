@@ -1,18 +1,27 @@
-# [Estimators of probabilities and entropies](@id estimators)
+# Probabilities
 
-## Count occurrences (counting)
+```@docs
+Probabilities
+probabilities
+probabilities!
+ProbabilitiesEstimator
+```
+
+## [Estimators](@id estimators)
+
+### Count occurrences (counting)
 
 ```@docs
 CountOccurrences
 ```
 
-## Permutation (symbolic)
+### Permutation (symbolic)
 
 ```@docs
 SymbolicPermutation
 ```
 
-### Example
+#### Example
 
 This example reproduces an example from Bandt and Pompe (2002), where the permutation
 entropy is compared with the largest Lyapunov exponents from time series of the chaotic
@@ -39,9 +48,9 @@ for r in rs
     push!(lyaps, lyapunov(ds, N_lyap))
 
     x = trajectory(ds, N_ent) # time series
-    hperm = Entropies.genentropy(x, SymbolicPermutation(m = m, τ = τ), base = base)
-    hwtperm = Entropies.genentropy(x, SymbolicWeightedPermutation(m = m, τ = τ), base = base)
-    hampperm = Entropies.genentropy(x, SymbolicAmplitudeAwarePermutation(m = m, τ = τ), base = base)
+    hperm = Entropies.entropy_renyi(x, SymbolicPermutation(m = m, τ = τ), base = base)
+    hwtperm = Entropies.entropy_renyi(x, SymbolicWeightedPermutation(m = m, τ = τ), base = base)
+    hampperm = Entropies.entropy_renyi(x, SymbolicAmplitudeAwarePermutation(m = m, τ = τ), base = base)
 
     push!(hs_perm, hperm); push!(hs_wtperm, hwtperm); push!(hs_ampperm, hampperm)
 end
@@ -63,25 +72,25 @@ end
 fig
 ```
 
-## Visitation frequency (binning)
+### Visitation frequency (binning)
 
 ```@docs
 VisitationFrequency
 ```
 
-### Specifying binning/boxes
+#### Specifying binning/boxes
 
 ```@docs
 RectangularBinning
 ```
 
-## Transfer operator (binning)
+### Transfer operator (binning)
 
 ```@docs
 TransferOperator
 ```
 
-### Utility methods/types
+#### Utility methods/types
 
 ```@docs
 InvariantMeasure
@@ -89,13 +98,13 @@ invariantmeasure
 transfermatrix
 ```
 
-## Kernel density
+### Kernel density
 
 ```@docs
 NaiveKernel
 ```
 
-### Example
+#### Example
 
 Here, we draw some random points from a 2D normal distribution. Then, we use kernel 
 density estimation to associate a probability to each point `p`, measured by how many 
@@ -116,13 +125,13 @@ ax.zticklabelsvisible = false
 fig
 ```
 
-## Time-scale (wavelet)
+### Wavelet
 
 ```@docs
-TimeScaleMODWT
+WaveletOverlap
 ```
 
-### Example
+#### Example
 
 The scale-resolved wavelet entropy should be lower for very regular signals (most of the
 energy is contained at one scale) and higher for very irregular signals (energy spread
@@ -137,10 +146,10 @@ x = sin.(t);
 y = sin.(t .+ cos.(t/0.5));
 z = sin.(rand(1:15, N) ./ rand(1:10, N))
 
-est = TimeScaleMODWT()
-h_x = genentropy(x, est)
-h_y = genentropy(y, est)
-h_z = genentropy(z, est)
+est = WaveletOverlap()
+h_x = entropy_renyi(x, est)
+h_y = entropy_renyi(y, est)
+h_z = entropy_renyi(z, est)
 
 fig = Figure()
 ax = Axis(fig[1,1]; ylabel = "x")
@@ -153,66 +162,3 @@ for a in (ax, ay, az); axislegend(a); end
 for a in (ax, ay); hidexdecorations!(a; grid=false); end
 fig
 ```
-
-## Nearest neighbor estimators
-
-### Kraskov
-
-```@docs
-Kraskov
-```
-
-### Kozachenko-Leonenko
-
-```@docs
-KozachenkoLeonenko
-```
-
-#### Example
-
-This example reproduces Figure in Charzyńska & Gambin (2016)[^Charzyńska2016]. Both
-estimators nicely converge to the true entropy with increasing time series length.
-For a uniform 1D distribution ``U(0, 1)``, the true entropy is `0`.
-
-```@example MAIN
-using DynamicalSystems, CairoMakie, Statistics
-using Distributions: Uniform, Normal
-
-Ns = [100:100:500; 1000:1000:10000]
-Ekl = Vector{Vector{Float64}}(undef, 0)
-Ekr = Vector{Vector{Float64}}(undef, 0)
-
-est_nn = KozachenkoLeonenko(w = 0)
-# with k = 1, Kraskov is virtually identical to KozachenkoLeonenko, so pick a higher
-# number of neighbors
-est_knn = Kraskov(w = 0, k = 3)
-
-nreps = 50
-for N in Ns
-    kl = Float64[]
-    kr = Float64[]
-    for i = 1:nreps
-        pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
-        push!(kl, genentropy(pts, est_nn))
-         # with k = 1 almost identical
-        push!(kr, genentropy(pts, est_knn))
-    end
-    push!(Ekl, kl)
-    push!(Ekr, kr)
-end
-
-fig = Figure()
-ax = Axis(fig[1,1]; ylabel = "entropy (nats)", title = "KozachenkoLeonenko")
-lines!(ax, Ns, mean.(Ekl); color = Cycled(1))
-band!(ax, Ns, mean.(Ekl) .+ std.(Ekl), mean.(Ekl) .- std.(Ekl);
-color = (Main.COLORS[1], 0.5))
-
-ay = Axis(fig[2,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Kraskov")
-lines!(ay, Ns, mean.(Ekr); color = Cycled(2))
-band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr); 
-color = (Main.COLORS[2], 0.5))
-
-fig
-```
-
-[^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy estimator with applications in systems biology. Entropy, 18(1), 13.

@@ -13,30 +13,9 @@ based on which method for probability/entropy estimation is applied.
 The main **API** of this package is contained in three functions:
 
 * [`probabilities`](@ref) which computes probability distributions of given datasets
-* [`genentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
+* [`entropy_renyi`](@ref) which uses the output of [`probabilities`](@ref), or a set of
     pre-computed [`Probabilities`](@ref), to calculate entropies.
-* [`tsallisentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
+* [`entropy_tsallis`](@ref) which uses the output of [`probabilities`](@ref), or a set of
     pre-computed [`Probabilities`](@ref), to calculate Tsallis entropies.
 
 These functions dispatch estimators listed [here](@ref estimators).
-
-## Probabilities
-
-```@docs
-Probabilities
-probabilities
-probabilities!
-ProbabilitiesEstimator
-```
-
-## Rényi (generalized) entropy
-
-```@docs
-Entropies.genentropy
-```
-
-## Tsallis entropy
-
-```@docs
-Entropies.tsallisentropy
-```

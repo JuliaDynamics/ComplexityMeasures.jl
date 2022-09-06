@@ -35,10 +35,10 @@ ENV["JULIA_DEBUG"] = "Documenter"
 
 PAGES = [
     "Entropies.jl" => "index.md",
-    "Estimators" => "estimators.md",
-    "Remaining" => [
-        "DispersionEntropy.md",
-    ],
+    "Probability estimation" => "probabilities.md",
+    "Entropy (Rényi)" => "renyi_entropy.md",
+    "Entropy (Tsallis)" => "tsallis_entropy.md",
+    "Complexity measures" => "complexity_measures.md",
     "Utility methods" => "utils.md",
 ]
 
