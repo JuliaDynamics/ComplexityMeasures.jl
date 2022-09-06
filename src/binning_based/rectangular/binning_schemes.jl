@@ -126,8 +126,8 @@ z₁, z₂ = 0, 0.5 # not completely covering the data, which are on [0, 1]
 RectangularBinning(ϵ)
 ```
 """
-struct RectangularBinning <: RectangularBinningScheme
-    ϵ::Union{Int, Float64, Vector{Int}, Vector{Float64}, Tuple{Vector{Tuple{T1, T2}},Int64} where {T1 <: Real, T2 <: Real}}
+struct RectangularBinning{E} <: RectangularBinningScheme
+    ϵ::E
 end
 
 """
@@ -235,7 +235,7 @@ function get_minima_and_edgelengths(points, binning_scheme::RectangularBinning)
     # Dictated by data ranges
     if ϵ isa Float64
         edgelengths = [ϵ for i in 1:D]
-    elseif ϵ isa Vector{Float64}    
+    elseif ϵ isa Vector{<:AbstractFloat}    
         edgelengths .= ϵ
     elseif ϵ isa Int
         edgeslengths_nonadjusted = (axismaxima  - axisminima) / ϵ

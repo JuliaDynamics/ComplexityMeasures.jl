@@ -13,6 +13,8 @@ The main **API** of this package is contained in two functions:
 * [`probabilities`](@ref) which computes probability distributions of given datasets
 * [`genentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
     pre-computed [`Probabilities`](@ref), to calculate entropies.
+* [`tsallisentropy`](@ref) which uses the output of [`probabilities`](@ref), or a set of
+    pre-computed [`Probabilities`](@ref), to calculate Tsallis entropies.
 
 These functions dispatch on subtypes of [`ProbabilitiesEstimator`](@ref), which are:
 
@@ -34,6 +36,7 @@ ProbabilitiesEstimator
 
 ```@docs
 Entropies.genentropy
+Entropies.tsallisentropy
 ```
 
 ## Fast histograms

@@ -3,6 +3,7 @@ using Entropies
 using DelayEmbeddings
 using Wavelets
 using StaticArrays
+using Neighborhood: KDTree, BruteForce
 
 @testset "Histogram estimation" begin
     x = rand(1:10, 100)
@@ -17,6 +18,7 @@ using StaticArrays
     @test Entropies._non0hist(D2)|> sum ≈ 1.0
     x = rand(100)
     @test genentropy(x, 100) ≠ NaN
+    @test genentropy(x, 0.1) ≠ NaN
 end
 
 @testset "Shorthand" begin
@@ -71,8 +73,8 @@ end
         N = 1000
         pts = Dataset([rand(2) for i = 1:N]);
         ϵ = 0.3
-        est_direct = NaiveKernel(ϵ, DirectDistance())
-        est_tree = NaiveKernel(ϵ, TreeDistance())
+        est_direct = NaiveKernel(ϵ, KDTree)
+        est_tree = NaiveKernel(ϵ, BruteForce)
 
         @test probabilities(pts, est_tree) isa Probabilities
         @test probabilities(pts, est_direct) isa Probabilities
@@ -260,8 +262,8 @@ end
         D = Dataset(rand(100, 3))
 
         @testset "Counting visits" begin
-            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{Vector{Int}}
-            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{Vector{Int}}
+            @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{<:AbstractVector{Int}}
+            @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{<:AbstractVector{Int}}
         end
 
         binnings = [
@@ -334,5 +336,33 @@ end
 
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
         end
+    end
+
+    @testset "Dispersion entropy" begin
+        # Li et al. (2018) recommends using at least 1000 data points when estimating
+        # dispersion entropy.
+        x = rand(1000)
+        n_categories = 4
+        m = 4
+        τ = 1
+        s = GaussianSymbolization(n_categories = n_categories)
+
+        # Symbols should be in the set [1, 2, …, n_categories].
+        symbols = Entropies.symbolize(x, s)
+        @test all([s ∈ collect(1:n_categories) for s in symbols])
+
+        # Dispersion patterns should have a normalized histogram that sums to 1.0.
+        dispersion_patterns = DelayEmbeddings.embed(symbols, m, τ)
+        hist = Entropies.dispersion_histogram(dispersion_patterns, length(x), m, τ)
+        @test sum(hist) ≈ 1.0
+
+        de = dispersion_entropy(x, s, m = 4, τ = 1)
+        @test typeof(de) <: Real
+        @test de >= 0.0
+    end
+
+    @testset "Tsallis" begin
+        p = Probabilities(repeat([1/5], 5))
+        @assert round(tsallisentropy(p, q = -1/2, k = 1), digits = 2) ≈ 6.79
     end
 end

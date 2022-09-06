@@ -5,17 +5,17 @@ export SymbolicAmplitudeAwarePermutation
 
 See docstring for [`SymbolicPermutation`](@ref).
 """
-struct SymbolicAmplitudeAwarePermutation <: PermutationProbabilityEstimator
-    τ
-    m
-    A::Real
-    lt::Function
-    function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5, 
-            lt::Function = isless_rand)
-        2 ≤ m || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-        0 ≤ A ≤ 1 || error("Weighting factor A must be on interval [0, 1]. Got A=$A.")
-        new(τ, m, A, isless_rand)
-    end
+struct SymbolicAmplitudeAwarePermutation{F} <: PermutationProbabilityEstimator
+    τ::Int
+    m::Int
+    A::Float64
+    lt::F
+end
+function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5, 
+        lt::F = isless_rand) where {F <: Function}
+    2 ≤ m || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+    0 ≤ A ≤ 1 || error("Weighting factor A must be on interval [0, 1]. Got A=$A.")
+    SymbolicAmplitudeAwarePermutation{F}(τ, m, A, lt)
 end
 
 """
@@ -34,7 +34,7 @@ function probabilities(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePerm
     πs = symbolize(x, SymbolicPermutation(m = m, lt = est.lt)) # motif length controlled by dimension of input data
     wts = AAPE.(x.data, A = est.A, m = est.m)
 
-    Probabilities(probs(πs, wts, normalize = true))
+    Probabilities(symprobs(πs, wts, normalize = true))
 end
 
 function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutation) where {T<:Real}
@@ -42,6 +42,6 @@ function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutat
     emb = genembed(x, τs)
     πs = symbolize(emb, SymbolicPermutation(m = est.m, lt = est.lt))  # motif length controlled by estimator m
     wts = AAPE.(emb.data, A = est.A, m = est.m)
-    p = probs(πs, wts, normalize = true)
+    p = symprobs(πs, wts, normalize = true)
     Probabilities(p)
 end
