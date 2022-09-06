@@ -400,7 +400,7 @@ end
         hist = Entropies.dispersion_histogram(dispersion_patterns, length(x), m, τ)
         @test sum(hist) ≈ 1.0
 
-        de = dispersion_entropy(x, s, m = 4, τ = 1)
+        de = entropy_dispersion(x, s = s, m = 4, τ = 1)
         @test typeof(de) <: Real
         @test de >= 0.0
     end
