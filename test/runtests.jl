@@ -381,4 +381,36 @@ end
         p = Probabilities(repeat([1/5], 5))
         @assert round(tsallisentropy(p, q = -1/2, k = 1), digits = 2) ≈ 6.79
     end
+
+    @testset "Reverse dispersion entropy" begin
+        est = ReverseDispersion()
+        @test Probabilities(est) isa Probabilities
+
+        # RDE is minimal when all probabilities are equal. Normalized RDE should then → 0.
+        m, n_categories = 3, 5
+        ps = Probabilities(repeat([1/n_categories^m], n_categories^m))
+        rde_eq = Entropies.distance_to_whitenoise(ps, n_categories, m)
+        @test round(rde_eq, digits = 10) ≈ 0.0
+
+        # RDE measures deviation from white noise, so for long enough
+        # time series, normalized values should approach zero.
+        rde = entropy_reverse_dispersion(rand(100000), m = 5, normalize = true)
+        @test round(rde, digits = 3) ≈ 0.0
+
+        # RDE is minimal when all symbol *embedding vectors*are equal.
+        # Normalized RDE should then → 1. This situtation arises
+        # when the input only has one unique element.
+        # Note: the input repeat([1, 2], 10), for example, would *not* give equal
+        # probabilities,because symbolization occurs *before* the embedding, slightly
+        # skewing the probabilities due to data entries lost during embedding.
+        x = repeat([1.0], 100)
+        rde_max = entropy_reverse_dispersion(x, normalize = true)
+        @test rde_max ≈ 1.0
+
+
+        # In all situations except those above, RDE ∈ (0.0, 1.0)
+        x = repeat([1, 2, 3, 4, 5, 4, 3, 2, 1, 0], 100)
+        res = entropy_reverse_dispersion(x, normalize = true)
+        @test 0.0 < res < 1.0
+    end
 end
