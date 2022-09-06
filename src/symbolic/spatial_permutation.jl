@@ -55,6 +55,7 @@ function SpatialSymbolicPermutation(
     # Ensure that no offset is part of the stencil
     stencil = pushfirst!(copy(stencil), CartesianIndex{D}(zeros(Int, D)...))
     arraysize = size(x)
+    @assert length(arraysize) == D "Indices and input array must match dimensionality!"
     # Store valid indices for later iteration
     if p
         valid = CartesianIndices(x)
@@ -106,4 +107,11 @@ function Entropies.probabilities!(s, x, est::SpatialSymbolicPermutation)
     end
     @show s
     return probabilities(s)
+end
+
+# Pretty printing
+function Base.show(io::IO, est::SpatialSymbolicPermutation{D}) where {D}
+    print(io, "Spatial permutation estimator for $D-dimensional data. Stencil:")
+    print(io, "\n")
+    print(io, est.stencil)
 end
