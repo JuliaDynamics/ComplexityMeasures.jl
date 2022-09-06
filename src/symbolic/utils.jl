@@ -1,15 +1,3 @@
-
-function isless_rand(a, b)
-    if a == b
-        rand(Bool)
-    elseif a < b
-        true
-    else
-        false
-    end
-end
-
-
 """ Compute probabilities of symbols `Π`, given weights `wts`. """
 function symprobs(Π::AbstractVector, wts::AbstractVector; normalize = true)
     length(Π) == length(wts) || error("Need length(Π) == length(wts)")
