@@ -1,27 +1,23 @@
-export Kraskov, genentropy
+export entropy_kraskov
 
 """
-## k-th nearest neighbour(kNN) based
-    
-    Kraskov(; k::Int = 1, w::Int = 0) <: EntropyEstimator
+    entropy_kraskov(x::AbstractDataset{D, T}; k::Int = 1, w::Int = 0,
+        base::Real = MathConstants.e) where {D, T}
 
-Entropy estimator based on `k`-th nearest neighbor searches[^Kraskov2004].
-`w` is the [Theiler window](@ref).
+Estimate Shannon entropy to the given `base` using `k`-th nearest neighbor
+searches (Kraskov, 2004)[^Kraskov2004].
 
-!!! info
-    This estimator is only available for entropy estimation. 
-    Probabilities cannot be obtained directly.
+`w` is the Theiler window, which determines if temporal neighbors are excluded
+during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
+when searching for neighbours).
+
+See also: [`entropy_kozachenkoleonenko`](@ref).
 
 [^Kraskov2004]: Kraskov, A., Stögbauer, H., & Grassberger, P. (2004). Estimating mutual information. Physical review E, 69(6), 066138.
 """
-Base.@kwdef struct Kraskov <: NearestNeighborEntropyEstimator
-    k::Int = 1
-    w::Int = 0
-end
-
-function genentropy(x::AbstractDataset{D, T}, est::Kraskov; base::Real = MathConstants.e) where {D, T}
+function entropy_kraskov(x::AbstractDataset{D, T}; k::Int = 1, w::Int = 0, base::Real = MathConstants.e) where {D, T}
     N = length(x)
-    ρs = maximum_neighbor_distances(x, est)
-    h = -digamma(est.k) + digamma(N) + log(base, ball_volume(D)) + D/N*sum(log.(base, ρs))
+    ρs = maximum_neighbor_distances(x, w, k)
+    h = -digamma(k) + digamma(N) + log(base, ball_volume(D)) + D/N*sum(log.(base, ρs))
     return h
 end

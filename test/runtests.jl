@@ -60,10 +60,6 @@ end
 
     @test VisitationFrequency(RectangularBinning(3)) isa VisitationFrequency
     @test TransferOperator(RectangularBinning(3)) isa TransferOperator
-    @test Kraskov(k = 2, w = 1) isa Kraskov
-    @test Kraskov() isa Kraskov
-    @test KozachenkoLeonenko() isa KozachenkoLeonenko
-    @test KozachenkoLeonenko(w = 5) isa KozachenkoLeonenko
     @test NaiveKernel(0.1) isa NaiveKernel
 
     @testset "Counting based" begin
@@ -302,20 +298,6 @@ end
         end
     end
 
-    @testset "Nearest neighbor based" begin
-        m = 4
-        τ = 1
-        τs = tuple([τ*i for i = 0:m-1]...)
-        x = rand(250)
-        D = genembed(x, τs)
-
-        est_nn = KozachenkoLeonenko(w = 5)
-        est_knn = Kraskov(k = 2, w = 1)
-
-        @test genentropy(D, est_nn) isa Real
-        @test genentropy(D, est_knn) isa Real
-    end
-
     @testset "TransferOperator" begin
         D = Dataset(rand(1000, 3))
 
@@ -371,3 +353,4 @@ end
 end
 
 include("spatial_permutation_tests.jl")
+include("nn_tests.jl")
