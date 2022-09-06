@@ -283,7 +283,7 @@ end
         end
     end
 
-    @testset "Wavelet" begin
+    @testset "Timescales" begin
         N = 200
         a = 10
         t = LinRange(0, 2*a*π, N)
@@ -293,9 +293,9 @@ end
             wl = Entropies.Wavelets.WT.Daubechies{4}()
             est = TimeScaleMODWT(wl)
             ps = probabilities(x, est)
-            @test length(ps) == 4
+            @test length(ps) == 8
+            @test ps isa Probabilities
             @test genentropy(x, TimeScaleMODWT(), q = 1, base = 2) isa Real
-            @test probabilities(x, TimeScaleMODWT()) isa Probabilities
         end
     end
 

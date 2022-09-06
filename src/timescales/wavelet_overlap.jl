@@ -1,14 +1,13 @@
-export TimeScaleMODWT
+export WaveletOverlap
 import Wavelets
 
 """
-    TimeScaleMODWT([wavelet]) <: WaveletProbabilitiesEstimator
+    WaveletOverlap([wavelet]) <: ProbabilitiesEstimator
 
 Apply the maximal overlap discrete wavelet transform (MODWT) to a
 signal, then compute probabilities/entropy from the energies at different
 wavelet scales. This implementation is based on Rosso et
 al. (2001)[^Rosso2001].
-Optionally specify a wavelet to be used.
 
 The probability `p[i]` is the relative energy for the `i`-th wavelet scale.
 To obtain a better understand of what these probabilities mean, we prepared
@@ -23,13 +22,13 @@ is used. Otherwise, you may choose a wavelet from the `Wavelets` package
     Rosso et al. (2001). Wavelet entropy: a new tool for analysis of short duration
     brain electrical signals. Journal of neuroscience methods, 105(1), 65-75.
 """
-struct TimeScaleMODWT <: WaveletProbabilitiesEstimator
+struct WaveletOverlap <: ProbabilitiesEstimator
     wl::Wavelets.WT.OrthoWaveletClass
 end
-TimeScaleMODWT() = TimeScaleMODWT(Wavelets.WT.Daubechies{12}())
+WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
 
-function probabilities(x, est::TimeScaleMODWT)
-    @assert x isa AbstractVector{<:Real} "`TimeScaleMODWT` only works for timeseries input!"
+function probabilities(x, est::WaveletOverlap)
+    @assert x isa AbstractVector{<:Real} "`WaveletOverlap` only works for timeseries input!"
     Probabilities(time_scale_density(x, est.wl))
 end
 
