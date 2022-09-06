@@ -288,17 +288,10 @@ end
         x = sin.(t .+  cos.(t/0.1)) .- 0.1;
 
         @testset "TimeScaleMODWT" begin
-            wl = WT.Daubechies{4}()
+            wl = Entropies.Wavelets.WT.Daubechies{4}()
             est = TimeScaleMODWT(wl)
-            W = Entropies.get_modwt(x, wl)
-            @test W isa AbstractArray{<:Real, 2}
-            Nlevels = maxmodwttransformlevels(x)
-            @test Entropies.energy_at_scale(W, 1) isa Real
-            @test Entropies.energy_at_time(W, 1) isa Real
-
-            @test Entropies.relative_wavelet_energies(W, 1:2) isa AbstractVector{<:Real}
-
-            @test Entropies.time_scale_density(x, wl) isa AbstractVector{<:Real}
+            ps = probabilities(x, est)
+            @test length(ps) == 4
             @test genentropy(x, TimeScaleMODWT(), q = 1, base = 2) isa Real
             @test probabilities(x, TimeScaleMODWT()) isa Probabilities
         end
