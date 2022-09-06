@@ -40,7 +40,7 @@ end
 # maximum overlap discrete wavelet transform
 function get_modwt(x, wl)
     orthofilter = Wavelets.wavelet(wl)
-    nscales = Wavelets.maxdyadiclevel(x)
+    nscales = Wavelets.WT.maxmodwttransformlevels(x)
     return Wavelets.modwt(x, orthofilter, nscales)
 end
 
