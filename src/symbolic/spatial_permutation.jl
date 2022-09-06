@@ -113,5 +113,5 @@ end
 function Base.show(io::IO, est::SpatialSymbolicPermutation{D}) where {D}
     print(io, "Spatial permutation estimator for $D-dimensional data. Stencil:")
     print(io, "\n")
-    print(io, est.stencil)
+    show(io, MIME"text/plain"(), est.stencil)
 end
