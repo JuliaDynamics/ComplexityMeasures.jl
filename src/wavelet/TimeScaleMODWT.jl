@@ -1,6 +1,5 @@
 export TimeScaleMODWT
 import Wavelets
-import Wavelets: wavelet, maxdyadiclevel, modwt
 
 """
     TimeScaleMODWT([wavelet]) <: WaveletProbabilitiesEstimator
@@ -11,7 +10,7 @@ wavelet scales. This implementation is based on Rosso et
 al. (2001)[^Rosso2001].
 Optionally specify a wavelet to be used.
 
-The probability `p[i]` is the relative/total energy for the `i`-th wavelet scale.
+The probability `p[i]` is the relative energy for the `i`-th wavelet scale.
 To obtain a better understand of what these probabilities mean, we prepared
 a notebook you can [view online](
 https://github.com/kahaaga/waveletentropy_example/blob/main/wavelet_entropy_example.ipynb)
@@ -40,9 +39,9 @@ function time_scale_density(x, wl::Wavelets.WT.OrthoWaveletClass)
 end
 # maximum overlap discrete wavelet transform
 function get_modwt(x, wl)
-    orthofilter = wavelet(wl)
-    nscales = maxdyadiclevel(x)
-    return WaveletsW.modwt(x, orthofilter, nscales)
+    orthofilter = Wavelets.wavelet(wl)
+    nscales = Wavelets.maxdyadiclevel(x)
+    return Wavelets.modwt(x, orthofilter, nscales)
 end
 
 function relative_wavelet_energies(W::AbstractMatrix)
