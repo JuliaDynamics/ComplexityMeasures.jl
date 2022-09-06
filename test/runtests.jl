@@ -355,6 +355,34 @@ end
     end
 
     @testset "Dispersion entropy" begin
+
+        est = Dispersion(m = 2, τ = 1, s = GaussianSymbolization(3), check_unique = true)
+
+        # Verify that symbolization works (example from Rostaghi & Azami, 2016)
+        x = [9,8,1,12,5,-3,1.5,8.01,2.99,4,-1,10]
+        symbols = symbolize(x, est.s)
+        @test symbols == [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
+
+
+        # Probabilities from their example
+        p_ex = [1/11, 3/11, 2/11, 1/11, 1/11, 2/11, 1/11] |> sort
+        @test p_ex == probabilities(x, est) |> sort
+
+        # There is probably a typo in their paper. They state that the non-normalized
+        # dispersion entropy is 1.8642. However, with identical probabilies, we obtain
+        # 1.8462.
+        res = entropy_dispersion(x, m = 2, τ = 1, base = MathConstants.e,
+            s = GaussianSymbolization(3), normalize = false)
+        @test round(res, digits = 4) == 1.8462
+
+        # Again, probabilities are identical up to this point, but the values we get differ
+        # slightly from the paper. They get normalized DE of 0.85, but we get 0.84. 0.85 is
+        # the normalized DE you'd get by manually normalizing the (erroneous) value from
+        # their previous step.
+        res_norm = entropy_dispersion(x, m = 2, τ = 1, base = MathConstants.e,
+            s = GaussianSymbolization(3), normalize = true)
+        @test round(res_norm, digits = 2) == 0.84
+
         # Li et al. (2018) recommends using at least 1000 data points when estimating
         # dispersion entropy.
         x = rand(1000)
