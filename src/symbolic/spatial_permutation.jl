@@ -105,7 +105,6 @@ function Entropies.probabilities!(s, x, est::SpatialSymbolicPermutation)
         pixels = pixels_in_stencil(pixel, est)
         s[i] = Entropies.encode_motif(view(x, pixels), m)
     end
-    @show s
     return probabilities(s)
 end
 
