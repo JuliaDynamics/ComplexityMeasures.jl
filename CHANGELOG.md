@@ -2,7 +2,8 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl.
 
-## 1.3 
+## main
+* New probability estimator `SpatialSymbolicPermutation` suitable for computing spatial permutation entropies
 * Introduce Tsallis entropy.
 
 ## 1.2

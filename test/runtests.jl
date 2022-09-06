@@ -382,3 +382,5 @@ end
         @assert round(tsallisentropy(p, q = -1/2, k = 1), digits = 2) ≈ 6.79
     end
 end
+
+include("spatial_permutation_tests.jl")
