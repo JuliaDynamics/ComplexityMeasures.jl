@@ -14,7 +14,7 @@ stencil, with respect to the current pixel. For example
 ```julia
 data = [rand(50, 50) for _ in 1:50]
 x = data[1] # first "time slice" of a spatial system evolution
-stencil = CartesianIndex.([(0,1), (0,1), (1,1)])
+stencil = CartesianIndex.([(0,1), (1,1), (1,0)])
 est = SpatialSymbolicPermutation(stencil, x)
 ```
 Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
@@ -98,11 +98,12 @@ function Entropies.probabilities(x, est::SpatialSymbolicPermutation)
     probabilities!(s, x, est)
 end
 
-function Entropies.probabilities!(s::AbstractVector{Int}, x, est::SpatialSymbolicPermutation)
+function Entropies.probabilities!(s, x, est::SpatialSymbolicPermutation)
     m = length(est.stencil)
     for (i, pixel) in enumerate(est.valid)
         pixels = pixels_in_stencil(pixel, est)
         s[i] = Entropies.encode_motif(view(x, pixels), m)
     end
+    @show s
     return probabilities(s)
 end

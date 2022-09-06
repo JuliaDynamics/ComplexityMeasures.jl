@@ -6,7 +6,7 @@ export probabilities, probabilities!
 export genentropy, genentropy!
 export Dataset, dimension
 
-const Array_or_Dataset = Union{AbstractArray, AbstractDataset}
+const Array_or_Dataset = Union{<:AbstractArray, <:AbstractDataset}
 
 """
     Probabilities(x) → p
@@ -149,7 +149,7 @@ function genentropy(prob::Probabilities; q = 1.0, α = nothing, base = MathConst
     end
 end
 
-genentropy(x::AbstractArray{<:Real}) =
+genentropy(::AbstractArray{<:Real}) =
     error("For single-argument input, do `genentropy(Probabilities(x))` instead.")
 
 function genentropy(x::Array_or_Dataset, est; q = 1.0, α = nothing, base = MathConstants.e)
