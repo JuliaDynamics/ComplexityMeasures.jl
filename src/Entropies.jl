@@ -5,9 +5,9 @@ module Entropies
     include("symbolic/symbolic.jl")
     include("binning_based/rectangular/rectangular_estimators.jl")
     include("kerneldensity/kerneldensity.jl")
-    include("wavelet/wavelet.jl")
+    include("timescales/timescales.jl")
     include("nearest_neighbors/nearest_neighbors.jl")
     include("dispersion/dispersion_entropy.jl")
-
     include("tsallis/tsallis.jl")
+    include("deprecations.jl")
 end

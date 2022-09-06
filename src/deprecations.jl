@@ -1,0 +1,1 @@
+@deprecate TimeScaleMODWT WaveletOverlap
