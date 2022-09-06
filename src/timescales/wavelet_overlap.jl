@@ -22,8 +22,8 @@ is used. Otherwise, you may choose a wavelet from the `Wavelets` package
     Rosso et al. (2001). Wavelet entropy: a new tool for analysis of short duration
     brain electrical signals. Journal of neuroscience methods, 105(1), 65-75.
 """
-struct WaveletOverlap <: ProbabilitiesEstimator
-    wl::Wavelets.WT.OrthoWaveletClass
+struct WaveletOverlap{W<:Wavelets.WT.OrthoWaveletClass} <: ProbabilitiesEstimator
+    wl::W
 end
 WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
 
