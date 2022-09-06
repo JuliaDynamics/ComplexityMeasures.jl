@@ -17,7 +17,7 @@ As such, this estimator only works for timeseries input.
 
 By default the wavelet `Wavelets.WT.Daubechies{12}()`
 is used. Otherwise, you may choose a wavelet from the `Wavelets` package
-(it myst subtype `OrthoWaveletClass`).
+(it must subtype `OrthoWaveletClass`).
 
 [^Rosso2001]:
     Rosso et al. (2001). Wavelet entropy: a new tool for analysis of short duration
