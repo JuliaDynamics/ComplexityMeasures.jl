@@ -383,8 +383,9 @@ end
     end
 
     @testset "Reverse dispersion entropy" begin
+        x = rand(100)
         est = ReverseDispersion()
-        @test Probabilities(est) isa Probabilities
+        @test probabilities(x, est) isa Probabilities
 
         # RDE is minimal when all probabilities are equal. Normalized RDE should then → 0.
         m, n_categories = 3, 5
