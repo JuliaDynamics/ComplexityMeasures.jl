@@ -220,54 +220,11 @@ function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where
     SymbolicPermutation{F}(τ, m, lt)
 end
 
-function symbolize(x::AbstractDataset{m, T}, est::PermutationProbabilityEstimator) where {m, T}
-    m >= 2 || error("Data must be at least 2-dimensional to symbolize. If data is a univariate time series, embed it using `genembed` first.")
-    s = zeros(Int, length(x))
-    symbolize!(s, x, est)
-    return s
-end
-
-function symbolize(x::AbstractVector{T}, est::PermutationProbabilityEstimator) where {T}
-    τs = tuple([est.τ*i for i = 0:est.m-1]...)
-    x_emb = genembed(x, τs)
-
-    s = zeros(Int, length(x_emb))
-    symbolize!(s, x_emb, est)
-    return s
-end
-
-function fill_symbolvector!(s, x, sp, m::Int; lt::Function = isless_rand)
-    @inbounds for i = 1:length(x)
-        sortperm!(sp, x[i], lt = lt)
-        s[i] = encode_motif(sp, m)
-    end
-end
-
-function symbolize!(s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
-    @assert length(s) == length(x)
-    #=
-    Loop over embedding vectors `E[i]`, find the indices `p_i` that sort each `E[i]`,
-    then get the corresponding integers `k_i` that generated the
-    permutations `p_i`. Those integers are the symbols for the embedding vectors
-    `E[i]`.
-    =#
-    sp = zeros(Int, m) # pre-allocate a single symbol vector that can be overwritten.
-    fill_symbolvector!(s, x, sp, m, lt = est.lt)
-
-    return s
-end
-
-function symbolize!(s::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where T
-    τs = tuple([est.τ*i for i = 0:est.m-1]...)
-    x_emb = genembed(x, τs)
-    symbolize!(s, x_emb, est)
-end
-
 function probabilities!(s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
     length(s) == length(x) || throw(ArgumentError("Need length(s) == length(x), got `length(s)=$(length(s))` and `length(x)==$(length(x))`."))
     m >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series embed it using `genembed` first.")
 
-    @inbounds for i = 1:length(x)
+    @inbounds for i in eachindex(x)
         s[i] = encode_motif(x[i], m)
     end
     probabilities(s)

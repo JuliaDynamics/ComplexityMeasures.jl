@@ -35,17 +35,11 @@ ENV["JULIA_DEBUG"] = "Documenter"
 
 PAGES = [
     "Entropies.jl" => "index.md",
-    "Estimators" => [
-        "CountOccurrences.md",
-        "VisitationFrequency.md",
-        "TransferOperator.md",
-        "Permutation.md",
+    "Estimators" => "estimators.md",
+    "Remaining" => [
         "DispersionEntropy.md",
-        "NearestNeighbors.md",
-        "NaiveKernel.md",
-        "TimeScaleMODWT.md"
     ],
-    "Non-exported" => "nonexported.md"
+    "Utility methods" => "utils.md",
 ]
 
 makedocs(

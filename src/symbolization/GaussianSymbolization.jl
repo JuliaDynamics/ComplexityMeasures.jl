@@ -3,7 +3,6 @@ using Statistics, QuadGK
 export GaussianSymbolization
 
 """
-
     GaussianSymbolization(; n_categories::Int = 5)
 
 A symbolization scheme where the elements of `x`, which is the time series
@@ -16,7 +15,30 @@ y_j = \\dfrac{1}{\\sigma\\sqrt{2\\pi}} \\int_{x = -\\infty}^{x_j} \\exp{\\dfrac{
 
 where ``\\mu`` and ``\\sigma`` are the mean and standard deviations of `x`.
 
-See also: [`Entropies.symbolize`](@ref).
+# Usage
+
+    symbolize(x::AbstractVector, s::GaussianSymbolization)
+
+Map the elements of `x` to a symbol time series according to the Gaussian symbolization
+scheme `s`.
+
+## Examples
+
+```jldoctest; setup = :(using Entropies)
+julia> x = [0.1, 0.4, 0.7, -2.1, 8.0, 0.9, -5.2];
+
+julia> Entropies.symbolize(x, GaussianSymbolization(5))
+7-element Vector{Int64}:
+ 3
+ 3
+ 3
+ 2
+ 5
+ 3
+ 1
+```
+
+See also: [`symbolize`](@ref).
 """
 Base.@kwdef struct GaussianSymbolization{I <: Integer}
     n_categories::I
@@ -33,7 +55,6 @@ function map_to_category(yⱼ, n_categories)
     zⱼ = ceil(Int, yⱼ * (n_categories - 1) + 1/2)
     return zⱼ
 end
-
 
 function symbolize(x::AbstractVector, s::GaussianSymbolization)
     σ = Statistics.std(x)

@@ -1,8 +1,6 @@
 using DelayEmbeddings
 using StatsBase
 
-include("GaussianSymbolization.jl")
-
 export dispersion_entropy
 
 """
