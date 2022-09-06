@@ -8,4 +8,6 @@ module Entropies
     include("wavelet/wavelet.jl")
     include("nearest_neighbors/nearest_neighbors.jl")
     include("dispersion/dispersion_entropy.jl")
+
+    include("tsallis/tsallis.jl")
 end
