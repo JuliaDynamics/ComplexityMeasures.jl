@@ -1,4 +1,6 @@
 export VisitationFrequency, probabilities
+export entropy_visitfreq
+export entropy_transferoperator
 
 """
     VisitationFrequency(r::RectangularBinning) <: BinningProbabilitiesEstimator
@@ -25,4 +27,19 @@ end
 
 function probabilities(x::AbstractDataset, est::VisitationFrequency)
     _non0hist(x, est.binning)[1]
+end
+
+"""
+    entropy_visitfreq(x, binning::RectangularBinning; base = MathConstants.e)
+
+Compute the (Shannon) entropy of `x` by counting visitation frequencies over
+the state-space coarse graining produced by the provided `binning` scheme.
+
+Short-hand for `renyi_entropy(x, VisitationFrequency(binning); base = base, q = 1)`.
+
+See also: [`VisitationFrequency`](@ref).
+"""
+function entropy_visitfreq(x, b::RectangularBinning)
+    est = VisitationFrequency(binning)
+    renyi_entropy(x, est; base = base, q = 1)
 end

@@ -1,6 +1,7 @@
 export entropy_perm
 export entropy_weightedperm
 export entropy_ampperm
+export entropy_spatialperm
 
 include("utils.jl")
 include("SymbolicPermutation.jl")
@@ -58,4 +59,28 @@ See also: [`SymbolicPermutation`](@ref), [`entropy_renyi`](@ref).
 function entropy_ampperm(x; τ = 1, m = 3, A = 0.5, base = MathConstants.e, lt = isless_rand)
     est = SymbolicAmplitudeAwarePermutation(m = m, τ = τ, A = A, lt = lt; base)
     return entropy_renyi(x, est; base = base, q = 1)
+end
+
+"""
+    entropy_spatialperm(x, stencil; periodic = false, base = MathConstants.e)
+
+Compute the spatiotemporal permutation entropy of `x`, which is a higher-dimensional
+(e.g. 2D[^Ribeiro2012] or 3D[^Schlemmer2018] array), using the given stencil for symbolizing sub-matrices,
+using circular wrapping around array boundaries if `periodic == true`.
+
+Short-hand for `entropy_renyi(x, SpatialSymbolicPermutation(stencil, x, periodic), base = base, q = 1)`.
+
+See also: [`SpatialSymbolicPermutation`](@ref), [`entropy_renyi`](@ref).
+
+[^Ribeiro2012]:
+    Ribeiro et al. (2012). Complexity-entropy causality plane as a complexity measure
+    for two-dimensional patterns. https://doi.org/10.1371/journal.pone.0040689
+
+[^Schlemmer2018]:
+    Schlemmer et al. (2018). Spatiotemporal Permutation Entropy as a Measure for
+    Complexity of Cardiac Arrhythmia. https://doi.org/10.3389/fphy.2018.00039
+"""
+function entropy_spatialperm(x, stencil; periodic = false, base = MathConstants.e)
+    est = SpatialSymbolicPermutation(stencil, x, periodic)
+    renyi_entropy(x, est; base = base, q = 1)
 end

@@ -2,7 +2,6 @@
 
 Many methods in the literature compute (Shannon) entropy in ways that don't explicitly result in probability distributions, so they can't be used in combination with [`probabilities`](@ref), [`entropy_renyi`](@ref) or [`entropy_tsallis`](@ref). Instead, they appear here as stand-alone functions.
 
-
 ## Nearest neighbors entropy
 
 ```@docs
@@ -62,6 +61,7 @@ fig
 entropy_perm
 entropy_weightedperm
 entropy_ampperm
+entropy_spatialperm
 ```
 
 ### Example
@@ -162,4 +162,11 @@ lines!(az, t, z; color = Cycled(3), label = "h=$(h=round(h_z, sigdigits = 5))");
 for a in (ax, ay, az); axislegend(a); end
 for a in (ax, ay); hidexdecorations!(a; grid=false); end
 fig
+```
+
+## Binning-based entropy
+
+```@docs
+entropy_visitfreq
+entropy_transferoperator
 ```

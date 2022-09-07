@@ -1,4 +1,3 @@
-using CairoMakie
 # %% Color theme definitions
 struct CyclicContainer <: AbstractVector{String}
     c::Vector{String}

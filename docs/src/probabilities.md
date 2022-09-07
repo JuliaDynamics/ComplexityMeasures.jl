@@ -11,37 +11,40 @@ probabilities!
 ProbabilitiesEstimator
 ```
 
-## Count occurrences (counting)
+## Estimators
+
+### Count occurrences (counting)
 
 ```@docs
 CountOccurrences
 ```
 
-## Permutation (symbolic)
+### Permutation (symbolic)
 
 ```@docs
 SymbolicPermutation
+SpatialSymbolicPermutation
 ```
 
-## Visitation frequency (binning)
+### Visitation frequency (binning)
 
 ```@docs
 VisitationFrequency
 ```
 
-### Specifying binning/boxes
+#### Specifying binning/boxes
 
 ```@docs
 RectangularBinning
 ```
 
-## Transfer operator (binning)
+### Transfer operator (binning)
 
 ```@docs
 TransferOperator
 ```
 
-### Utility methods/types
+#### Utility methods/types
 
 ```@docs
 InvariantMeasure
@@ -49,13 +52,13 @@ invariantmeasure
 transfermatrix
 ```
 
-## Kernel density
+### Kernel density
 
 ```@docs
 NaiveKernel
 ```
 
-### Example
+#### Example
 
 Here, we draw some random points from a 2D normal distribution. Then, we use kernel 
 density estimation to associate a probability to each point `p`, measured by how many 
@@ -76,7 +79,7 @@ ax.zticklabelsvisible = false
 fig
 ```
 
-## Wavelet
+### Wavelet
 
 ```@docs
 WaveletOverlap

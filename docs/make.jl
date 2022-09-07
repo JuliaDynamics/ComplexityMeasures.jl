@@ -8,7 +8,7 @@ using DelayEmbeddings
 using Documenter
 using DocumenterTools: Themes
 using Entropies
-using PyPlot
+using CairoMakie
 using DynamicalSystems
 using Wavelets
 
@@ -29,7 +29,6 @@ Themes.compile(joinpath(@__DIR__, "juliadynamics-light.scss"), joinpath(@__DIR__
 Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-dark.css"))
 
 # %% Build docs
-PyPlot.ioff()
 cd(@__DIR__)
 ENV["JULIA_DEBUG"] = "Documenter"
 
@@ -64,5 +63,3 @@ if CI
         push_preview = true
     )
 end
-PyPlot.close("all")
-PyPlot.ion()

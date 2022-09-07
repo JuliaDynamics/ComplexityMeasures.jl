@@ -454,3 +454,21 @@ See also: [`TransferOperator`](@ref).
 function transfermatrix(iv::InvariantMeasure)
     return iv.to.transfermatrix, iv.to.bins
 end
+
+"""
+    entropy_transferoperator(x, binning::RectangularBinning; base = MathConstants.e)
+
+Compute the (Shannon) entropy of `x` using an approximation to the transfer operator over
+the state-space coarse graining produced by the provided `binning` scheme.
+
+Short-hand for `renyi_entropy(x, TransferOperator(binning); base = base, q = 1)`.
+
+See also: [`TransferOperator`](@ref).
+
+[^Diego2019]: Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation
+    using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
+"""
+function entropy_transferoperator(x, b::RectangularBinning)
+    est = TransferOperator(binning)
+    renyi_entropy(x, est; base = base, q = 1)
+end
