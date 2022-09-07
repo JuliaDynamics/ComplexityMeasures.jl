@@ -6,7 +6,7 @@ export entropy_tsallis
 Compute the Tsallis entropy of `x` (Tsallis, 1998)[^Tsallis1988].
 
 ```math
-S_q(\\bf p) = \\dfrac{k}{q - 1}\\left(1 - \\sum_{p_i \\in \\bf p} \\right)
+S_q(\\bf p) = \\dfrac{k}{q - 1}\\left(1 - \\sum_{p_i \\in \\bf p} p_i^q\\right)
 ```
 
 [^Tsallis1988]: Tsallis, C. (1988). Possible generalization of Boltzmann-Gibbs statistics. Journal of statistical physics, 52(1), 479-487.
