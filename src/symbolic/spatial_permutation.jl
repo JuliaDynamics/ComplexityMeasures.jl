@@ -4,7 +4,7 @@ export SpatialSymbolicPermutation
     SpatialSymbolicPermutation(stencil, x, periodic = true)
 A symbolic, permutation-based probabilities/entropy estimator for spatiotemporal systems.
 The data are a high-dimensional array `x`, such as 2D [^Ribeiro2012] or 3D [^Schlemmer2018].
-This approach is also known as _Spatiotemporal Permutation Entropy_.
+This approach is also known as _spatiotemporal permutation entropy_.
 `x` is given because we need to know its size for optimization and bound checking.
 
 A _stencil_ defines what local area around each pixel to
