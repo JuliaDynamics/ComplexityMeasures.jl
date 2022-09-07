@@ -5,7 +5,7 @@ export SymbolicAmplitudeAwarePermutation
 
 See docstring for [`SymbolicPermutation`](@ref).
 """
-struct SymbolicAmplitudeAwarePermutation{F} <: PermutationProbabilityEstimator
+struct SymbolicAmplitudeAwarePermutation{F} <: ProbabilitiesEstimator
     τ::Int
     m::Int
     A::Float64

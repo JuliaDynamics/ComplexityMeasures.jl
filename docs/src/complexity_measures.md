@@ -1,7 +1,7 @@
 # Complexity measures
 
-## Dispersion entropy
+## Sample entropy
 
-```@docs
-dispersion_entropy
-```
+## Approximate entropy
+
+## Disequilibrium

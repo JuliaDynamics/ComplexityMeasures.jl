@@ -1,7 +1,7 @@
 using DelayEmbeddings
 using StatsBase
 
-export dispersion_entropy
+export entropy_dispersion
 
 """
     embed_symbols(s::AbstractVector{T}, m, τ) {where T} → Dataset{m, T}
@@ -25,7 +25,7 @@ end
 
 
 """
-    dispersion_entropy(x, s = GaussianSymbolization(n_categories = 5);
+    entropy_dispersion(x, s = GaussianSymbolization(n_categories = 5);
         m = 3, τ = 1, q = 1, base = MathConstants.e)
 
 Compute the (order-`q` generalized) dispersion entropy to the given `base` of the
@@ -49,7 +49,7 @@ Li et al. (2018) recommends that `x` has at least 1000 data points.
 [^Li2018]: Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale dispersion entropy and wavelet threshold denoising. Entropy, 21(1), 11.
 [^Azami2018]: Azami, H., & Escudero, J. (2018). Coarse-graining approaches in univariate multiscale sample and dispersion entropy. Entropy, 20(2), 138.
 """
-function dispersion_entropy(x::AbstractVector,
+function entropy_dispersion(x::AbstractVector,
         s::GaussianSymbolization = GaussianSymbolization(n_categories = 5);
         m = 2, τ = 1, q = 1, base = MathConstants.e)
     symbols = symbolize(x, s)

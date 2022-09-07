@@ -1,15 +1,15 @@
 using Neighborhood: Theiler, KDTree, BruteForce, bulkisearch, searchstructure
 using Distances: Metric, Euclidean
 export NaiveKernel, KDTree, BruteForce
-
+export entropy_kernel
 """
     NaiveKernel(ϵ::Real, ss = KDTree; w = 0, metric = Euclidean()) <: ProbabilitiesEstimator
 
-Estimate probabilities/entropy using a "naive" kernel density estimation approach (KDE), as 
+Estimate probabilities/entropy using a "naive" kernel density estimation approach (KDE), as
 discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
 
-Probabilities ``P(\\mathbf{x}, \\epsilon)`` are assigned to every point ``\\mathbf{x}`` by 
-counting how many other points occupy the space spanned by 
+Probabilities ``P(\\mathbf{x}, \\epsilon)`` are assigned to every point ``\\mathbf{x}`` by
+counting how many other points occupy the space spanned by
 a hypersphere of radius `ϵ` around ``\\mathbf{x}``, according to:
 
 ```math
@@ -45,4 +45,23 @@ function probabilities(x::DelayEmbeddings.AbstractDataset, est::NaiveKernel)
     idxs = bulkisearch(ss, x.data, WithinRange(est.ϵ), theiler)
     p = Float64.(length.(idxs))
     return Probabilities(p)
+end
+
+"""
+    entropy_kernel(x; ϵ::Real = 0.2*StatsBase.std(x), method = KDTree; w = 0,
+        metric = Euclidean(), base = MathConstants.e)
+
+Calculate Shannon entropy using the "naive" kernel density estimation approach (KDE), as
+discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
+
+Shorthand for `entropy_renyi(x, NaiveKernel(ϵ, method, w = w, metric = metric), q = 1, base = base)`.
+
+See also: [`NaiveKernel`](@ref), [`entropy_renyi`](@ref).
+
+[^PrichardTheiler1995]: Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis. Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
+"""
+function entropy_kernel(x; ϵ::Real = 0.2*StatsBase.std(x), method = KDTree, w = 0,
+        metric = Euclidean(), base = MathConstants.e)
+    est = NaiveKernel(ϵ, method, w = w, metric = metric)
+    return entropy_renyi(x, est; base = base, q = 1)
 end

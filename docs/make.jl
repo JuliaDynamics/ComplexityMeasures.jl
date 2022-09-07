@@ -35,12 +35,14 @@ ENV["JULIA_DEBUG"] = "Documenter"
 
 PAGES = [
     "Entropies.jl" => "index.md",
-    "Probability estimation" => "probabilities.md",
-    "Entropy (Rényi)" => "renyi_entropy.md",
-    "Entropy (Tsallis)" => "tsallis_entropy.md",
+    "Probabilities" => "probabilities.md",
+    "Generalized entropy" => "generalized_entropies.md",
+    "Shannon entropy" => "shannon_entropies.md",
     "Complexity measures" => "complexity_measures.md",
     "Utility methods" => "utils.md",
 ]
+
+include("style.jl")
 
 makedocs(
     modules = [Entropies],

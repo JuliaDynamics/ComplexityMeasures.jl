@@ -3,7 +3,7 @@ export SymbolicPermutation
 """
 A probability estimator based on permutations.
 """
-abstract type PermutationProbabilityEstimator <: SymbolicProbabilityEstimator end
+abstract type PermutationProbabilityEstimator <: ProbabilitiesEstimator end
 
 """
     SymbolicPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: ProbabilityEstimator

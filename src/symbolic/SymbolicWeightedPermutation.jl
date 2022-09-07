@@ -8,7 +8,7 @@ export SymbolicWeightedPermutation
 
 See docstring for [`SymbolicPermutation`](@ref).
 """
-struct SymbolicWeightedPermutation{F} <: PermutationProbabilityEstimator
+struct SymbolicWeightedPermutation{F} <: ProbabilitiesEstimator
     τ::Int
     m::Int
     lt::F

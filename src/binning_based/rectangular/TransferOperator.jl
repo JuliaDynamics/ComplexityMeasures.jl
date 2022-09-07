@@ -1,7 +1,7 @@
 using DelayEmbeddings, SparseArrays
 include("GroupSlices.jl")
 
-export 
+export
     TransferOperator, # the probabilities estimator
     InvariantMeasure, invariantmeasure,
     transfermatrix
@@ -9,21 +9,21 @@ export
 """
     TransferOperator(ϵ::RectangularBinning) <: BinningProbabilitiesEstimator
 
-A probability estimator based on binning data into rectangular boxes dictated by 
-the binning scheme `ϵ`, then approxmating the transfer (Perron-Frobenius) operator 
-over the bins, then taking the invariant measure associated with that transfer operator 
+A probability estimator based on binning data into rectangular boxes dictated by
+the binning scheme `ϵ`, then approxmating the transfer (Perron-Frobenius) operator
+over the bins, then taking the invariant measure associated with that transfer operator
 as the bin probabilities. Assumes that the input data are sequential (time-ordered).
 
 This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
 
 ## Description
 
-The transfer operator ``P^{N}``is computed as an `N`-by-`N` matrix of transition 
-probabilities between the states defined by the partition elements, where `N` is the 
-number of boxes in the partition that is visited by the orbit/points. 
+The transfer operator ``P^{N}``is computed as an `N`-by-`N` matrix of transition
+probabilities between the states defined by the partition elements, where `N` is the
+number of boxes in the partition that is visited by the orbit/points.
 
-If  ``\\{x_t^{(D)} \\}_{n=1}^L`` are the ``L`` different ``D``-dimensional points over 
-which the transfer operator is approximated, ``\\{ C_{k=1}^N \\}`` are the ``N`` different 
+If  ``\\{x_t^{(D)} \\}_{n=1}^L`` are the ``L`` different ``D``-dimensional points over
+which the transfer operator is approximated, ``\\{ C_{k=1}^N \\}`` are the ``N`` different
 partition elements (as dictated by `ϵ`) that gets visited by the points, and
  ``\\phi(x_t) = x_{t+1}``, then
 
@@ -33,34 +33,34 @@ P_{ij} = \\dfrac
 {\\#\\{ x_m | x_m \\in C_i \\}},
 ```
 
-where ``\\#`` denotes the cardinal. The element ``P_{ij}`` thus indicates how many points 
-that are initially in box ``C_i`` end up in box ``C_j`` when the points in ``C_i`` are 
-projected one step forward in time. Thus, the row ``P_{ik}^N`` where 
-``k \\in \\{1, 2, \\ldots, N \\}`` gives the probability 
-of jumping from the state defined by box ``C_i`` to any of the other ``N`` states. It 
-follows that ``\\sum_{k=1}^{N} P_{ik} = 1`` for all ``i``. Thus, ``P^N`` is a row/right 
+where ``\\#`` denotes the cardinal. The element ``P_{ij}`` thus indicates how many points
+that are initially in box ``C_i`` end up in box ``C_j`` when the points in ``C_i`` are
+projected one step forward in time. Thus, the row ``P_{ik}^N`` where
+``k \\in \\{1, 2, \\ldots, N \\}`` gives the probability
+of jumping from the state defined by box ``C_i`` to any of the other ``N`` states. It
+follows that ``\\sum_{k=1}^{N} P_{ik} = 1`` for all ``i``. Thus, ``P^N`` is a row/right
 stochastic matrix.
 
 ### Invariant measure estimation from transfer operator
 
-The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where 
-``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row 
-eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The distribution 
-``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to the 
+The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where
+``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row
+eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The distribution
+``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to the
 partition `ϵ`, and can be taken as a probability distribution over the partition elements.
 
-In practice, the invariant measure ``\\mathbf{\\rho}^N`` is computed using 
+In practice, the invariant measure ``\\mathbf{\\rho}^N`` is computed using
 [`invariantmeasure`](@ref), which also approximates the transfer matrix. The invariant distribution
-is initialized as a length-`N` random distribution which is then applied to ``P^{N}``. 
-The resulting length-`N` distribution is then applied to ``P^{N}`` again. This process 
-repeats until the difference between the distributions over consecutive iterations is 
-below some threshold. 
+is initialized as a length-`N` random distribution which is then applied to ``P^{N}``.
+The resulting length-`N` distribution is then applied to ``P^{N}`` again. This process
+repeats until the difference between the distributions over consecutive iterations is
+below some threshold.
 
 ## Probability and entropy estimation
 
-- `probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinning})` estimates 
+- `probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinning})` estimates
     probabilities for the bins defined by the provided binning (`est.ϵ`)
-- `genentropy(x::AbstractDataset, est::TransferOperator{RectangularBinning})` does the same, 
+- `entropy_renyi(x::AbstractDataset, est::TransferOperator{RectangularBinning})` does the same,
     but computes generalized entropy using the probabilities.
 
 
@@ -88,11 +88,11 @@ function inds_in_terms_of_unique(x)
             end
         end
     end
-    
+
     return inds
 end
 
-# Taking advantage of the fact that x is sorted reduces runtime by 1.5 orders of magnitude 
+# Taking advantage of the fact that x is sorted reduces runtime by 1.5 orders of magnitude
 # for datasets of >100 000+ points
 function inds_in_terms_of_unique_sorted(x) # assumes sorted
     @assert issorted(x)
@@ -111,12 +111,12 @@ function inds_in_terms_of_unique_sorted(x) # assumes sorted
         end
         inds[j] = uidx
     end
-    
+
     return inds
 end
 
 function inds_in_terms_of_unique(x, sorted::Bool)
-    if sorted 
+    if sorted
         return inds_in_terms_of_unique_sorted(x)
     else
         return inds_in_terms_of_unique(x)
@@ -126,22 +126,22 @@ end
 inds_in_terms_of_unique(x::AbstractDataset) = inds_in_terms_of_unique(x.data)
 
 """
-    TransferOperatorApproximationRectangular(to, ϵ::RectangularBinning, mini, edgelengths, 
+    TransferOperatorApproximationRectangular(to, ϵ::RectangularBinning, mini, edgelengths,
         bins, sort_idxs)
 
-The `N`-by-`N` matrix `to` is an approximation to the transfer operator, subject to the 
-partition `ϵ`, computed over some set of sequentially ordered points. 
+The `N`-by-`N` matrix `to` is an approximation to the transfer operator, subject to the
+partition `ϵ`, computed over some set of sequentially ordered points.
 
-For convenience, `mini` and `edgelengths` provide the minima and box edge lengths along 
-each coordinate axis, as determined by applying `ϵ` to the points. The coordinates of 
-the (leftmost, if axis is ordered low-high) box corners are given in `bins`. 
+For convenience, `mini` and `edgelengths` provide the minima and box edge lengths along
+each coordinate axis, as determined by applying `ϵ` to the points. The coordinates of
+the (leftmost, if axis is ordered low-high) box corners are given in `bins`.
 
-Only bins actually visited by the points are considered, and `bins` give the coordinates 
-of these bins. The element `bins[i]` correspond to the `i`-th state of the system, which 
+Only bins actually visited by the points are considered, and `bins` give the coordinates
+of these bins. The element `bins[i]` correspond to the `i`-th state of the system, which
 corresponds to the `i`-th column/row of the transfer operator `to`.
 
-`sort_idxs` contains the indices that would sort the input points. `visitors` is a 
-vector of vectors, where `visitors[i]` contains the indices of the (sorted) 
+`sort_idxs` contains the indices that would sort the input points. `visitors` is a
+vector of vectors, where `visitors[i]` contains the indices of the (sorted)
 points that visits `bins[i]`.
 See also: [`RectangularBinning`](@ref).
 """
@@ -159,10 +159,10 @@ end
 """
     transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning) → TransferOperatorApproximationRectangular
 
-Estimate the transfer operator given a set of sequentially ordered points subject to a 
+Estimate the transfer operator given a set of sequentially ordered points subject to a
 rectangular partition given by `ϵ`.
 
-## Example 
+## Example
 
 ```julia
 using DynamicalSystems, Plots, Entropy
@@ -179,25 +179,25 @@ See also: [`RectangularBinning`](@ref).
 """
 function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
         boundary_condition = :circular) where {D, T<:Real}
-    
+
     L = length(pts)
     mini, edgelengths = Entropies.minima_edgelengths(pts, ϵ)
 
-    # The L points visits a total of L bins, which are the following bins: 
+    # The L points visits a total of L bins, which are the following bins:
     visited_bins = Entropies.encode_as_bin(pts, mini, edgelengths)
     sort_idxs = sortperm(visited_bins)
 
     # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
     #sort!(visited_bins)
-    
+
     # There are N=length(unique(visited_bins)) unique bins.
-    # Which of the unqiue bins does each of the L points visit? 
+    # Which of the unqiue bins does each of the L points visit?
     visits_whichbin = inds_in_terms_of_unique(visited_bins, false) # set to true when sorting is fixed
 
     # `visitors` lists the indices of the points visiting each of the N unique bins.
     slices = GroupSlices.groupslices(visited_bins)
-    visitors = GroupSlices.groupinds(slices) 
-    
+    visitors = GroupSlices.groupinds(slices)
+
     # first_visited_by == [x[1] for x in visitors]
     first_visited_by = GroupSlices.firstinds(slices)
     L = length(first_visited_by)
@@ -210,7 +210,7 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
     # one point of the orbit visiting a bin.
     target_bin_j::Int = 0
     n_visitsᵢ::Int = 0
-    
+
     if boundary_condition == :circular
         #warn("Using circular boundary condition")
         append!(visits_whichbin, [1])
@@ -220,7 +220,7 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
     else
         error("Boundary condition $(boundary_condition) not implemented")
     end
-    
+
     # Loop over the visited bins bᵢ
     for i in 1:L
         # How many times is this bin visited?
@@ -280,28 +280,28 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
             end
         end
     end
-    
+
     # Transfer operator is just the normalized transition probabilities between the boxes.
     TO = sparse(I, J, P)
-    
-    # Compute the coordinates of the visited bins. bins[i] corresponds to the i-th 
+
+    # Compute the coordinates of the visited bins. bins[i] corresponds to the i-th
     # row/column of the transfer operator
     unique!(visited_bins)
     bins = [β .* edgelengths .+ mini for β in visited_bins]
 
-    TransferOperatorApproximationRectangular(TO, ϵ, mini, edgelengths, bins, 
+    TransferOperatorApproximationRectangular(TO, ϵ, mini, edgelengths, bins,
         sort_idxs, visitors)
 end
 
-""" 
+"""
     InvariantMeasure(to, ρ)
 
-Minimal return struct for [`invariantmeasure`](@ref) that contains the estimated invariant 
-measure `ρ`, as well as the transfer operator `to` from which it is computed (including 
+Minimal return struct for [`invariantmeasure`](@ref) that contains the estimated invariant
+measure `ρ`, as well as the transfer operator `to` from which it is computed (including
 bin information).
 
 See also: [`invariantmeasure`](@ref).
-""" 
+"""
 struct InvariantMeasure{T}
     to::T
     ρ::Probabilities
@@ -316,14 +316,14 @@ import LinearAlgebra: norm
 """
     invariantmeasure(x::AbstractDataset, ϵ::RectangularBinning) → iv::InvariantMeasure
 
-Estimate an invariant measure over the points in `x` based on binning the data into 
-rectangular boxes dictated by the binning scheme `ϵ`, then approximate the transfer 
-(Perron-Frobenius) operator over the bins. From the approximation to the transfer operator, 
+Estimate an invariant measure over the points in `x` based on binning the data into
+rectangular boxes dictated by the binning scheme `ϵ`, then approximate the transfer
+(Perron-Frobenius) operator over the bins. From the approximation to the transfer operator,
 compute an invariant distribution over the bins. Assumes that the input data are sequential.
 
 Details on the estimation procedure is found the [`TransferOperator`](@ref) docstring.
 
-## Example 
+## Example
 
 ```julia
 using DynamicalSystems, Plots, Entropies
@@ -335,7 +335,7 @@ orbit = trajectory(ds, N*dt; dt = dt, Ttr = 10.0)
 # Estimate the invariant measure over some coarse graining of the orbit.
 iv = invariantmeasure(orbit, RectangularBinning(15))
 
-# Get the probabilities and bins 
+# Get the probabilities and bins
 invariantmeasure(iv)
 ```
 
@@ -343,31 +343,31 @@ invariantmeasure(iv)
 
     invariantmeasure(iv::InvariantMeasure) → (ρ::Probabilities, bins::Vector{<:SVector})
 
-From a pre-computed invariant measure, return the probabilities and associated bins. 
-The element `ρ[i]` is the probability of visitation to the box `bins[i]`. Analogous to 
-[`binhist`](@ref). 
+From a pre-computed invariant measure, return the probabilities and associated bins.
+The element `ρ[i]` is the probability of visitation to the box `bins[i]`. Analogous to
+[`binhist`](@ref).
 
 
 !!! hint "Transfer operator approach vs. naive histogram approach"
 
-    Why bother with the transfer operator instead of using regular histograms to obtain 
-    probabilities? 
-    
-    In fact, the naive histogram approach and the 
-    transfer operator approach are equivalent in the limit of long enough time series 
+    Why bother with the transfer operator instead of using regular histograms to obtain
+    probabilities?
+
+    In fact, the naive histogram approach and the
+    transfer operator approach are equivalent in the limit of long enough time series
     (as ``n \\to \\intfy``), which is guaranteed by the ergodic theorem. There is a crucial
     difference, however:
-    
-    The naive histogram approach only gives the long-term probabilities that 
-    orbits visit a certain region of the state space. The transfer operator encodes that 
-    information too, but comes with the added benefit of knowing the *transition 
-    probabilities* between states (see [`transfermatrix`](@ref)). 
+
+    The naive histogram approach only gives the long-term probabilities that
+    orbits visit a certain region of the state space. The transfer operator encodes that
+    information too, but comes with the added benefit of knowing the *transition
+    probabilities* between states (see [`transfermatrix`](@ref)).
 
 See also: [`InvariantMeasure`](@ref).
 """
-function invariantmeasure(to::TransferOperatorApproximationRectangular; 
+function invariantmeasure(to::TransferOperatorApproximationRectangular;
         N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8)
-    
+
     TO = to.transfermatrix
     #=
     # Start with a random distribution `Ρ` (big rho). Normalise it so that it
@@ -444,9 +444,9 @@ end
 """
     transfermatrix(iv::InvariantMeasure) → (M::AbstractArray{<:Real, 2}, bins::Vector{<:SVector})
 
-Return the transfer matrix/operator and corresponding bins. Here, `bins[i]` corresponds 
-to the i-th row/column of the transfer matrix. Thus, the entry `M[i, j]` is the 
-probability of jumping from the state defined by `bins[i]` to the state defined by 
+Return the transfer matrix/operator and corresponding bins. Here, `bins[i]` corresponds
+to the i-th row/column of the transfer matrix. Thus, the entry `M[i, j]` is the
+probability of jumping from the state defined by `bins[i]` to the state defined by
 `bins[j]`.
 
 See also: [`TransferOperator`](@ref).

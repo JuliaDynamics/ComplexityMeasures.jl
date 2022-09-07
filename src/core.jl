@@ -60,6 +60,7 @@ datasets and with small box sizes `ε` without memory overflow and with maximum 
 To obtain the bin information along with `p`, use [`binhist`](@ref).
 
     probabilities(x::Array_or_Dataset, n::Integer) → p::Probabilities
+
 Same as the above method, but now each dimension of the data is binned into `n::Int` equal
 sized bins instead of bins of length `ε::AbstractFloat`.
 

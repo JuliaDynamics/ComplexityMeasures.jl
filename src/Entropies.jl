@@ -8,7 +8,7 @@ module Entropies
     include("kerneldensity/kerneldensity.jl")
     include("timescales/timescales.jl")
     include("nearest_neighbors/nearest_neighbors.jl")
-    include("dispersion/dispersion_entropy.jl")
+    include("dispersion/entropy_dispersion.jl")
     include("tsallis/tsallis.jl")
     include("deprecations.jl")
 end
