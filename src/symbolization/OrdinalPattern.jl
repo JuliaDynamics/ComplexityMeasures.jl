@@ -31,12 +31,6 @@ is then encoded as an integer using [`encode_motif`](@ref).
 If using the in-place variant with univariate input, `s` must obey
 `length(s) == length(x)-(est.m-1)*est.τ`.
 
-!!! note
-    `OrdinalPattern` is intended for symbolizing *time series*. If providing a short vector,
-    say `x = [2, 5, 2, 1, 3, 4]`, then `symbolize(x, OrdinalPattern(m = 2, τ = 1)` will
-    first embed `x`, then encode/symbolize each resulting *state vector*, not the original
-    input. For symbolizing a permutation pattern, use [`encode_motif`](@ref).
-
 ## Examples
 
 ```julia
