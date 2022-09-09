@@ -1,13 +1,12 @@
+using Entropies # using before activation of environment ensures dev'ed version
 cd(@__DIR__)
 using Pkg
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
-CI && Pkg.activate(@__DIR__)
+Pkg.activate(@__DIR__)
 CI && Pkg.instantiate()
-CI && (ENV["GKSwstype"] = "100")
 using DelayEmbeddings
 using Documenter
 using DocumenterTools: Themes
-using Entropies
 using CairoMakie
 using DynamicalSystems
 using Wavelets
@@ -16,7 +15,10 @@ using Wavelets
 # download the themes
 using DocumenterTools: Themes
 for file in ("juliadynamics-lightdefs.scss", "juliadynamics-darkdefs.scss", "juliadynamics-style.scss")
-    download("https://raw.githubusercontent.com/JuliaDynamics/doctheme/master/$file", joinpath(@__DIR__, file))
+    filepath = joinpath(@__DIR__, file)
+    if !isfile(filepath)
+        download("https://raw.githubusercontent.com/JuliaDynamics/doctheme/master/$file", joinpath(@__DIR__, file))
+    end
 end
 # create the themes
 for w in ("light", "dark")
@@ -29,17 +31,9 @@ Themes.compile(joinpath(@__DIR__, "juliadynamics-light.scss"), joinpath(@__DIR__
 Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-dark.css"))
 
 # %% Build docs
-cd(@__DIR__)
 ENV["JULIA_DEBUG"] = "Documenter"
 
-PAGES = [
-    "Entropies.jl" => "index.md",
-    "Probabilities" => "probabilities.md",
-    "Generalized entropy" => "generalized_entropies.md",
-    "Shannon entropy" => "shannon_entropies.md",
-    "Complexity measures" => "complexity_measures.md",
-    "Utility methods" => "utils.md",
-]
+PAGES = include("toc.jl")
 
 include("style.jl")
 
