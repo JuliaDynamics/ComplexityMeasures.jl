@@ -13,18 +13,9 @@ export AbstractDataset, Dataset
 const Array_or_Dataset = Union{<:AbstractArray, <:AbstractDataset}
 
 include("probabilities.jl")
+include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
 include("symbolization/symbolize.jl")
-include("entropies/entropies.jl")
-include("histogram_estimation.jl")
-include("counting_based/CountOccurrences.jl")
-include("symbolic/symbolic.jl")
-include("binning_based/rectangular/rectangular_estimators.jl")
-include("kerneldensity/kerneldensity.jl")
-include("timescales/timescales.jl")
-include("nearest_neighbors/nearest_neighbors.jl")
-include("dispersion/entropy_dispersion.jl")
-include("tsallis/tsallis.jl")
 include("deprecations.jl")
 
 
