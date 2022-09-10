@@ -13,6 +13,7 @@ abstract type PermutationProbabilityEstimator <: ProbabilitiesEstimator end
 Symbolic, permutation-based probabilities/entropy estimators.
 `m` is the permutation order (or the symbol size or the embedding dimension) and
 `τ` is the delay time (or lag).
+They are used to define the permutation entropies[^BandtPompe2002].
 
 ## Repeated values during symbolization
 
