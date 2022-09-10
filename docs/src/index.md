@@ -34,9 +34,11 @@ Thus, any of the implemented [probabilities estimators](@ref estimators) can be 
 
 
 !!! tip "There aren't many entropies, really."
-    A crucial thing to clarify, is that many quantities that are named as entropies (e.g., permutation entropy ([`entropy_permutation`](@ref)), the wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are in fact new probability estimators. They simply devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. While in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref), they really aren't anything more than 3-lines-of-code wrappers that call [`entropy_shannon`](@ref) with the appropriate [`ProbabilityEstimator`](@ref).
+    A crucial thing to clarify is that many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are new probability estimators. They simply devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probability estimators are smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
 
-    There are only a few exceptions to this rule, which are quantities that are able to compute Shannon entropies via alternate means, without explicitly computing some probability distributions, such as [TODO ADD EXAMPLE].
+    While in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref), they really aren't anything more than 2-lines-of-code wrappers that call [`entropy_shannon`](@ref) with the appropriate [`ProbabilityEstimator`](@ref).
+
+    There are only a few exceptions to this rule, which are quantities that are able to compute Shannon entropies via alternate means, without explicitly computing some probability distributions, such as [`entropy_kraskov`](@ref).
 
 
 ### Complexity measures
