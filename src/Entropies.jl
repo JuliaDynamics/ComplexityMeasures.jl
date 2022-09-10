@@ -1,5 +1,5 @@
 """
-A Julia language package that provides estimators for probabilities, entropies,
+A Julia package that provides estimators for probabilities, entropies,
 and complexity measures for timeseries, nonlinear dynamics and complex systems.
 It can be used as standalone or part of several projects in the JuliaDynamics organization,
 such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/)

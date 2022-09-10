@@ -8,8 +8,8 @@ using DelayEmbeddings
 using Documenter
 using DocumenterTools: Themes
 using CairoMakie
+using Entropies.Wavelets
 using DynamicalSystems
-using Wavelets
 
 # %% JuliaDynamics theme.
 # download the themes

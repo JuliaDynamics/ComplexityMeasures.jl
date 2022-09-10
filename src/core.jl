@@ -45,6 +45,15 @@ const ProbEst = ProbabilitiesEstimator # shorthand
 
 Directly count probabilities from the elements of `x` without any discretization,
 binning, or other processing (mostly useful when `x` contains categorical or integer data).
+`probabilities` always returns a [`Probabilities`](@ref) container (`Vector`-like).
+
+
+    probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
+
+Calculate probabilities representing `x` based on the provided estimator.
+The probabilities are typically unordered and may or may not contain 0s, see the
+documentation of the individual estimators for more.
+Configuration options are always given as arguments to the chosen estimator.
 
     probabilities(x::Array_or_Dataset, ε::AbstractFloat) → p::Probabilities
 
@@ -64,14 +73,6 @@ To obtain the bin information along with `p`, use [`binhist`](@ref).
 Same as the above method, but now each dimension of the data is binned into `n::Int` equal
 sized bins instead of bins of length `ε::AbstractFloat`.
 
-    probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
-
-Calculate probabilities representing `x` based on the provided
-estimator and return them as a [`Probabilities`](@ref) container (`Vector`-like).
-The probabilities are typically unordered and may or may not contain 0s, see the
-documentation of the individual estimators for more.
-
-The configuration options are always given as arguments to the chosen estimator.
 """
 function probabilities end
 

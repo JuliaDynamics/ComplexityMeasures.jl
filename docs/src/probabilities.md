@@ -5,46 +5,44 @@ For categorical or integer-valued data, probabilities can be estimated by direct
 More advanced estimators computing probabilities by first either discretizing, symbolizing or transforming the data in a way that quantifies some useful properties about the underlying data (e.g. visitation frequencies, wavelet energies, or permutation patterns), from which probability distributions can be estimated. Use `probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator)` in combination with any of the estimators listed below.
 
 ```@docs
-Probabilities
 probabilities
 probabilities!
+Probabilities
 ProbabilitiesEstimator
 ```
 
-## Estimators
-
-### Count occurrences (counting)
+## Count occurrences (counting)
 
 ```@docs
 CountOccurrences
 ```
 
-### Permutation (symbolic)
+## Permutation (symbolic)
 
 ```@docs
 SymbolicPermutation
 SpatialSymbolicPermutation
 ```
 
-### Visitation frequency (binning)
+## Visitation frequency (binning)
 
 ```@docs
 VisitationFrequency
 ```
 
-#### Specifying binning/boxes
+### Specifying binning/boxes
 
 ```@docs
 RectangularBinning
 ```
 
-### Transfer operator (binning)
+## Transfer operator (binning)
 
 ```@docs
 TransferOperator
 ```
 
-#### Utility methods/types
+### Utility methods/types
 
 ```@docs
 InvariantMeasure
@@ -52,18 +50,18 @@ invariantmeasure
 transfermatrix
 ```
 
-### Kernel density
+## Kernel density
 
 ```@docs
 NaiveKernel
 ```
 
-#### Example
+## Example
 
-Here, we draw some random points from a 2D normal distribution. Then, we use kernel 
-density estimation to associate a probability to each point `p`, measured by how many 
-points are within radius `1.5` of `p`. Plotting the actual points, along with their 
-associated probabilities estimated by the KDE procedure, we get the following surface 
+Here, we draw some random points from a 2D normal distribution. Then, we use kernel
+density estimation to associate a probability to each point `p`, measured by how many
+points are within radius `1.5` of `p`. Plotting the actual points, along with their
+associated probabilities estimated by the KDE procedure, we get the following surface
 plot.
 
 ```@example MAIN
@@ -79,7 +77,7 @@ ax.zticklabelsvisible = false
 fig
 ```
 
-### Wavelet
+## Wavelet
 
 ```@docs
 WaveletOverlap
