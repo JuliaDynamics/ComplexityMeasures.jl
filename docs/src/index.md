@@ -12,7 +12,7 @@ Entropies
 
 
 In the literature, the term "entropy" is used (and abused) in multiple contexts.
-The API of Entropies.jl and documentation aim to clarify some aspects and
+The API and documentation of Entropies.jl aim to clarify some aspects and
 provide a simple way to obtain probabilities, entropies, or other complexity measures.
 
 ### Probabilities
@@ -29,7 +29,7 @@ Entropy is an established concept in statistics, information theory, and nonline
 - Tsallis entropy [`entropy_tsallis`](@ref).
 - Shannon entropy [`entropy_shannon`](@ref), which is just a subcase of either of the above two.
 
-Computing such an entropy boils down to two simple steps: first estimating a probability distribution, and then applying one of the generalized entropy formulas to the distributions.
+Computing such an entropy most of the time boils down to two simple steps: first estimating a probability distribution, and then applying one of the generalized entropy formulas to the distributions.
 Thus, any of the implemented [probabilities estimators](@ref estimators) can be used to compute generalized entropies.
 
 

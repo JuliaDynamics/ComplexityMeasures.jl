@@ -1,6 +1,4 @@
-# Generalized entropies
-
-Computing entropy boils down to one thing: first estimating a probability distribution, then applying one of the generalized entropy formulas ([`entropy_renyi`](@ref) or [`entropy_tsallis`](@ref)) to these distributions. Thus, any of the implemented [probabilities estimators](@ref estimators) can be used to compute generalized entropies.
+# Entropies
 
 ## Rényi (generalized) entropy
 
@@ -18,3 +16,15 @@ Entropies.entropy_tsallis
 ```@docs
 entropy_shannon
 ```
+
+## Indirect entropies
+Here we list functions which compute Shannon entropies via alternate means, without explicitly computing some probability distributions.
+
+### Nearest neighbors entropy
+```@docs
+entropy_kraskov
+entropy_kozachenkoleonenko
+```
+
+## Convenience functions
+In this subsection we expand documentation strings of "entropy names" that are used commonly in the literature, such as "permutation entropy". As we made clear in [API & terminology](@ref), these are just the existing Shannon/Rényi/Tsallis entropy with a particularly chosen probability estimator.
