@@ -7,8 +7,15 @@ or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 """
 module Entropies
 
-include("core.jl")
+using DelayEmbeddings
+using DelayEmbeddings: AbstractDataset, Dataset, dimension
+export AbstractDataset, Dataset
+const Array_or_Dataset = Union{<:AbstractArray, <:AbstractDataset}
+
+include("probabilities.jl")
+include("entropies/entropies.jl")
 include("symbolization/symbolize.jl")
+include("entropies/entropies.jl")
 include("histogram_estimation.jl")
 include("counting_based/CountOccurrences.jl")
 include("symbolic/symbolic.jl")

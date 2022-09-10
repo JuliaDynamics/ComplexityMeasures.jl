@@ -5,14 +5,14 @@ import StaticArrays: SVector, MVector
     encode_as_bin(point, reference_point, edgelengths) → Vector{Int}
 
 Encode a point into its integer bin labels relative to some `reference_point`
-(always counting from lowest to highest magnitudes), given a set of box 
-`edgelengths` (one for each axis). The first bin on the positive side of 
-the reference point is indexed with 0, and the first bin on the negative 
+(always counting from lowest to highest magnitudes), given a set of box
+`edgelengths` (one for each axis). The first bin on the positive side of
+the reference point is indexed with 0, and the first bin on the negative
 side of the reference point is indexed with -1.
 
 See also: [`joint_visits`](@ref), [`marginal_visits`](@ref).
 
-## Example 
+## Example
 
 ```julia
 using Entropies
@@ -22,8 +22,10 @@ steps = [0.2, 0.2, 0.3]
 encode_as_bin(rand(3), refpoint, steps)
 ```
 """
-function encode_as_bin end 
+function encode_as_bin end
 
+# TODO: All of these methods have exactly the same source code, why not just use Union?
+# Or literally use AbstractVector{T}...
 function encode_as_bin(point::Vector{T}, reference_point, edgelengths) where {T <: Real}
     floor.(Int, (point .- reference_point) ./ edgelengths)
 end
@@ -49,16 +51,16 @@ end
     joint_visits(points, binning_scheme::RectangularBinning) → Vector{Vector{Int}}
 
 Determine which bins are visited by `points` given the rectangular binning
-scheme `ϵ`. Bins are referenced relative to the axis minima, and are 
+scheme `ϵ`. Bins are referenced relative to the axis minima, and are
 encoded as integers, such that each box in the binning is assigned a
-unique integer array (one element for each dimension). 
+unique integer array (one element for each dimension).
 
-For example, if a bin is visited three times, then the corresponding 
+For example, if a bin is visited three times, then the corresponding
 integer array will appear three times in the array returned.
 
 See also: [`marginal_visits`](@ref), [`encode_as_bin`](@ref).
 
-# Example 
+# Example
 
 ```julia
 using DelayEmbeddings, Entropies
@@ -77,12 +79,12 @@ end
     marginal_visits(points, binning_scheme::RectangularBinning, dims) → Vector{Vector{Int}}
 
 Determine which bins are visited by `points` given the rectangular binning
-scheme `ϵ`, but only along the desired dimensions `dims`. Bins are referenced 
-relative to the axis minima, and are encoded as integers, such that each box 
-in the binning is assigned a unique integer array (one element for each 
-dimension in `dims`). 
+scheme `ϵ`, but only along the desired dimensions `dims`. Bins are referenced
+relative to the axis minima, and are encoded as integers, such that each box
+in the binning is assigned a unique integer array (one element for each
+dimension in `dims`).
 
-For example, if a bin is visited three times, then the corresponding 
+For example, if a bin is visited three times, then the corresponding
 integer array will appear three times in the array returned.
 
 See also: [`joint_visits`](@ref), [`encode_as_bin`](@ref).
@@ -117,13 +119,13 @@ end
 """
     marginal_visits(joint_visits, dims) → Vector{Vector{Int}}
 
-If joint visits have been precomputed using [`joint_visits`](@ref), marginal 
-visits can be returned directly without providing the binning again 
+If joint visits have been precomputed using [`joint_visits`](@ref), marginal
+visits can be returned directly without providing the binning again
 using the `marginal_visits(joint_visits, dims)` signature.
 
 See also: [`joint_visits`](@ref), [`encode_as_bin`](@ref).
 
-# Example 
+# Example
 
 ```
 using DelayEmbeddings, Entropies
