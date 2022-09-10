@@ -11,8 +11,10 @@ using CairoMakie
 using Entropies.Wavelets
 using DynamicalSystems
 
-# %% JuliaDynamics theme.
-# download the themes
+# %% JuliaDynamics theme
+# It includes themeing for the HTML build
+# and themeing for the Makie plotting
+
 using DocumenterTools: Themes
 for file in ("juliadynamics-lightdefs.scss", "juliadynamics-darkdefs.scss", "juliadynamics-style.scss")
     filepath = joinpath(@__DIR__, file)
@@ -34,7 +36,6 @@ Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__,
 ENV["JULIA_DEBUG"] = "Documenter"
 
 PAGES = include("toc.jl")
-
 include("style.jl")
 
 makedocs(

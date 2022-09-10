@@ -6,6 +6,10 @@ function entropy_permutation(args...)
 
 end
 
+function entropy_spatial_permutation(args...)
+
+end
+
 function entropy_wavelet(args...)
 
 end

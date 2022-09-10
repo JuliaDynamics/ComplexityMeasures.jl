@@ -16,7 +16,7 @@ The API and documentation of Entropies.jl aim to clarify some aspects and
 provide a simple way to obtain probabilities, entropies, or other complexity measures.
 
 ### Probabilities
-Entropies and other complexity measures are computed based on _probability distributions_.
+Entropies and other complexity measures are typically computed based on _probability distributions_.
 These are obtained from [Input data](@ref) by a plethora of different ways.
 The central API function that returns a probability distribution (actual, just a vector of probabilities) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilityEstimator`](@ref) to specify how the probabilities are computed.
 All estimators available in Entropies.jl can be found in the [estimators page](@ref estimators).

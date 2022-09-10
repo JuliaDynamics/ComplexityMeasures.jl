@@ -1,18 +1,9 @@
-# [Shannon entropies](@id shannon_entropies)
+# Examples
 
-Many methods in the literature compute (Shannon) entropy in ways that don't explicitly result in probability distributions, so they can't be used in combination with [`probabilities`](@ref), [`entropy_renyi`](@ref) or [`entropy_tsallis`](@ref). Instead, they appear here as stand-alone functions.
-
-## Nearest neighbors entropy
-
-```@docs
-entropy_kraskov
-entropy_kozachenkoleonenko
-```
-
-### Example
+## Nearest neighbor direct entropy example
 
 This example reproduces Figure in Charzyńska & Gambin (2016)[^Charzyńska2016]. Both
-estimators nicely converge to the true entropy with increasing time series length.
+estimators nicely converge to the "true" entropy with increasing time series length.
 For a uniform 1D distribution ``U(0, 1)``, the true entropy is `0`.
 
 ```@example MAIN
@@ -29,9 +20,9 @@ for N in Ns
     kr = Float64[]
     for i = 1:nreps
         pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
-        
+
         push!(kl, entropy_kozachenkoleonenko(pts, w = 0, k = 1))
-        # with k = 1, Kraskov is virtually identical to 
+        # with k = 1, Kraskov is virtually identical to
         # Kozachenko-Leonenko, so pick a higher number of neighbors
         push!(kr, entropy_kraskov(pts, w = 0, k = 3))
     end
@@ -47,7 +38,7 @@ color = (Main.COLORS[1], 0.5))
 
 ay = Axis(fig[2,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Kraskov")
 lines!(ay, Ns, mean.(Ekr); color = Cycled(2))
-band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr); 
+band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr);
 color = (Main.COLORS[2], 0.5))
 
 fig
@@ -55,17 +46,7 @@ fig
 
 [^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy estimator with applications in systems biology. Entropy, 18(1), 13.
 
-## Permutation entropy
-
-```@docs
-entropy_perm
-entropy_weightedperm
-entropy_ampperm
-entropy_spatialperm
-```
-
-### Example
-
+## Permutation entropy example
 This example reproduces an example from Bandt and Pompe (2002), where the permutation
 entropy is compared with the largest Lyapunov exponents from time series of the chaotic
 logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
@@ -115,26 +96,27 @@ end
 fig
 ```
 
-## Dispersion entropy
 
-```@docs
-entropy_dispersion
+## Kernel density example
+Here, we draw some random points from a 2D normal distribution. Then, we use kernel density estimation to associate a probability to each point `p`, measured by how many points are within radius `1.5` of `p`. Plotting the actual points, along with their associated probabilities estimated by the KDE procedure, we get the following surface plot.
+
+```@example MAIN
+using DynamicalSystems, CairoMakie, Distributions
+𝒩 = MvNormal([1, -4], 2)
+N = 500
+D = Dataset(sort([rand(𝒩) for i = 1:N]))
+x, y = columns(D)
+p = probabilities(D, NaiveKernel(1.5))
+fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
+    markersize=8, axis=(type = Axis3,)
+)
+surface!(ax, x, y, p.p)
+ax.zlabel = "P"
+ax.zticklabelsvisible = false
+fig
 ```
 
-## Kernel entropy
-
-```@docs
-entropy_kernel
-```
-
-## Wavelet entropy
-
-```@docs
-entropy_wavelet
-```
-
-### Example
-
+## Wavelet entropy example
 The scale-resolved wavelet entropy should be lower for very regular signals (most of the
 energy is contained at one scale) and higher for very irregular signals (energy spread
 more out across scales).
@@ -162,11 +144,4 @@ lines!(az, t, z; color = Cycled(3), label = "h=$(h=round(h_z, sigdigits = 5))");
 for a in (ax, ay, az); axislegend(a); end
 for a in (ax, ay); hidexdecorations!(a; grid=false); end
 fig
-```
-
-## Binning-based entropy
-
-```@docs
-entropy_visitfreq
-entropy_transferoperator
 ```

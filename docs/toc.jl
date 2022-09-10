@@ -1,8 +1,8 @@
 ENTROPIES_PAGES = [
     "Entropies.jl" => "index.md",
     "Probabilities" => "probabilities.md",
-    "Generalized entropy" => "generalized_entropies.md",
-    "Shannon entropy" => "shannon_entropies.md",
+    "Entropies" => "entropies.md",
     "Complexity measures" => "complexity_measures.md",
+    "Entropies.jl examples" => "examples.md",
     "Utility methods" => "utils.md",
 ]
