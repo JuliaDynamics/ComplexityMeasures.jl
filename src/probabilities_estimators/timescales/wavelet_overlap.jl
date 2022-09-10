@@ -6,8 +6,8 @@ import Wavelets
 
 Apply the maximal overlap discrete wavelet transform (MODWT) to a
 signal, then compute probabilities/entropy from the energies at different
-wavelet scales. This implementation is based on Rosso et
-al. (2001)[^Rosso2001].
+wavelet scales. These probabilities are used to compute the wavelet entropy,
+according to Rosso et al. (2001)[^Rosso2001].
 
 The probability `p[i]` is the relative energy for the `i`-th wavelet scale.
 To obtain a better understanding of what these probabilities mean, we prepared
