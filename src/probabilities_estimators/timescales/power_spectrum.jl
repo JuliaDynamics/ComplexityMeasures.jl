@@ -7,7 +7,11 @@ import FFTW
 Calculate the power spectrum of a timeseries (amplitude square of its Fourier transform),
 and return the spectrum normalized to sum = 1 as probabilities.
 The Shannon entropy of these probabilities is typically referred in the literature as
-_spectral entropy_, e.g. [^Llanos2016],[^Tian2017]
+_spectral entropy_, e.g. [^Llanos2016],[^Tian2017].
+
+The simpler the temporal structure of the timeseries, the lower the entropy. However,
+you can't compare entropies of timeseries with different length, because the binning
+in spectral space depends on the length of the input.
 
 [^Llanos2016]:
     Llanos et al., _Power spectral entropy as an information-theoretic correlate of manner
@@ -23,6 +27,6 @@ struct PowerSpectrum <: ProbabilitiesEstimator end
 
 function probabilities(x, ::PowerSpectrum)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
-    f = rfft(x)
+    f = FFTW.rfft(x)
     Probabilities(abs2.(f))
 end
