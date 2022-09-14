@@ -14,4 +14,15 @@ using Entropies, Test
         @test ps isa Probabilities
         @test entropy_renyi(x, WaveletOverlap(), q = 1, base = 2) isa Real
     end
+
+    @testet "Fourier Spectrum" begin
+        N = 1000
+        t = range(0, 10π, N)
+        x = sin.(t)
+        y = @. sin(t) + sin(sqrt(3)*t)
+        z = randn(N)
+        est = PowerSpectrum()
+        ents = [entropy_renyi(w, est) for w in (x,y,z)]
+        @test ents[1] < ents[2] < ents[3]
+    end
 end
