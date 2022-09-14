@@ -15,7 +15,7 @@ using Entropies, Test
         @test entropy_renyi(x, WaveletOverlap(), q = 1, base = 2) isa Real
     end
 
-    @testet "Fourier Spectrum" begin
+    @testset "Fourier Spectrum" begin
         N = 1000
         t = range(0, 10π, N)
         x = sin.(t)

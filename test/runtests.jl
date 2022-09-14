@@ -5,9 +5,11 @@ using Wavelets
 using StaticArrays
 using Neighborhood: KDTree, BruteForce
 
-# This is how the tests should look like in the end:
-@testset "Entopies.jl tests" begin
-    include("timescales.jl")
+# TODO: This is how the tests should look like in the end:
+defaultname(file) = splitext(basename(file))[1]
+testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include(file); end
+@testset "Entopies.jl" begin
+    testfile("timescales.jl")
 end
 
 @testset "Histogram estimation" begin
