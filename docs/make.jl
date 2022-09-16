@@ -45,6 +45,7 @@ makedocs(
         assets = [
             asset("https://fonts.googleapis.com/css?family=Montserrat|Source+Code+Pro&display=swap", class=:css),
         ],
+        collapselevel = 3,
         ),
     sitename = "Entropies.jl",
     authors = "Kristian Agasøster Haaga, George Datseris",
