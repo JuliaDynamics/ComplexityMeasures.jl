@@ -7,10 +7,17 @@ function distance_to_whitenoise(p::Probabilities, N, m)
 end
 
 """
-    reverse_dispersion(x::AbstractVector{T}, s = GaussianSymbolization(5), m = 2, τ = 1)
+    reverse_dispersion(x::AbstractVector{T}, s = GaussianSymbolization(5), m = 2, τ = 1,
+        normalize = true)
 
 Compute the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019],
 which measures how far from being white noise a signal is.
+
+Like for [`Dispersion`](@ref), relative frequencies of dispersion patterns are computed
+using the symbolization scheme `s` with embedding dimension `m` and embedding delay `τ`.
+Recommended parameter values[^Li2018] are `m ∈ [2, 3]`, `τ = 1`, and
+`n_categories ∈ [3, 4, …, 8]` for the Gaussian mapping (defaults to 5).
+If `normalize == true`, then the reverse dispersion entropy is normalized to `[0, 1]`.
 
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
