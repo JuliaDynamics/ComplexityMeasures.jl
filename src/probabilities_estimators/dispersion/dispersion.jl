@@ -93,16 +93,20 @@ function probabilities(x::AbstractVector, est::Dispersion)
     p = Probabilities(hist)
 end
 
-function renyi_entropy(x::AbstractVector;
-        s::GaussianSymbolization = GaussianSymbolization(n_categories = 5),
-        m = 2, τ = 1, q = 1, base = MathConstants.e)
-    est = Dispersion(m = m, τ = τ, s = s, check_unique = true)
+function entropy_renyi(x::AbstractVector, est::Dispersion; q = 1, base = MathConstants.e)
     p = probabilities(x, est)
+    dh = entropy_renyi(p, q = q, base = base)
 
-    dh = renyi_entropy(p, q = q, base = base)
+    n, m = est.s.n_categories, est.m
 
     if est.normalize
-        return dh / log(base, s.n_categories^m)
+        # TODO: is is possible to normalize for general order `q`? Need to have a literature
+        # dive or figure it out manually.
+        if q == 1
+            return dh / log(base, n^m)
+        else
+            throw(ArgumentError("Normalization is not well defined when q != 1."))
+        end
     else
         return dh
     end

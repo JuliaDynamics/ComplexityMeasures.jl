@@ -1,3 +1,5 @@
+using Entropies, Test
+
 @testset "Dispersion methods" begin
     x = rand(100)
 
@@ -25,11 +27,9 @@
         ps = probabilities(x, Dispersion())
         @test ps isa Probabilities
 
-        de = entropy_renyi(x, Dispersion(normalize = false), q = 1, base = 2)
         de_norm = entropy_renyi(x, Dispersion(normalize = true), q = 1, base = 2)
-        @test de isa Real
-        @test de_norm isa Real
-        @test de >= 0.0
-        @test de_norm >= 0.0
+        @test 0.0 <= de_norm <= 1.0
+
+        @test_throws ArgumentError entropy_renyi(x, Dispersion(normalize = true), q = 2)
     end
 end
