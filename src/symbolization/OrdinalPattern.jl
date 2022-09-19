@@ -3,8 +3,15 @@ export OrdinalPattern
 """
     OrdinalPattern(m = 3, τ = 1; lt = est.lt)
 
-A symbolization scheme that converts the input data to ordinal patterns, which are then
-encoded to integers using [`encode_motif`](@ref).
+A symbolization scheme that converts the input time series to ordinal patterns, which are
+then encoded to integers using [`encode_motif`](@ref).
+
+!!! note
+    `OrdinalPattern` is intended for symbolizing *time series*. If providing a short vector,
+    say `x = [2, 5, 2, 1, 3, 4]`, then `symbolize(x, OrdinalPattern(m = 2, τ = 1)` will
+    first embed `x`, then encode/symbolize each resulting *state vector*, not the original
+    input. For symbolizing a single vector, use `sortperm` on it and use
+    [`encode_motif`](@ref) on the resulting permutation indices.
 
 # Usage
 
@@ -12,13 +19,15 @@ encoded to integers using [`encode_motif`](@ref).
     symbolize!(s, x, scheme::OrdinalPattern) → Vector{Int}
 
 If applied to an `m`-dimensional [`Dataset`](@ref) `x`, then `m` and `τ` are ignored,
-and each `m`-dimensional `xᵢ ∈ x` is directly encoded using [`encode_motif`](@ref).
+and `m`-dimensional permutation patterns are obtained directly for each
+`xᵢ ∈ x`. Permutation patterns are then encoded as integers using [`encode_motif`](@ref).
 Optionally, symbols can be written directly into a pre-allocated integer vector `s`, where
 `length(s) == length(x)` using `symbolize!`.
 
 If applied to a univariate vector `x`, then `x` is first converted to a delay
-reconstruction using embedding dimension `m` and lag `τ`. The resulting
-`m`-dimensional `xᵢ ∈ x` are then encoded using [`encode_motif`](@ref).
+reconstruction using embedding dimension `m` and lag `τ`. Permutation patterns are then
+computed for each of the resulting `m`-dimensional `xᵢ ∈ x`, and each permutation
+is then encoded as an integer using [`encode_motif`](@ref).
 If using the in-place variant with univariate input, `s` must obey
 `length(s) == length(x)-(est.m-1)*est.τ`.
 

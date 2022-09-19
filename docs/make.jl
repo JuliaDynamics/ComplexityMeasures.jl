@@ -1,22 +1,26 @@
+using Entropies # using before activation of environment ensures dev'ed version
 cd(@__DIR__)
 using Pkg
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
-CI && Pkg.activate(@__DIR__)
+Pkg.activate(@__DIR__)
 CI && Pkg.instantiate()
-CI && (ENV["GKSwstype"] = "100")
 using DelayEmbeddings
 using Documenter
 using DocumenterTools: Themes
-using Entropies
-using PyPlot
+using CairoMakie
+using Entropies.Wavelets
 using DynamicalSystems
-using Wavelets
 
-# %% JuliaDynamics theme.
-# download the themes
+# %% JuliaDynamics theme
+# It includes themeing for the HTML build
+# and themeing for the Makie plotting
+
 using DocumenterTools: Themes
 for file in ("juliadynamics-lightdefs.scss", "juliadynamics-darkdefs.scss", "juliadynamics-style.scss")
-    download("https://raw.githubusercontent.com/JuliaDynamics/doctheme/master/$file", joinpath(@__DIR__, file))
+    filepath = joinpath(@__DIR__, file)
+    if !isfile(filepath)
+        download("https://raw.githubusercontent.com/JuliaDynamics/doctheme/master/$file", joinpath(@__DIR__, file))
+    end
 end
 # create the themes
 for w in ("light", "dark")
@@ -29,18 +33,10 @@ Themes.compile(joinpath(@__DIR__, "juliadynamics-light.scss"), joinpath(@__DIR__
 Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-dark.css"))
 
 # %% Build docs
-PyPlot.ioff()
-cd(@__DIR__)
 ENV["JULIA_DEBUG"] = "Documenter"
 
-PAGES = [
-    "Entropies.jl" => "index.md",
-    "Estimators" => "estimators.md",
-    "Remaining" => [
-        "DispersionEntropy.md",
-    ],
-    "Utility methods" => "utils.md",
-]
+PAGES = include("toc.jl")
+include("style.jl")
 
 makedocs(
     modules = [Entropies],
@@ -49,6 +45,7 @@ makedocs(
         assets = [
             asset("https://fonts.googleapis.com/css?family=Montserrat|Source+Code+Pro&display=swap", class=:css),
         ],
+        collapselevel = 3,
         ),
     sitename = "Entropies.jl",
     authors = "Kristian Agasøster Haaga, George Datseris",
@@ -62,5 +59,3 @@ if CI
         push_preview = true
     )
 end
-PyPlot.close("all")
-PyPlot.ion()
