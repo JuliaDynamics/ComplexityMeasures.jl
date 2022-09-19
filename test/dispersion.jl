@@ -2,7 +2,6 @@
     x = rand(100)
 
     @testset "Dispersion" begin
-        est = Dispersion()
 
         @testset "Internals" begin
             # Li et al. (2018) recommends using at least 1000 data points when estimating
@@ -23,11 +22,11 @@
             @test sum(hist) ≈ 1.0
         end
 
-        ps = probabilities(x, est)
+        ps = probabilities(x, Dispersion())
         @test ps isa Probabilities
 
-        de = entropy_renyi(x, est, q = 1, base = 2, normalize = false)
-        de_norm = entropy_renyi(x, est, q = 1, base = 2, normalize = true)
+        de = entropy_renyi(x, Dispersion(normalize = false), q = 1, base = 2)
+        de_norm = entropy_renyi(x, Dispersion(normalize = true), q = 1, base = 2)
         @test de isa Real
         @test de_norm isa Real
         @test de >= 0.0
@@ -39,8 +38,8 @@
         ps = probabilities(x, est)
         @test ps isa Probabilities
 
-        de = entropy_renyi(x, est, q = 1, base = 2, normalize = false)
-        de_norm = entropy_renyi(x, est, q = 1, base = 2, normalize = true)
+        de = entropy_renyi(x, ReverseDispersion(normalize = false), q = 1, base = 2)
+        de_norm = entropy_renyi(x, ReverseDispersion(normalize = true), q = 1, base = 2)
         @test de isa Real
         @test de_norm isa Real
         @test de >= 0.0
