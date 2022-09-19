@@ -158,16 +158,16 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropies
-            @test entropy_renyi!(s, x, est, q = 1) ≈ 0  # Regular order-1 entropy
-            @test entropy_renyi!(s, y, est, q = 1) >= 0 # Regular order-1 entropy
-            @test entropy_renyi!(s, x, est, q = 2) ≈ 0  # Higher-order entropy
-            @test entropy_renyi!(s, y, est, q = 2) >= 0 # Higher-order entropy
+            @test Entropies.entropy_renyi!(s, x, est, q = 1) ≈ 0  # Regular order-1 entropy
+            @test Entropies.entropy_renyi!(s, y, est, q = 1) >= 0 # Regular order-1 entropy
+            @test Entropies.entropy_renyi!(s, x, est, q = 2) ≈ 0  # Higher-order entropy
+            @test Entropies.entropy_renyi!(s, y, est, q = 2) >= 0 # Higher-order entropy
 
             # For a time series
             sz = zeros(Int, N - (est.m-1)*est.τ)
             @test probabilities!(sz, z, est) isa Probabilities
             @test probabilities(z, est) isa Probabilities
-            @test entropy_renyi!(sz, z, est) isa Real
+            @test Entropies.entropy_renyi!(sz, z, est) isa Real
             @test entropy_renyi(z, est) isa Real
         end
 

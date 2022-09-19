@@ -1,4 +1,4 @@
-export entropy_renyi, entropy_renyi!
+export entropy_renyi
 
 """
     entropy_renyi(p::Probabilities; q = 1.0, base = MathConstants.e)
