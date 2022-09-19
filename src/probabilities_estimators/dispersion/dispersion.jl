@@ -29,9 +29,8 @@ The original dispersion entropy paper does not discuss the technique as a probab
 estimator per se, but does require a step where probabilities over dispersion patterns
 are explicitly computed. Hence, we provide `Dispersion` as a probability estimator.
 
-The `Dispersion` estimator can be used both to compute probability distributions over
-dispersion patterns directly. To compute (normalized) dispersion entropy of order `q` to a
-given `base` on the univariate input time series `x` by calling
+To compute (normalized) dispersion entropy of order `q` to a given `base` on the
+univariate input time series `x`, do:
 
 ```julia
 renyi_entropy(x, Dispersion(normalize = true), base = base, q = q)
@@ -90,17 +89,17 @@ function probabilities(x::AbstractVector, est::Dispersion)
     m, τ = est.m, est.τ
     τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
     dispersion_patterns = genembed(symbols, τs, ones(m))
-
-    𝐩 = Probabilities(dispersion_histogram(dispersion_patterns, N, est.m, est.τ))
+    hist = dispersion_histogram(dispersion_patterns, N, est.m, est.τ)
+    p = Probabilities(hist)
 end
 
 function renyi_entropy(x::AbstractVector;
         s::GaussianSymbolization = GaussianSymbolization(n_categories = 5),
         m = 2, τ = 1, q = 1, base = MathConstants.e)
     est = Dispersion(m = m, τ = τ, s = s, check_unique = true)
-    𝐩 = probabilities(x, est)
+    p = probabilities(x, est)
 
-    dh = renyi_entropy(𝐩, q = q, base = base)
+    dh = renyi_entropy(p, q = q, base = base)
 
     if est.normalize
         return dh / log(base, s.n_categories^m)

@@ -32,18 +32,4 @@
         @test de >= 0.0
         @test de_norm >= 0.0
     end
-
-    @testset "ReverseDispersion" begin
-        est = ReverseDispersion()
-        ps = probabilities(x, est)
-        @test ps isa Probabilities
-
-        de = entropy_renyi(x, ReverseDispersion(normalize = false), q = 1, base = 2)
-        de_norm = entropy_renyi(x, ReverseDispersion(normalize = true), q = 1, base = 2)
-        @test de isa Real
-        @test de_norm isa Real
-        @test de >= 0.0
-        @test de_norm >= 0.0
-    end
-
 end

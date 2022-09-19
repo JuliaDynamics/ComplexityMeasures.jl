@@ -11,6 +11,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
 @testset "Entropies.jl" begin
     testfile("timescales.jl")
     testfile("dispersion.jl")
+    testfile("complexity_measures.jl")
 end
 
 @testset "Histogram estimation" begin
