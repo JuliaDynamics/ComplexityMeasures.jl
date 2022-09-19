@@ -1,3 +1,5 @@
+export reverse_dispersion
+
 function distance_to_whitenoise(p::Probabilities, N, m)
     # We can safely skip non-occurring symbols, because they don't contribute
     # to the sum in eq. 3 in Li et al. (2019)
