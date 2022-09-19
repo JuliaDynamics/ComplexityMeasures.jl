@@ -28,7 +28,6 @@ SpatialSymbolicPermutation
 
 ```@docs
 Dispersion
-ReverseDispersion
 ```
 
 ## Visitation frequency (binning)
