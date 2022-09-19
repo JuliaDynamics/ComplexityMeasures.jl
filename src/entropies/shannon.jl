@@ -2,7 +2,7 @@ export entropy_shannon
 
 """
     entropy_shannon(args...; base = MathConstants.e)
-Equivalent with `entropy_renyi(args...; base, q = 1)` and provided solely for convenience.
+Equivalent to `entropy_renyi(args...; base, q = 1)` and provided solely for convenience.
 Compute the Shannon entropy, given by
 ```math
 H(p) = - \\sum_i p[i] \\log(p[i])
