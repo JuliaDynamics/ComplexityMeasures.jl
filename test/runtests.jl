@@ -290,7 +290,7 @@ end
             RectangularBinning([0.2, 0.3, 0.3])
         ]
 
-        @testset "Binning test $i" for i in 1:length(binnings)
+        @testset "Binning test $i" for i in eachindex(binnings)
             est = VisitationFrequency(binnings[i])
             @test probabilities(D, est) isa Probabilities
             @test entropy_renyi(D, est, q=1, base = 3) isa Real # Regular order-1 entropy
@@ -310,7 +310,7 @@ end
             RectangularBinning([0.2, 0.3, 0.3])
         ]
 
-        @testset "Binning test $i" for i in 1:length(binnings)
+        @testset "Binning test $i" for i in eachindex(binnings)
             to = Entropies.transferoperator(D, binnings[i])
             @test to isa Entropies.TransferOperatorApproximationRectangular
 
