@@ -158,16 +158,16 @@ end
             @test sum(p2) ≈ 1.0
 
             # Entropies
-            @test entropy_renyi!(s, x, est, q = 1) ≈ 0  # Regular order-1 entropy
-            @test entropy_renyi!(s, y, est, q = 1) >= 0 # Regular order-1 entropy
-            @test entropy_renyi!(s, x, est, q = 2) ≈ 0  # Higher-order entropy
-            @test entropy_renyi!(s, y, est, q = 2) >= 0 # Higher-order entropy
+            @test Entropies.entropy_renyi!(s, x, est, q = 1) ≈ 0  # Regular order-1 entropy
+            @test Entropies.entropy_renyi!(s, y, est, q = 1) >= 0 # Regular order-1 entropy
+            @test Entropies.entropy_renyi!(s, x, est, q = 2) ≈ 0  # Higher-order entropy
+            @test Entropies.entropy_renyi!(s, y, est, q = 2) >= 0 # Higher-order entropy
 
             # For a time series
             sz = zeros(Int, N - (est.m-1)*est.τ)
             @test probabilities!(sz, z, est) isa Probabilities
             @test probabilities(z, est) isa Probabilities
-            @test entropy_renyi!(sz, z, est) isa Real
+            @test Entropies.entropy_renyi!(sz, z, est) isa Real
             @test entropy_renyi(z, est) isa Real
         end
 
@@ -290,7 +290,7 @@ end
             RectangularBinning([0.2, 0.3, 0.3])
         ]
 
-        @testset "Binning test $i" for i in 1:length(binnings)
+        @testset "Binning test $i" for i in eachindex(binnings)
             est = VisitationFrequency(binnings[i])
             @test probabilities(D, est) isa Probabilities
             @test entropy_renyi(D, est, q=1, base = 3) isa Real # Regular order-1 entropy
@@ -310,7 +310,7 @@ end
             RectangularBinning([0.2, 0.3, 0.3])
         ]
 
-        @testset "Binning test $i" for i in 1:length(binnings)
+        @testset "Binning test $i" for i in eachindex(binnings)
             to = Entropies.transferoperator(D, binnings[i])
             @test to isa Entropies.TransferOperatorApproximationRectangular
 

@@ -50,4 +50,4 @@ The input data type typically depend on the probability estimator chosen. In gen
 
 - _Timeseries_, which are `AbstractVector{<:Real}`, used in e.g. with [`WaveletOverlap`](@ref).
 - _Multi-dimensional timeseries, or datasets, or state space sets_, which are `Dataset`, used e.g. with [`NaiveKernel`](@ref).
-- _Spatial data_, which are higher dimensional standard `Array`, used e.g. with  [`SpatialSymbolicPermutation`](@ref).
+- _Spatial data_, which are higher dimensional standard `Array`s, used e.g. with  [`SpatialSymbolicPermutation`](@ref).

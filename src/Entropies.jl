@@ -1,7 +1,7 @@
 """
 A Julia package that provides estimators for probabilities, entropies,
 and complexity measures for timeseries, nonlinear dynamics and complex systems.
-It can be used as standalone or part of several projects in the JuliaDynamics organization,
+It can be used as a standalone package, or as part of several projects in the JuliaDynamics organization,
 such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/)
 or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 """
@@ -12,10 +12,10 @@ using DelayEmbeddings: AbstractDataset, Dataset, dimension
 export AbstractDataset, Dataset
 const Array_or_Dataset = Union{<:AbstractArray, <:AbstractDataset}
 
+include("symbolization/symbolize.jl")
 include("probabilities.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
-include("symbolization/symbolize.jl")
 include("deprecations.jl")
 
 
