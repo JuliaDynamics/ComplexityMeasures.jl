@@ -8,8 +8,9 @@ using Neighborhood: KDTree, BruteForce
 # TODO: This is how the tests should look like in the end:
 defaultname(file) = splitext(basename(file))[1]
 testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include(file); end
-@testset "Entopies.jl" begin
+@testset "Entropies.jl" begin
     testfile("timescales.jl")
+    testfile("dispersion.jl")
 end
 
 @testset "Histogram estimation" begin
@@ -323,29 +324,6 @@ end
 
             @test probabilities(D, TransferOperator(binnings[i])) isa Probabilities
         end
-    end
-
-    @testset "Dispersion entropy" begin
-        # Li et al. (2018) recommends using at least 1000 data points when estimating
-        # dispersion entropy.
-        x = rand(1000)
-        n_categories = 4
-        m = 4
-        τ = 1
-        s = GaussianSymbolization(n_categories = n_categories)
-
-        # Symbols should be in the set [1, 2, …, n_categories].
-        symbols = Entropies.symbolize(x, s)
-        @test all([s ∈ collect(1:n_categories) for s in symbols])
-
-        # Dispersion patterns should have a normalized histogram that sums to 1.0.
-        dispersion_patterns = DelayEmbeddings.embed(symbols, m, τ)
-        hist = Entropies.dispersion_histogram(dispersion_patterns, length(x), m, τ)
-        @test sum(hist) ≈ 1.0
-
-        de = entropy_dispersion(x, s, m = 4, τ = 1)
-        @test typeof(de) <: Real
-        @test de >= 0.0
     end
 
     @testset "Tsallis" begin

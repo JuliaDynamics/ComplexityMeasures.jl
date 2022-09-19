@@ -24,6 +24,13 @@ SymbolicPermutation
 SpatialSymbolicPermutation
 ```
 
+## Dispersion (symbolic)
+
+```@docs
+Dispersion
+ReverseDispersion
+```
+
 ## Visitation frequency (binning)
 
 ```@docs
