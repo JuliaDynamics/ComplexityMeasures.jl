@@ -9,15 +9,16 @@ export Dispersion
 
 A probability estimator based on dispersion patterns, originally used by
 Rostaghi & Azami, 2016[^Rostaghi2016] to compute the "dispersion entropy", which
-characterizes the complexity and irregularity of a time series.
+characterizes the complexity and irregularity of a time series
 
 Relative frequencies of dispersion patterns are computed using the symbolization scheme
 `s` with embedding dimension `m` and embedding delay `τ`. Recommended parameter
 values[^Li2018] are `m ∈ [2, 3]`, `τ = 1`, and `n_categories ∈ [3, 4, …, 8]` for the
-Gaussian mapping (defaults to 5).
+Gaussian symbol mapping (defaults to 5).
 
-If `normalize == true`, then when used in combination with [`renyi_entropy`](@ref)
-(see below), the the dispersion entropy is normalized to `[0, 1]`.
+If `normalize == true`, then when used in combination with [`entropy_renyi`](@ref)
+(see below), the the dispersion entropy is normalized to `[0, 1]`. Normalization is only
+defined when `q == 1`.
 
 If `check_unique == true` (default), then it is checked that the input has
 more than one unique value. If `check_unique == false` and the input only has one
@@ -40,6 +41,11 @@ renyi_entropy(x, Dispersion(normalize = true), base = base, q = q)
 
 The input must have more than one unique element for the Gaussian mapping to be
 well-defined. Li et al. (2018) recommends that `x` has at least 1000 data points.
+
+## Further reading
+
+See the [online examples](@ref dispersion_examples) for a more in-depth description of
+dispersion pattern estimation and usage.
 
 [^Rostaghi2016]: Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.
 [^Li2018]: Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale dispersion entropy and wavelet threshold denoising. Entropy, 21(1), 11.

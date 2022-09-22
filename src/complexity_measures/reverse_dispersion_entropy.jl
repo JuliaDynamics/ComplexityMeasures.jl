@@ -1,9 +1,17 @@
 export reverse_dispersion
 
-function distance_to_whitenoise(p::Probabilities, N, m)
+function distance_to_whitenoise(p::Probabilities, n_classes, m; normalize = false)
     # We can safely skip non-occurring symbols, because they don't contribute
     # to the sum in eq. 3 in Li et al. (2019)
-    return sum(abs2, p) - 1/(N^m)
+    Hrde = sum(abs2, p) - 1/(n_classes^m)
+
+    if normalize
+        # The factor `f` considers *all* possible symbols (also non-occurring)
+        f = n_classes^m
+        return Hrde / (1 - (1/f))
+    else
+        return Hrde
+    end
 end
 
 """
@@ -31,12 +39,4 @@ function reverse_dispersion(x::AbstractVector{T}; s = GaussianSymbolization(5),
     # from here on, it is not possible to use `renyi_entropy` or similar methods, because
     # we're not dealing with probabilities anymore.
     Hrde = distance_to_whitenoise(p, s.n_categories, m)
-
-    if normalize
-        # The factor `f` considers *all* possible symbols (also non-occurring)
-        f = s.n_categories^m
-        return Hrde / (1 - (1/f))
-    else
-        return Hrde
-    end
 end
