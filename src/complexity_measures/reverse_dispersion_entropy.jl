@@ -21,7 +21,7 @@ end
 
 Compute the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019].
 
-## Algorithm
+## Description
 
 Li et al. (2021)[^Li2019] defines the reverse dispersion entropy as
 
