@@ -129,14 +129,14 @@ end
              # Li et al. (2018) recommends using at least 1000 data points when estimating
             # dispersion entropy.
             x = rand(1000)
-            n_categories = 4
+            c = 4
             m = 4
             τ = 1
-            s = GaussianSymbolization(n_categories = n_categories)
+            s = GaussianSymbolization(c = c)
 
-            # Symbols should be in the set [1, 2, …, n_categories].
+            # Symbols should be in the set [1, 2, …, c].
             symbols = Entropies.symbolize(x, s)
-            @test all([s ∈ collect(1:n_categories) for s in symbols])
+            @test all([s ∈ collect(1:c) for s in symbols])
 
             # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper.
             y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]

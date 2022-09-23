@@ -3,7 +3,7 @@ using Statistics, QuadGK
 export GaussianSymbolization
 
 """
-    GaussianSymbolization(; c::Int = 5)
+    GaussianSymbolization(; c::Int = 3)
 
 A symbolization scheme where the elements of `x` are symbolized into `c` distinct integer
 categories using the normal cumulative distribution function (NCDF).
@@ -50,7 +50,7 @@ julia> Entropies.symbolize(x, GaussianSymbolization(c = 5))
 See also: [`symbolize`](@ref).
 """
 Base.@kwdef struct GaussianSymbolization{I <: Integer}
-    c::I
+    c::I = 3
 end
 
 g(xᵢ, μ, σ) = exp((-(xᵢ - μ)^2)/(2σ^2))
