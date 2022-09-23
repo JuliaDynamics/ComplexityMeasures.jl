@@ -1,4 +1,4 @@
-# Complexity measures
+# [Complexity measures](@id complexity_measures)
 
 ## Sample entropy
 
