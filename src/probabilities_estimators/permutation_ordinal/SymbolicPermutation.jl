@@ -6,14 +6,20 @@ A probability estimator based on permutations.
 abstract type PermutationProbabilityEstimator <: ProbabilitiesEstimator end
 
 """
-    SymbolicPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: ProbabilityEstimator
-    SymbolicWeightedPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand) <: ProbabilityEstimator
-    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand) <: ProbabilityEstimator
+    SymbolicPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand,
+        normalize = true) <: ProbabilityEstimator
+    SymbolicWeightedPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand,
+        normalize = true) <: ProbabilityEstimator
+    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand,
+        normalize = true) <: ProbabilityEstimator
 
 Symbolic, permutation-based probabilities/entropy estimators.
 `m` is the permutation order (or the symbol size or the embedding dimension) and
 `τ` is the delay time (or lag).
+
 They are used to define the permutation entropies[^BandtPompe2002].
+
+If `normalize == true`, then the computed entropy value is normalized to `[0, 1]`.
 
 ## Repeated values during symbolization
 
@@ -215,10 +221,11 @@ struct SymbolicPermutation{F} <: PermutationProbabilityEstimator
     τ::Int
     m::Int
     lt::F
+    normalize::Bool
 end
-function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F <: Function}
+function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand, normalize = true) where {F <: Function}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-    SymbolicPermutation{F}(τ, m, lt)
+    SymbolicPermutation{F}(τ, m, lt, normalize)
 end
 
 function probabilities!(s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
@@ -267,7 +274,15 @@ function entropy_renyi!(
     length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
     ps = probabilities!(s, x, est)
 
-    entropy_renyi(ps, α = α, base = base)
+    if (est.normalize)
+        if (q == 1)
+            return entropy_renyi(ps, q = q, base = base) / log(base, factorial(est.m))
+        else
+            throw(ArgumentError("Normalization is not well defined when q != 1."))
+        end
+    else
+        return entropy_renyi(ps, q = q, base = base)
+    end
 end
 
 function entropy_renyi!(
@@ -283,5 +298,13 @@ function entropy_renyi!(
     length(s) == N || error("Pre-allocated symbol vector `s` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
 
     ps = probabilities!(s, x, est)
-    entropy_renyi(ps, α = α, base = base)
+    if (est.normalize)
+        if (q == 1)
+            return entropy_renyi(ps, q = q, base = base) / log(base, factorial(est.m))
+        else
+            throw(ArgumentError("Normalization is not well defined when q != 1."))
+        end
+    else
+        return entropy_renyi(ps, q = q, base = base)
+    end
 end

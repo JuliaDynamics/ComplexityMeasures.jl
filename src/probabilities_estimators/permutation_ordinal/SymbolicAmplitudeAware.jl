@@ -1,7 +1,8 @@
 export SymbolicAmplitudeAwarePermutation
 
 """
-    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
+    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand,
+        normalize = true) <: PermutationProbabilityEstimator
 
 See docstring for [`SymbolicPermutation`](@ref).
 """
@@ -10,12 +11,13 @@ struct SymbolicAmplitudeAwarePermutation{F} <: ProbabilitiesEstimator
     m::Int
     A::Float64
     lt::F
+    normalize::Bool
 end
 function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5,
-        lt::F = isless_rand) where {F <: Function}
+        lt::F = isless_rand, normalize::Bool = true) where {F <: Function}
     2 ≤ m || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     0 ≤ A ≤ 1 || error("Weighting factor A must be on interval [0, 1]. Got A=$A.")
-    SymbolicAmplitudeAwarePermutation{F}(τ, m, A, lt)
+    SymbolicAmplitudeAwarePermutation{F}(τ, m, A, lt, normalize)
 end
 
 """
