@@ -26,3 +26,9 @@ OrdinalPattern
 ```@docs
 Entropies.encode_motif
 ```
+
+### Normalization
+
+```@docs
+alphabet_length
+```

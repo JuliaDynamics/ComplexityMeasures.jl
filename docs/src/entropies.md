@@ -4,17 +4,21 @@
 
 ```@docs
 entropy_renyi
+entropy_renyi_norm
 ```
 
 ## Tsallis (generalized) entropy
 
 ```@docs
 entropy_tsallis
+entropy_tsallis_norm
 ```
 
 ## Shannon entropy (convenience)
+
 ```@docs
 entropy_shannon
+entropy_shannon_norm
 ```
 
 ## Indirect entropies

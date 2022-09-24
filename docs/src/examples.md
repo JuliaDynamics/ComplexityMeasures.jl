@@ -171,13 +171,11 @@ des = zeros(length(windows))
 pes = zeros(length(windows))
 
 m, c = 2, 6
-scheme = GaussianSymbolization(c)
-est_de = Dispersion(s = scheme, m = m, τ = 1, normalize = true)
+est_de = Dispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
 
 for (i, window) in enumerate(windows)
-    rdes[i] = reverse_dispersion(y[window];
-        s = scheme, m = m, τ = 1, normalize = true)
-    des[i] = entropy_renyi(y[window], est_de)
+    rdes[i] = reverse_dispersion(y[window], est_de; normalize = true)
+    des[i] = entropy_renyi_norm(y[window], est_de)
 end
 
 fig = Figure()

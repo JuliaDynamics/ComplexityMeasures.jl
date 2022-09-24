@@ -49,7 +49,7 @@ julia> Entropies.symbolize(x, GaussianSymbolization(c = 5))
 
 See also: [`symbolize`](@ref).
 """
-Base.@kwdef struct GaussianSymbolization{I <: Integer}
+Base.@kwdef struct GaussianSymbolization{I <: Integer} <: SymbolizationScheme
     c::I = 3
 end
 
