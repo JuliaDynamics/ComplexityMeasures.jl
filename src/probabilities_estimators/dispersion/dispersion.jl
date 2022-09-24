@@ -80,7 +80,6 @@ Base.@kwdef struct Dispersion{S <: SymbolizationScheme} <: ProbabilitiesEstimato
     m::Int = 2
     τ::Int = 1
     check_unique::Bool = false
-    normalize::Bool = true
 end
 
 export entropy_dispersion
