@@ -29,8 +29,7 @@ using Entropies, Test
         # We here start from pre-computed symbols `s`.
         x = [0.82,0.75,0.21,0.94,0.52,0.05,0.241,0.75,0.35,0.43,0.11,0.87]
         m, n_classes = 2, 3
-        est = Dispersion(m = m, s = GaussianSymbolization(n_classes), normalize = false)
-        est_norm = Dispersion(m = m, s = GaussianSymbolization(n_classes), normalize = true)
+        est = Dispersion(m = m, symbolization = GaussianSymbolization(c = n_classes))
 
         # Take only the non-zero probabilities from the paper (in `dispersion_histogram`,
         # we don't count zero-probability bins, so eliminate zeros for comparison).
@@ -50,24 +49,20 @@ using Entropies, Test
         # slightly from the paper. They get normalized DE of 0.85, but we get 0.84. 0.85 is
         # the normalized DE you'd get by manually normalizing the (erroneous) value from
         # their previous step.
-        res_norm = entropy_renyi(x, est_norm, base = MathConstants.e, q = 1)
+        res_norm = entropy_renyi_norm(x, est, base = MathConstants.e, q = 1)
         @test round(res_norm, digits = 2) == 0.84
-
-        # Only defined for q = 1. There's potential in expanding the definition for q != 1,
-        # but that requires careful thinking about the normalization step. A small future
-        # paper on generalized dispersion entropy, perhaps?
-        @test_throws ArgumentError entropy_renyi(x, Dispersion(normalize = true), q = 2)
     end
 
     @testset "Reverse dispersion entropy" begin
 
         @testset "Distance to whitenoise" begin
+            m, n_classes = 2, 2
+            est = Dispersion(m = m, symbolization = GaussianSymbolization(c = n_classes))
+
              # Reverse dispersion entropy is 0 when all probabilities are identical and equal
             # to 1/(n_classes^m).
-            m, n_classes = 2, 2
             flat_dist = Probabilities(repeat([1/m^n_classes], m^n_classes))
-            Hrde_minimal = distance_to_whitenoise(flat_dist, n_classes, m,
-                normalize = false)
+            Hrde_minimal = distance_to_whitenoise(flat_dist, est, normalize = false)
             @test round(Hrde_minimal, digits = 7) ≈ 0.0
 
              # Reverse dispersion entropy is maximal when there is only one non-zero dispersal
@@ -75,15 +70,12 @@ using Entropies, Test
             # 1 - 1/(n_classes^m). When normalizing to this value, the RDE should be 1.0.
             m, n_classes = 2, 2
             single_element_dist = Probabilities([1.0, 0.0, 0.0, 0.0])
-            Hrde_maximal = distance_to_whitenoise(single_element_dist, n_classes, m,
+            Hrde_maximal = distance_to_whitenoise(single_element_dist, est,
                 normalize = false)
-            Hrde_maximal_norm = distance_to_whitenoise(single_element_dist, n_classes, m,
+            Hrde_maximal_norm = distance_to_whitenoise(single_element_dist, est,
                 normalize = true)
             @test round(Hrde_maximal, digits = 7) ≈ 1 - 1/(n_classes^m)
             @test round(Hrde_maximal_norm, digits = 7) ≈ 1.0
         end
-
-
-
     end
 end
