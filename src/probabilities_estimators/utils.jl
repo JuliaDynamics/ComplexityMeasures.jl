@@ -19,6 +19,8 @@ julia> alphabet_length(est)
 """
 function alphabet_length end
 
+alphabet_length(est) =
+    throw(error("alphabet_length not implemented for estimator of type $(typeof(est))"))
 alphabet_length(est::SymbolicPermutation)::Int = factorial(est.m)
 alphabet_length(est::SymbolicWeightedPermutation)::Int = factorial(est.m)
 alphabet_length(est::SymbolicAmplitudeAwarePermutation)::Int = factorial(est.m)
