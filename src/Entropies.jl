@@ -12,8 +12,9 @@ using DelayEmbeddings: AbstractDataset, Dataset, dimension
 export AbstractDataset, Dataset
 const Array_or_Dataset = Union{<:AbstractArray, <:AbstractDataset}
 
-include("symbolization/symbolize.jl")
 include("probabilities.jl")
+include("entropy.jl")
+include("symbolization/symbolize.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
 include("complexity_measures/complexity_measures.jl")

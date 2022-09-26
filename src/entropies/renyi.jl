@@ -23,7 +23,8 @@ also known as Hartley entropy), or the correlation entropy
 (``q = 2``, also known as collision entropy).
 
 If the probability estimator has known alphabet length ``L``, then the maximum
-value of the Rényi entropy is ``\\log_{base}(L)``.
+value of the Rényi entropy is ``\\log_{base}(L)``, which is the entropy of the
+uniform distribution with given alphabet length.
 
 [^Rényi1960]:
     A. Rényi, _Proceedings of the fourth Berkeley Symposium on Mathematics,
