@@ -32,3 +32,11 @@ Entropies.encode_motif
 ```@docs
 alphabet_length
 ```
+
+#### [Maximum entropy](@id maximum_entropy)
+
+```@docs
+maxentropy_tsallis
+maxentropy_renyi
+maxentropy_shannon
+```

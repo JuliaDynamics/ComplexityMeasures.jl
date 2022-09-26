@@ -49,7 +49,7 @@ using Entropies, Test
         # slightly from the paper. They get normalized DE of 0.85, but we get 0.84. 0.85 is
         # the normalized DE you'd get by manually normalizing the (erroneous) value from
         # their previous step.
-        res_norm = entropy_renyi_norm(x, est, base = MathConstants.e, q = 1)
+        res_norm = entropy_normalized(entropy_renyi, x, est, base = MathConstants.e, q = 1)
         @test round(res_norm, digits = 2) == 0.84
     end
 

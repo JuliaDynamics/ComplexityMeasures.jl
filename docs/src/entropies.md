@@ -4,21 +4,28 @@
 
 ```@docs
 entropy_renyi
-entropy_renyi_norm
 ```
 
 ## Tsallis (generalized) entropy
 
 ```@docs
 entropy_tsallis
-entropy_tsallis_norm
 ```
 
 ## Shannon entropy (convenience)
 
 ```@docs
 entropy_shannon
-entropy_shannon_norm
+```
+
+## Normalization
+
+The generic [`entropy_normalized`](@ref) normalizes any entropy value to the entropy of a
+uniform distribution. We also provide [maximum entropy](@ref maximum_entropy) functions
+that are useful for manual normalization.
+
+```@docs
+entropy_normalized
 ```
 
 ## Indirect entropies

@@ -1,5 +1,5 @@
 export entropy_renyi
-export entropy_renyi_norm
+export maxentropy_renyi
 
 """
     entropy_renyi(p::Probabilities; q = 1.0, base = MathConstants.e)
@@ -34,6 +34,8 @@ also known as Hartley entropy), or the correlation entropy
 [^Kumar1986]: Kumar, U., Kumar, V., & Kapur, J. N. (1986). Normalized measures of entropy.
     International Journal Of General System, 12(1), 55-69.
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
+
+See also: [`maxentropy_renyi`](@ref).
 """
 function entropy_renyi end
 
@@ -93,45 +95,13 @@ function entropy_renyi!(p, x, est; q = 1.0, α = nothing, base = MathConstants.e
     entropy_renyi(p; q = q, base = base)
 end
 
-# Normalization is well-defined for all values of `q`, e.g. Kumar, U., Kumar, V., &
-# Kapur, J. N. (1986). Normalized measures of entropy. International Journal Of General
-# System, 12(1), 55-69.
 """
-    entropy_renyi_norm(p::Probabilities, est; q = 1.0, α = nothing,
-        base = MathConstants.e)
+    maxentropy_renyi(N::Int, base = MathConstants.e)
 
-Computes the normalized generalized order-`q` entropy,
+Convenience function that computes the maximum value of the order-`q` generalized
+Rényi entropy for an `N`-element probability distribution, i.e.
+``\\log_{base}(N)``, which is useful for normalization when `N` is known.
 
-```math
-H_q(p) = \\dfrac{\\frac{1}{1-q} \\log \\left(\\sum_i p[i]^q\\right)}{\\log(N)},
-```
-
-where `N` is the alphabet length, or total number of states, as determined by
-[`alphabet_length`](@ref). Normalization is only well-defined for
-estimators for which the alphabet length is known.
-
-This normalization is well defined for all orders `q`, because `0` is its minimum value,
-and its maximum value is obtained when `pᵢ = 1/N ∀ pᵢ : i ∈ [1, 2, …, N]`, where `N` is the
-alphabet length, or total number of states (e.g. Kumar et al., 1986)
-
-    entropy_renyi_norm(x::Array_or_Dataset, est; q = 1.0, α = nothing,
-        base = MathConstants.e)
-
-The same as above, but first calls `probabilities(x, est)` and then calculates the
-normalized entropy of the result.
+See also [`entropy_renyi`](@ref), [`entropy_normalized`](@ref).
 """
-function entropy_renyi_norm(p::Probabilities, est;
-        q = 1.0, α = nothing, base = MathConstants.e)
-    entropy_renyi(p; q = q, base = base) / log(base, alphabet_length(est))
-end
-
-function entropy_renyi_norm(x::Array_or_Dataset, est;
-        q = 1.0, α = nothing, base = MathConstants.e)
-
-    if α ≠ nothing
-        @warn "Keyword `α` is deprecated in favor of `q`."
-        q = α
-    end
-    p = probabilities(x, est)
-    entropy_renyi(p; q = q, base = base) / log(base, alphabet_length(est))
-end
+maxentropy_renyi(N::Int; base = MathConstants.e) = log(base, N)

@@ -1,26 +1,26 @@
 export entropy_shannon
-export entropy_shannon_norm
+export maxentropy_shannon
 
 """
     entropy_shannon(args...; base = MathConstants.e)
+
 Equivalent to `entropy_renyi(args...; base = base, q = 1)` and provided solely for convenience.
 Computes the Shannon entropy, given by
 ```math
 H(p) = - \\sum_i p[i] \\log(p[i])
 ```
+
+See also: [`maxentropy_shannon`](@ref).
 """
 entropy_shannon(args...; base = MathConstants.e) =
     entropy_renyi(args...; base = base, q = 1)
 
 """
-    entropy_shannon_norm(args...; base = MathConstants.e)
-Equivalent to `entropy_renyi_norm(args...; base = base, q = 1)` and provided solely for convenience.
-Computes the normalized Shannon entropy, given by
-```math
-H(p) = - \\dfrac{\\sum_i p[i] \\log(p[i])}{\\log(N)},
-```
-where ``N`` is the total number of possible states, as determined by
-[`alphabet_length`](@ref).
+    maxentropy_shannon(N::Int, q; base = MathConstants.e)
+
+Convenience function that computes the maximum value of the Shannon entropy, i.e.
+``log_{base}(N)``, which is useful for normalization when `N` is known.
+
+See also [`entropy_shannon`](@ref), [`entropy_normalized`](@ref).
 """
-entropy_shannon_norm(args...; base = MathConstants.e) =
-    entropy_renyi_norm(args...; base = base, q = 1)
+maxentropy_shannon(N::Int; base = MathConstants.e) = maxentropy_renyi(N, base = base)
