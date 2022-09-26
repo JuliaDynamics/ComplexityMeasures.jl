@@ -1,4 +1,4 @@
-# Entropies
+## Entropy API
 
 ```@docs
 entropy

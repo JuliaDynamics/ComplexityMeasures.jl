@@ -88,8 +88,8 @@ end
 
 import Statistics
 """
-entropy_kernel(x; ϵ::Real = 0.2*Statistics.std(x), method = KDTree; w = 0,
-    metric = Euclidean(), base = 2)
+    entropy_kernel(x; ϵ::Real = 0.2*Statistics.std(x), method = KDTree; w = 0,
+        metric = Euclidean(), base = 2)
 
 Calculate Shannon entropy using the "naive" kernel density estimation approach (KDE), as
 discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
