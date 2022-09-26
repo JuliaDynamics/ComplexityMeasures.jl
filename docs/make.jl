@@ -1,9 +1,7 @@
-using Entropies # using before activation of environment ensures dev'ed version
 cd(@__DIR__)
 using Pkg
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
-Pkg.activate(@__DIR__)
-CI && Pkg.instantiate()
+using Entropies
 using DelayEmbeddings
 using Documenter
 using DocumenterTools: Themes
