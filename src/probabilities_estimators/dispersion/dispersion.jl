@@ -122,3 +122,5 @@ function probabilities(x::AbstractVector, est::Dispersion)
     hist = dispersion_histogram(dispersion_patterns, N, est.m, est.τ)
     p = Probabilities(hist)
 end
+
+alphabet_length(est::Dispersion)::Int = est.symbolization.c ^ est.m

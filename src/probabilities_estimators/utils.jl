@@ -1,10 +1,10 @@
 export alphabet_length
 
 """
-    alphabet_length(estimator) → Union{Int, Nothing}
+    alphabet_length(estimator) → Int
 
 Returns the total number of possible symbols/states implied by `estimator`.
-If the total number of states cannot be known a priori, `nothing` is returned.
+If the total number of states cannot be known a priori, an error is thrown.
 Primarily used for normalization of entropy values computed using symbolic estimators.
 
 ## Examples
@@ -17,11 +17,5 @@ julia> alphabet_length(est)
 24
 ```
 """
-function alphabet_length end
-
 alphabet_length(est) =
     throw(error("alphabet_length not implemented for estimator of type $(typeof(est))"))
-alphabet_length(est::SymbolicPermutation)::Int = factorial(est.m)
-alphabet_length(est::SymbolicWeightedPermutation)::Int = factorial(est.m)
-alphabet_length(est::SymbolicAmplitudeAwarePermutation)::Int = factorial(est.m)
-alphabet_length(est::Dispersion)::Int = est.symbolization.c ^ est.m

@@ -45,3 +45,5 @@ function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutat
     p = symprobs(πs, wts, normalize = true)
     Probabilities(p)
 end
+
+alphabet_length(est::SymbolicAmplitudeAwarePermutation)::Int = factorial(est.m)

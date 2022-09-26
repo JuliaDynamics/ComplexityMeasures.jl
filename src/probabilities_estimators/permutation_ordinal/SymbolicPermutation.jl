@@ -285,3 +285,5 @@ function entropy_renyi!(
     ps = probabilities!(s, x, est)
     entropy_renyi(ps, α = α, base = base)
 end
+
+alphabet_length(est::SymbolicPermutation)::Int = factorial(est.m)
