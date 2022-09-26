@@ -1,12 +1,13 @@
 export AbstractEntropy, Entropy, IndirectEntropy, entropy
 
+# TODO: Add docstrings here
 abstract type AbstractEntropy end
 abstract type Entropy <: AbstractEntropy end
 abstract type IndirectEntropy <: AbstractEntropy end
 
 """
     entropy(e::Entropy, x, est::ProbabilitiesEstimator) → h::Real
-    entropy(e::Entropy, ps::Probabilities) → h::Real
+    entropy(e::Entropy, probs::Probabilities) → h::Real
 Compute a quantity `h`, that qualifies as a (generalized) entropy of `x`,
 according to the specified entropy type `e` and the given probability estimator `est`.
 Alternatively compute the entropy directly from the existing probabilities `ps`.
@@ -20,10 +21,24 @@ entropies". Currently implemented types are:
 
 - [`Renyi`](@ref).
 - [`Tsallis`](@ref).
+
+These entropies also have a well defined maximum value for a given probability estimator.
+To obtain this value one only needs to call the [`maximum`](@ref) function with the
+chosen entropy type and probability estimator.
 """
 function entropy(e::Entropy, x, est::ProbabilitiesEstimator)
     ps = probabilities(x, est)
     return entropy(e, ps)
+end
+
+"""
+    maximum(e::Entropy, est::ProbabilitiesEstimator) → m::Real
+Return the maximum value of the given entropy type based on the given estimator.
+This function only works if the maximum value is deducable, which is possible only
+when the estimator has a known [`alphabet_length`](@ref).
+"""
+function Base.maximum(e::Entropy, est::ProbabilitiesEstimator)
+    error("Method not implemented for entropy type $(nameof(typeof(e))).")
 end
 
 """
@@ -40,5 +55,22 @@ The available indirect entropies are:
 - [`KozachenkoLeonenko`](@ref).
 """
 function entropy(e::IndirectEntropy, x)
-    error("Method not implemented for entropy type $(nameof(typeof(e)))")
+    error("Method not implemented for entropy type $(nameof(typeof(e))).")
+end
+
+"""
+    log_with_base(base) → f
+Return a function that computes the logarithm at a given base.
+This definitely increases accuracy, and probably also performance.
+"""
+function log_with_base(base)
+    if base == 2
+        log2
+    elseif base == MathConstants.e
+        log
+    elseif base == 10
+        log10
+    else
+        x -> log(base, x)
+    end
 end
