@@ -1,4 +1,5 @@
 export entropy_renyi
+export maxentropy_renyi
 
 """
     entropy_renyi(p::Probabilities; q = 1.0, base = MathConstants.e)
@@ -30,7 +31,11 @@ also known as Hartley entropy), or the correlation entropy
 [^Rényi1960]:
     A. Rényi, _Proceedings of the fourth Berkeley Symposium on Mathematics,
     Statistics and Probability_, pp 547 (1960)
+[^Kumar1986]: Kumar, U., Kumar, V., & Kapur, J. N. (1986). Normalized measures of entropy.
+    International Journal Of General System, 12(1), 55-69.
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
+
+See also: [`maxentropy_renyi`](@ref).
 """
 function entropy_renyi end
 
@@ -89,3 +94,14 @@ function entropy_renyi!(p, x, est; q = 1.0, α = nothing, base = MathConstants.e
     probabilities!(p, x, est)
     entropy_renyi(p; q = q, base = base)
 end
+
+"""
+    maxentropy_renyi(N::Int, base = MathConstants.e)
+
+Convenience function that computes the maximum value of the order-`q` generalized
+Rényi entropy for an `N`-element probability distribution, i.e.
+``\\log_{base}(N)``, which is useful for normalization when `N` is known.
+
+See also [`entropy_renyi`](@ref), [`entropy_normalized`](@ref).
+"""
+maxentropy_renyi(N::Int; base = MathConstants.e) = log(base, N)

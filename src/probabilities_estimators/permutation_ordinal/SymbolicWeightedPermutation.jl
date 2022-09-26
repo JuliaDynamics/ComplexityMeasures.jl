@@ -39,3 +39,5 @@ function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) w
 
     Probabilities(symprobs(πs, wts, normalize = true))
 end
+
+alphabet_length(est::SymbolicWeightedPermutation)::Int = factorial(est.m)

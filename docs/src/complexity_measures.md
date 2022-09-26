@@ -8,6 +8,7 @@
 
 ```@docs
 reverse_dispersion
+distance_to_whitenoise
 ```
 
 ## Disequilibrium
