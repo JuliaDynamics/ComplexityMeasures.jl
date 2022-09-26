@@ -336,6 +336,29 @@ end
     @testset "Tsallis" begin
         p = Probabilities(repeat([1/5], 5))
         @assert round(entropy_tsallis(p, q = -1/2, k = 1), digits = 2) ≈ 6.79
+
+        # Analytical tests from Tsallis (1998)
+        # -----------------------------------
+        # Probability distribution has only  one element
+        @test entropy_tsallis(Probabilities([1.0])) ≈ 0.0
+
+        # One and only one probability of 1.0 => entropy → 0.
+        @test entropy_tsallis(Probabilities([1.0, 0.0, 0.0, 0.0])) ≈ 0.0
+
+        # Uniform distribution maximizes Tsallis entropy, which then equals log(N),
+        # where N is the number of states. Then the entropy attains its maximum value
+        # (N^(1 - q) - 1) / (1 - q)
+        b = 2
+        N = 4
+        ps = Probabilities(repeat([1/N], N))
+
+        q_cases = [-2.0, -0.5, 0.5, 2.0]
+        t_entropies = [entropy_tsallis(ps, q = q) for q in q_cases]
+        maxvals = [maxentropy_tsallis(N, q) for q in q_cases]
+        @test all(t_entropies .≈ maxvals)
+
+        # Reduces to Shannon entropy for q → 1.0
+        @test entropy_tsallis(ps, q = 1.0, base = 2) ≈ log(2, N)
     end
 end
 
