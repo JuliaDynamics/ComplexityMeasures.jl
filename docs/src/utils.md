@@ -26,3 +26,17 @@ OrdinalPattern
 ```@docs
 Entropies.encode_motif
 ```
+
+### Normalization
+
+```@docs
+alphabet_length
+```
+
+#### [Maximum entropy](@id maximum_entropy)
+
+```@docs
+maxentropy_tsallis
+maxentropy_renyi
+maxentropy_shannon
+```

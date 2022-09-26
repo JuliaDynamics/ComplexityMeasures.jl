@@ -145,3 +145,60 @@ for a in (ax, ay, az); axislegend(a); end
 for a in (ax, ay); hidexdecorations!(a; grid=false); end
 fig
 ```
+
+## [Dispersion and reverse dispersion entropy](@id dispersion_examples)
+
+Here we reproduce parts of figure 3 in Li et al. (2019), computing reverse and regular dispersion entropy for a time series consisting of normally distributed noise with a single spike in the middle of the signal. We compute the entropies over a range subsets of the data, using a sliding window consisting of 70 data points, stepping the window 10 time steps at a time.
+
+Note: the results here are not exactly the same as in the original paper, because Li et 
+al. (2019) base their examples on randomly generated numbers and do not provide code that 
+specify random number seeds.
+
+```@example
+using Entropies, DynamicalSystems, Random, CairoMakie, Distributions
+
+n = 1000
+ts = 1:n
+x = [i == n ÷ 2 ? 50.0 : 0.0 for i in ts]
+rng = Random.default_rng()
+s = rand(rng, Normal(0, 1), n)
+y = x .+ s
+
+ws = 70
+windows = [t:t+ws for t in 1:10:n-ws]
+rdes = zeros(length(windows))
+des = zeros(length(windows))
+pes = zeros(length(windows))
+
+m, c = 2, 6
+est_de = Dispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
+
+for (i, window) in enumerate(windows)
+    rdes[i] = reverse_dispersion(y[window], est_de; normalize = true)
+    des[i] = entropy_renyi_norm(y[window], est_de)
+end
+
+fig = Figure()
+
+a1 = Axis(fig[1,1]; xlabel = "Time step", ylabel = "Value")
+lines!(a1, ts, y)
+display(fig)
+
+a2 = Axis(fig[2, 1]; xlabel = "Time step", ylabel = "Value")
+p_rde = scatterlines!([first(w) for w in windows], rdes,
+    label = "Reverse dispersion entropy",
+    color = :black,
+    markercolor = :black, marker = '●')
+p_de = scatterlines!([first(w) for w in windows], des,
+    label = "Dispersion entropy",
+    color = :red,
+    markercolor = :red, marker = 'x', markersize = 20)
+
+axislegend(position = :rc)
+ylims!(0, max(maximum(pes), 1))
+fig
+```
+
+[^Rostaghi2016]: Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.
+[^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
+    complexity measure for sensor signal. Sensors, 19(23), 5203.

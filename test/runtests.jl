@@ -8,8 +8,10 @@ using Neighborhood: KDTree, BruteForce
 # TODO: This is how the tests should look like in the end:
 defaultname(file) = splitext(basename(file))[1]
 testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include(file); end
-@testset "Entopies.jl" begin
+@testset "Entropies.jl" begin
     testfile("timescales.jl")
+    testfile("dispersion.jl")
+    testfile("complexity_measures.jl")
 end
 
 @testset "Histogram estimation" begin
@@ -127,14 +129,20 @@ end
              # Li et al. (2018) recommends using at least 1000 data points when estimating
             # dispersion entropy.
             x = rand(1000)
-            n_categories = 4
+            c = 4
             m = 4
             τ = 1
-            s = GaussianSymbolization(n_categories = n_categories)
+            s = GaussianSymbolization(c = c)
 
-            # Symbols should be in the set [1, 2, …, n_categories].
+            # Symbols should be in the set [1, 2, …, c].
             symbols = Entropies.symbolize(x, s)
-            @test all([s ∈ collect(1:n_categories) for s in symbols])
+            @test all([s ∈ collect(1:c) for s in symbols])
+
+            # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper.
+            y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
+            scheme = GaussianSymbolization(3)
+            s = symbolize(y, scheme)
+            @test s == [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
         end
 
     end
@@ -325,32 +333,37 @@ end
         end
     end
 
-    @testset "Dispersion entropy" begin
-        # Li et al. (2018) recommends using at least 1000 data points when estimating
-        # dispersion entropy.
-        x = rand(1000)
-        n_categories = 4
-        m = 4
-        τ = 1
-        s = GaussianSymbolization(n_categories = n_categories)
-
-        # Symbols should be in the set [1, 2, …, n_categories].
-        symbols = Entropies.symbolize(x, s)
-        @test all([s ∈ collect(1:n_categories) for s in symbols])
-
-        # Dispersion patterns should have a normalized histogram that sums to 1.0.
-        dispersion_patterns = DelayEmbeddings.embed(symbols, m, τ)
-        hist = Entropies.dispersion_histogram(dispersion_patterns, length(x), m, τ)
-        @test sum(hist) ≈ 1.0
-
-        de = entropy_dispersion(x, s, m = 4, τ = 1)
-        @test typeof(de) <: Real
-        @test de >= 0.0
-    end
-
     @testset "Tsallis" begin
         p = Probabilities(repeat([1/5], 5))
         @assert round(entropy_tsallis(p, q = -1/2, k = 1), digits = 2) ≈ 6.79
+
+        # Analytical tests from Tsallis (1998)
+        # -----------------------------------
+        # Probability distribution has only  one element
+        @test entropy_tsallis(Probabilities([1.0])) ≈ 0.0
+
+        # One and only one probability of 1.0 => entropy → 0.
+        @test entropy_tsallis(Probabilities([1.0, 0.0, 0.0, 0.0])) ≈ 0.0
+
+        # Uniform distribution maximizes Tsallis entropy, which then equals log(N),
+        # where N is the number of states. Then the entropy attains its maximum value
+        # (N^(1 - q) - 1) / (1 - q)
+        N = 4
+        ps = Probabilities(repeat([1/N], N))
+
+        q_cases = [-2.0, -0.5, 0.5, 2.0]
+        t_entropies = [entropy_tsallis(ps, q = q) for q in q_cases]
+        maxvals = [maxentropy_tsallis(N, q) for q in q_cases]
+        @test all(t_entropies .≈ maxvals)
+
+        q_cases = [-2.0, -0.5, 0.5, 2.0]
+        k = 2
+        t_entropies = [entropy_tsallis(ps, q = q, k = 2) for q in q_cases]
+        maxvals = [maxentropy_tsallis(N, q, k = 2) for q in q_cases]
+        @test all(t_entropies .≈ maxvals)
+
+        # Reduces to Shannon entropy for q → 1.0
+        @test entropy_tsallis(ps, q = 1.0, base = 2) ≈ log(2, N)
     end
 end
 

@@ -42,7 +42,7 @@ Thus, any of the implemented [probabilities estimators](@ref estimators) can be 
 
 
 ### Complexity measures
-Other complexity measures, which strictly speaking don't compute entropies, and may or may not explicitly compute probability distributions, appear in the [Complexity measures](@ref) section.
+Other complexity measures, which strictly speaking don't compute entropies, and may or may not explicitly compute probability distributions, appear in the [Complexity measures](@ref complexity_measures) section.
 
 
 ## Input data

@@ -53,6 +53,20 @@ function entropy_wavelet(x; wavelet = Wavelets.WT.Daubechies{12}(), base = MathC
     entropy_renyi(x, est; base, q = 1)
 end
 
-function entropy_dispersion(args...)
+"""
+    entropy_dispersion(x; m = 2, τ = 1, s = GaussianSymbolization(3),
+        base = MathConstants.e)
 
+Compute the dispersion entropy. This function is just a convenience call to:
+```julia
+est = Dispersion(m = m, τ = τ, s = s)
+entropy_shannon(x, est; base)
+```
+See [`Dispersion`](@ref) for more info.
+"""
+function entropy_dispersion(x; wavelet = Wavelets.WT.Daubechies{12}(),
+        base = MathConstants.e)
+
+    est = Dispersion(m = m, τ = τ, s = s)
+    entropy_renyi(x, est; base, q = 1)
 end
