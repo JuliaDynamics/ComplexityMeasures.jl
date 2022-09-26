@@ -41,6 +41,8 @@ Directly count probabilities from the elements of `x` without any discretization
 binning, or other processing (mostly useful when `x` contains categorical or integer data).
 `probabilities` always returns a [`Probabilities`](@ref) container (`Vector`-like).
 
+`x` is typically an `Array` or a `Dataset`, see [Input data for Entropies.jl](@ref).
+
 
     probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
 
