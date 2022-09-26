@@ -1,4 +1,4 @@
-# [Probabilities](@id estimators)
+# [Probabilities](@id probabilities_estimators)
 
 For categorical or integer-valued data, probabilities can be estimated by directly counting relative frequencies of data elements. For such data, use `probabilities(x::Array_or_Dataset) → p::Probabilities`.
 

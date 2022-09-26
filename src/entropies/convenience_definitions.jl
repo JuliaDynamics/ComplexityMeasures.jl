@@ -96,7 +96,6 @@ discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
 
 Shorthand for `entropy(Renyi(;base), x, NaiveKernel(ϵ, method; w, metric))`.
 
-
 [^PrichardTheiler1995]:
     Prichard, D., & Theiler, J. (1995).
     Generalized redundancies for time series analysis.
