@@ -1,15 +1,19 @@
 # Entropies
 
+```@docs
+entropy
+```
+
 ## Rényi (generalized) entropy
 
 ```@docs
-entropy_renyi
+Renyi
 ```
 
 ## Tsallis (generalized) entropy
 
 ```@docs
-entropy_tsallis
+Tsallis
 ```
 
 ## Shannon entropy (convenience)
@@ -20,16 +24,13 @@ entropy_shannon
 
 ## Normalization
 
-The generic [`entropy_normalized`](@ref) normalizes any entropy value to the entropy of a
-uniform distribution. We also provide [maximum entropy](@ref maximum_entropy) functions
-that are useful for manual normalization.
-
 ```@docs
+maximum(::Entropy, ::ProbabilitiesEstimator)
 entropy_normalized
 ```
 
 ## Indirect entropies
-Here we list functions which compute Shannon entropies via alternate means, without explicitly computing some probability distributions and then using the Shannon formulat.
+Here we list functions which compute Shannon entropies via alternate means, without explicitly computing some probability distributions and then using the Shannon formula.
 
 ### Nearest neighbors entropy
 ```@docs
@@ -44,4 +45,5 @@ entropy_permutation
 entropy_spatial_permutation
 entropy_wavelet
 entropy_dispersion
+entropy_kernel
 ```

@@ -46,22 +46,3 @@ function probabilities(x::DelayEmbeddings.AbstractDataset, est::NaiveKernel)
     p = Float64.(length.(idxs))
     return Probabilities(p)
 end
-
-"""
-    entropy_kernel(x; ϵ::Real = 0.2*StatsBase.std(x), method = KDTree; w = 0,
-        metric = Euclidean(), base = MathConstants.e)
-
-Calculate Shannon entropy using the "naive" kernel density estimation approach (KDE), as
-discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
-
-Shorthand for `entropy_renyi(x, NaiveKernel(ϵ, method, w = w, metric = metric), q = 1, base = base)`.
-
-See also: [`NaiveKernel`](@ref), [`entropy_renyi`](@ref).
-
-[^PrichardTheiler1995]: Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis. Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
-"""
-function entropy_kernel(x; ϵ::Real = 0.2*StatsBase.std(x), method = KDTree, w = 0,
-        metric = Euclidean(), base = MathConstants.e)
-    est = NaiveKernel(ϵ, method, w = w, metric = metric)
-    return entropy_renyi(x, est; base = base, q = 1)
-end

@@ -29,7 +29,7 @@ value of the Tsallis entropy is ``k(L^{1 - q} - 1)/(1 - q)``.
     Tsallis, C. (1988). Possible generalization of Boltzmann-Gibbs statistics.
     Journal of statistical physics, 52(1), 479-487.
 """
-struct Tsallis{Q,K,B}
+struct Tsallis{Q,K,B} <: Entropy
     q::Q
     k::K
     base::B
