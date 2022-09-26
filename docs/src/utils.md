@@ -26,3 +26,9 @@ OrdinalPattern
 ```@docs
 Entropies.encode_motif
 ```
+
+#### [Maximum entropy](@id maximum_entropy)
+
+```@docs
+maxentropy_stretched_exponential
+```

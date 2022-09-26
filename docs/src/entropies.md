@@ -17,6 +17,12 @@ entropy_tsallis
 entropy_shannon
 ```
 
+## Stretched exponental entropy
+
+```@docs
+entropy_stretched_exponential
+```
+
 ## Indirect entropies
 Here we list functions which compute Shannon entropies via alternate means, without explicitly computing some probability distributions and then using the Shannon formulat.
 

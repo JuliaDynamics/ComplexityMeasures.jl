@@ -145,3 +145,35 @@ for a in (ax, ay, az); axislegend(a); end
 for a in (ax, ay); hidexdecorations!(a; grid=false); end
 fig
 ```
+
+## Properties of different entropies
+
+Here, we show the sensitivity of the various entropies to variations in their parameters.
+
+### Stretched exponential entropy
+
+Here, we reproduce the example from Anteneodo & Plastino (1999)[^Anteneodo1999], showing
+how the stretched exponential entropy changes as function of the parameter `η` for a range
+of two-element probability distributions given by
+`Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
+
+```@example stretched_exponential_example
+ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
+ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
+
+nf = maxentropy_stretched_exponential
+hs_norm = [[entropy_stretched_exponential(p, η = η) / gamma((η + 1)/η) for p in ps] for η in ηs]
+fig = Figure()
+ax = Axis(fig[1,1]; ylabel = "x")
+
+for h in hs_norm
+    lines!(ax, t, x; color = Cycled(1), label = "h=$(h=round(h_x, sigdigits = 5))");
+end
+CairoMakie.plot([p[1] for p in ps], hs_norm, 
+    labels = permutedims(["η=$η" for η in ηs]))
+CairoMakie.xlabel!("p"); CairoMakie.ylabel!("H(p)")
+```
+
+[^Anteneodo1999]: Anteneodo, C., & Plastino, A. R. (1999). Maximum entropy approach to
+    stretched exponential probability distributions. Journal of Physics A: Mathematical
+    and General, 32(7), 1089.
