@@ -31,15 +31,26 @@ function entropy(e::Entropy, x, est::ProbabilitiesEstimator)
     return entropy(e, ps)
 end
 
+
+
 """
     maximum(e::Entropy, est::ProbabilitiesEstimator) → m::Real
-Return the maximum value of the given entropy type based on the given estimator.
+Return the maximum value `m` of the given entropy type based on the given estimator.
 This function only works if the maximum value is deducable, which is possible only
 when the estimator has a known [`alphabet_length`](@ref).
+
+    maximum(e::Entropy, L::Int) → m::Real
+Alternatively, compute the maximum entropy from the alphabet length `L` directly.
 """
 function Base.maximum(e::Entropy, est::ProbabilitiesEstimator)
+    L = alphabet_length(est)
+    return maximum(e, L)
+end
+function Base.maximum(e::Entropy, L::Int)
     error("Method not implemented for entropy type $(nameof(typeof(e))).")
 end
+
+
 
 """
     entropy(e::IndirectEntropy, x) → h::Real

@@ -62,10 +62,7 @@ function entropy(e::Renyi, probs::Probabilities)
     end
 end
 
-function Base.maximum(::Renyi, est::ProbabilitiesEstimator)
-    L = alphabet_length(est)
-    return log_with_base(est.base)(L)
-end
+Base.maximum(::Renyi, L::Int) = log_with_base(est.base)(L)
 
 # TODO: Not sure yet how to treat in-place methods.
 """
