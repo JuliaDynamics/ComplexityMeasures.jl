@@ -348,13 +348,18 @@ end
         # Uniform distribution maximizes Tsallis entropy, which then equals log(N),
         # where N is the number of states. Then the entropy attains its maximum value
         # (N^(1 - q) - 1) / (1 - q)
-        b = 2
         N = 4
         ps = Probabilities(repeat([1/N], N))
 
         q_cases = [-2.0, -0.5, 0.5, 2.0]
         t_entropies = [entropy_tsallis(ps, q = q) for q in q_cases]
         maxvals = [maxentropy_tsallis(N, q) for q in q_cases]
+        @test all(t_entropies .≈ maxvals)
+
+        q_cases = [-2.0, -0.5, 0.5, 2.0]
+        k = 2
+        t_entropies = [entropy_tsallis(ps, q = q, k = 2) for q in q_cases]
+        maxvals = [maxentropy_tsallis(N, q, k = 2) for q in q_cases]
         @test all(t_entropies .≈ maxvals)
 
         # Reduces to Shannon entropy for q → 1.0

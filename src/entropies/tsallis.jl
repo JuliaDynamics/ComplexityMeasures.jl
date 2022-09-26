@@ -46,10 +46,10 @@ end
 
 
 """
-    maxentropy_tsallis(N::Int, q; base = MathConstants.e)
+    maxentropy_tsallis(N::Int, q; k = 1, base = MathConstants.e)
 
 Convenience function that computes the maximum value of the generalized Tsallis
-entropy with parameter `q` for an `N`-element probability distribution, i.e.
+entropy with parameters `q` and `k` for an `N`-element probability distribution, i.e.
 ``\\dfrac{N^{1 - q} - 1}{(1 - q)}``, which is useful for normalization when `N` and `q`
 is known.
 
@@ -58,10 +58,10 @@ If `q == 1`, then `log(base, N)` is returned.
 See also [`entropy_tsallis`](@ref), [`entropy_normalized`](@ref),
 [`maxentropy_tsallis`](@ref).
 """
-function maxentropy_tsallis(N::Int, q; base = MathConstants.e)
+function maxentropy_tsallis(N::Int, q; k = 1, base = MathConstants.e)
     if q ≈ 1.0
         return log(base, N)
     else
-        return (N^(1 - q) - 1) / (1 - q)
+        return k*(N^(1 - q) - 1) / (1 - q)
     end
 end
