@@ -40,28 +40,14 @@ Tsallis(; q = 1.0, k = 1.0, base = 2) = Tsallis(q, k, base)
 function entropy(e::Tsallis, probs::Probabilities)
     (; q, k, base) = e
     # As for Renyi, we want to skip the zeros as well.
-    probs = Iterators.filter(!iszero, probs.p)
+    non0_probs = Iterators.filter(!iszero, probs.p)
     if q ≈ 1
-        return -sum(p * log(base, p) for p in probs)
+        return -sum(p * log(base, p) for p in non0_probs)
     else
-        return k/(q-1)*(1 - sum(p^q for p in probs))
+        return k/(q-1)*(1 - sum(p^q for p in non0_probs))
     end
 end
 
-
-"""
-    maxentropy_tsallis(N::Int, q; k = 1, base = MathConstants.e)
-
-Convenience function that computes the maximum value of the generalized Tsallis
-entropy with parameters `q` and `k` for an `N`-element probability distribution, i.e.
-``\\dfrac{N^{1 - q} - 1}{(1 - q)}``, which is useful for normalization when `N` and `q`
-is known.
-
-If `q == 1`, then `log(base, N)` is returned.
-
-See also [`entropy_tsallis`](@ref), [`entropy_normalized`](@ref),
-[`maxentropy_tsallis`](@ref).
-"""
 function Base.maximum(e::Tsallis, L::Int)
     (; q, k, base) = e
     if q ≈ 1.0

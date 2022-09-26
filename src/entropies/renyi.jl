@@ -39,26 +39,17 @@ Renyi(; q = 1.0, base = 2) = Renyi(q, base)
 
 function entropy(e::Renyi, probs::Probabilities)
     q, base = e.q, e.base
-    q < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
-    haszero = any(iszero, probs)
-    p = if haszero
-        i0 = findall(iszero, probs.p)
-        # We copy because if someone initialized Probabilities with 0s, I would guess
-        # they would want to index the zeros as well. Not so costly anyways.
-        deleteat!(copy(probs.p), i0)
-    else
-        probs.p
-    end
-
+    q < 0 && throw(ArgumentError("Order of Renyi entropy must be ≥ 0."))
+    non0_probs = Iterators.filter(!iszero, probs.p)
     logf = log_with_base(base)
     if q ≈ 0
-        return logf(length(p))
+        return logf(length(non0_probs))
     elseif q ≈ 1
-        return -sum(x*logf(x) for x in p)
+        return -sum(x*logf(x) for x in non0_probs)
     elseif isinf(q)
-        return -logf(maximum(p))
+        return -logf(maximum(non0_probs))
     else
-        return (1/(1-q))*logf(sum(x^q for x in p))
+        return (1/(1-q))*logf(sum(x^q for x in non0_probs))
     end
 end
 
