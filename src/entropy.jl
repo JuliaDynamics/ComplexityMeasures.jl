@@ -9,9 +9,7 @@ abstract type IndirectEntropy <: AbstractEntropy end
 ###########################################################################################
 # Direct API
 ###########################################################################################
-# TODO: Do we actually _use_ `StatsBase` anywhere, or do we use `Statistics`???
-import StatsBase: entropy
-
+# Notice that StatsBase.jl also exports `entropy`.
 """
     entropy(e::Entropy, x, est::ProbabilitiesEstimator) → h::Real
     entropy(e::Entropy, probs::Probabilities) → h::Real
