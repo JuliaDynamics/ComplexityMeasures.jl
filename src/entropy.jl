@@ -9,7 +9,7 @@ abstract type IndirectEntropy <: AbstractEntropy end
 ###########################################################################################
 # Direct API
 ###########################################################################################
-# Notice that StatsBase.jl also exports `entropy`.
+# Notice that StatsBase.jl exports `entropy` and Wavelets.jl exports `Entropy`.
 """
     entropy([e::Entropy,] x, est::ProbabilitiesEstimator) → h::Real
     entropy([e::Entropy,] probs::Probabilities) → h::Real
@@ -69,7 +69,7 @@ function Base.maximum(e::Entropy, ::Int)
 end
 
 """
-    entropy_normalized(e::Entropy, x, est::ProbabilitiesEstimator) → h̃ ∈ [0, 1]
+    entropy_normalized([e::Entropy,] x, est::ProbabilitiesEstimator) → h̃ ∈ [0, 1]
 Return the normalized entropy of `x`, i.e., the value of [`entropy`](@ref) divided
 by the maximum value for `e`, according to the given probability estimator.
 
@@ -79,6 +79,9 @@ the amount of _possible_ events (i.e., the [`alphabet_length`](@ref)) from `prob
 """
 function entropy_normalized(e::Entropy, x, est::ProbabilitiesEstimator)
     return entropy(e, x, est)/maximum(e, x, est)
+end
+function entropy_normalized(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+    return entropy_normalized(Shannon(), x, est)
 end
 
 ###########################################################################################
@@ -97,9 +100,7 @@ The available indirect entropies are:
 - [`Kraskov`](@ref).
 - [`KozachenkoLeonenko`](@ref).
 """
-function entropy(e::IndirectEntropy, x::Array_or_Dataset)
-    error("Method not implemented for entropy type $(nameof(typeof(e))).")
-end
+function entropy(::IndirectEntropy, ::Array_or_Dataset) end
 function entropy(e::IndirectEntropy, ::Array_or_Dataset, ::ProbabilitiesEstimator)
     error("Indirect entropies like $(nameof(typeof(e))) are not called with probabilities.")
 end

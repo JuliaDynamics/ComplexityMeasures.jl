@@ -150,8 +150,8 @@ fig
 
 Here we reproduce parts of figure 3 in Li et al. (2019), computing reverse and regular dispersion entropy for a time series consisting of normally distributed noise with a single spike in the middle of the signal. We compute the entropies over a range subsets of the data, using a sliding window consisting of 70 data points, stepping the window 10 time steps at a time.
 
-Note: the results here are not exactly the same as in the original paper, because Li et 
-al. (2019) base their examples on randomly generated numbers and do not provide code that 
+Note: the results here are not exactly the same as in the original paper, because Li et
+al. (2019) base their examples on randomly generated numbers and do not provide code that
 specify random number seeds.
 
 ```@example
@@ -202,3 +202,28 @@ fig
 [^Rostaghi2016]: Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
+
+
+## Normalized entropy for comparing different signals
+When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the [Wavelet entropy example](@ref) (where we use the spectral entropy instead of the wavelet entropy):
+
+```@example MAIN
+using DynamicalSystems
+N1, N2, a = 101, 100001, 10
+
+for N in (N1, N2)
+    t = LinRange(0, 2*a*π, N)
+    x = sin.(t) # periodic
+    y = sin.(t .+ cos.(t/0.5)) # periodic, complex spectrum
+    z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
+    w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
+
+    for q in (x, y, z, w)
+        h = entropy(q, PowerSpectrum())
+        n = entropy_normalized(q, PowerSpectrum())
+        println("entropy: $(h), normalized: $(n).")
+    end
+end
+```
+You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
+For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.

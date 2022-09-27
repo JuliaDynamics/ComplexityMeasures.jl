@@ -25,8 +25,13 @@ in spectral space depends on the length of the input.
 """
 struct PowerSpectrum <: ProbabilitiesEstimator end
 
-function probabilities(x, ::PowerSpectrum)
+function probabilities(x::Array_or_Dataset, ::PowerSpectrum)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
     f = FFTW.rfft(x)
     Probabilities(abs2.(f))
+end
+
+function alphabet_length(x::Array_or_Dataset, ::PowerSpectrum)
+    n = length(x)
+    return n÷2 + 1
 end

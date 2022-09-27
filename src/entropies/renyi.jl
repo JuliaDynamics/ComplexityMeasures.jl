@@ -54,7 +54,7 @@ function entropy(e::Renyi, probs::Probabilities)
     end
 end
 
-Base.maximum(::Renyi, L::Int) = log_with_base(est.base)(L)
+Base.maximum(e::Renyi, L::Int) = log_with_base(e.base)(L)
 
 # TODO: Not sure yet how to treat in-place methods.
 """

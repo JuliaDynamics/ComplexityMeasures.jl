@@ -6,7 +6,7 @@ using DelayEmbeddings
 using Documenter
 using DocumenterTools: Themes
 using CairoMakie
-using Entropies.Wavelets
+import Entropies.Wavelets
 using DynamicalSystems
 
 # %% JuliaDynamics theme
@@ -49,6 +49,7 @@ makedocs(
     authors = "Kristian Agasøster Haaga, George Datseris",
     pages = PAGES,
     doctest = CI,
+    draft = true,
 )
 
 if CI
