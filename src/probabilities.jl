@@ -88,9 +88,13 @@ function probabilities! end
 
 
 """
+    alphabet_length(x::Array_or_Dataset, est::ProbabilitiesEstimator) → Int
     alphabet_length(estimator::ProbabilitiesEstimator) → Int
 
-Returns the total number of possible symbols/states implied by `estimator`.
+Return the total number of possible symbols/states implied by `estimator` for a given `x`.
+For some estimators, this total number is independent of `x`, in which case the second
+method is called.
+
 If the total number of states cannot be known a priori, an error is thrown.
 Primarily used in [`entropy_normalized`](@ref).
 
@@ -103,5 +107,9 @@ julia> alphabet_length(est) # same as m!
 24
 ```
 """
-alphabet_length(est) =
-    throw(error("alphabet_length not implemented for estimator of type $(typeof(est))"))
+function alphabet_length(::Array_or_Dataset, est::ProbabilitiesEstimator)
+    return alphabet_length(est)
+end
+function alphabet_length(est::ProbabilitiesEstimator)
+    error("`alphabet_length` not known/implemented for estimator of type $(typeof(est)).")
+end
