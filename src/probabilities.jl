@@ -1,5 +1,6 @@
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
+export alphabet_length
 
 """
     Probabilities(x) → p
@@ -83,3 +84,24 @@ containers.
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
 function probabilities! end
+
+
+
+"""
+    alphabet_length(estimator::ProbabilitiesEstimator) → Int
+
+Returns the total number of possible symbols/states implied by `estimator`.
+If the total number of states cannot be known a priori, an error is thrown.
+Primarily used in [`entropy_normalized`](@ref).
+
+## Examples
+
+```jldoctest setup = :(using Entropies)
+julia> est = SymbolicPermutation(m = 4);
+
+julia> alphabet_length(est) # same as m!
+24
+```
+"""
+alphabet_length(est) =
+    throw(error("alphabet_length not implemented for estimator of type $(typeof(est))"))
