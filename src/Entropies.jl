@@ -6,7 +6,7 @@ projects in the JuliaDynamics organization,
 such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/)
 or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 
-To install run `import Pkg; Pkg.add("Entropies")`.
+To install it, run `import Pkg; Pkg.add("Entropies")`.
 """
 module Entropies
 
