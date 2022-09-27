@@ -96,8 +96,14 @@ The available indirect entropies are:
 - [`Kraskov`](@ref).
 - [`KozachenkoLeonenko`](@ref).
 """
-function entropy(e::IndirectEntropy, x)
+function entropy(e::IndirectEntropy, x::Array_or_Dataset)
     error("Method not implemented for entropy type $(nameof(typeof(e))).")
+end
+function entropy(e::IndirectEntropy, ::Array_or_Dataset, ::ProbabilitiesEstimator)
+    error("Indirect entropies like $(nameof(typeof(e))) are not called with probabilities.")
+end
+function entropy(e::IndirectEntropy, ::Probabilities)
+    error("Indirect entropies $(nameof(typeof(e))) are not called with probabilities.")
 end
 
 ###########################################################################################

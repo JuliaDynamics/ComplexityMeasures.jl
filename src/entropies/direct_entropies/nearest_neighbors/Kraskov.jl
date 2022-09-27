@@ -1,4 +1,4 @@
-export entropy_kraskov
+export Kraskov
 
 """
     Kraskov <: IndirectEntropy
@@ -18,7 +18,7 @@ See also: [`KozachenkoLeonenko`](@ref).
     Kraskov, A., Stögbauer, H., & Grassberger, P. (2004).
     Estimating mutual information. Physical review E, 69(6), 066138.
 """
-struct Kraskov{B}
+struct Kraskov{B} <: IndirectEntropy
     k::Int
     w::Int
     base::B
