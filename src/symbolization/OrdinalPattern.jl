@@ -18,7 +18,7 @@ then encoded to integers using [`encode_motif`](@ref).
     symbolize(x, scheme::OrdinalPattern) → Vector{Int}
     symbolize!(s, x, scheme::OrdinalPattern) → Vector{Int}
 
-If applied to an `m`-dimensional [`Dataset`](@ref) `x`, then `m` and `τ` are ignored,
+If applied to an `m`-dimensional `Dataset` `x`, then `m` and `τ` are ignored,
 and `m`-dimensional permutation patterns are obtained directly for each
 `xᵢ ∈ x`. Permutation patterns are then encoded as integers using [`encode_motif`](@ref).
 Optionally, symbols can be written directly into a pre-allocated integer vector `s`, where
