@@ -51,20 +51,21 @@ entropy(probs::Probabilities) = entropy(Shannon(), probs)
 # Normalize API
 ###########################################################################################
 """
-    maximum(e::Entropy, est::ProbabilitiesEstimator) → m::Real
-Return the maximum value `m` of the given entropy type based on the given estimator.
+    maximum(e::Entropy, x, est::ProbabilitiesEstimator) → m::Real
+Return the maximum value `m` of the given entropy type based on the given estimator
+and the given input `x` (whose values are not important, but layout and type are).
 This function only works if the maximum value is deducable, which is possible only
 when the estimator has a known [`alphabet_length`](@ref).
 
     maximum(e::Entropy, L::Int) → m::Real
 Alternatively, compute the maximum entropy from the alphabet length `L` directly.
 """
-function Base.maximum(e::Entropy, est::ProbabilitiesEstimator)
-    L = alphabet_length(est)
+function Base.maximum(e::Entropy, x, est::ProbabilitiesEstimator)
+    L = alphabet_length(x, est)
     return maximum(e, L)
 end
 function Base.maximum(e::Entropy, ::Int)
-    error("Method not implemented for entropy type $(nameof(typeof(e))).")
+    error("Maximum not implemented for entropy type $(nameof(typeof(e))).")
 end
 
 """
@@ -77,7 +78,7 @@ Notice that unlike [`entropy`](@ref), here there is no method
 the amount of _possible_ events (i.e., the [`alphabet_length`](@ref)) from `probs`.
 """
 function entropy_normalized(e::Entropy, x, est::ProbabilitiesEstimator)
-    return entropy(e, x, est)/maximum(e, est)
+    return entropy(e, x, est)/maximum(e, x, est)
 end
 
 ###########################################################################################

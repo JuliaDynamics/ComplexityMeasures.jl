@@ -19,13 +19,13 @@ Tsallis
 ## Shannon entropy (convenience)
 
 ```@docs
-entropy_shannon
+Shannon
 ```
 
 ## Normalization
 
 ```@docs
-maximum(::Entropy, ::ProbabilitiesEstimator)
+maximum(::Entropy, ::Any, ::ProbabilitiesEstimator)
 entropy_normalized
 ```
 
