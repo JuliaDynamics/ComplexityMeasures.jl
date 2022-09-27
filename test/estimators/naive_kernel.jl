@@ -1,4 +1,4 @@
-using Neighborhood: KDTree, BruteForce
+using Entropies.DelayEmbeddings.Neighborhood: KDTree, BruteForce
 
 @test NaiveKernel(0.1) isa NaiveKernel
 @test NaiveKernel(0.1, KDTree) isa NaiveKernel

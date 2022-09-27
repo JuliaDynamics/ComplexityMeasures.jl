@@ -1,9 +1,9 @@
 using Test
+using Entropies
+# TODO: None of these packages should be used here. Instead, the files they are needed
 using Entropies.DelayEmbeddings
 using Entropies.DelayEmbeddings.StaticArrays
-using Entropies.Wavelets
 
-# TODO: This is how the tests should look like in the end:
 defaultname(file) = splitext(basename(file))[1]
 testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include(file); end
 @testset "Entropies.jl" begin
@@ -23,7 +23,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("estimators/permutation_spatial.jl")
     testfile("estimators/visitation_frequency.jl")
     testfile("estimators/transfer_operator.jl")
-    testfile("estimators/nn.jl")
+    testfile("estimators/nn.jl", "nearest neighbors direct")
 
     # Various
     testfile("complexity_measures/complexity_measures.jl")
