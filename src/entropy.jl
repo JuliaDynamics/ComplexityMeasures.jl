@@ -49,6 +49,22 @@ function entropy(x::Array_or_Dataset, est::ProbabilitiesEstimator)
 end
 entropy(probs::Probabilities) = entropy(Shannon(), probs)
 
+"""
+    entropy!(e::Entropy, p, x, est::ProbabilitiesEstimator)
+
+Similar to `probabilities!`, this is an in-place version of [`entropy`](@ref) that allows
+pre-allocation of temporarily used containers.
+
+Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
+"""
+function entropy_renyi!(e::Entropy, p, x, est::ProbabilitiesEstimator)
+    if α ≠ nothing
+        @warn "Keyword `α` is deprecated in favor of `q`."
+        q = α
+    end
+    probabilities!(p, x, est)
+    entropy(e, p)
+end
 ###########################################################################################
 # Normalize API
 ###########################################################################################

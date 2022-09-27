@@ -57,24 +57,6 @@ end
 
 Base.maximum(e::Renyi, L::Int) = log_with_base(e.base)(L)
 
-# TODO: Not sure yet how to treat in-place methods.
-"""
-    entropy_renyi!(p, x, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
-
-Similarly with `probabilities!` this is an in-place version of `entropy_renyi` that allows
-pre-allocation of temporarily used containers.
-
-Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
-"""
-function entropy_renyi!(p, x, est; q = 1.0, α = nothing, base = MathConstants.e)
-    if α ≠ nothing
-        @warn "Keyword `α` is deprecated in favor of `q`."
-        q = α
-    end
-    probabilities!(p, x, est)
-    entropy_renyi(p; q = q, base = base)
-end
-
 """
     Shannon(; base = 2)
 
