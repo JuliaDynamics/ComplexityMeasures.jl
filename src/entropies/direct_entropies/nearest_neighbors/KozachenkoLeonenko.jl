@@ -4,8 +4,8 @@ export KozachenkoLeonenko
     KozachenkoLeonenko <: IndirectEntropy
     KozachenkoLeonenko(; k::Int = 1, w::Int = 1, base = 2)
 
-An indirect entropy used in [`entropy`](@ref)`(KozachenkoLeonenko(), x)` to estimate the
-Shannon entropy of `x` (a multi-dimensional `Dataset`) to the given
+An indirect entropy estimator used in [`entropy`](@ref)`(KozachenkoLeonenko(), x)` to
+estimate the Shannon entropy of `x` (a multi-dimensional `Dataset`) to the given
 `base` using `k`-th nearest neighbor searches using the method from Kozachenko &
 Leonenko[^KozachenkoLeonenko1987],
 as described in Charzyńska and Gambin[^Charzyńska2016].
@@ -21,10 +21,10 @@ See also: [`Kraskov`](@ref).
 [^KozachenkoLeonenko1987]: Kozachenko, L. F., & Leonenko, N. N. (1987). Sample estimate of
     the entropy of a random vector. Problemy Peredachi Informatsii, 23(2), 9-16.
 """
-struct KozachenkoLeonenko{B} <: IndirectEntropy
-    k::Int
-    w::Int
-    base::B
+@Base.kwdef struct KozachenkoLeonenko{B} <: IndirectEntropy
+    k::Int = 1
+    w::Int = 1
+    base::B = 2
 end
 
 function entropy(e::KozachenkoLeonenko, x::AbstractDataset{D, T}) where {D, T}

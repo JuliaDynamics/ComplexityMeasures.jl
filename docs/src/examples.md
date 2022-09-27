@@ -47,6 +47,7 @@ fig
 [^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy estimator with applications in systems biology. Entropy, 18(1), 13.
 
 ## Permutation entropy example
+
 This example reproduces an example from Bandt and Pompe (2002), where the permutation
 entropy is compared with the largest Lyapunov exponents from time series of the chaotic
 logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
@@ -61,22 +62,18 @@ N_lyap, N_ent = 100000, 10000
 m, τ = 6, 1 # Symbol size/dimension and embedding lag
 
 # Generate one time series for each value of the logistic parameter r
-lyaps = Float64[]
-hs_perm = Float64[]
-hs_wtperm = Float64[]
-hs_ampperm = Float64[]
+lyaps, hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
 
-base = Base.MathConstants.e
-for r in rs
+for (i, r) in enumerate(rs)
     ds.p[1] = r
-    push!(lyaps, lyapunov(ds, N_lyap))
+    lyaps[i] = lyapunov(ds, N_lyap)
 
     x = trajectory(ds, N_ent) # time series
-    hperm = Entropies.entropy_renyi(x, SymbolicPermutation(m = m, τ = τ), base = base)
-    hwtperm = Entropies.entropy_renyi(x, SymbolicWeightedPermutation(m = m, τ = τ), base = base)
-    hampperm = Entropies.entropy_renyi(x, SymbolicAmplitudeAwarePermutation(m = m, τ = τ), base = base)
+    hperm = entropy(x, SymbolicPermutation(; m, τ))
+    hwtperm = entropy(x, SymbolicWeightedPermutation(; m, τ))
+    hampperm = entropy(x, SymbolicAmplitudeAwarePermutation(; m, τ))
 
-    push!(hs_perm, hperm); push!(hs_wtperm, hwtperm); push!(hs_ampperm, hampperm)
+    hs_perm[i] = hperm; hs_wtperm[i] = hwtperm; hs_ampperm[i] = hampperm
 end
 
 fig = Figure()
@@ -96,8 +93,8 @@ end
 fig
 ```
 
-
 ## Kernel density example
+
 Here, we draw some random points from a 2D normal distribution. Then, we use kernel density estimation to associate a probability to each point `p`, measured by how many points are within radius `1.5` of `p`. Plotting the actual points, along with their associated probabilities estimated by the KDE procedure, we get the following surface plot.
 
 ```@example MAIN
@@ -117,6 +114,7 @@ fig
 ```
 
 ## Wavelet entropy example
+
 The scale-resolved wavelet entropy should be lower for very regular signals (most of the
 energy is contained at one scale) and higher for very irregular signals (energy spread
 more out across scales).
@@ -203,8 +201,8 @@ fig
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
 
-
 ## Normalized entropy for comparing different signals
+
 When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the [Wavelet entropy example](@ref) (where we use the spectral entropy instead of the wavelet entropy):
 
 ```@example MAIN
@@ -225,5 +223,6 @@ for N in (N1, N2)
     end
 end
 ```
+
 You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.

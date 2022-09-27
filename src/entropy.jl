@@ -1,5 +1,5 @@
 export AbstractEntropy, Entropy, IndirectEntropy
-export entropy, entropy_normalized
+export entropy, entropy_normalized, entropy!
 
 # TODO: Add docstrings here
 abstract type AbstractEntropy end
@@ -13,8 +13,10 @@ abstract type IndirectEntropy <: AbstractEntropy end
 """
     entropy([e::Entropy,] x, est::ProbabilitiesEstimator) → h::Real
     entropy([e::Entropy,] probs::Probabilities) → h::Real
-Compute a quantity `h`, that qualifies as a (generalized) entropy of `x`,
-according to the specified entropy type `e` and the given probability estimator `est`.
+
+Compute a (generalized) entropy `h` from `x` according to the specified
+entropy type `e` and the given probability estimator `est`.
+
 Alternatively compute the entropy directly from the existing probabilities `probs`.
 In fact, the first method is a 2-lines-of-code wrapper that calls [`probabilities`](@ref)
 and gives the result to the second method.
@@ -28,14 +30,14 @@ entropies". Currently implemented types are:
 
 - [`Renyi`](@ref).
 - [`Tsallis`](@ref).
-- [`Shannon`](@ref), which is a subcase of the above two for `q = 1`.
+- [`Shannon`](@ref), which is a subcase of the above two in the limit `q → 1`.
 
 The entropy (first argument) is optional: if not given, `Shannon()` is used instead.
 
 These entropies also have a well defined maximum value for a given probability estimator.
 To obtain this value one only needs to call the [`maximum`](@ref) function with the
 chosen entropy type and probability estimator. Or, one can use [`entropy_normalized`](@ref)
-to obtain the normalized form of the entropy (divided by maximum).
+to obtain the normalized form of the entropy (divided by the maximum).
 """
 function entropy(e::Entropy, x, est::ProbabilitiesEstimator)
     ps = probabilities(x, est)
@@ -47,17 +49,36 @@ function entropy(x::Array_or_Dataset, est::ProbabilitiesEstimator)
 end
 entropy(probs::Probabilities) = entropy(Shannon(), probs)
 
+"""
+    entropy!(e::Entropy, p, x, est::ProbabilitiesEstimator)
+
+Similar to `probabilities!`, this is an in-place version of [`entropy`](@ref) that allows
+pre-allocation of temporarily used containers.
+
+Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
+"""
+function entropy!(e::Entropy, p, x, est::ProbabilitiesEstimator)
+    if α ≠ nothing
+        @warn "Keyword `α` is deprecated in favor of `q`."
+        q = α
+    end
+    probabilities!(p, x, est)
+    entropy(e, p)
+end
 ###########################################################################################
 # Normalize API
 ###########################################################################################
 """
     maximum(e::Entropy, x, est::ProbabilitiesEstimator) → m::Real
+
 Return the maximum value `m` of the given entropy type based on the given estimator
 and the given input `x` (whose values are not important, but layout and type are).
-This function only works if the maximum value is deducable, which is possible only
+
+This function only works if the maximum value is dedicable, which is possible only
 when the estimator has a known [`alphabet_length`](@ref).
 
     maximum(e::Entropy, L::Int) → m::Real
+
 Alternatively, compute the maximum entropy from the alphabet length `L` directly.
 """
 function Base.maximum(e::Entropy, x, est::ProbabilitiesEstimator)
@@ -70,11 +91,12 @@ end
 
 """
     entropy_normalized([e::Entropy,] x, est::ProbabilitiesEstimator) → h̃ ∈ [0, 1]
+
 Return the normalized entropy of `x`, i.e., the value of [`entropy`](@ref) divided
 by the maximum value for `e`, according to the given probability estimator.
 If `e` is not given, it defaults to `Shannon()`.
 
-Notice that unlike [`entropy`](@ref), here there is no method
+Notice that unlike for [`entropy`](@ref), here there is no method
 `entropy_normalized(e::Entropy, probs::Probabilities)` because there is no way to know
 the amount of _possible_ events (i.e., the [`alphabet_length`](@ref)) from `probs`.
 """
@@ -90,13 +112,13 @@ end
 ###########################################################################################
 """
     entropy(e::IndirectEntropy, x) → h::Real
-Compute a quantity `h`, that qualifies as an entropy of `x`,
-according to the specified inderect entropy estimator `e`.
 
-In contrast to the "typical" way one obtains entropies in the above methods,
-these entropy estimators are able to compute Shannon entropies via alternate means,
-without explicitly computing some probability distributions.
-The available indirect entropies are:
+Compute the entropy of `x`, here named `h`, according to the specified indirect entropy
+estimator `e`.
+
+In contrast to the "typical" way one obtains entropies in the above methods, indirect
+entropy estimators compute Shannon entropies via alternate means, without explicitly
+computing probability distributions. The available indirect entropies are:
 
 - [`Kraskov`](@ref).
 - [`KozachenkoLeonenko`](@ref).
@@ -114,6 +136,7 @@ end
 ###########################################################################################
 """
     log_with_base(base) → f
+
 Return a function that computes the logarithm at a given base.
 This definitely increases accuracy, and probably also performance.
 """

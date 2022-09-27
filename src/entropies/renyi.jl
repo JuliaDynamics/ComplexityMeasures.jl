@@ -4,6 +4,7 @@ export Renyi, Shannon
     Renyi <: Entropy
     Renyi(q, base = 2)
     Renyi(; q = 1.0, base = 2)
+
 The Rényi[^Rényi1960] generalized order-`q` entropy, used with [`entropy`](@ref)
 to compute an entropy with units given by `base` (typically `2` or `MathConstants.e`).
 
@@ -56,26 +57,8 @@ end
 
 Base.maximum(e::Renyi, L::Int) = log_with_base(e.base)(L)
 
-# TODO: Not sure yet how to treat in-place methods.
 """
-    entropy_renyi!(p, x, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
-
-Similarly with `probabilities!` this is an in-place version of `entropy_renyi` that allows
-pre-allocation of temporarily used containers.
-
-Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
-"""
-function entropy_renyi!(p, x, est; q = 1.0, α = nothing, base = MathConstants.e)
-    if α ≠ nothing
-        @warn "Keyword `α` is deprecated in favor of `q`."
-        q = α
-    end
-    probabilities!(p, x, est)
-    entropy_renyi(p; q = q, base = base)
-end
-
-"""
-    Shannon(base = 2)
+    Shannon(; base = 2)
 
 The Shannon[^Shannon1948] entropy, used with [`entropy`](@ref) to compute:
 
@@ -84,8 +67,8 @@ H(p) = - \\sum_i p[i] \\log(p[i])
 ```
 with the ``log`` at the given `base`.
 
-`Shannon(base)` is syntactically equivalent with `Renyi(; base)`.
+`Shannon(base)` is syntactically equivalent to `Renyi(; base)`.
 
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
-Shannon(base = 2) = Renyi(; base)
+Shannon(; base = 2) = Renyi(; base)

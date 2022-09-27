@@ -12,7 +12,8 @@ include("spatial_permutation.jl")
 """
     entropy_perm(x; τ = 1, m = 3, base = MathConstants.e)
 
-Compute the (Shannon) permutation entropy (Bandt & Pompe, 2002)[^BandtPompe2002] of order `m` with delay time `τ`.
+Compute the (Shannon) permutation entropy (Bandt & Pompe, 2002)[^BandtPompe2002] of
+order `m` with delay time `τ`.
 
 Short-hand for `entropy_renyi(x, SymbolicPermutation(τ = 1, m = 3), base = base, q = 1)`.
 
@@ -29,9 +30,11 @@ end
 """
     entropy_weightedperm(x; τ = 1, m = 3, base = MathConstants.e)
 
-Compute the (Shannon) weighted permutation entropy (Fadlallah et al., 2013)[^Fadlallah2013] of order `m` with delay time `τ`.
+Compute the (Shannon) weighted permutation entropy (Fadlallah et al.,
+2013)[^Fadlallah2013] of order `m` with delay time `τ`.
 
-Short-hand for `entropy_renyi(x, SymbolicWeightedPermutation(τ = 1, m = 3), base = base, q = 1)`.
+Short-hand for
+`entropy_renyi(x, SymbolicWeightedPermutation(τ = 1, m = 3), base = base, q = 1)`.
 
 See also: [`SymbolicPermutation`](@ref), [`entropy_renyi`](@ref).
 
@@ -54,7 +57,8 @@ Short-hand for `entropy_renyi(x, SymbolicAmplitudeAwarePermutation(τ = 1, m = 3
 See also: [`SymbolicPermutation`](@ref), [`entropy_renyi`](@ref).
 
 [^Azami2016]: Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy:
-    Illustration in spike detection and signal segmentation. Computer methods and programs in biomedicine, 128, 40-51.
+    Illustration in spike detection and signal segmentation. Computer methods and
+    programs in biomedicine, 128, 40-51.
 """
 function entropy_ampperm(x; τ = 1, m = 3, A = 0.5, base = MathConstants.e, lt = isless_rand)
     est = SymbolicAmplitudeAwarePermutation(m = m, τ = τ, A = A, lt = lt; base)
@@ -65,10 +69,12 @@ end
     entropy_spatialperm(x, stencil; periodic = false, base = MathConstants.e)
 
 Compute the spatiotemporal permutation entropy of `x`, which is a higher-dimensional
-(e.g. 2D[^Ribeiro2012] or 3D[^Schlemmer2018] array), using the given stencil for symbolizing sub-matrices,
-using circular wrapping around array boundaries if `periodic == true`.
+(e.g. 2D[^Ribeiro2012] or 3D[^Schlemmer2018] array), using the given stencil for
+symbolizing sub-matrices, using circular wrapping around array boundaries if
+`periodic == true`.
 
-Short-hand for `entropy_renyi(x, SpatialSymbolicPermutation(stencil, x, periodic), base = base, q = 1)`.
+Short-hand for
+`entropy_renyi(x, SpatialSymbolicPermutation(stencil, x, periodic), base = base, q = 1)`.
 
 See also: [`SpatialSymbolicPermutation`](@ref), [`entropy_renyi`](@ref).
 

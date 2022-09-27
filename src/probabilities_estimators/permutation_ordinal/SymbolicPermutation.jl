@@ -255,35 +255,30 @@ function probabilities(x::AbstractVector{T}, est::SymbolicPermutation) where {T<
     probabilities!(s, x_emb, est)
 end
 
-function entropy_renyi!(
-    s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation;
-    q = 1.0, α = nothing, base::Real = MathConstants.e
+function entropy!(e::Entropy,
+    s::AbstractVector{Int},
+    x::AbstractDataset{m, T},
+    est::SymbolicPermutation;
     ) where {m, T}
 
-    if α ≠ nothing
-        @warn "Keyword `α` is deprecated in favor of `q`."
-        q = α
-    end
     length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
     ps = probabilities!(s, x, est)
 
-    entropy_renyi(ps, α = α, base = base)
+    entropy(e, ps)
 end
 
-function entropy_renyi!(
-        s::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation;
-        q::Real = 1.0, α = nothing, base::Real = MathConstants.e
+function entropy!(e::Entropy,
+        s::AbstractVector{Int},
+        x::AbstractVector{T},
+        est::SymbolicPermutation
     ) where {T<:Real}
-    if α ≠ nothing
-        @warn "Keyword `α` is deprecated in favor of `q`."
-        q = α
-    end
+
     L = length(x)
     N = L - (est.m-1)*est.τ
     length(s) == N || error("Pre-allocated symbol vector `s` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
 
     ps = probabilities!(s, x, est)
-    entropy_renyi(ps, α = α, base = base)
+    entropy(e, ps)
 end
 
 alphabet_length(est::SymbolicPermutation)::Int = factorial(est.m)
