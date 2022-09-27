@@ -7,6 +7,7 @@ export maxentropy_tsallis
     Tsallis <: Entropy
     Tsallis(q; k = 1.0, base = 2)
     Tsallis(; q = 1.0, k = 1.0, base = 2)
+
 The Tsallis[^Tsallis1988] generalized order-`q` entropy, used with [`entropy`](@ref)
 to compute an entropy.
 

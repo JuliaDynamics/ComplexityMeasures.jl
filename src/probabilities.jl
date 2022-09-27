@@ -4,6 +4,7 @@ export alphabet_length
 
 """
     Probabilities(x) → p
+
 A simple wrapper type around an `x::AbstractVector` which ensures that `p` sums to 1.
 Behaves identically to `Vector`.
 """
@@ -75,6 +76,7 @@ probabilities(x) = _non0hist(x)
 
 """
     probabilities!(args...)
+
 Identical to `probabilities(args...)`, but allows pre-allocation of temporarily used
 containers.
 

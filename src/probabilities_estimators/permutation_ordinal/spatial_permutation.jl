@@ -2,6 +2,7 @@ export SpatialSymbolicPermutation
 
 """
     SpatialSymbolicPermutation(stencil, x, periodic = true)
+
 A symbolic, permutation-based probabilities/entropy estimator for spatiotemporal systems.
 The data are a high-dimensional array `x`, such as 2D [^Ribeiro2012] or 3D [^Schlemmer2018].
 This approach is also known as _spatiotemporal permutation entropy_.
@@ -11,12 +12,14 @@ A _stencil_ defines what local area around each pixel to
 consider, and compute the ordinal pattern within the stencil. Stencils are given as
 vectors of `CartesianIndex` which encode the _offsets_ of the pixes to include in the
 stencil, with respect to the current pixel. For example
+
 ```julia
 data = [rand(50, 50) for _ in 1:50]
 x = data[1] # first "time slice" of a spatial system evolution
 stencil = CartesianIndex.([(0,1), (1,1), (1,0)])
 est = SpatialSymbolicPermutation(stencil, x)
 ```
+
 Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
 (directions here correspond to the way Julia prints matrices by default).
 Notice that no offset (meaning the pixel itself) is always included automatically.
@@ -27,6 +30,7 @@ The pixel without any offset is always first in the order.
 After having defined `est`, one calculates the spatial permutation entropy
 by calling [`entropy_renyi`](@ref) with `est`, and with the array data.
 To apply this to timeseries of spatial data, simply loop over the call, e.g.:
+
 ```julia
 entropy = entropy_renyi(x, est)
 entropy_vs_time = entropy_renyi.(data, est) # broadcasting with `.`

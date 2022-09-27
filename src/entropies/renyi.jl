@@ -4,6 +4,7 @@ export Renyi, Shannon
     Renyi <: Entropy
     Renyi(q, base = 2)
     Renyi(; q = 1.0, base = 2)
+
 The Rényi[^Rényi1960] generalized order-`q` entropy, used with [`entropy`](@ref)
 to compute an entropy with units given by `base` (typically `2` or `MathConstants.e`).
 
