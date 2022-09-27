@@ -23,7 +23,7 @@ Specifically, use `KDTree` to use a tree-based neighbor search, or `BruteForce` 
 the direct distances between all points. KDTrees heavily outperform direct distances
 when the dimensionality of the data is much smaller than the data length.
 
-The keyword `w` stands for the [Theiler window](@ref), and excludes indices ``s``
+The keyword `w` stands for the Theiler window, and excludes indices ``s``
 that are within ``|i - s| ≤ w`` from the given point ``X_i``.
 
 [^PrichardTheiler1995]: Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis. Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
