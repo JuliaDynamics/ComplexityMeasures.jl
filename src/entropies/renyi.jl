@@ -1,4 +1,4 @@
-export Renyi
+export Renyi, Shannon
 
 """
     Renyi <: Entropy
@@ -73,3 +73,19 @@ function entropy_renyi!(p, x, est; q = 1.0, α = nothing, base = MathConstants.e
     probabilities!(p, x, est)
     entropy_renyi(p; q = q, base = base)
 end
+
+"""
+    Shannon(base = 2)
+
+The Shannon[^Shannon1948] entropy, used with [`entropy`](@ref) to compute:
+
+```math
+H(p) = - \\sum_i p[i] \\log(p[i])
+```
+with the ``log`` at the given `base`.
+
+`Shannon(base)` is syntactically equivalent with `Renyi(; base)`.
+
+[^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
+"""
+Shannon(base = 2) = Renyi(; base)

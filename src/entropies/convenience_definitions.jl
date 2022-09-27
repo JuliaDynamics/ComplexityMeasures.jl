@@ -1,22 +1,7 @@
 # This file defines and exports some convenience definition of entropies
 # for commonly used names in the literature. They aren't actually new entropies
 # as discussed extensively in the documentation.
-export entropy_shannon
 export entropy_permutation, entropy_spatial_permutation, entropy_wavelet
-
-export entropy_shannon
-export maxentropy_shannon
-
-"""
-    entropy_shannon(args...; base = 2)
-
-Equivalent to `entropy(Renyi(;base), args...)` and provided solely for convenience.
-Computes the Shannon entropy, given by
-```math
-H(p) = - \\sum_i p[i] \\log(p[i])
-```
-"""
-entropy_shannon(args...; base = 2) = entropy(Renyi(; base), args...)
 
 """
     entropy_permutation(x; τ = 1, m = 3, base = 2)

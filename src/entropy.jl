@@ -11,11 +11,11 @@ abstract type IndirectEntropy <: AbstractEntropy end
 ###########################################################################################
 # Notice that StatsBase.jl also exports `entropy`.
 """
-    entropy(e::Entropy, x, est::ProbabilitiesEstimator) → h::Real
-    entropy(e::Entropy, probs::Probabilities) → h::Real
+    entropy([e::Entropy,] x, est::ProbabilitiesEstimator) → h::Real
+    entropy([e::Entropy,] probs::Probabilities) → h::Real
 Compute a quantity `h`, that qualifies as a (generalized) entropy of `x`,
 according to the specified entropy type `e` and the given probability estimator `est`.
-Alternatively compute the entropy directly from the existing probabilities `ps`.
+Alternatively compute the entropy directly from the existing probabilities `probs`.
 In fact, the first method is a 2-lines-of-code wrapper that calls [`probabilities`](@ref)
 and gives the result to the second method.
 
@@ -28,8 +28,9 @@ entropies". Currently implemented types are:
 
 - [`Renyi`](@ref).
 - [`Tsallis`](@ref).
-- The Shannon entropy (from the convenience function [`entropy_shannon`](@ref))
-  is a subcase of the above two for `q = 1`.
+- [`Shannon`](@ref), which is a subcase of the above two for `q = 1`.
+
+The entropy (first argument) is optional: if not given, `Shannon()` is used instead.
 
 These entropies also have a well defined maximum value for a given probability estimator.
 To obtain this value one only needs to call the [`maximum`](@ref) function with the
@@ -40,6 +41,11 @@ function entropy(e::Entropy, x, est::ProbabilitiesEstimator)
     ps = probabilities(x, est)
     return entropy(e, ps)
 end
+# Convenience
+function entropy(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+    entropy(Shannon(), x, est)
+end
+entropy(probs::Probabilities) = entropy(Shannon(), probs)
 
 ###########################################################################################
 # Normalize API
