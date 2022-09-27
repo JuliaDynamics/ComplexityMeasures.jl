@@ -38,7 +38,9 @@ const ProbEst = ProbabilitiesEstimator # shorthand
     probabilities(x::Array_or_Dataset) → p::Probabilities
 
 Directly count probabilities from the elements of `x` without any discretization,
-binning, or other processing (mostly useful when `x` contains categorical or integer data).
+binning, symbolizing, or any other common processing.
+This is mostly useful when `x` contains categorical or integer data.
+
 `probabilities` always returns a [`Probabilities`](@ref) container (`Vector`-like).
 
 `x` is typically an `Array` or a `Dataset`, see [Input data for Entropies.jl](@ref).
@@ -51,6 +53,7 @@ The probabilities are typically unordered and may or may not contain 0s, see the
 documentation of the individual estimators for more.
 Configuration options are always given as arguments to the chosen estimator.
 
+
     probabilities(x::Array_or_Dataset, ε::AbstractFloat) → p::Probabilities
 
 Convenience syntax which provides probabilities for `x` based on rectangular binning
@@ -58,11 +61,6 @@ Convenience syntax which provides probabilities for `x` based on rectangular bin
 `ε`, and formally we use `est = VisitationFrequency(RectangularBinning(ε))`
 as an estimator, see [`VisitationFrequency`](@ref).
 
-This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
-and a linear space complexity (`l` for `l = dimension(x)`).
-This allows computation of probabilities (histograms) of high-dimensional
-datasets and with small box sizes `ε` without memory overflow and with maximum performance.
-To obtain the bin information along with `p`, use [`binhist`](@ref).
 
     probabilities(x::Array_or_Dataset, n::Integer) → p::Probabilities
 
