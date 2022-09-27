@@ -2,6 +2,7 @@
 # for commonly used names in the literature. They aren't actually new entropies
 # as discussed extensively in the documentation.
 export entropy_permutation, entropy_spatial_permutation, entropy_wavelet
+export entropy_dispersion, entropy_kernel
 
 """
     entropy_permutation(x; τ = 1, m = 3, base = 2)
@@ -10,7 +11,7 @@ Compute the permutation entropy of order `m` with delay/lag `τ`.
 This function is just a convenience call to:
 ```julia
 est = SymbolicPermutation(; m, τ)
-entropy_shannon(x, est; base)
+entropy(Shannon(base), x, est)
 ```
 See [`SymbolicPermutation`](@ref) for more info.
 Similarly, one can use `SymbolicWeightedPermutation` or `SymbolicAmplitudeAwarePermutation`
@@ -18,7 +19,7 @@ for the weighted/amplitude-aware versions.
 """
 function entropy_permutation(x; τ = 1, m = 3, base = 2)
     est = SymbolicPermutation(; m, τ)
-    entropy_shannon(x, est; base)
+    entropy(Shannon(base), x, est)
 end
 
 """
@@ -29,13 +30,13 @@ Here `x` must be a matrix or higher dimensional `Array` containing spatial data.
 This function is just a convenience call to:
 ```julia
 est = SpatialSymbolicPermutation(stencil, x, periodic)
-entropy_shannon(x, est; kwargs...)
+entropy(Renyi(;kwargs...), x, est)
 ```
 See [`SpatialSymbolicPermutation`](@ref) for more info, or how to encode stencils.
 """
 function entropy_spatial_permutation(x, stencil, periodic = true; kwargs...)
     est = SpatialSymbolicPermutation(stencil, x, periodic)
-    entropy_shannon(x, est; kwargs...)
+    entropy(Renyi(;kwargs...), x, est)
 end
 
 """
@@ -44,13 +45,13 @@ end
 Compute the wavelet entropy. This function is just a convenience call to:
 ```julia
 est = WaveletOverlap(wavelet)
-entropy_shannon(x, est; base)
+entropy(Shannon(base), x, est)
 ```
 See [`WaveletOverlap`](@ref) for more info.
 """
 function entropy_wavelet(x; wavelet = Wavelets.WT.Daubechies{12}(), base = 2)
     est = WaveletOverlap(wavelet)
-    entropy_renyi(x, est; base, q = 1)
+    entropy(Shannon(base), x, est)
 end
 
 """
@@ -60,15 +61,13 @@ end
 Compute the dispersion entropy. This function is just a convenience call to:
 ```julia
 est = Dispersion(m = m, τ = τ, s = s)
-entropy_shannon(x, est; base)
+entropy(Shannon(base), x, est)
 ```
 See [`Dispersion`](@ref) for more info.
 """
-function entropy_dispersion(x; s = GaussianSymbolization(3),
-        base = 2)
-
+function entropy_dispersion(x; s = GaussianSymbolization(3), base = 2)
     est = Dispersion(m = m, τ = τ, s = s)
-    entropy_renyi(x, est; base, q = 1)
+    entropy(Shannon(base), x, est)
 end
 
 import Statistics
@@ -79,7 +78,11 @@ import Statistics
 Calculate Shannon entropy using the "naive" kernel density estimation approach (KDE), as
 discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
 
-Shorthand for `entropy(Renyi(;base), x, NaiveKernel(ϵ, method; w, metric))`.
+This function is just a convenience call to:
+```julia
+est = NaiveKernel(ϵ, method; w, metric)
+entropy(Shannon(base), x, est)
+```
 
 [^PrichardTheiler1995]:
     Prichard, D., & Theiler, J. (1995).
@@ -89,5 +92,5 @@ Shorthand for `entropy(Renyi(;base), x, NaiveKernel(ϵ, method; w, metric))`.
 function entropy_kernel(x; ϵ::Real = 0.2*Statistics.std(x), method = KDTree, w = 0,
         metric = Euclidean(), base = 2)
     est = NaiveKernel(ϵ, method, w = w, metric = metric)
-    return entropy_renyi(x, est; base = base, q = 1)
+    return entropy(Shannon(base), x, est)
 end
