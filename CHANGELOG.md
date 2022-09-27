@@ -2,6 +2,11 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl.
 
+## 2.0
+
+- Common interfaces `entropy`, `entropy_normalized` and `maximum` (maximum entropy) that dispatches on different types of entropies (e.g `Renyi()` `Shannon()`, `Tsallis()`).
+- No more deprecation warnings for using the old keyword `α` for Renyi entropy.
+
 ## main
 * New probability estimator `SpatialSymbolicPermutation` suitable for computing spatial permutation entropies
 * Introduce Tsallis entropy.
