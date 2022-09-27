@@ -1,8 +1,7 @@
 using Test
-using Entropies
-using DelayEmbeddings
-using Wavelets
-using StaticArrays
+using Entropies.DelayEmbeddings
+using Entropies.DelayEmbeddings.StaticArrays
+using Entropies.Wavelets
 
 # TODO: This is how the tests should look like in the end:
 defaultname(file) = splitext(basename(file))[1]
