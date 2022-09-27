@@ -67,7 +67,7 @@ H(p) = - \\sum_i p[i] \\log(p[i])
 ```
 with the ``log`` at the given `base`.
 
-`Shannon(base)` is syntactically equivalent with `Renyi(; base)`.
+`Shannon(base)` is syntactically equivalent to `Renyi(; base)`.
 
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
