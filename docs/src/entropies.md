@@ -2,6 +2,7 @@
 
 ```@docs
 entropy
+entropy!
 ```
 
 ## Rényi (generalized) entropy

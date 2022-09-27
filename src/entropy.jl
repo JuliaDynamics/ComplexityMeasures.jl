@@ -1,5 +1,5 @@
 export AbstractEntropy, Entropy, IndirectEntropy
-export entropy, entropy_normalized
+export entropy, entropy_normalized, entropy!
 
 # TODO: Add docstrings here
 abstract type AbstractEntropy end
@@ -57,7 +57,7 @@ pre-allocation of temporarily used containers.
 
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
-function entropy_renyi!(e::Entropy, p, x, est::ProbabilitiesEstimator)
+function entropy!(e::Entropy, p, x, est::ProbabilitiesEstimator)
     if α ≠ nothing
         @warn "Keyword `α` is deprecated in favor of `q`."
         q = α
