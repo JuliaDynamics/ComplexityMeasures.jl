@@ -33,12 +33,12 @@ update_name = "update_v$(version_number)"
 update_message = """
 \nUpdate message: Entropies v$(version_number)\n
 - An overall overhaul of the documentation and API of Entropies.jl has been performed.
-- A huge amount of new content has been added, which is best seen by visiting the changelog
-    or the online documentation. Some examples are Tsallis entropy and spatial permutation
-        entropy, and much more.
+- A huge amount of new content has been added, which is best seen by visiting the
+  the online documentation. Some examples are Tsallis entropy and spatial permutation
+  entropy, and much more.
 - In summary, all entropies and normalized entropies are computing using the
-    `entropy` and `entropy_normalized` functions, which dispatch on entropy types such
-    as `Renyi()`, `Shannon()` or `Tsallis()`.
+  `entropy` and `entropy_normalized` functions, which dispatch on entropy types such
+  as `Renyi()`, `Shannon()` or `Tsallis()`.
 - New constructors for symbolizing: `OrdinalPattern, GaussianSymbolization`.
 """
 

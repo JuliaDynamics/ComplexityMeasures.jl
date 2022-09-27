@@ -29,10 +29,10 @@ However it is also an umbrella term that may mean several computationally differ
 In Entropies.jl, we provide the generic function [`entropy`](@ref) that tries to both clarify the disparate "entropy concepts", while unifying them under a common interface that highlights the modular nature of the word "entropy".
 
 Most of the time, computing an entropy boils down to two simple steps: first estimating a probability distribution, and then applying one of the so-called "generalized entropy" formulas to the distributions.
-Thus, any of the implemented [probability estimators](@ref probabilities_estimators) can be used to compute generalized entropies.
+Thus, any of the implemented [probabilities estimators](@ref probabilities_estimators) can be used to compute generalized entropies.
 
 !!! tip "There aren't many entropies, really."
-    A crucial thing to clarify is that many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are new probability estimators. They simply devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probability estimators are smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
+    A crucial thing to clarify is that many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are new probabilities estimators. They simply devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probabilities estimators are smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
 
     These names are common place, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy_shannon`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
 
