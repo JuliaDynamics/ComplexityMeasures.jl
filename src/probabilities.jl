@@ -22,12 +22,11 @@ end
 for f in (:length, :size, :eachindex, :eltype, :lastindex, :firstindex)
     @eval Base.$(f)(d::Probabilities) = $(f)(d.p)
 end
-Base.IteratorSize(d::Probabilities) = Base.HasLength()
+Base.IteratorSize(::Probabilities) = Base.HasLength()
 @inline Base.iterate(d::Probabilities, i = 1) = iterate(d.p, i)
 @inline Base.getindex(d::Probabilities, i) = d.p[i]
-@inline Base.setindex!(d::Probabilities, v, i) = (d.p[i] = v)
 @inline Base.:*(d::Probabilities, x::Number) = d.p * x
-@inline Base.sum(d::Probabilities{T}) where T = one(T)
+@inline Base.sum(::Probabilities{T}) where T = one(T)
 
 """
 An abstract type for probabilities estimators.
