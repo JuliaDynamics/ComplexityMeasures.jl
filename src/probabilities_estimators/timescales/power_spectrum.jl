@@ -33,5 +33,6 @@ end
 
 function alphabet_length(x::Array_or_Dataset, ::PowerSpectrum)
     n = length(x)
-    return n÷2 + 1
+    # From the docstring of `AbstractFFTs.rfftfreq`:
+    iseven(n) ? length(0:(n÷2)) : length(0:((n-1)÷2))
 end

@@ -72,6 +72,7 @@ end
     entropy_normalized([e::Entropy,] x, est::ProbabilitiesEstimator) → h̃ ∈ [0, 1]
 Return the normalized entropy of `x`, i.e., the value of [`entropy`](@ref) divided
 by the maximum value for `e`, according to the given probability estimator.
+If `e` is not given, it defaults to `Shannon()`.
 
 Notice that unlike [`entropy`](@ref), here there is no method
 `entropy_normalized(e::Entropy, probs::Probabilities)` because there is no way to know

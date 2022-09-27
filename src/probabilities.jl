@@ -89,11 +89,10 @@ function probabilities! end
 
 """
     alphabet_length(x::Array_or_Dataset, est::ProbabilitiesEstimator) → Int
-    alphabet_length(estimator::ProbabilitiesEstimator) → Int
 
 Return the total number of possible symbols/states implied by `estimator` for a given `x`.
-For some estimators, this total number is independent of `x`, in which case the second
-method is called.
+For some estimators, this total number is independent of `x`, in which case the
+input `x` is ignored and the method `alphabet_length(est)` is called.
 
 If the total number of states cannot be known a priori, an error is thrown.
 Primarily used in [`entropy_normalized`](@ref).
@@ -103,7 +102,7 @@ Primarily used in [`entropy_normalized`](@ref).
 ```jldoctest setup = :(using Entropies)
 julia> est = SymbolicPermutation(m = 4);
 
-julia> alphabet_length(est) # same as m!
+julia> alphabet_length(rand(42), est) # same as `factorial(m)` for any `x`
 24
 ```
 """
