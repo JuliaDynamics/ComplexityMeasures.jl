@@ -19,7 +19,7 @@ to provide a simple way to obtain probabilities, entropies, or other complexity 
 
 Entropies and other complexity measures are typically computed based on _probability distributions_.
 These are obtained from [Input data for Entropies.jl](@ref) in a plethora of different ways.
-The central API function that returns a probability distribution (in fact, just a vector of probabilities) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilityEstimator`](@ref) to specify how the probabilities are computed.
+The central API function that returns a probability distribution (in fact, just a vector of probabilities) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref) to specify how the probabilities are computed.
 All estimators available in Entropies.jl can be found in the [estimators page](@ref probabilities_estimators).
 
 ### Entropies
@@ -34,7 +34,7 @@ Thus, any of the implemented [probability estimators](@ref probabilities_estimat
 !!! tip "There aren't many entropies, really."
     A crucial thing to clarify is that many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are new probability estimators. They simply devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probability estimators are smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
 
-    These names are common place, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy_shannon`](@ref) with the appropriate [`ProbabilityEstimator`](@ref).
+    These names are common place, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy_shannon`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
 
     There are only a few exceptions to this rule, which are quantities that are able to compute Shannon entropies via alternate means, without explicitly computing some probability distributions. These are `IndirectEntropy` instances, such as [`Kraskov`](@ref).
 
