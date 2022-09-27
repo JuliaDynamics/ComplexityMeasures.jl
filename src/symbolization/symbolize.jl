@@ -10,7 +10,9 @@ Symbolize `x` using the provided symbolization `scheme`, optionally writing symb
 pre-allocated symbol vector `s`. For usage examples, see individual symbolization scheme
 docstrings.
 
-See also: [`OrdinalPattern`](@ref), [`GaussianSymbolization`](@ref).
+The following symbolization schemes are currently implemented:
+- [`OrdinalPattern`](@ref).
+- [`GaussianSymbolization`](@ref).
 """
 function symbolize end
 

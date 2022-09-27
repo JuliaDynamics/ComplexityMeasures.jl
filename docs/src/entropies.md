@@ -22,7 +22,7 @@ Tsallis
 Shannon
 ```
 
-## Normalization
+## Normalized entropies
 
 ```@docs
 maximum(::Entropy, ::Any, ::ProbabilitiesEstimator)
