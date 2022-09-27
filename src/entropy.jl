@@ -14,7 +14,7 @@ abstract type IndirectEntropy <: AbstractEntropy end
     entropy([e::Entropy,] x, est::ProbabilitiesEstimator) → h::Real
     entropy([e::Entropy,] probs::Probabilities) → h::Real
 
-Compute (generalized) entropy (here named `h`), from `x`, according to the specified
+Compute a (generalized) entropy `h` from `x` according to the specified
 entropy type `e` and the given probability estimator `est`.
 
 Alternatively compute the entropy directly from the existing probabilities `probs`.
