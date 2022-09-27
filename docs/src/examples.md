@@ -62,22 +62,18 @@ N_lyap, N_ent = 100000, 10000
 m, τ = 6, 1 # Symbol size/dimension and embedding lag
 
 # Generate one time series for each value of the logistic parameter r
-lyaps = Float64[]
-hs_perm = Float64[]
-hs_wtperm = Float64[]
-hs_ampperm = Float64[]
+lyaps, hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
 
-base = Base.MathConstants.e
-for r in rs
+for (i, r) in enumerate(rs)
     ds.p[1] = r
-    push!(lyaps, lyapunov(ds, N_lyap))
+    lyaps[i] = lyapunov(ds, N_lyap)
 
     x = trajectory(ds, N_ent) # time series
-    hperm = Entropies.entropy_renyi(x, SymbolicPermutation(m = m, τ = τ), base = base)
-    hwtperm = Entropies.entropy_renyi(x, SymbolicWeightedPermutation(m = m, τ = τ), base = base)
-    hampperm = Entropies.entropy_renyi(x, SymbolicAmplitudeAwarePermutation(m = m, τ = τ), base = base)
+    hperm = entropy(x, SymbolicPermutation(; m, τ))
+    hwtperm = entropy(x, SymbolicWeightedPermutation(; m, τ))
+    hampperm = entropy(x, SymbolicAmplitudeAwarePermutation(; m, τ))
 
-    push!(hs_perm, hperm); push!(hs_wtperm, hwtperm); push!(hs_ampperm, hampperm)
+    hs_perm[i] = hperm; hs_wtperm[i] = hwtperm; hs_ampperm[i] = hampperm
 end
 
 fig = Figure()

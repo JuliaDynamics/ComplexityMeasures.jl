@@ -34,7 +34,7 @@ Thus, any of the implemented [probabilities estimators](@ref probabilities_estim
 !!! tip "There aren't many entropies, really."
     A crucial thing to clarify is that many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are new probabilities estimators. They simply devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probabilities estimators are smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
 
-    These names are common place, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy_shannon`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
+    These names are common place, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
 
     There are only a few exceptions to this rule, which are quantities that are able to compute Shannon entropies via alternate means, without explicitly computing some probability distributions. These are `IndirectEntropy` instances, such as [`Kraskov`](@ref).
 
