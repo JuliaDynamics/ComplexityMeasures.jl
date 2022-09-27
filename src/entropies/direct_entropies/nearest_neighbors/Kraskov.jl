@@ -18,12 +18,11 @@ See also: [`KozachenkoLeonenko`](@ref).
     Kraskov, A., Stögbauer, H., & Grassberger, P. (2004).
     Estimating mutual information. Physical review E, 69(6), 066138.
 """
-struct Kraskov{B} <: IndirectEntropy
-    k::Int
-    w::Int
-    base::B
+Base.@kwdef struct Kraskov{B} <: IndirectEntropy
+    k::Int = 1
+    w::Int = 1
+    base::B = 2
 end
-Kraskov(; k::Int = 1, w::Int = 1, base = 2) = Kraskov(k, w, base)
 
 function entropy(e::Kraskov, x::AbstractDataset{D, T}) where {D, T}
     (; k, w, base) = e

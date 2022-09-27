@@ -21,10 +21,10 @@ See also: [`Kraskov`](@ref).
 [^KozachenkoLeonenko1987]: Kozachenko, L. F., & Leonenko, N. N. (1987). Sample estimate of
     the entropy of a random vector. Problemy Peredachi Informatsii, 23(2), 9-16.
 """
-struct KozachenkoLeonenko{B} <: IndirectEntropy
-    k::Int
-    w::Int
-    base::B
+@Base.kwdef struct KozachenkoLeonenko{B} <: IndirectEntropy
+    k::Int = 1
+    w::Int = 1
+    base::B = 2
 end
 
 function entropy(e::KozachenkoLeonenko, x::AbstractDataset{D, T}) where {D, T}
