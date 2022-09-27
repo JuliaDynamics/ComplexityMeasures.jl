@@ -1,4 +1,5 @@
 # Entropies.jl
+
 ```@docs
 Entropies
 ```
@@ -10,18 +11,19 @@ Entropies
     [Nonlinear Dynamics](https://link.springer.com/book/10.1007/978-3-030-91032-7),
     Datseris & Parlitz, Springer 2022.
 
-
 In the literature, the term "entropy" is used (and abused) in multiple contexts.
 The API and documentation of Entropies.jl aim to clarify some aspects and
 provide a simple way to obtain probabilities, entropies, or other complexity measures.
 
 ### Probabilities
+
 Entropies and other complexity measures are typically computed based on _probability distributions_.
 These are obtained from [Input data for Entropies.jl](@ref) by a plethora of different ways.
 The central API function that returns a probability distribution (in fact, just a vector of probabilities) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilityEstimator`](@ref) to specify how the probabilities are computed.
 All estimators available in Entropies.jl can be found in the [estimators page](@ref probabilities_estimators).
 
 ### Entropies
+
 Entropy is an established concept in statistics, information theory, and nonlinear dynamics.
 However it is also an umbrella term that may mean several computationally different quantities.
 In Entropies.jl, we provide the generic function [`entropy`](@ref) that tries to both clarify the disparate "entropy concepts", while unifying them under a common interface that highlights the modular nature of the word "entropy".
@@ -36,12 +38,12 @@ Thus, any of the implemented [probabilities estimators](@ref estimators) can be 
 
     There are only a few exceptions to this rule, which are quantities that are able to compute Shannon entropies via alternate means, without explicitly computing some probability distributions. These are `IndirectEntropy` instances, such as [`Kraskov`](@ref).
 
-
 ### Complexity measures
+
 Other complexity measures, which strictly speaking don't compute entropies, and may or may not explicitly compute probability distributions, appear in the [Complexity measures](@ref complexity_measures) section.
 
-
 ## Input data for Entropies.jl
+
 The input data type typically depend on the probability estimator chosen. In general though, the standard DynamicalSystems.jl approach is taken and as such we have three types of input data:
 
 - _Timeseries_, which are `AbstractVector{<:Real}`, used in e.g. with [`WaveletOverlap`](@ref).
