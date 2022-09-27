@@ -42,40 +42,14 @@ using Entropies, Test
         # There is probably a typo in Rostaghi & Azami (2016). They state that the
         # non-normalized dispersion entropy is 1.8642. However, with identical probabilies,
         # we obtain non-normalized dispersion entropy of 1.8462.
-        res = entropy_renyi(x, est, base = MathConstants.e, q = 1)
+        res = entropy(Renyi(base = MathConstants.e, q = 1), x, est)
         @test round(res, digits = 4) == 1.8462
 
         # Again, probabilities are identical up to this point, but the values we get differ
         # slightly from the paper. They get normalized DE of 0.85, but we get 0.84. 0.85 is
         # the normalized DE you'd get by manually normalizing the (erroneous) value from
         # their previous step.
-        res_norm = entropy_normalized(entropy_renyi, x, est, base = MathConstants.e, q = 1)
+        res_norm = entropy_normalized(Renyi(base = MathConstants.e, q = 1), x, est)
         @test round(res_norm, digits = 2) == 0.84
-    end
-
-    @testset "Reverse dispersion entropy" begin
-
-        @testset "Distance to whitenoise" begin
-            m, n_classes = 2, 2
-            est = Dispersion(m = m, symbolization = GaussianSymbolization(c = n_classes))
-
-             # Reverse dispersion entropy is 0 when all probabilities are identical and equal
-            # to 1/(n_classes^m).
-            flat_dist = Probabilities(repeat([1/m^n_classes], m^n_classes))
-            Hrde_minimal = distance_to_whitenoise(flat_dist, est, normalize = false)
-            @test round(Hrde_minimal, digits = 7) ≈ 0.0
-
-             # Reverse dispersion entropy is maximal when there is only one non-zero dispersal
-            # pattern. Then reverse dispersion entropy is
-            # 1 - 1/(n_classes^m). When normalizing to this value, the RDE should be 1.0.
-            m, n_classes = 2, 2
-            single_element_dist = Probabilities([1.0, 0.0, 0.0, 0.0])
-            Hrde_maximal = distance_to_whitenoise(single_element_dist, est,
-                normalize = false)
-            Hrde_maximal_norm = distance_to_whitenoise(single_element_dist, est,
-                normalize = true)
-            @test round(Hrde_maximal, digits = 7) ≈ 1 - 1/(n_classes^m)
-            @test round(Hrde_maximal_norm, digits = 7) ≈ 1.0
-        end
     end
 end
