@@ -30,14 +30,14 @@ entropies". Currently implemented types are:
 
 - [`Renyi`](@ref).
 - [`Tsallis`](@ref).
-- [`Shannon`](@ref), which is a subcase of the above two for `q = 1`.
+- [`Shannon`](@ref), which is a subcase of the above two in the limit `q → 1`.
 
 The entropy (first argument) is optional: if not given, `Shannon()` is used instead.
 
 These entropies also have a well defined maximum value for a given probability estimator.
 To obtain this value one only needs to call the [`maximum`](@ref) function with the
 chosen entropy type and probability estimator. Or, one can use [`entropy_normalized`](@ref)
-to obtain the normalized form of the entropy (divided by maximum).
+to obtain the normalized form of the entropy (divided by the maximum).
 """
 function entropy(e::Entropy, x, est::ProbabilitiesEstimator)
     ps = probabilities(x, est)
@@ -80,7 +80,7 @@ Return the normalized entropy of `x`, i.e., the value of [`entropy`](@ref) divid
 by the maximum value for `e`, according to the given probability estimator.
 If `e` is not given, it defaults to `Shannon()`.
 
-Notice that unlike [`entropy`](@ref), here there is no method
+Notice that unlike for [`entropy`](@ref), here there is no method
 `entropy_normalized(e::Entropy, probs::Probabilities)` because there is no way to know
 the amount of _possible_ events (i.e., the [`alphabet_length`](@ref)) from `probs`.
 """
@@ -100,10 +100,9 @@ end
 Compute the entropy of `x`, here named `h`, according to the specified indirect entropy
 estimator `e`.
 
-In contrast to the "typical" way one obtains entropies in the above methods,
-these entropy estimators are able to compute Shannon entropies via alternate means,
-without explicitly computing some probability distributions.
-The available indirect entropies are:
+In contrast to the "typical" way one obtains entropies in the above methods, indirect
+entropy estimators compute Shannon entropies via alternate means, without explicitly
+computing probability distributions. The available indirect entropies are:
 
 - [`Kraskov`](@ref).
 - [`KozachenkoLeonenko`](@ref).
