@@ -12,13 +12,13 @@ Entropies
     Datseris & Parlitz, Springer 2022.
 
 In the literature, the term "entropy" is used (and abused) in multiple contexts.
-The API and documentation of Entropies.jl aim to clarify some aspects and
-provide a simple way to obtain probabilities, entropies, or other complexity measures.
+The API and documentation of Entropies.jl aim to clarify some aspects of its usage, and
+to provide a simple way to obtain probabilities, entropies, or other complexity measures.
 
 ### Probabilities
 
 Entropies and other complexity measures are typically computed based on _probability distributions_.
-These are obtained from [Input data for Entropies.jl](@ref) by a plethora of different ways.
+These are obtained from [Input data for Entropies.jl](@ref) in a plethora of different ways.
 The central API function that returns a probability distribution (in fact, just a vector of probabilities) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilityEstimator`](@ref) to specify how the probabilities are computed.
 All estimators available in Entropies.jl can be found in the [estimators page](@ref probabilities_estimators).
 
