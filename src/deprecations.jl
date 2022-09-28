@@ -1,5 +1,21 @@
 @deprecate TimeScaleMODWT WaveletOverlap
-@deprecate genentropy entropy_renyi
+export genentropy
+
+function genentropy(probs::Probabilities; q = 1.0, base = MathConstants.e)
+    @warn """
+    `genentropy(probs::Probabilities; q, base)` is a deprecated function in Entropies 2.0.
+    Use instead: `entropy(Renyi(q, base), probs)`.
+    """
+    return entropy(Renyi(q, base), probs)
+end
+
+function genentropy(x, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
+    @warn """
+    `genentropy(x, est::ProbabilitiesEstimator; q, base)` is a deprecated function in
+    Entropies 2.0. Use instead: `entropy(Renyi(q, base), x, est)`.
+    """
+    return entropy(Renyi(q, base), x, est)
+end
 
 function symbolize(x::AbstractDataset{m, T}, est::PermutationProbabilityEstimator) where {m, T}
     Base.depwarn("`symbolize(x, est::$P)` is deprecated, use `symbolize(x, scheme::OrdinalPattern)` instead.", :symbolize)
