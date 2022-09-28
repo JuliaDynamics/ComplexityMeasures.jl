@@ -50,5 +50,4 @@ entropy_permutation
 entropy_spatial_permutation
 entropy_wavelet
 entropy_dispersion
-entropy_kernel
 ```

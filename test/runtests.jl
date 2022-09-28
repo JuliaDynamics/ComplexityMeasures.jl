@@ -28,4 +28,5 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     # Various
     testfile("complexity_measures/complexity_measures.jl")
     testfile("utils/utils.jl")
+    testfile("entropies/convenience.jl")
 end

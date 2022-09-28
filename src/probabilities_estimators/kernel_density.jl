@@ -1,7 +1,7 @@
 using Neighborhood: Theiler, KDTree, BruteForce, bulkisearch, searchstructure
 using Distances: Metric, Euclidean
 export NaiveKernel, KDTree, BruteForce
-export entropy_kernel
+
 """
     NaiveKernel(ϵ::Real, ss = KDTree; w = 0, metric = Euclidean()) <: ProbabilitiesEstimator
 
@@ -26,7 +26,9 @@ when the dimensionality of the data is much smaller than the data length.
 The keyword `w` stands for the Theiler window, and excludes indices ``s``
 that are within ``|i - s| ≤ w`` from the given point ``X_i``.
 
-[^PrichardTheiler1995]: Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis. Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
+[^PrichardTheiler1995]:
+    Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis.
+    Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
 """
 struct NaiveKernel{KM, M <: Metric} <: ProbabilitiesEstimator
     ϵ::Float64
@@ -39,7 +41,7 @@ function NaiveKernel(ϵ::Real, method = KDTree; w = 0, metric = Euclidean())
     return NaiveKernel(ϵ, method, w, metric)
 end
 
-function probabilities(x::DelayEmbeddings.AbstractDataset, est::NaiveKernel)
+function probabilities(x::AbstractDataset, est::NaiveKernel)
     theiler = Theiler(est.w)
     ss = searchstructure(est.method, x.data, est.metric)
     idxs = bulkisearch(ss, x.data, WithinRange(est.ϵ), theiler)
