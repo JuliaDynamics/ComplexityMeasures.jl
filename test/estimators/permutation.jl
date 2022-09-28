@@ -3,31 +3,43 @@
 @test SymbolicPermutation(lt = Entropies.isless_rand) isa SymbolicPermutation
 
 @testset "Pre-allocated" begin
-    est = SymbolicPermutation(m = 5, τ = 1)
-    N = 500
-    s = zeros(Int, N);
-    x = Dataset(repeat([1.1 2.2 3.3], N))
-    y = Dataset(rand(N, 5))
-    z = rand(N)
+    @testset "Probabilities" begin
+        est = SymbolicPermutation(m = 5, τ = 1)
+        N = 500
+        s = zeros(Int, N);
+        x = Dataset(repeat([1.1 2.2 3.3], N))
+        y = Dataset(rand(N, 5))
+        z = rand(N)
 
-    # Probability distributions
-    p1 = probabilities!(s, x, est)
-    p2 = probabilities!(s, y, est)
-    @test sum(p1) ≈ 1.0
-    @test sum(p2) ≈ 1.0
+        # Probability distributions
+        p1 = probabilities!(s, x, est)
+        p2 = probabilities!(s, y, est)
+        @test sum(p1) ≈ 1.0
+        @test sum(p2) ≈ 1.0
+    end
 
-    # Entropies
-    @test Entropies.entropy!(Renyi(q = 1), s, x, est) ≈ 0  # Regular order-1 entropy
-    @test Entropies.entropy!(Renyi(q = 1), s, y, est) >= 0 # Regular order-1 entropy
-    @test Entropies.entropy!(Renyi(q = 2), s, x, est) ≈ 0  # Higher-order entropy
-    @test Entropies.entropy!(Renyi(q = 2), s, y, est) >= 0 # Higher-order entropy
 
-    # For a time series
-    sz = zeros(Int, N - (est.m-1)*est.τ)
-    @test probabilities!(sz, z, est) isa Probabilities
-    @test probabilities(z, est) isa Probabilities
-    @test Entropies.entropy!(Renyi(), sz, z, est) isa Real
-    @test entropy(Renyi(), z, est) isa Real
+    @testset "In-place permutation entropy" begin
+        m, τ = 2, 1
+        est = SymbolicPermutation(; m, τ)
+
+        # For these two inputs, with m = 2, τ = 1, there should be two symbols (0 and 1)
+        # with equal probabilities, so base-2 Shannon entropy should be
+        # -(0.5 * log2(0.5) + 0.5 * log2(0.5)) = 1.0
+        x_timeseries = [repeat([1, 2], 5); 1]
+        x_dataset = Dataset(repeat([1 2; 2 1], 3))
+
+        # Pre-allocated integer vectors
+        s_timeseries = zeros(Int, length(x_timeseries) - (m - 1)*τ)
+        s_dataset = zeros(Int, length(x_dataset))
+
+        @test entropy!(Shannon(base = 2), s_timeseries, x_timeseries, est) ≈ 1.0
+        @test entropy!(Shannon(base = 2), s_dataset, x_dataset, est) ≈ 1.0
+
+        # Should default to Shannon base 2
+        @test entropy!(s_timeseries, x_timeseries, est) ≈ 1.0
+        @test entropy!(s_dataset, x_dataset, est) ≈ 1.0
+    end
 end
 
 @testset "Not pre-allocated" begin
