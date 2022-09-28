@@ -210,11 +210,11 @@ using DynamicalSystems
 N1, N2, a = 101, 100001, 10
 
 for N in (N1, N2)
-    t = LinRange(0, 2*a*π, N)
-    x = sin.(t) # periodic
-    y = sin.(t .+ cos.(t/0.5)) # periodic, complex spectrum
-    z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
-    w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
+    local t = LinRange(0, 2*a*π, N)
+    local x = sin.(t) # periodic
+    local y = sin.(t .+ cos.(t/0.5)) # periodic, complex spectrum
+    local z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
+    local w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
 
     for q in (x, y, z, w)
         h = entropy(q, PowerSpectrum())

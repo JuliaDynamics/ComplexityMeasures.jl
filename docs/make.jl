@@ -49,7 +49,7 @@ makedocs(
     authors = "Kristian Agasøster Haaga, George Datseris",
     pages = PAGES,
     doctest = CI,
-    draft = true,
+    draft = false,
 )
 
 if CI
