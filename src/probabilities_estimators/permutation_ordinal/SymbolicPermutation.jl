@@ -57,6 +57,9 @@ information about within-state-vector amplitudes.
 
 [^BandtPompe2002]: Bandt, Christoph, and Bernd Pompe. "Permutation entropy: a natural
     complexity measure for time series." Physical review letters 88.17 (2002): 174102.
+[^Zunino2017]: Zunino, L., Olivares, F., Scholkmann, F., & Rosso, O. A. (2017).
+    Permutation entropy based time series analysis: Equalities in the input signal can
+    lead to false conclusions. Physics Letters A, 381(22), 1883-1892.
 """
 struct SymbolicPermutation{F} <: PermutationProbabilityEstimator
     τ::Int
