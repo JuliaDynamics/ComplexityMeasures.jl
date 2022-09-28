@@ -20,8 +20,8 @@ in spectral space depends on the length of the input.
 
 [^Tian2017]:
     Tian et al, _Spectral Entropy Can Predict Changes of Working Memory Performance Reduced
-    by Short-Time Training in the Delayed-Match-to-Sample Task_, [Front. Hum. Neurosci.](
-    https://doi.org/10.3389/fnhum.2017.00437)
+    by Short-Time Training in the Delayed-Match-to-Sample Task_,
+    [Front. Hum. Neurosci.](https://doi.org/10.3389/fnhum.2017.00437)
 """
 struct PowerSpectrum <: ProbabilitiesEstimator end
 
