@@ -17,6 +17,8 @@ CountOccurrences
 
 ```@docs
 SymbolicPermutation
+SymbolicWeightedPermutation
+SymbolicAmplitudeAwarePermutation
 SpatialSymbolicPermutation
 ```
 
