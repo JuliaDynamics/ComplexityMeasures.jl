@@ -9,7 +9,7 @@ export entropy_dispersion
 """
     entropy_permutation(x; τ = 1, m = 3, base = 2)
 
-Compute the permutation entropy of order `m` with delay/lag `τ`.
+Compute the permutation entropy of `x` of order `m` with delay/lag `τ`.
 This function is just a convenience call to:
 
 ```julia
