@@ -38,6 +38,17 @@ These entropies also have a well defined maximum value for a given probability e
 To obtain this value one only needs to call the [`maximum`](@ref) function with the
 chosen entropy type and probability estimator. Or, one can use [`entropy_normalized`](@ref)
 to obtain the normalized form of the entropy (divided by the maximum).
+
+## Examples
+```julia
+x = [rand(Bool) for _ in 1:10000] # coin toss
+ps = probabilities(x) # gives about [0.5, 0.5] by definition
+h = entropy(ps) # gives 1, about 1 bit by definition
+h = entropy(Shannon(), ps) # syntactically equivalent to above
+h = entropy(Shannon(), x, CountOccurrences()) # syntactically equivalent to above
+h = entropy(x, SymbolicPermutation(;m=3)) # gives about 2, again by definition
+h = entropy(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin toss
+```
 """
 function entropy(e::Entropy, x, est::ProbabilitiesEstimator)
     ps = probabilities(x, est)

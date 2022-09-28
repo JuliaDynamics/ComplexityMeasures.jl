@@ -67,7 +67,6 @@ as an estimator, see [`VisitationFrequency`](@ref).
 
 Same as the above method, but now each dimension of the data is binned into `n::Int` equal
 sized bins instead of bins of length `ε::AbstractFloat`.
-
 """
 function probabilities end
 
@@ -75,10 +74,10 @@ function probabilities end
 probabilities(x) = _non0hist(x)
 
 """
-    probabilities!(args...)
+    probabilities!(s, args...)
 
-Identical to `probabilities(args...)`, but allows pre-allocation of temporarily used
-containers.
+Similar to `probabilities(args...)`, but allows pre-allocation of temporarily used
+containers `s`.
 
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
