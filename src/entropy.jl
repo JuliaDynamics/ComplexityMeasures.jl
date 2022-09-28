@@ -58,10 +58,6 @@ pre-allocation of temporarily used containers.
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
 function entropy!(e::Entropy, p, x, est::ProbabilitiesEstimator)
-    if α ≠ nothing
-        @warn "Keyword `α` is deprecated in favor of `q`."
-        q = α
-    end
     probabilities!(p, x, est)
     entropy(e, p)
 end
