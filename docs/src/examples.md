@@ -21,10 +21,10 @@ for N in Ns
     for i = 1:nreps
         pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
 
-        push!(kl, entropy_kozachenkoleonenko(pts, w = 0, k = 1))
+        push!(kl, entropy(KozachenkoLeonenko(w = 0, k = 1, base = MathConstants.e), pts))
         # with k = 1, Kraskov is virtually identical to
         # Kozachenko-Leonenko, so pick a higher number of neighbors
-        push!(kr, entropy_kraskov(pts, w = 0, k = 3))
+        push!(kr, entropy(Kraskov(w = 0, k = 3, base = MathConstants.e), pts))
     end
     push!(Ekl, kl)
     push!(Ekr, kr)
