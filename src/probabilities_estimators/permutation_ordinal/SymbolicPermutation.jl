@@ -41,14 +41,14 @@ est = SymbolicPermutation(; m, τ)
 x_ts = rand(N)
 s_ts = zeros(Int, N - (m - 1)*τ)
 p = probabilities!(s_ts, x_ts, est)
-h = entropy!(Renyi(), s_ts, x_ts, est)
+h = entropy!(s_ts, Renyi(),  x_ts, est)
 
 # For a pre-symbolized `Dataset`
 x_symb = symbolize(x_ts, OrdinalPattern(m = 2, τ = 1))
 x_d = genembed(x_symb, (0, -1, -2))
 s_d = zeros(Int, length(x_d))
 p = probabilities!(s_d, x_d, est)
-h = entropy!(Renyi(), s_d, x_d, est)
+h = entropy!(s_d, Renyi(), x_d, est)
 ```
 
 See [`SymbolicWeightedPermutation`](@ref) and [`SymbolicAmplitudeAwarePermutation`](@ref)

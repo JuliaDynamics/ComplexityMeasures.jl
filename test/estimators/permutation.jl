@@ -33,8 +33,8 @@
         s_timeseries = zeros(Int, length(x_timeseries) - (m - 1)*τ)
         s_dataset = zeros(Int, length(x_dataset))
 
-        @test entropy!(Shannon(base = 2), s_timeseries, x_timeseries, est) ≈ 1.0
-        @test entropy!(Shannon(base = 2), s_dataset, x_dataset, est) ≈ 1.0
+        @test entropy!(s_timeseries, Shannon(base = 2), x_timeseries, est) ≈ 1.0
+        @test entropy!(s_dataset, Shannon(base = 2), x_dataset, est) ≈ 1.0
 
         # Should default to Shannon base 2
         @test entropy!(s_timeseries, x_timeseries, est) ≈ 1.0

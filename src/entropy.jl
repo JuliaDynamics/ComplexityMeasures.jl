@@ -50,22 +50,22 @@ end
 entropy(probs::Probabilities) = entropy(Shannon(), probs)
 
 """
-    entropy!([e::Entropy,] p, x, est::ProbabilitiesEstimator)
+    entropy!(s, [e::Entropy,] x, est::ProbabilitiesEstimator)
 
 Similar to `probabilities!`, this is an in-place version of [`entropy`](@ref) that allows
 pre-allocation of temporarily used containers.
 
-The entropy (first argument) is optional: if not given, `Shannon()` is used instead.
+The entropy (second argument) is optional: if not given, `Shannon()` is used instead.
 
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
-function entropy!(e::Entropy, p::AbstractVector{Int}, x, est::ProbabilitiesEstimator)
-    probabilities!(p, x, est)
-    entropy(e, p)
+function entropy!(s::AbstractVector{Int}, e::Entropy, x, est::ProbabilitiesEstimator)
+    probs = probabilities!(s, x, est)
+    entropy(e, probs)
 end
 
 entropy!(s::AbstractVector{Int}, x, est::ProbabilitiesEstimator) =
-    entropy!(Shannon(), s, x, est)
+    entropy!(s, Shannon(), x, est)
 
 ###########################################################################################
 # Normalize API
