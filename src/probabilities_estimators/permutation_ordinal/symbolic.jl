@@ -17,7 +17,7 @@ order `m` with delay time `τ`.
 
 Short-hand for `entropy_renyi(x, SymbolicPermutation(τ = 1, m = 3), base = base, q = 1)`.
 
-See also: [`SymbolicPermutation`](@ref), [`entropy_renyi`](@ref).
+See also: [`SymbolicPermutation`](@ref), [`entropy`](@ref).
 
 [^BandtPompe2002]: Bandt, Christoph, and Bernd Pompe. "Permutation entropy: a natural
     complexity measure for time series." Physical review letters 88.17 (2002): 174102.
@@ -36,7 +36,7 @@ Compute the (Shannon) weighted permutation entropy (Fadlallah et al.,
 Short-hand for
 `entropy_renyi(x, SymbolicWeightedPermutation(τ = 1, m = 3), base = base, q = 1)`.
 
-See also: [`SymbolicPermutation`](@ref), [`entropy_renyi`](@ref).
+See also: [`SymbolicPermutation`](@ref), [`entropy`](@ref).
 
 [^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity
     measure for time series incorporating amplitude information." Physical Review E 87.2 (2013): 022911.
@@ -54,7 +54,7 @@ with weighting parameter `A`.
 
 Short-hand for `entropy_renyi(x, SymbolicAmplitudeAwarePermutation(τ = 1, m = 3, A = A), base = base, q = 1)`.
 
-See also: [`SymbolicPermutation`](@ref), [`entropy_renyi`](@ref).
+See also: [`SymbolicPermutation`](@ref), [`entropy`](@ref).
 
 [^Azami2016]: Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy:
     Illustration in spike detection and signal segmentation. Computer methods and
@@ -76,7 +76,7 @@ symbolizing sub-matrices, using circular wrapping around array boundaries if
 Short-hand for
 `entropy_renyi(x, SpatialSymbolicPermutation(stencil, x, periodic), base = base, q = 1)`.
 
-See also: [`SpatialSymbolicPermutation`](@ref), [`entropy_renyi`](@ref).
+See also: [`SpatialSymbolicPermutation`](@ref), [`entropy`](@ref).
 
 [^Ribeiro2012]:
     Ribeiro et al. (2012). Complexity-entropy causality plane as a complexity measure

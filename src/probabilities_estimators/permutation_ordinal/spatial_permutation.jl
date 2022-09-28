@@ -29,7 +29,7 @@ within the stencil dictates the order that pixels are compared with.
 The pixel without any offset is always first in the order.
 
 After having defined `est`, one calculates the spatial permutation entropy
-by calling [`entropy_renyi`](@ref) with `est`, and with the array data.
+by calling [`entropy`](@ref) with `est`, and with the array data.
 To apply this to timeseries of spatial data, simply loop over the call, e.g.:
 
 ```julia
