@@ -1,10 +1,19 @@
 @deprecate TimeScaleMODWT WaveletOverlap
-export genentropy
+export genentropy, permentropy
+
+function permentropy(x; τ = 1, m = 3, base = MathConstants.e)
+    @warn """
+    `permentropy(x; τ, m, base)` is a deprecated function in Entropies.jl v2.0.
+    Use instead: `entropy_permutation(x; τ, m, base)`, or even better, use the
+    direct syntax discussed in the docstring of `entropy_permutation`.
+    """
+    return entropy_permutation(x; τ, m, base)
+end
 
 function genentropy(probs::Probabilities; q = 1.0, base = MathConstants.e)
     @warn """
-    `genentropy(probs::Probabilities; q, base)` is a deprecated function in Entropies 2.0.
-    Use instead: `entropy(Renyi(q, base), probs)`.
+    `genentropy(probs::Probabilities; q, base)` is a deprecated function in
+    Entropies.jl v2.0. Use instead: `entropy(Renyi(q, base), probs)`.
     """
     return entropy(Renyi(q, base), probs)
 end
@@ -12,7 +21,7 @@ end
 function genentropy(x, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(x, est::ProbabilitiesEstimator; q, base)` is a deprecated function in
-    Entropies 2.0. Use instead: `entropy(Renyi(q, base), x, est)`.
+    Entropies.jl v2.0. Use instead: `entropy(Renyi(q, base), x, est)`.
     """
     return entropy(Renyi(q, base), x, est)
 end
