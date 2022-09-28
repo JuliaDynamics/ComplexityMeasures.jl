@@ -1,6 +1,4 @@
 using DelayEmbeddings
-using StatsBase
-
 export Dispersion
 
 """

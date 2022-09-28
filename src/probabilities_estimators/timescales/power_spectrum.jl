@@ -20,13 +20,19 @@ in spectral space depends on the length of the input.
 
 [^Tian2017]:
     Tian et al, _Spectral Entropy Can Predict Changes of Working Memory Performance Reduced
-    by Short-Time Training in the Delayed-Match-to-Sample Task_, [Front. Hum. Neurosci.](
-    https://doi.org/10.3389/fnhum.2017.00437)
+    by Short-Time Training in the Delayed-Match-to-Sample Task_,
+    [Front. Hum. Neurosci.](https://doi.org/10.3389/fnhum.2017.00437)
 """
 struct PowerSpectrum <: ProbabilitiesEstimator end
 
-function probabilities(x, ::PowerSpectrum)
+function probabilities(x::Array_or_Dataset, ::PowerSpectrum)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
     f = FFTW.rfft(x)
     Probabilities(abs2.(f))
+end
+
+function alphabet_length(x::Array_or_Dataset, ::PowerSpectrum)
+    n = length(x)
+    # From the docstring of `AbstractFFTs.rfftfreq`:
+    iseven(n) ? length(0:(n÷2)) : length(0:((n-1)÷2))
 end

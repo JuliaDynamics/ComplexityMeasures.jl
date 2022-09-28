@@ -1,9 +1,42 @@
 export SymbolicAmplitudeAwarePermutation
 
 """
-    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand) <: PermutationProbabilityEstimator
+    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand)
 
-See docstring for [`SymbolicPermutation`](@ref).
+A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
+based on the amplitude-aware permutation entropy (Azami & Escudero, 2016).
+
+Probabilities are computed as
+
+```math
+p(\\pi_i^{m, \\tau}) =
+\\dfrac{\\sum_{k=1}^N
+\\mathbf{1}_{u:S(u) = s_i} \\left( \\mathbf{x}_k^{m, \\tau} \\right) \\, a_k}{\\sum_{k=1}^N
+\\mathbf{1}_{u:S(u) \\in \\Pi} \\left( \\mathbf{x}_k^{m, \\tau} \\right) \\,a_k} =
+\\dfrac{\\sum_{k=1}^N \\mathbf{1}_{u:S(u) = s_i}
+\\left( \\mathbf{x}_k^{m, \\tau} \\right) \\, a_k}{\\sum_{k=1}^N a_k}.
+```
+
+The weights encoding amplitude information about state vector
+``\\mathbf{x}_i = (x_1^i, x_2^i, \\ldots, x_m^i)`` are
+
+```math
+a_i = \\dfrac{A}{m} \\sum_{k=1}^m |x_k^i | + \\dfrac{1-A}{d-1}
+\\sum_{k=2}^d |x_{k}^i - x_{k-1}^i|,
+```
+
+with ``0 \\leq A \\leq 1``. When ``A=0`` , only internal differences between the
+elements of
+``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector
+elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is used.
+
+See [`SymbolicPermutation`](@ref) for an estimator that only incorporates ordinal/sorting
+information and disregards amplitudes, and [`SymbolicWeightedPermutation`](@ref) for
+another estimator that incorporates amplitude information.
+
+[^Azami2016]: Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy:
+    Illustration in spike detection and signal segmentation. Computer methods and programs
+    in biomedicine, 128, 40-51.
 """
 struct SymbolicAmplitudeAwarePermutation{F} <: ProbabilitiesEstimator
     τ::Int

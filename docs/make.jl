@@ -1,14 +1,12 @@
-using Entropies # using before activation of environment ensures dev'ed version
 cd(@__DIR__)
 using Pkg
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
-Pkg.activate(@__DIR__)
-CI && Pkg.instantiate()
+using Entropies
 using DelayEmbeddings
 using Documenter
 using DocumenterTools: Themes
 using CairoMakie
-using Entropies.Wavelets
+import Entropies.Wavelets
 using DynamicalSystems
 
 # %% JuliaDynamics theme
@@ -49,7 +47,9 @@ makedocs(
         ),
     sitename = "Entropies.jl",
     authors = "Kristian Agasøster Haaga, George Datseris",
-    pages = PAGES
+    pages = PAGES,
+    doctest = CI,
+    draft = false,
 )
 
 if CI

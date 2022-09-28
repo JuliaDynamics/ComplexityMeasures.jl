@@ -1,17 +1,12 @@
-export entropy_renyi
-export maxentropy_renyi
+export Renyi, Shannon
 
 """
-    entropy_renyi(p::Probabilities; q = 1.0, base = MathConstants.e)
+    Renyi <: Entropy
+    Renyi(q, base = 2)
+    Renyi(; q = 1.0, base = 2)
 
-Compute the Rényi[^Rényi1960] generalized order-`q` entropy of some probabilities
-(typically returned by the [`probabilities`](@ref) function).
-
-    entropy_renyi(x::Array_or_Dataset, est; q = 1.0, base)
-
-A convenience syntax, which calls first `probabilities(x, est)`
-and then calculates the entropy of the result (and thus `est` can be anything
-the [`probabilities`](@ref) function accepts).
+The Rényi[^Rényi1960] generalized order-`q` entropy, used with [`entropy`](@ref)
+to compute an entropy with units given by `base` (typically `2` or `MathConstants.e`).
 
 ## Description
 
@@ -28,80 +23,52 @@ like e.g. the information entropy
 also known as Hartley entropy), or the correlation entropy
 (``q = 2``, also known as collision entropy).
 
+If the probability estimator has known alphabet length ``L``, then the maximum
+value of the Rényi entropy is ``\\log_{base}(L)``, which is the entropy of the
+uniform distribution with given alphabet length.
+
 [^Rényi1960]:
     A. Rényi, _Proceedings of the fourth Berkeley Symposium on Mathematics,
     Statistics and Probability_, pp 547 (1960)
-[^Kumar1986]: Kumar, U., Kumar, V., & Kapur, J. N. (1986). Normalized measures of entropy.
-    International Journal Of General System, 12(1), 55-69.
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
-
-See also: [`maxentropy_renyi`](@ref).
 """
-function entropy_renyi end
+struct Renyi{Q, B} <: Entropy
+    q::Q
+    base::B
+end
+Renyi(q) = Renyi(q, 2)
+Renyi(; q = 1.0, base = 2) = Renyi(q, base)
 
-function entropy_renyi(prob::Probabilities; q = 1.0, α = nothing, base = MathConstants.e)
-    if α ≠ nothing
-        @warn "Keyword `α` is deprecated in favor of `q`."
-        q = α
-    end
-    q < 0 && throw(ArgumentError("Order of generalized entropy must be ≥ 0."))
-    haszero = any(iszero, prob)
-    p = if haszero
-        i0 = findall(iszero, prob.p)
-        # We copy because if someone initialized Probabilities with 0s, I would guess
-        # they would want to index the zeros as well. Not so costly anyways.
-        deleteat!(copy(prob.p), i0)
-    else
-        prob.p
-    end
-
+function entropy(e::Renyi, probs::Probabilities)
+    q, base = e.q, e.base
+    q < 0 && throw(ArgumentError("Order of Renyi entropy must be ≥ 0."))
+    non0_probs = Iterators.filter(!iszero, probs.p)
+    logf = log_with_base(base)
     if q ≈ 0
-        return log(base, length(p)) #Hartley entropy, max-entropy
+        return logf(length(non0_probs))
     elseif q ≈ 1
-        return -sum( x*log(base, x) for x in p ) #Shannon entropy
+        return -sum(x*logf(x) for x in non0_probs)
     elseif isinf(q)
-        return -log(base, maximum(p)) #Min entropy
+        return -logf(maximum(non0_probs))
     else
-        return (1/(1-q))*log(base, sum(x^q for x in p) ) #Renyi q entropy
+        return (1/(1-q))*logf(sum(x^q for x in non0_probs))
     end
 end
 
-entropy_renyi(::AbstractArray{<:Real}) =
-    error("For single-argument input, do `entropy_renyi(Probabilities(x))` instead.")
-
-function entropy_renyi(x::Array_or_Dataset, est; q = 1.0, α = nothing, base = MathConstants.e)
-    if α ≠ nothing
-        @warn "Keyword `α` is deprecated in favor of `q`."
-        q = α
-    end
-    p = probabilities(x, est)
-    entropy_renyi(p; q = q, base = base)
-end
+Base.maximum(e::Renyi, L::Int) = log_with_base(e.base)(L)
 
 """
-    entropy_renyi!(p, x, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
+    Shannon(; base = 2)
 
-Similarly with `probabilities!` this is an in-place version of `entropy_renyi` that allows
-pre-allocation of temporarily used containers.
+The Shannon[^Shannon1948] entropy, used with [`entropy`](@ref) to compute:
 
-Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
+```math
+H(p) = - \\sum_i p[i] \\log(p[i])
+```
+with the ``log`` at the given `base`.
+
+`Shannon(base)` is syntactically equivalent to `Renyi(; base)`.
+
+[^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
-function entropy_renyi!(p, x, est; q = 1.0, α = nothing, base = MathConstants.e)
-    if α ≠ nothing
-        @warn "Keyword `α` is deprecated in favor of `q`."
-        q = α
-    end
-    probabilities!(p, x, est)
-    entropy_renyi(p; q = q, base = base)
-end
-
-"""
-    maxentropy_renyi(N::Int, base = MathConstants.e)
-
-Convenience function that computes the maximum value of the order-`q` generalized
-Rényi entropy for an `N`-element probability distribution, i.e.
-``\\log_{base}(N)``, which is useful for normalization when `N` is known.
-
-See also [`entropy_renyi`](@ref), [`entropy_normalized`](@ref).
-"""
-maxentropy_renyi(N::Int; base = MathConstants.e) = log(base, N)
+Shannon(; base = 2) = Renyi(; base)
