@@ -52,9 +52,9 @@ To estimate probabilities or entropies from univariate time series, use the foll
 - `probabilities(x::AbstractVector, est::SymbolicProbabilityEstimator)`. Constructs state vectors
     from `x` using embedding lag `τ` and embedding dimension `m`, symbolizes state vectors,
     and computes probabilities as (weighted) relative frequency of symbols.
-- `entropy_renyi(x::AbstractVector, est::SymbolicProbabilityEstimator; α=1, base = 2)` computes
+- `entropy(x::AbstractVector, est::SymbolicProbabilityEstimator)` computes
     probabilities by calling `probabilities(x::AbstractVector, est)`,
-    then computer the order-`α` generalized entropy to the given base.
+    then computes Shannon entropy.
 
 #### Speeding up repeated computations
 
