@@ -14,7 +14,7 @@ Bandt & Pompe (2002)[^BandtPompe2002] to compute permutation entropy.
 If applied to a univariate time series, then the time series is first embedded using
 embedding delay `τ` and dimension `m`, and then converted to a symbol time series using
 [`symbolize`](@ref) with [`OrdinalPattern`](@ref), from which probabilities are
-estimated. If applied to a [`Dataset`](@ref), then the data is assumed to be
+estimated. If applied to a `Dataset`, then the data is assumed to be
 pre-symbolized, and probabilities are computed directly from the state vectors.
 
 !!! note "Handling equal values in ordinal patterns"
@@ -30,7 +30,7 @@ pre-symbolized, and probabilities are computed directly from the state vectors.
 `SymbolicPermutation` also implements the in-place [`entropy!`](@ref) and
 [`probabilities!`](@ref). The length of the pre-allocated symbol vector must match the
 length of the embedding: `N - (m-1)τ` for univariate time series, and `M` for length-`M`
-[`Dataset`](@ref)s), i.e.
+`Dataset`s), i.e.
 
 ```julia
 using DelayEmbeddings, Entropies
