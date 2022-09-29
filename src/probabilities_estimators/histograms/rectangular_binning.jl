@@ -4,14 +4,6 @@ import DelayEmbeddings: Dataset, minima, maxima
 import StaticArrays: SVector, MVector
 
 """
-    AbstractBinning
-
-The supertype of all binning schemes in the CausalityTools ecosystem.
-"""
-abstract type AbstractBinning end
-
-
-"""
     RectangularBinning(ϵ) <: AbstractBinning
 
 Instructions for creating a rectangular box partition using the binning scheme `ϵ`.

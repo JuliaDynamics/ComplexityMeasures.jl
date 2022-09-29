@@ -1,6 +1,11 @@
-export VisitationFrequency, probabilities
+export VisitationFrequency, AbstractBinning
 
-abstract type BinningProbabilitiesEstimator <: ProbabilitiesEstimator end
+"""
+    AbstractBinning
+
+The supertype of all binning schemes.
+"""
+abstract type AbstractBinning end
 
 """
     VisitationFrequency(r::RectangularBinning) <: ProbabilitiesEstimator
@@ -16,10 +21,16 @@ To obtain the bin information along with the probabilities, use [`binhist`](@ref
 
 See also: [`RectangularBinning`](@ref).
 """
-struct VisitationFrequency{RB<:RectangularBinning} <: BinningProbabilitiesEstimator
+struct VisitationFrequency{RB<:AbstractBinning} <: ProbabilitiesEstimator
     binning::RB
 end
 
 function probabilities(x::AbstractDataset, est::VisitationFrequency)
     _non0hist(x, est.binning)[1]
 end
+
+
+include("rectangular_binning.jl")
+include("count_box_visits.jl")
+include("histogram_estimation.jl")
+include("VisitationFrequency.jl")
