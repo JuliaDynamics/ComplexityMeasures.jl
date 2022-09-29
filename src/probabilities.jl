@@ -71,7 +71,7 @@ sized bins instead of bins of length `ε::AbstractFloat`.
 function probabilities end
 
 # The histogram related stuff are defined in histogram_estimation.jl file
-probabilities(x) = _non0hist(x)
+probabilities(x) = fasthist(x)
 
 """
     probabilities!(s, args...)

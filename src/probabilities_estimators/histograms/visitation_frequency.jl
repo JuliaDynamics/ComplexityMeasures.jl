@@ -26,11 +26,10 @@ struct VisitationFrequency{RB<:AbstractBinning} <: ProbabilitiesEstimator
 end
 
 function probabilities(x::AbstractDataset, est::VisitationFrequency)
-    _non0hist(x, est.binning)[1]
+    fasthist(x, est.binning)[1]
 end
 
 
 include("rectangular_binning.jl")
 include("count_box_visits.jl")
 include("histogram_estimation.jl")
-include("VisitationFrequency.jl")

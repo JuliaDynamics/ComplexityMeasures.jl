@@ -1,7 +1,7 @@
 export binhist
 
 """
-    _non0hist(points, binning_scheme::RectangularBinning, dims)
+    fasthist(points, binning_scheme::RectangularBinning, dims)
 
 Determine which bins are visited by `points` given the rectangular `binning_scheme`,
 considering only the marginal along dimensions `dims`. Bins are referenced
@@ -16,28 +16,28 @@ using using Entropies, DelayEmbeddings
 pts = Dataset([rand(5) for i = 1:100]);
 
 # Histograms directly from points given a rectangular binning scheme
-h1 = _non0hist(pts, RectangularBinning(0.2), 1:3)
-h2 = _non0hist(pts, RectangularBinning(0.2), [1, 2])
+h1 = fasthist(pts, RectangularBinning(0.2), 1:3)
+h2 = fasthist(pts, RectangularBinning(0.2), [1, 2])
 
 # Test that we're actually getting normalised histograms
 sum(h1) ≈ 1.0, sum(h2) ≈ 1.0
 ```
 """
-function _non0hist(points, binning_scheme::RectangularBinning, dims)
+function fasthist(points, binning_scheme::RectangularBinning, dims)
     bin_visits = marginal_visits(points, binning_scheme, dims)
-    _non0hist(bin_visits)
+    fasthist(bin_visits)
 end
 
-function _non0hist(points::AbstractDataset{N, T}, binning_scheme::RectangularBinning) where {N, T}
-    _non0hist(points, binning_scheme, 1:N)
+function fasthist(points::AbstractDataset{N, T}, binning_scheme::RectangularBinning) where {N, T}
+    fasthist(points, binning_scheme, 1:N)
 end
 
 
 # TODO: ϵ::RectangularBinning(Float64) allocates slightly more memory than the method below
 # because of the call to `minima_edgelengths`. Can be optimized, but keep both versions for
 # now and merge docstrings.
-probabilities(data::AbstractDataset, ϵ::RectangularBinning) = _non0hist(data, ϵ)[1]
-function _non0hist(data::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:Real}
+probabilities(data::AbstractDataset, ϵ::RectangularBinning) = fasthist(data, ϵ)[1]
+function fasthist(data::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:Real}
 
     # TODO: this allocates a lot, but is not performance critical
     mini, edgelengths = minima_edgelengths(data, ϵ)
@@ -70,7 +70,7 @@ function _non0hist(data::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D
 end
 
 function binhist(x::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:Real}
-    hist, bins, mini, edgelengths = _non0hist(x, ϵ)
+    hist, bins, mini, edgelengths = fasthist(x, ϵ)
     unique!(bins)
     b = [β .* edgelengths .+ mini for β in bins]
     return hist, b
@@ -84,8 +84,8 @@ probabilities(Dataset(data), VisitationFrequency(RectangularBinning(n)))
 probabilities(data, ε::AbstractFloat) = probabilities(Dataset(data), ε)
 
 # The following is originally from ChaosTools.jl
-probabilities(data::AbstractDataset, ε::AbstractFloat) = _non0hist(data, ε)[1]
-function _non0hist(data::AbstractDataset{D, T}, ε::AbstractFloat) where {D, T<:Real}
+probabilities(data::AbstractDataset, ε::AbstractFloat) = fasthist(data, ε)[1]
+function fasthist(data::AbstractDataset{D, T}, ε::AbstractFloat) where {D, T<:Real}
     mini = minima(data)
     L = length(data)
     hist = Vector{Float64}()
@@ -128,7 +128,7 @@ size for each dimension will depend on the binning scheme.
 See also: [`RectangularBinning`](@ref).
 """
 function binhist(data, ε)
-    hist, bins, mini = _non0hist(data, ε)
+    hist, bins, mini = fasthist(data, ε)
     unique!(bins)
     b = [β .* ε .+ mini for β in bins]
     return hist, b
@@ -162,15 +162,15 @@ function _non0hist_frequencies(x)
     return hist
 end
 
-function _non0hist(x, N)
+function fasthist(x, N)
     hist = _non0hist_frequencies(x)
     return Probabilities(hist ./ N)
 end
 
-function _non0hist(x)
-    return _non0hist(x, length(x))
+function fasthist(x)
+    return fasthist(x, length(x))
 end
 
-_non0hist(x::AbstractDataset) = _non0hist(x.data)
-_non0hist(x::AbstractDataset, N) = _non0hist(x.data, N)
-probabilities(x::AbstractDataset) = _non0hist(x.data)
+fasthist(x::AbstractDataset) = fasthist(x.data)
+fasthist(x::AbstractDataset, N) = fasthist(x.data, N)
+probabilities(x::AbstractDataset) = fasthist(x.data)

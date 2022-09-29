@@ -145,7 +145,7 @@ function get_edgelengths end
 
 get_edgelengths(points, ϵ::RectangularBinning) = get_minima_and_edgelengths(points, ϵ)[2]
 
-# need this for type stability when getting minima and edgelength for a Dataset for _non0hist
+# need this for type stability when getting minima and edgelength for a Dataset for fasthist
 # otherwise, we're subtracting and dividing static vectors with regular vectors, which allocates
 # all over the place.
 import StaticArrays: SVector
