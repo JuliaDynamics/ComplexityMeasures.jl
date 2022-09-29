@@ -10,12 +10,6 @@ The supertype of all binning schemes in the CausalityTools ecosystem.
 """
 abstract type AbstractBinning end
 
-"""
-    RectangularBinningScheme <: AbstractBinning
-
-The supertype of all rectangular binning schemes in the CausalityTools ecosystem.
-"""
-abstract type RectangularBinningScheme <: AbstractBinning end
 
 """
     RectangularBinning(ϵ) <: AbstractBinning
@@ -125,7 +119,7 @@ z₁, z₂ = 0, 0.5 # not completely covering the data, which are on [0, 1]
 RectangularBinning(ϵ)
 ```
 """
-struct RectangularBinning{E} <: RectangularBinningScheme
+struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
 end
 
