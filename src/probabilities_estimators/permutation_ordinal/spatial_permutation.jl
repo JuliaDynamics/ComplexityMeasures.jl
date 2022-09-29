@@ -33,8 +33,8 @@ by calling [`entropy`](@ref) with `est`, and with the array data.
 To apply this to timeseries of spatial data, simply loop over the call, e.g.:
 
 ```julia
-entropy = entropy_renyi(x, est)
-entropy_vs_time = entropy_renyi.(data, est) # broadcasting with `.`
+h = entropy(x, est)
+h_vs_t = entropy.(data, est) # broadcasting with `.`
 ```
 
 The argument `periodic` decides whether the stencil should wrap around at the end of the
