@@ -1,4 +1,57 @@
-export binhist
+# Notice that in the new `event` API, there is no reason to export the `fasthist`
+# function, because it is just the `probabilities` call,
+# while the old `binhist` function becomes the dispatch of `event`
+# for `RectangularBinning`. Deprecations will be added for `binhist` of course.
+
+# Internal function
+"""
+    fasthist(x::Vector_or_Dataset, binning::RectangularBinning)
+    fasthist(x::Vector_or_Dataset, ε::Union{<:Real, <:Vector})
+
+Hyper-optimized histogram calculation for `x` with rectangular binning.
+Return the probabilities `p` of each bin of the histogram, the bins
+(in integer coordinates), the minima of the histogram support, and the edge lengths.
+
+Use `binhist` (TO BE RENAMED TO `events`) to get the bins in state space coordinates.
+
+This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
+and a linear space complexity (`l` for `l = dimension(x)`).
+This allows computation of histograms of high-dimensional
+datasets and with small box sizes `ε` without memory overflow and with maximum performance.
+
+See [`RectangularBinning`](@ref) for all possible binning configurations.
+"""
+function fasthist end
+
+# Dataset implementation:
+function fasthist(data::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:Real}
+    # TODO: this allocates a lot, but is not performance critical...?
+    mini, edgelengths = minima_edgelengths(data, ϵ)
+    # Map each datapoint to its bin edge and sort the resulting list:
+    bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), data)
+    sort!(bins, alg=QuickSort)
+    # Reserve enough space for histogram:
+    L = length(data)
+    hist = Vector{Float64}()
+    sizehint!(hist, L)
+    # Fill the histogram by counting consecutive equal bins:
+    prev_bin, count = bins[1], 0
+    for bin in bins
+        if bin == prev_bin
+            count += 1
+        else
+            push!(hist, count)
+            prev_bin = bin
+            count = 1
+        end
+    end
+    push!(hist, count)
+    # Shrink histogram capacity to fit its size:
+    sizehint!(hist, length(hist))
+    return Probabilities(hist ./ L), bins, mini, edgelengths
+end
+
+
 
 """
     fasthist(points, binning_scheme::RectangularBinning, dims)
@@ -36,38 +89,6 @@ end
 # TODO: ϵ::RectangularBinning(Float64) allocates slightly more memory than the method below
 # because of the call to `minima_edgelengths`. Can be optimized, but keep both versions for
 # now and merge docstrings.
-probabilities(data::AbstractDataset, ϵ::RectangularBinning) = fasthist(data, ϵ)[1]
-function fasthist(data::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:Real}
-
-    # TODO: this allocates a lot, but is not performance critical
-    mini, edgelengths = minima_edgelengths(data, ϵ)
-
-    # Map each datapoint to its bin edge and sort the resulting list:
-    bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), data)
-    sort!(bins, alg=QuickSort)
-
-    # Reserve enough space for histogram:
-    L = length(data)
-    hist = Vector{Float64}()
-    sizehint!(hist, L)
-
-    # Fill the histogram by counting consecutive equal bins:
-    prev_bin, count = bins[1], 0
-    for bin in bins
-        if bin == prev_bin
-            count += 1
-        else
-            push!(hist, count)
-            prev_bin = bin
-            count = 1
-        end
-    end
-    push!(hist, count)
-
-    # Shrink histogram capacity to fit its size:
-    sizehint!(hist, length(hist))
-    return Probabilities(hist ./ L), bins, mini, edgelengths
-end
 
 function binhist(x::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:Real}
     hist, bins, mini, edgelengths = fasthist(x, ϵ)
