@@ -25,8 +25,12 @@ struct VisitationFrequency{RB<:AbstractBinning} <: ProbabilitiesEstimator
     binning::RB
 end
 
-function probabilities(x::AbstractDataset, est::VisitationFrequency)
-    fasthist(x, est.binning)[1]
+function probabilities(x::Array_or_Dataset, est::VisitationFrequency)
+    probabilities(x, est.binning)
+end
+
+function probabilities(x::Array_or_Dataset, binning::RectangularBinning)
+    fasthist(x, binning)
 end
 
 
