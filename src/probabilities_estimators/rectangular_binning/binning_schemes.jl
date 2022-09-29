@@ -4,21 +4,21 @@ import DelayEmbeddings: Dataset, minima, maxima
 import StaticArrays: SVector, MVector
 
 """
-    BinningScheme
+    AbstractBinning
 
 The supertype of all binning schemes in the CausalityTools ecosystem.
 """
-abstract type BinningScheme end
+abstract type AbstractBinning end
 
 """
-    RectangularBinningScheme <: BinningScheme
+    RectangularBinningScheme <: AbstractBinning
 
 The supertype of all rectangular binning schemes in the CausalityTools ecosystem.
 """
-abstract type RectangularBinningScheme <: BinningScheme end
+abstract type RectangularBinningScheme <: AbstractBinning end
 
 """
-    RectangularBinning(ϵ) <: BinningScheme
+    RectangularBinning(ϵ) <: AbstractBinning
 
 Instructions for creating a rectangular box partition using the binning scheme `ϵ`.
 Binning instructions are deduced from the type of `ϵ`.
