@@ -23,53 +23,8 @@ struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
 end
 
-"""
-    get_minima(pts) → SVector
-
-Return the minima along each axis of the dataset `pts`.
-"""
-function get_minima end
-
-"""
-    get_maxima(pts) → SVector
-
-Return the maxima along each axis of the dataset `pts`.
-"""
-function get_maxima end
-
-"""
-    get_minmaxes(pts) → Tuple{Vector{Float}, Vector{Float}}
-
-Return a vector of tuples containing axis-wise (minimum, maximum) values.
-"""
-function get_minmaxes end
-
-function get_minima(pts::AbstractDataset)
-    minima(pts)
-end
-
-function get_minima(pts::Vector{T}) where {T <: Union{SVector, MVector, Vector}}
-    minima(Dataset(pts))
-end
-
-function get_maxima(pts::AbstractDataset)
-    maxima(pts)
-end
-
-function get_maxima(pts::Vector{T}) where {T <: Union{SVector, MVector, Vector}}
-    maxima(Dataset(pts))
-end
-
-
-function get_minmaxes(pts::AbstractDataset)
-    mini, maxi = minima(pts), maxima(pts)
-    minmaxes = [(mini[i], maxi[i]) for i = 1:length(mini)]
-end
-
-function get_minmaxes(pts::Vector{T}) where {T <: Union{SVector, MVector, Vector}}
-    get_minmaxes(Dataset(pts))
-end
-
+# Extend this so that we use same function for vector or dataset input
+DelayEmbeddings.minima(x::AbstractVector{<:Real}) = minimum(x)
 
 """
     get_minima_and_edgelengths(points,
@@ -85,6 +40,7 @@ function get_minima_and_edgelengths(points, binning_scheme::RectangularBinning)
     D = length(points[1])
     n_pts = length(points)
 
+    # TODO: This is INSANE, and the least performant thing on the universe. MUST FIX.
     axisminima = minimum.([minimum.([pt[i] for pt in points]) for i = 1:D])
     axismaxima = maximum.([maximum.([pt[i] for pt in points]) for i = 1:D])
 
