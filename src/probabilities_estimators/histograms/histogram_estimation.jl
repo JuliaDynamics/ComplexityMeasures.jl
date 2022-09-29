@@ -3,7 +3,10 @@
 # while the old `binhist` function becomes the dispatch of `event`
 # for `RectangularBinning`. Deprecations will be added for `binhist` of course.
 
-# Internal function
+# Originally this code was in ChaosTools.jl, many years ago. It has been transferred
+# here, and then expanded to work with different binning configurations.
+
+# Internal function docstring
 """
     fasthist(x::Vector_or_Dataset, binning::RectangularBinning)
     fasthist(x::Vector_or_Dataset, ε::Union{<:Real, <:Vector})
@@ -51,7 +54,46 @@ function fasthist(data::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D,
     return Probabilities(hist ./ L), bins, mini, edgelengths
 end
 
+# Vector implementation
+# TODO: Paste here.
 
+
+# Count occurrences implementation (direct counting of identical elements)
+
+# Frequencies are needed elsewhere in the package too, so keep in its own method.
+"""
+    fasthist(x::Vector_or_Dataset)
+
+Equivalent with `probabilities(x)` or with `probabilities(x, CountOccurrences)`.
+See [`CountOccurrences`](@ref).
+"""
+function fasthist(x)
+    L = length(x)
+    hist = Vector{Float64}()
+    # Reserve enough space for histogram:
+    sizehint!(hist, L)
+    # Sort
+    sx = sort(x, alg = QuickSort)
+    # Fill the histogram by counting consecutive equal values:
+    prev_val, count = sx[1], 0
+    for val in sx
+        if val == prev_val
+            count += 1
+        else
+            push!(hist, count)
+            prev_val = val
+            count = 1
+        end
+    end
+    push!(hist, count)
+    # Shrink histogram capacity to fit its size:
+    sizehint!(hist, length(hist))
+    return Probabilities(hist ./ L)
+end
+
+###########################################################################################
+# Old code
+###########################################################################################
 
 """
     fasthist(points, binning_scheme::RectangularBinning, dims)
@@ -154,44 +196,3 @@ function binhist(data, ε)
     b = [β .* ε .+ mini for β in bins]
     return hist, b
 end
-
-# Frequencies are needed elsewhere in the package too, so keep in its own method.
-function _non0hist_frequencies(x)
-    L = length(x)
-
-    hist = Vector{Float64}()
-    # Reserve enough space for histogram:
-    sizehint!(hist, L)
-
-    sx = sort(x, alg = QuickSort)
-
-    # Fill the histogram by counting consecutive equal values:
-    prev_val, count = sx[1], 0
-    for val in sx
-        if val == prev_val
-            count += 1
-        else
-            push!(hist, count)
-            prev_val = val
-            count = 1
-        end
-    end
-    push!(hist, count)
-
-    # Shrink histogram capacity to fit its size:
-    sizehint!(hist, length(hist))
-    return hist
-end
-
-function fasthist(x, N)
-    hist = _non0hist_frequencies(x)
-    return Probabilities(hist ./ N)
-end
-
-function fasthist(x)
-    return fasthist(x, length(x))
-end
-
-fasthist(x::AbstractDataset) = fasthist(x.data)
-fasthist(x::AbstractDataset, N) = fasthist(x.data, N)
-probabilities(x::AbstractDataset) = fasthist(x.data)

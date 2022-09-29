@@ -25,6 +25,7 @@ end
 
 # Extend this so that we use same function for vector or dataset input
 DelayEmbeddings.minima(x::AbstractVector{<:Real}) = minimum(x)
+DelayEmbeddings.mimaxima(x::AbstractVector{<:Real}) = extrema(x)
 
 """
     get_minima_and_edgelengths(points,
