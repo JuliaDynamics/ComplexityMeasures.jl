@@ -5,15 +5,16 @@
 
 # Originally this code was in ChaosTools.jl, many years ago. It has been transferred
 # here, and then expanded to work with different binning configurations.
+# It also has been made generic to work with arbitrary inputs without code duplication.
 
 # Internal function docstring
 """
-    fasthist(x::Vector_or_Dataset, binning::RectangularBinning)
+    fasthist(x::Vector_or_Dataset, binning::AbstractBinning)
     fasthist(x::Vector_or_Dataset, ε::Union{<:Real, <:Vector})
 
 Hyper-optimized histogram calculation for `x` with rectangular binning.
 Return the probabilities `p` of each bin of the histogram, the bins
-(in integer coordinates), the minima of the histogram support, and the edge lengths.
+(in integer coordinates), and the encoder, that can map points into bins.
 
 Use `binhist` (TO BE RENAMED TO `events`) to get the bins in state space coordinates.
 
@@ -24,38 +25,28 @@ datasets and with small box sizes `ε` without memory overflow and with maximum 
 
 See [`RectangularBinning`](@ref) for all possible binning configurations.
 """
-function fasthist(x::Vector_or_Dataset, ε::Union{<:Real, <:Vector})
-    return fasthist(x, RectangularBinning(ε))
+function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+    encoder = bin_encoder(x, ϵ)
+    bins = encode_as_bins(x, encoder)
+    hist = fasthist(bins)
+    return Probabilities(hist ./ length(x)), bins, encoder
 end
 
-###########################################################################################
-# Concrete implementations
-###########################################################################################
-# Dataset implementation:
-function fasthist(x::Vector_or_Dataset, ϵ::RectangularBinning)
-    mini, edgelengths = minima_and_edgelengths(x, ϵ)
-    # Map each datapoint to its bin edge (hence, we are symbolizing the x here)
-    # (notice that this also works for vector x, and broadcasting is ignored)
-    bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), x)
-    hist = fasthist(bins, false)
-    return Probabilities(hist ./ length(x)), bins, mini, edgelengths
-end
-
-# Count occurrences implementation (direct counting of identical elements)
-# Which is the same as frequencies, which is also used in the binned data
 """
     fasthist(x::Vector_or_Dataset)
 
-Equivalent with `probabilities(x)` or with `probabilities(x, CountOccurrences)`.
-See [`CountOccurrences`](@ref).
+Count the frequencies of the unique data values in `x`.
+Return them as raw data, i.e., `Vector{Int}`.
+The actual values the frequencies correspond to are `sort!(unique(x))`, but are not
+returned.
 """
-function fasthist(x::Vector_or_Dataset, makecopy::Bool = true)
+function fasthist(x::Array_or_Dataset)
     L = length(x)
-    hist = Vector{Float64}()
+    hist = Vector{Int}()
     # Reserve enough space for histogram:
     sizehint!(hist, L)
     # Sort
-    sx = makecopy ? sort(x; alg = QuickSort) : sort!(x; alg = QuickSort)
+    sort!(x; alg = QuickSort)
     # Fill the histogram by counting consecutive equal values:
     prev_val, count = sx[1], 0
     for val in sx

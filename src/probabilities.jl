@@ -47,7 +47,7 @@ This is mostly useful when `x` contains categorical or integer data.
     probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
 
 Calculate probabilities representing `x` based on the provided estimator.
-The probabilities are typically unordered and may or may not contain 0s, see the
+The probabilities may, or may not be ordered, and may, or may not contain 0s, see the
 documentation of the individual estimators for more.
 Configuration options are always given as arguments to the chosen estimator.
 
@@ -60,9 +60,9 @@ Convenience syntax which provides probabilities for `x` based on rectangular bin
 as an estimator, see [`VisitationFrequency`](@ref).
 
 
-    probabilities(x::Array_or_Dataset, n::Integer) → p::Probabilities
+    probabilities(x::Array_or_Dataset, n::Int) → p::Probabilities
 
-Same as the above method, but now each dimension of the data is binned into `n::Int` equal
+Same as the above method, but now each dimension of the data is binned into `n` equal
 sized bins instead of bins of length `ε::AbstractFloat`.
 """
 function probabilities end

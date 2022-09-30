@@ -8,6 +8,16 @@ The supertype of all binning schemes.
 abstract type AbstractBinning end
 
 """
+    AbstractBinning
+
+The supertype of all binning encoders, which, are used with `symbolize` to "encode"
+a data point into its bin. The function `bin_encoder(x, b)` takes in an AbstractBinning
+and returns the encoder.
+"""
+abstract type AbstractBinEncoder end
+
+
+"""
     VisitationFrequency(r::RectangularBinning) <: ProbabilitiesEstimator
 
 A probability estimator based on binning data into rectangular boxes dictated by
@@ -27,6 +37,9 @@ end
 
 function probabilities(x::Array_or_Dataset, est::VisitationFrequency)
     probabilities(x, est.binning)
+end
+function probabilities(x::Array_or_Dataset)
+    return Probabilities(fasthist(copy(x)))
 end
 
 include("rectangular_binning.jl")

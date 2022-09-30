@@ -19,22 +19,23 @@ struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
 end
 
-function probabilities(x::Array_or_Dataset, binning::RectangularBinning)
+function probabilities(x::Vector_or_Dataset, binning::RectangularBinning)
     fasthist(x, binning)[1]
 end
-function probabilities(x::Array_or_Dataset, ε::Union{Real, Vector{<:Real}})
+function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})
     probabilities(x, RectangularBinning(ε))
 end
 
 
-
 """
-    minima_and_edgelengths(x, binning_scheme::RectangularBinning)
+    bin_encoder(x, binning_scheme::RectangularBinning)
 
 Find the minima along each dimension, and compute appropriate
 edge lengths for each dimension of `x` given a rectangular binning.
+Put them in a `RectangularBinEncoder` that can be then used to map points into bins.
 """
-function minima_and_edgelengths(x::AbstractDataset{D,T}, b::RectangularBinning) where {D, T}
+function bin_encoder(x::AbstractDataset{D,T}, b::RectangularBinning) where {D, T}
+    # This function always returns static vectors and is type stable
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
     v = ones(SVector{D,T})
@@ -48,9 +49,11 @@ function minima_and_edgelengths(x::AbstractDataset{D,T}, b::RectangularBinning) 
         edgelengths = nextfloat.(edgeslengths_nonadjusted)
         # edgelengths = ((axismaxima + (edgeslengths_nonadjusted ./ 100)) - axisminima) ./ ϵ
     end
+    RectangularBinEncoder(mini, edgelengths)
 end
 
-function minima_and_edgelengths(x::AbstractVector{<:Real}, b::RectangularBinning)
+function bin_encoder(x::AbstractVector{<:Real}, b::RectangularBinning)
+    # This function always returns numbers and is type stable
     ϵ = b.ϵ
     mini, maxi = extrema(x)
     if ϵ isa Real
@@ -63,10 +66,25 @@ function minima_and_edgelengths(x::AbstractVector{<:Real}, b::RectangularBinning
     else
         error("Invalid ϵ for binning of a vector")
     end
-    return mini, edgelength
+    RectangularBinEncoder(mini, edgelengths)
 end
 
+struct RectangularBinEncoder{M, E} <: AbstractBinEncoder
+    mini::M # fields are either static vectors or numbers
+    edgelengths::E
+end
 
+# This function is the same as `symbolize`.
+function encode_as_bins(x::Vector_or_Dataset, b::RectangularBinEncoder)
+    (; mini, edgelengths) = b
+    # Map each datapoint to its bin edge (hence, we are symbolizing the x here)
+    # (notice that this also works for vector x, and broadcasting is ignored)
+    bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), x)
+    return bins
+end
+function symbolize(x::Vector_or_Dataset, b::RectangularBinEncoder)
+    return encode_as_bins(x, b)
+end
 
 
 ###########################################################################################
