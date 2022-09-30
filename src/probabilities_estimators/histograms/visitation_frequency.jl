@@ -10,7 +10,7 @@ abstract type AbstractBinning end
 """
     AbstractBinEncoder
 
-The supertype of all binning encoders, which, are used with `symbolize` to "encode"
+The supertype of all binning encoders, which are used with `symbolize` to "encode"
 a data point into its bin. The function `bin_encoder(x, b)` takes in an AbstractBinning
 and returns the encoder.
 """
