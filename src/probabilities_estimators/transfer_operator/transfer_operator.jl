@@ -8,7 +8,7 @@ export
     transfermatrix
 
 """
-    TransferOperator(ϵ::RectangularBinning) <: BinningProbabilitiesEstimator
+    TransferOperator(ϵ::RectangularBinning) <: ProbabilitiesEstimator
 
 A probability estimator based on binning data into rectangular boxes dictated by
 the binning scheme `ϵ`, then approxmating the transfer (Perron-Frobenius) operator
@@ -69,7 +69,7 @@ See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
 
 [^Diego2019]: Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
 """
-struct TransferOperator{R} <: BinningProbabilitiesEstimator
+struct TransferOperator{R} <: ProbabilitiesEstimator
     ϵ::R
 end
 

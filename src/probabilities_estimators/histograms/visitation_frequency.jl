@@ -29,11 +29,6 @@ function probabilities(x::Array_or_Dataset, est::VisitationFrequency)
     probabilities(x, est.binning)
 end
 
-function probabilities(x::Array_or_Dataset, binning::RectangularBinning)
-    fasthist(x, binning)
-end
-
-
 include("rectangular_binning.jl")
 include("count_box_visits.jl")
 include("histogram_estimation.jl")

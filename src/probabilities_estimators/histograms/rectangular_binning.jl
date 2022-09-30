@@ -19,6 +19,15 @@ struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
 end
 
+function probabilities(x::Array_or_Dataset, binning::RectangularBinning)
+    fasthist(x, binning)[1]
+end
+function probabilities(x::Array_or_Dataset, ε::Union{Real, Vector{<:Real}})
+    probabilities(x, RectangularBinning(ε))
+end
+
+
+
 """
     minima_and_edgelengths(x, binning_scheme::RectangularBinning)
 
@@ -41,10 +50,10 @@ function minima_and_edgelengths(x::AbstractDataset{D,T}, b::RectangularBinning) 
     end
 end
 
-function minima_and_edgelengths(x::AbstractVector{T}, b::RectangularBinning) where {T<:Real}
+function minima_and_edgelengths(x::AbstractVector{<:Real}, b::RectangularBinning)
     ϵ = b.ϵ
     mini, maxi = extrema(x)
-    if ϵ isa Float64
+    if ϵ isa Real
         edgelength = ϵ
     elseif ϵ isa Int
         edgeslength_nonadjusted = (maxi - mini)/ϵ
@@ -108,20 +117,6 @@ function minima_and_edgelengths_OLD(points, binning_scheme::RectangularBinning)
 
     axisminima, edgelengths
 end
-
-function minima_and_edgelengths(x::AbstractVector{<:Real}, binning_scheme::RectangularBinning)
-    mini = minimum(x)
-    ϵ = binning_scheme.ϵ
-    if ϵ isa Float64
-        edgelength = todo
-    elseif ϵ isa Int
-        edgelength = todo
-    else
-        error("Invalid binning for vector input.")
-    end
-    return mini, edgelength
-end
-
 
 #=
 TODO: for @kahaaga
