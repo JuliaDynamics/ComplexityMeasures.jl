@@ -23,19 +23,15 @@ struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
 end
 
-# Extend this so that we use same function for vector or dataset input
-DelayEmbeddings.minima(x::AbstractVector{<:Real}) = minimum(x)
-DelayEmbeddings.mimaxima(x::AbstractVector{<:Real}) = extrema(x)
-
 """
-    get_minima_and_edgelengths(points,
+    minima_and_edgelengths(points,
         binning_scheme::RectangularBinning) → (Vector{Float}, Vector{Float})
 
 Find the minima along each axis of the embedding, and computes appropriate
 edge lengths given a rectangular `binning_scheme`, which provide instructions on how to
 grid the space. Assumes the input is a vector of points.
 """
-function get_minima_and_edgelengths(points, binning_scheme::RectangularBinning)
+function minima_and_edgelengths(points, binning_scheme::RectangularBinning)
     # TODO: Ensure this function returns static vectors!!!!!!!!!!!
     ϵ = binning_scheme.ϵ
 
@@ -75,7 +71,7 @@ function get_minima_and_edgelengths(points, binning_scheme::RectangularBinning)
             axisminima[i] = minimum(ranges[i])
         end
     else
-       error("get_minima_and_edgelengths not implemented for RectangularBinning(ϵ) with ϵ of type $(typeof(ϵ))")
+       error("minima_and_edgelengths not implemented for RectangularBinning(ϵ) with ϵ of type $(typeof(ϵ))")
     end
 
     axisminima, edgelengths
