@@ -1,5 +1,6 @@
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
+export probabilities_and_events
 export alphabet_length
 
 """
@@ -114,3 +115,13 @@ end
 function alphabet_length(est::ProbabilitiesEstimator)
     error("`alphabet_length` not known/implemented for estimator of type $(typeof(est)).")
 end
+
+
+"""
+    probabilities_and_events(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+Return `probs, events`. `probs` is exactly [`probabilities`](@ref)`(x, est)`.
+`events` is a vector, so that `events[i]` is the event that has probability `probs[i]`.
+Naturally, the element type of `events` depends on the estimator.
+Each estimator's docstring describes what kind of events it returns.
+"""
+function probabilities_and_events end
