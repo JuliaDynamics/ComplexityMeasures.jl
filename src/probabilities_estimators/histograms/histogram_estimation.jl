@@ -10,7 +10,6 @@
 # Internal function docstring
 """
     fasthist(x::Vector_or_Dataset, binning::AbstractBinning)
-    fasthist(x::Vector_or_Dataset, ε::Union{<:Real, <:Vector})
 
 Hyper-optimized histogram calculation for `x` with rectangular binning.
 Return the probabilities `p` of each bin of the histogram, the bins
@@ -29,18 +28,20 @@ function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
     encoder = bin_encoder(x, ϵ)
     bins = encode_as_bins(x, encoder)
     hist = fasthist(bins)
-    return Probabilities(hist ./ length(x)), bins, encoder
+    return Probabilities(hist), bins, encoder
 end
 
 """
-    fasthist(x::Vector_or_Dataset)
+    fasthist(x)
 
-Count the frequencies of the unique data values in `x`.
+Count the occurrences of the unique data values in `x`.
 Return them as raw data, i.e., `Vector{Int}`.
-The actual values the frequencies correspond to are `sort!(unique(x))`, but are not
+The actual values the counts correspond to are `sort!(unique(x))`, but are not
 returned.
+
+This function works for any `x` for which `sort(x)` works.
 """
-function fasthist(x::Array_or_Dataset)
+function fasthist(x)
     L = length(x)
     hist = Vector{Int}()
     # Reserve enough space for histogram:
