@@ -13,7 +13,7 @@ The closer the spectrum is to flat, i.e., white noise, the higher the entropy. H
 you can't compare entropies of timeseries with different length, because the binning
 in spectral space depends on the length of the input.
 
-The events, for [`probabilities_and_events`](@ref) are just the frequencies in Fourier
+The events in [`probabilities_and_events`](@ref) are just the frequencies in Fourier
 space. They should be multiplied with the sampling rate of the signal, which is assumed
 to be `1`.
 

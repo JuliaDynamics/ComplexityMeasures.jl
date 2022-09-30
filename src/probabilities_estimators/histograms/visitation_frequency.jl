@@ -30,6 +30,9 @@ This allows computation of probabilities (histograms) of high-dimensional
 datasets and with small box sizes `ε` without memory overflow and with maximum performance.
 To obtain the bin information along with the probabilities, use [`binhist`](@ref).
 
+The events in [`probabilities_and_events`](@ref) are the smallest value each bin can hold
+(i.e., the corner).
+
 See also: [`RectangularBinning`](@ref).
 """
 struct ValueHistogram{RB<:AbstractBinning} <: ProbabilitiesEstimator
