@@ -63,8 +63,8 @@ Configuration options are always given as arguments to the chosen estimator.
 
 Convenience syntax which provides probabilities for `x` based on rectangular binning
 (i.e. performing a histogram). In short, the state space is divided into boxes of length
-`ε`, and formally we use `est = VisitationFrequency(RectangularBinning(ε))`
-as an estimator, see [`VisitationFrequency`](@ref).
+`ε`, and formally we use `est = ValueHistogram(RectangularBinning(ε))`
+as an estimator, see [`ValueHistogram`](@ref).
 
 
     probabilities(x::Array_or_Dataset, n::Int) → p::Probabilities

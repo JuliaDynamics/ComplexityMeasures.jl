@@ -16,7 +16,7 @@ CountOccurrences
 ## Visitation frequency (histograms)
 
 ```@docs
-VisitationFrequency
+ValueHistogram
 RectangularBinning
 ```
 

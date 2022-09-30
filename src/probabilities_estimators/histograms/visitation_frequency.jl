@@ -1,4 +1,4 @@
-export VisitationFrequency, AbstractBinning
+export ValueHistogram, VisitationFrequency, AbstractBinning
 
 """
     AbstractBinning
@@ -8,7 +8,7 @@ The supertype of all binning schemes.
 abstract type AbstractBinning end
 
 """
-    AbstractBinning
+    AbstractBinEncoder
 
 The supertype of all binning encoders, which, are used with `symbolize` to "encode"
 a data point into its bin. The function `bin_encoder(x, b)` takes in an AbstractBinning
@@ -18,10 +18,11 @@ abstract type AbstractBinEncoder end
 
 
 """
-    VisitationFrequency(b::AbstractBinning) <: ProbabilitiesEstimator
+    ValueHistogram(b::AbstractBinning) <: ProbabilitiesEstimator
 
-A probability estimator based on binning data into rectangular boxes dictated by
-the binning scheme `b` and then computing the frequencies of points in the bins.
+A probability estimator based on binning the values of the data as dictated by
+the binning scheme `b` and formally computing their histogram, i.e.,
+the frequencies of points in the bins. Alias to this is `VisitationFrequency`.
 
 This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
 and a linear space complexity (`l` for `l = dimension(x)`).
@@ -31,17 +32,17 @@ To obtain the bin information along with the probabilities, use [`binhist`](@ref
 
 See also: [`RectangularBinning`](@ref).
 """
-struct VisitationFrequency{RB<:AbstractBinning} <: ProbabilitiesEstimator
+struct ValueHistogram{RB<:AbstractBinning} <: ProbabilitiesEstimator
     binning::RB
 end
 
 """
-    ValueHistogram
-An alias for [`VisitationFrequency`](@ref).
+    VisitationFrequency
+An alias for [`ValueHistogram`](@ref).
 """
-const ValueHistogram = VisitationFrequency
+const VisitationFrequency = ValueHistogram
 
-function probabilities(x::Array_or_Dataset, est::VisitationFrequency)
+function probabilities(x::Array_or_Dataset, est::ValueHistogram)
     probabilities(x, est.binning)
 end
 function probabilities(x::Array_or_Dataset)

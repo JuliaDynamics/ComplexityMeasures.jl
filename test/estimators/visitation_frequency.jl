@@ -20,7 +20,7 @@ using Random
     for bin in binnings
         @testset "ϵ = $(bin.ϵ)" begin
             p = probabilities(x, bin)
-            est = VisitationFrequency(bin)
+            est = ValueHistogram(bin)
             p2 = probabilities(x, est)
             @test p == p2
             @test length(p) == 100
