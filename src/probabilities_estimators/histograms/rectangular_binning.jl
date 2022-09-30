@@ -23,6 +23,10 @@ struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
 end
 
+# TODO: This function must instead create dedicated stuct that will be
+# given to `encode_as_bin` function that allows a binning-agnostic
+# definition of `fasthist`.
+
 """
     minima_and_edgelengths(points,
         binning_scheme::RectangularBinning) → (Vector{Float}, Vector{Float})
@@ -76,6 +80,20 @@ function minima_and_edgelengths(points, binning_scheme::RectangularBinning)
 
     axisminima, edgelengths
 end
+
+function minima_and_edgelengths(x::AbstractVector{<:Real}, binning_scheme::RectangularBinning)
+    mini = minimum(x)
+    ϵ = binning_scheme.ϵ
+    if ϵ isa Float64
+        edgelength = todo
+    elseif ϵ isa Int
+        edgelength = todo
+    else
+        error("Invalid binning for vector input.")
+    end
+    return mini, edgelength
+end
+
 
 #=
 TODO: for @kahaaga
