@@ -26,6 +26,15 @@ function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})
     probabilities(x, RectangularBinning(ε))
 end
 
+function probabilities_and_events(x, ϵ::RectangularBinning)
+    probs, bins, encoder = fasthist(x, ϵ)
+    (mini, edgelengths) = encoder
+    sort!(unique!(bins))
+    b = map(b -> b .* edgelengths .+ mini, bins)
+    return probs, b
+end
+
+
 
 """
     bin_encoder(x, binning_scheme::RectangularBinning)

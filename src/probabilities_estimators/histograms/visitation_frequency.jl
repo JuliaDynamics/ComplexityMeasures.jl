@@ -49,6 +49,10 @@ function probabilities(x::Array_or_Dataset)
     return Probabilities(fasthist(copy(x)))
 end
 
+function probabilities_and_events(x, est::ValueHistogram)
+    return probabilities_and_events(x, est.binning)
+end
+
 include("rectangular_binning.jl")
 include("histogram_estimation.jl")
 include("count_box_visits.jl")
