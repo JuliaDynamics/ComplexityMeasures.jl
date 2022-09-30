@@ -1,21 +1,17 @@
 export RectangularBinning
 
-import DelayEmbeddings: Dataset, minima, maxima
-import StaticArrays: SVector, MVector
-
 """
     RectangularBinning(ϵ) <: AbstractBinning
 
 Rectangular box partition of state space using the scheme `ϵ`.
 Binning instructions are deduced from the type of `ϵ` as follows:
 
-1. `ϵ::Int` divides each coordinate axis into `ϵ` equal-length intervals,
-    extending the upper bound 1/100th of a bin size to ensure all points are covered.
+1. `ϵ::Int` divides each coordinate axis into `ϵ` equal-length intervals
+    that cover all data.
 2. `ϵ::Float64` divides each coordinate axis into intervals of fixed size `ϵ`, starting
     from the axis minima until the data is completely covered by boxes.
 3. `ϵ::Vector{Int}` divides the i-th coordinate axis into `ϵ[i]` equal-length
-    intervals, extending the upper bound 1/100th of a bin size to ensure all points are
-    covered.
+    intervals that cover all data.
 4. `ϵ::Vector{Float64}` divides the i-th coordinate axis into intervals of fixed size
     `ϵ[i]`, starting from the axis minima until the data is completely covered by boxes.
 """
@@ -23,18 +19,51 @@ struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
 end
 
-# TODO: This function must instead create dedicated stuct that will be
-# given to `encode_as_bin` function that allows a binning-agnostic
-# definition of `fasthist`.
-
 """
     minima_and_edgelengths(x, binning_scheme::RectangularBinning)
 
-Find the minima along each axis of the embedding, and computes appropriate
-edge lengths given a rectangular `binning_scheme`, which provide instructions on how to
-grid the space. Assumes the input is a vector of points.
+Find the minima along each dimension, and compute appropriate
+edge lengths for each dimension of `x` given a rectangular binning.
 """
-function minima_and_edgelengths(points, binning_scheme::RectangularBinning)
+function minima_and_edgelengths(x::AbstractDataset{D,T}, b::RectangularBinning) where {D, T}
+    ϵ = b.ϵ
+    mini, maxi = minmaxima(x)
+    v = ones(SVector{D,T})
+    if ϵ isa Float64
+        edgelengths = ϵ*v
+    elseif ϵ isa Vector{<:AbstractFloat}
+        edgelengths = ϵ .* v
+    elseif ϵ isa Int || ϵ isa Vector{Int}
+        edgeslengths_nonadjusted = @. (maxi - mini)/ϵ
+        # just taking the next float here should be enough
+        edgelengths = nextfloat.(edgeslengths_nonadjusted)
+        # edgelengths = ((axismaxima + (edgeslengths_nonadjusted ./ 100)) - axisminima) ./ ϵ
+    end
+end
+
+function minima_and_edgelengths(x::AbstractVector{T}, b::RectangularBinning) where {T<:Real}
+    ϵ = b.ϵ
+    mini, maxi = extrema(x)
+    if ϵ isa Float64
+        edgelength = ϵ
+    elseif ϵ isa Int
+        edgeslength_nonadjusted = (maxi - mini)/ϵ
+        # just taking the next float here should be enough
+        edgelength = nextfloat(edgeslength_nonadjusted)
+        # edgelengths = ((axismaxima + (edgeslengths_nonadjusted ./ 100)) - axisminima) ./ ϵ
+    else
+        error("Invalid ϵ for binning of a vector")
+    end
+    return mini, edgelength
+end
+
+
+
+
+###########################################################################################
+# OLD CODE! Also terrible performance, no static vectors!!! Will be deleted!
+###########################################################################################
+function minima_and_edgelengths_OLD(points, binning_scheme::RectangularBinning)
     # TODO: Ensure this function returns static vectors!!!!!!!!!!!
     ϵ = binning_scheme.ϵ
 
