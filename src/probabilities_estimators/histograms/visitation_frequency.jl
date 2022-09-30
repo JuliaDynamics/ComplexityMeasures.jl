@@ -18,10 +18,10 @@ abstract type AbstractBinEncoder end
 
 
 """
-    VisitationFrequency(r::RectangularBinning) <: ProbabilitiesEstimator
+    VisitationFrequency(b::AbstractBinning) <: ProbabilitiesEstimator
 
 A probability estimator based on binning data into rectangular boxes dictated by
-the binning scheme `r` and then computing the frequencies of points in the bins.
+the binning scheme `b` and then computing the frequencies of points in the bins.
 
 This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
 and a linear space complexity (`l` for `l = dimension(x)`).
@@ -34,6 +34,12 @@ See also: [`RectangularBinning`](@ref).
 struct VisitationFrequency{RB<:AbstractBinning} <: ProbabilitiesEstimator
     binning::RB
 end
+
+"""
+    ValueHistogram
+An alias for [`VisitationFrequency`](@ref).
+"""
+const ValueHistogram = VisitationFrequency
 
 function probabilities(x::Array_or_Dataset, est::VisitationFrequency)
     probabilities(x, est.binning)

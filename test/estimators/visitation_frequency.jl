@@ -1,4 +1,4 @@
-# TODO: Use stablerngs here
+using Entropies
 using DelayEmbeddings, Test
 using Random
 
@@ -32,7 +32,7 @@ using Random
         b = RectangularBinning(0.1) # no `nextfloat` here, so the rogue (1, 1) is in extra bin!
         p = probabilities(x, b)
         @test length(p) == 100 + 1
-        @test p[end] ≈ 1/100_000 atol = 1e-4
+        @test p[end] ≈ 1/100_000 atol = 1e-5
     end
 end
 

@@ -13,6 +13,14 @@ ProbabilitiesEstimator
 CountOccurrences
 ```
 
+## Visitation frequency (histograms)
+
+```@docs
+VisitationFrequency
+RectangularBinning
+```
+
+
 ## Permutation (symbolic)
 
 ```@docs
@@ -26,18 +34,6 @@ SpatialSymbolicPermutation
 
 ```@docs
 Dispersion
-```
-
-## Visitation frequency (binning)
-
-```@docs
-VisitationFrequency
-```
-
-### Specifying binning/boxes
-
-```@docs
-RectangularBinning
 ```
 
 ## Transfer operator (binning)
