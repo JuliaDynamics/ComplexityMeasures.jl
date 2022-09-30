@@ -1,14 +1,12 @@
 using DelayEmbeddings
 using Neighborhood
 using Distances
+using Statistics
 
 export approx_entropy
 
-# So we don't need to import StatsBase
-_std(x) = sqrt(sum((x .- mean(x)) .^ 2) / (length(x) - 1))
-
 """
-    approx_entropy(x; m = 2, τ = 1, r = 0.2 * StatsBase.std(x), base = MathConstants.e)
+    approx_entropy(x; m = 2, τ = 1, r = 0.2 * Statistics.std(x), base = MathConstants.e)
 
 Compute the approximate entropy (ApEn; Pincus, 1991)[^Pincus1991] of a univariate
 timeseries `x`, using embedding dimension (pattern length) `m`, embedding lag `τ`,
@@ -21,7 +19,7 @@ some fraction of the standard deviation of the input.
     Proceedings of the National Academy of Sciences, 88(6), 2297-2301.
 """
 function approx_entropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1,
-        r = 0.2 * _std(x), base = MathConstants.e) where T
+        r = 0.2 * std(x), base = MathConstants.e) where T
     m >= 1 || throw(ArgumentError("m must be >= 1. Got m=$(m)."))
 
     # Definition in https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7515030/
