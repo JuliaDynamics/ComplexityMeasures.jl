@@ -48,9 +48,6 @@ const VisitationFrequency = ValueHistogram
 function probabilities(x::Array_or_Dataset, est::ValueHistogram)
     probabilities(x, est.binning)
 end
-function probabilities(x::Array_or_Dataset)
-    return Probabilities(fasthist(copy(x)))
-end
 
 function probabilities_and_events(x, est::ValueHistogram)
     return probabilities_and_events(x, est.binning)
