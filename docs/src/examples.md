@@ -226,3 +226,81 @@ end
 
 You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.
+
+## Approximate entropy
+
+Here, we reproduce the Henon map example with ``R=0.8`` from Pincus (1991),
+comparing our values with relevant values from table 1 in Pincus (1991).
+
+We use `DiscreteDynamicalSystem` from `DynamicalSystems.jl` to represent the map,
+and use the `trajectory` function from the same package to iterate the map
+for different initial conditions, for multiple time series lengths.
+
+Finally, we summarize our results in box plots and compare the values to those
+obtained by Pincus (1991).
+
+```@example
+using Entropies, DynamicalSystems, CairoMakie
+
+# Equation 13 in Pincus (1991)
+function eom_henon(x, p, n)
+    R = p[1]
+    x, y = (x...,)
+    dx = R*y + 1 - 1.4*x^2
+    dy = 0.3*R*x
+
+    return SVector{2}(dx, dy)
+end
+
+function henon(; u₀ = rand(2), R = 0.8)
+    DiscreteDynamicalSystem(eom_henon, u₀, [R])
+end
+
+ts_lengths = [300, 1000, 2000, 3000]
+nreps = 100
+apens_08 = [zeros(nreps) for i = 1:length(ts_lengths)]
+
+# For some initial conditions, the Henon map as specified here blows up,
+# so we need to check for infinite values.
+containsinf(x) = any(isinf.(x))
+
+for (i, L) in enumerate(ts_lengths)
+    k = 1
+    while k <= nreps
+        sys = henon(u₀ = rand(2), R = 0.8)
+        t = trajectory(sys, L, Ttr = 5000)
+
+        if !any([containsinf(tᵢ) for tᵢ in t])
+            x, y = columns(t)
+            apen = approx_entropy(x, r = 0.05, m = 2)
+            apens_08[i][k] = apen
+            k += 1
+        end
+    end
+end
+
+fig = Figure()
+
+# Example time series
+a1 = Axis(fig[1,1]; xlabel = "Time (t)", ylabel = "Value")
+sys = henon(u₀ = [0.5, 0.1], R = 0.8)
+x, y = columns(trajectory(sys, 100, Ttr = 500))
+lines!(a1, 1:length(x), x, label = "x")
+lines!(a1, 1:length(y), y, label = "y")
+
+# Approximate entropy values, compared to those of the original paper (black dots).
+a2 = Axis(fig[2, 1]; 
+    xlabel = "Time series length (L)", 
+    ylabel = "ApEn(m = 2, r = 0.05)")
+
+# hacky boxplot, but this seems to be how it's done in Makie at the moment
+n = length(ts_lengths)
+for i = 1:n
+    boxplot!(a2, fill(ts_lengths[i], n), apens_08[i];
+        width = 200)
+end
+
+scatter!(a2, ts_lengths, [0.337, 0.385, NaN, 0.394]; 
+    label = "Pincus (1991)", color = :black)
+fig
+```
