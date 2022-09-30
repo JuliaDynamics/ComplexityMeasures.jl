@@ -10,7 +10,7 @@ Behaves identically to `Vector`.
 """
 struct Probabilities{T} <: AbstractVector{T}
     p::Vector{T}
-    function Probabilities(x::AbstractVector{T}) where T
+    function Probabilities(x::AbstractVector{T}) where T <: Real
         s = sum(x)
         if s ≠ 1
             x = x ./ s
@@ -20,20 +20,17 @@ struct Probabilities{T} <: AbstractVector{T}
 end
 
 # extend base Vector interface:
-for f in (:length, :size, :eachindex, :eltype, :lastindex, :firstindex)
-    @eval Base.$(f)(d::Probabilities) = $(f)(d.p)
+for f in (:length, :size, :eachindex, :eltype,
+    :lastindex, :firstindex, :vec, :getindex, :iterate)
+    @eval Base.$(f)(d::Probabilities, args...) = $(f)(d.p, args...)
 end
 Base.IteratorSize(::Probabilities) = Base.HasLength()
-@inline Base.iterate(d::Probabilities, i = 1) = iterate(d.p, i)
-@inline Base.getindex(d::Probabilities, i) = d.p[i]
-@inline Base.:*(d::Probabilities, x::Number) = d.p * x
 @inline Base.sum(::Probabilities{T}) where T = one(T)
 
 """
 An abstract type for probabilities estimators.
 """
 abstract type ProbabilitiesEstimator end
-const ProbEst = ProbabilitiesEstimator # shorthand
 
 """
     probabilities(x::Array_or_Dataset) → p::Probabilities
@@ -69,9 +66,9 @@ Same as the above method, but now each dimension of the data is binned into `n::
 sized bins instead of bins of length `ε::AbstractFloat`.
 """
 function probabilities end
+# See visitation_frequency.jl and rectangular_binning.jl (all in histograms folder)
+# for the dispatches of `probabilities` for the convenience methods shown above.
 
-# The histogram related stuff are defined in histogram_estimation.jl file
-probabilities(x) = fasthist(x)
 
 """
     probabilities!(s, args...)
