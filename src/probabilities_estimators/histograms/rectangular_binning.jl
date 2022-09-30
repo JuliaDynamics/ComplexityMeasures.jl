@@ -6,7 +6,7 @@ import StaticArrays: SVector, MVector
 """
     RectangularBinning(ϵ) <: AbstractBinning
 
-Instructions for creating a rectangular box partition using the binning scheme `ϵ`.
+Rectangular box partition of state space using the scheme `ϵ`.
 Binning instructions are deduced from the type of `ϵ` as follows:
 
 1. `ϵ::Int` divides each coordinate axis into `ϵ` equal-length intervals,
@@ -36,6 +36,7 @@ edge lengths given a rectangular `binning_scheme`, which provide instructions on
 grid the space. Assumes the input is a vector of points.
 """
 function get_minima_and_edgelengths(points, binning_scheme::RectangularBinning)
+    # TODO: Ensure this function returns static vectors!!!!!!!!!!!
     ϵ = binning_scheme.ϵ
 
     D = length(points[1])
@@ -79,41 +80,6 @@ function get_minima_and_edgelengths(points, binning_scheme::RectangularBinning)
 
     axisminima, edgelengths
 end
-
-"""
-    get_edgelengths(pts, binning_scheme::RectangularBinning) → Vector{Float}
-
-Return the box edge length along each axis resulting from discretizing `pts` on a
-rectangular grid specified by `binning_scheme`.
-
-# Example
-
-```julia
-using Entropies, DelayEmbeddings
-pts = Dataset([rand(5) for i = 1:1000])
-
-get_edgelengths(pts, RectangularBinning(0.6))
-get_edgelengths(pts, RectangularBinning([0.5, 0.3, 0.3, 0.4, 0.4]))
-get_edgelengths(pts, RectangularBinning(8))
-get_edgelengths(pts, RectangularBinning([10, 8, 5, 4, 22]))
-```
-"""
-function get_edgelengths end
-
-get_edgelengths(points, ϵ::RectangularBinning) = get_minima_and_edgelengths(points, ϵ)[2]
-
-# need this for type stability when getting minima and edgelength for a Dataset for fasthist
-# otherwise, we're subtracting and dividing static vectors with regular vectors, which allocates
-# all over the place.
-import StaticArrays: SVector
-
-function minima_edgelengths(points::AbstractDataset{D, T}, binning_scheme::RectangularBinning) where {D, T<:Real}
-    mini, edgelengths = get_minima_and_edgelengths(points, binning_scheme)
-    return SVector{D, T}(mini), SVector{D, Float64}(float.(edgelengths))
-end
-get_edgelengths(points::AbstractDataset, ϵ::RectangularBinning) = minima_edgelengths(points, ϵ)[2]
-
-
 
 #=
 TODO: for @kahaaga

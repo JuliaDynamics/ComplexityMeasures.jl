@@ -24,13 +24,20 @@ datasets and with small box sizes `ε` without memory overflow and with maximum 
 
 See [`RectangularBinning`](@ref) for all possible binning configurations.
 """
-function fasthist end
+function fasthist(x::Vector_or_Dataset, ε::Union{<:Real, <:Vector})
+    return fasthist(x, RectangularBinning(ε))
+end
 
+###########################################################################################
+# Concrete implementations
+###########################################################################################
 # Dataset implementation:
+# TODO: Both vector and dataset can be come one, given minima_edgelengths definition
 function fasthist(data::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:Real}
     # TODO: this allocates a lot, but is not performance critical...?
     mini, edgelengths = minima_edgelengths(data, ϵ)
     # Map each datapoint to its bin edge and sort the resulting list:
+    # (notice that this also works for vector data, and broadcasting is ignored)
     bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), data)
     sort!(bins, alg=QuickSort)
     # Reserve enough space for histogram:
