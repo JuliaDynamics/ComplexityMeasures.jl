@@ -33,54 +33,33 @@ end
 ###########################################################################################
 # Dataset implementation:
 # TODO: Both vector and dataset can be come one, given minima_edgelengths definition
+# In fact ,everything can just be using `map` with `encode_to_bin` and hen call 1-arg
+# version....
 function fasthist(data::AbstractDataset{D, T}, ϵ::RectangularBinning) where {D, T<:Real}
     # TODO: this allocates a lot, but is not performance critical...?
     mini, edgelengths = minima_edgelengths(data, ϵ)
     # Map each datapoint to its bin edge and sort the resulting list:
     # (notice that this also works for vector data, and broadcasting is ignored)
     bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), data)
-    sort!(bins, alg=QuickSort)
-    # Reserve enough space for histogram:
-    L = length(data)
-    hist = Vector{Float64}()
-    sizehint!(hist, L)
-    # Fill the histogram by counting consecutive equal bins:
-    prev_bin, count = bins[1], 0
-    for bin in bins
-        if bin == prev_bin
-            count += 1
-        else
-            push!(hist, count)
-            prev_bin = bin
-            count = 1
-        end
-    end
-    push!(hist, count)
-    # Shrink histogram capacity to fit its size:
-    sizehint!(hist, length(hist))
-    return Probabilities(hist ./ L), bins, mini, edgelengths
+    hist = fasthist(bins, false)
+    return Probabilities(hist ./ length(data)), bins, mini, edgelengths
 end
 
-# Vector implementation
-# TODO: Paste here.
-
-
 # Count occurrences implementation (direct counting of identical elements)
-
-# Frequencies are needed elsewhere in the package too, so keep in its own method.
+# Which is the same as frequencies, which is also used in the binned data
 """
     fasthist(x::Vector_or_Dataset)
 
 Equivalent with `probabilities(x)` or with `probabilities(x, CountOccurrences)`.
 See [`CountOccurrences`](@ref).
 """
-function fasthist(x)
+function fasthist(x, makecopy = true)
     L = length(x)
     hist = Vector{Float64}()
     # Reserve enough space for histogram:
     sizehint!(hist, L)
     # Sort
-    sx = sort(x, alg = QuickSort)
+    sx = makecopy ? sort(x; alg = QuickSort) : sort!(x; alg = Quicksort)
     # Fill the histogram by counting consecutive equal values:
     prev_val, count = sx[1], 0
     for val in sx
@@ -95,7 +74,7 @@ function fasthist(x)
     push!(hist, count)
     # Shrink histogram capacity to fit its size:
     sizehint!(hist, length(hist))
-    return Probabilities(hist ./ L)
+    return hist
 end
 
 ###########################################################################################

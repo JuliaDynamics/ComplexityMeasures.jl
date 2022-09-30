@@ -28,8 +28,7 @@ end
 # definition of `fasthist`.
 
 """
-    minima_and_edgelengths(points,
-        binning_scheme::RectangularBinning) → (Vector{Float}, Vector{Float})
+    minima_and_edgelengths(x, binning_scheme::RectangularBinning)
 
 Find the minima along each axis of the embedding, and computes appropriate
 edge lengths given a rectangular `binning_scheme`, which provide instructions on how to
