@@ -43,5 +43,5 @@ function probabilities(x::Array_or_Dataset)
 end
 
 include("rectangular_binning.jl")
-include("count_box_visits.jl")
 include("histogram_estimation.jl")
+include("count_box_visits.jl")

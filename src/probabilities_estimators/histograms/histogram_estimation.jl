@@ -15,14 +15,10 @@ Hyper-optimized histogram calculation for `x` with rectangular binning.
 Return the probabilities `p` of each bin of the histogram, the bins
 (in integer coordinates), and the encoder, that can map points into bins.
 
-Use `binhist` (TO BE RENAMED TO `events`) to get the bins in state space coordinates.
-
-This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
-and a linear space complexity (`l` for `l = dimension(x)`).
+For rectangular binning this method has a linearithmic time complexity
+(`n log(n)` for `n = length(x)`) and a linear space complexity (`l` for `l = dimension(x)`).
 This allows computation of histograms of high-dimensional
-datasets and with small box sizes `ε` without memory overflow and with maximum performance.
-
-See [`RectangularBinning`](@ref) for all possible binning configurations.
+datasets and with small bin sizes without memory overflow and with maximum performance.
 """
 function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
     encoder = bin_encoder(x, ϵ)
@@ -32,14 +28,18 @@ function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
 end
 
 """
-    fasthist(x)
+    fasthist(x) → c::Vector{Int}
 
-Count the occurrences of the unique data values in `x`.
+Count the occurrences `c` of the unique data values in `x`.
 Return them as raw data, i.e., `Vector{Int}`.
+
+Useful mostly when `x` contains integer or categorical data.
 The actual values the counts correspond to are `sort!(unique(x))`, but are not
 returned.
 
-This function works for any `x` for which `sort(x)` works.
+This function works for any `x` for which `sort!(x)` works.
+So, it also mutates `x`. That's why it's called with `copy` in higher level
+API when necessary.
 """
 function fasthist(x)
     L = length(x)
@@ -49,8 +49,8 @@ function fasthist(x)
     # Sort
     sort!(x; alg = QuickSort)
     # Fill the histogram by counting consecutive equal values:
-    prev_val, count = sx[1], 0
-    for val in sx
+    prev_val, count = x[1], 0
+    for val in x
         if val == prev_val
             count += 1
         else

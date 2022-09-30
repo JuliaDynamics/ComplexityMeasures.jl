@@ -39,15 +39,12 @@ function bin_encoder(x::AbstractDataset{D,T}, b::RectangularBinning) where {D, T
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
     v = ones(SVector{D,T})
-    if ϵ isa Float64
-        edgelengths = ϵ*v
-    elseif ϵ isa Vector{<:AbstractFloat}
+    if ϵ isa Float64 || ϵ isa Vector{<:AbstractFloat}
         edgelengths = ϵ .* v
     elseif ϵ isa Int || ϵ isa Vector{Int}
         edgeslengths_nonadjusted = @. (maxi - mini)/ϵ
-        # just taking the next float here should be enough
+        # just taking the next float here is enough to ensure boxes cover data
         edgelengths = nextfloat.(edgeslengths_nonadjusted)
-        # edgelengths = ((axismaxima + (edgeslengths_nonadjusted ./ 100)) - axisminima) ./ ϵ
     end
     RectangularBinEncoder(mini, edgelengths)
 end

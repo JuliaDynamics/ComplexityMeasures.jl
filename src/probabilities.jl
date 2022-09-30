@@ -10,14 +10,21 @@ Behaves identically to `Vector`.
 """
 struct Probabilities{T} <: AbstractVector{T}
     p::Vector{T}
-    function Probabilities(x::AbstractVector{T}) where T <: Real
-        s = sum(x)
-        if s ≠ 1
-            x = x ./ s
+    function Probabilities(x::AbstractVector{T}, normed = false) where T <: Real
+        if !normed # `normed` is an internal argument that skips checking the sum.
+            s = sum(x)
+            if s ≠ 1
+                x = x ./ s
+            end
         end
         return new{T}(x)
     end
 end
+function Probabilities(x::AbstractVector{<:Integer})
+    s = sum(x)
+    return Probabilities(x ./ s, true)
+end
+
 
 # extend base Vector interface:
 for f in (:length, :size, :eachindex, :eltype,
