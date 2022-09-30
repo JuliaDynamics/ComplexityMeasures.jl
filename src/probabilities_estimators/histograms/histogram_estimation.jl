@@ -46,9 +46,8 @@ function fasthist(x)
     hist = Vector{Int}()
     # Reserve enough space for histogram:
     sizehint!(hist, L)
-    # Sort
-    sort!(x; alg = QuickSort)
     # Fill the histogram by counting consecutive equal values:
+    sort!(x; alg = QuickSort)
     prev_val, count = x[1], 0
     for val in x
         if val == prev_val
@@ -68,7 +67,6 @@ end
 ###########################################################################################
 # Old code
 ###########################################################################################
-
 """
     fasthist(points, binning_scheme::RectangularBinning, dims)
 
