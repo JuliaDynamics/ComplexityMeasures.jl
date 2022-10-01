@@ -6,3 +6,9 @@
 reverse_dispersion
 distance_to_whitenoise
 ```
+
+## Sample entropy
+
+```@docs
+sample_entropy
+```
