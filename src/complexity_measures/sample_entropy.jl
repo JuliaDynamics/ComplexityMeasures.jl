@@ -27,7 +27,7 @@ function computeprobs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * Statisti
     # Pᵐ := The probability that two sequences will match for k points.
     # We only consider the first N-m*τ vectors, regardless of embedding dimension. This
     # means that the last vector is skipped in the highest-dimensional embedding.
-    # `inrangecount`` includes the point itself, so subtract 1.
+    # `inrangecount` includes the point itself, so subtract 1.
     Pᵐ = sum(inrangecount(tree, pᵢ, r) - 1 for pᵢ in Iterators.take(pts, N - m*τ))
 
     # We don't include the normalization terms here, because they cancel in the final
@@ -96,7 +96,7 @@ In these cases, `NaN` is returned.
 function sample_entropy(x::AbstractVector{T}; r::Real = 0.2 * Statistics.std(x),
         m::Int = 2, τ::Int = 1,
         metric = Chebyshev(),
-        normalize::Bool = false
+        normalize::Bool = false,
         ) where T <: Real
 
     A = computeprobs(x; m = m, τ = τ, r = r, metric = metric, k = m + 1)
@@ -118,7 +118,7 @@ function sample_entropy(x::AbstractVector{T}; r::Real = 0.2 * Statistics.std(x),
             # For τ = 1, this recovers the normalization from Richman & Moorman (2000).
             # The absolute value accounts for negative lags.
             N = length(x)
-            lowerbound = 2*((N - m*abs(τ) - 1)*(N - m*abs(τ)))^(-1)
+            lowerbound = 1/(2*(N - m*abs(τ) - 1) * (N - m*abs(τ)))
             upperbound = log(N - m*abs(τ)) + log(N - m*abs(τ) - 1) - log(2)
             sampen = scale(sampen, lowerbound, upperbound, 0.0, 1.0)
         end
