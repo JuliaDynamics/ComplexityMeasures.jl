@@ -53,7 +53,7 @@ function bin_encoder(x::AbstractVector{<:Real}, b::RectangularBinning)
     # This function always returns numbers and is type stable
     ϵ = b.ϵ
     mini, maxi = extrema(x)
-    if ϵ isa Real
+    if ϵ isa AbstractFloat
         edgelength = ϵ
     elseif ϵ isa Int
         edgeslength_nonadjusted = (maxi - mini)/ϵ
@@ -63,7 +63,7 @@ function bin_encoder(x::AbstractVector{<:Real}, b::RectangularBinning)
     else
         error("Invalid ϵ for binning of a vector")
     end
-    RectangularBinEncoder(mini, edgelengths)
+    RectangularBinEncoder(mini, edgelength)
 end
 
 struct RectangularBinEncoder{M, E} <: AbstractBinEncoder
