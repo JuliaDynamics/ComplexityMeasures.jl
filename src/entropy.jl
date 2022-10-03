@@ -32,6 +32,7 @@ entropies". Currently implemented types are:
 - [`Tsallis`](@ref).
 - [`Shannon`](@ref), which is a subcase of the above two in the limit `q → 1`.
 - [`Curado`](@ref).
+- [`StretchedExponential`](@ref).
 
 The entropy (first argument) is optional: if not given, `Shannon()` is used instead.
 

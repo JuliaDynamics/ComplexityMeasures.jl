@@ -24,6 +24,8 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("entropies/shannon.jl")
     testfile("entropies/tsallis.jl")
     testfile("entropies/curado.jl")
+    testfile("entropies/stretched_exponential.jl")
+    
     testfile("entropies/nearest_neighbors_direct.jl")
 
     # Various

@@ -146,6 +146,8 @@ fig
 
 ## Properties of different entropies
 
+Here, we show the sensitivity of the various entropies to variations in their parameters.
+
 ### Curado entropy
 
 Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
@@ -163,12 +165,39 @@ pp = [p[1] for p in ps]
 for (i, b) in enumerate(bs)
     lines!(ax, pp, hs[i], label = "b=$b", color = Cycled(i))
 end
-axislegend(ax)
 fig
 ```
 
 [^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
     entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
+
+### Stretched exponential entropy
+
+Here, we reproduce the example from Anteneodo & Plastino (1999)[^Anteneodo1999], showing
+how the stretched exponential entropy changes as function of the parameter `η` for a range
+of two-element probability distributions given by
+`Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
+
+```@example stretched_exponential_example
+using Entropies, SpecialFunctions, CairoMakie
+ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
+ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
+
+hs_norm = [[entropy(StretchedExponential( η = η), p) / gamma((η + 1)/η) for p in ps] for η in ηs]
+fig = Figure()
+ax = Axis(fig[1,1]; xlabel = "p", ylabel = "H(p)")
+pp = [p[1] for p in ps]
+
+for (i, η) in enumerate(ηs)
+    lines!(ax, pp, hs_norm[i], label = "η=$η")
+end
+axislegend(ax)
+fig
+```
+
+[^Anteneodo1999]: Anteneodo, C., & Plastino, A. R. (1999). Maximum entropy approach to
+    stretched exponential probability distributions. Journal of Physics A: Mathematical
+    and General, 32(7), 1089.
 
 ## [Dispersion and reverse dispersion entropy](@id dispersion_examples)
 
