@@ -128,38 +128,7 @@ end
 
 inds_in_terms_of_unique(x::AbstractDataset) = inds_in_terms_of_unique(x.data)
 
-"""
-    encode_as_bin(point, refpoint, edgelengths) → Vector{Int}
 
-Encode a point into its integer bin labels relative to some `refpoint`
-(always counting from lowest to highest magnitudes), given a set of box
-`edgelengths` (one for each axis). The first bin on the positive side of
-the reference point is indexed with 0, and the first bin on the negative
-side of the reference point is indexed with -1.
-
-## Example
-
-```julia
-using Entropies
-
-refpoint = [0, 0, 0]
-steps = [0.2, 0.2, 0.3]
-encode_as_bin(rand(3), refpoint, steps)
-```
-"""
-function encode_as_bin end
-
-function encode_as_bin(point::AbstractVector{T}, refpoint, edgelengths) where {T <: Real}
-    floor.(Int, (point .- refpoint) ./ edgelengths)
-end
-
-function encode_as_bin(points::Vector{T}, refpoint, edgelengths) where {T <: Union{Vector, SVector, MVector}}
-    [encode_as_bin(points[i], refpoint, edgelengths) for i = 1:length(points)]
-end
-
-function encode_as_bin(points::AbstractDataset{dim, T}, refpoint, edgelengths) where {dim, T}
-    [encode_as_bin(points[i], refpoint, edgelengths) for i in eachindex(points)]
-end
 """
     TransferOperatorApproximationRectangular(to, ϵ::RectangularBinning, mini, edgelengths,
         bins, sort_idxs)
@@ -216,11 +185,10 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
-    bin_encoder = bin_encoder(pts, ϵ)
-    mini, edgelengths = bin_encoder.mini, bin_encoder.edgelengths
+    encoder = bin_encoder(pts, ϵ)
 
     # The L points visits a total of L bins, which are the following bins:
-    visited_bins = encode_as_bin(pts, mini, edgelengths)
+    visited_bins = encode_as_bins(x, encoder)
     sort_idxs = sortperm(visited_bins)
 
     # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
@@ -323,9 +291,9 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
     # Compute the coordinates of the visited bins. bins[i] corresponds to the i-th
     # row/column of the transfer operator
     unique!(visited_bins)
-    bins = [β .* edgelengths .+ mini for β in visited_bins]
+    bins = [β .* encoder.edgelengths .+ encoder.mini for β in visited_bins]
 
-    TransferOperatorApproximationRectangular(TO, ϵ, mini, edgelengths, bins,
+    TransferOperatorApproximationRectangular(TO, ϵ, encoder.mini, encoder.edgelengths, bins,
         sort_idxs, visitors)
 end
 
