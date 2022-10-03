@@ -165,6 +165,7 @@ pp = [p[1] for p in ps]
 for (i, b) in enumerate(bs)
     lines!(ax, pp, hs[i], label = "b=$b", color = Cycled(i))
 end
+axislegend(ax)
 fig
 ```
 
