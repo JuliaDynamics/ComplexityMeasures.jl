@@ -5,7 +5,7 @@ export StretchedExponential
 
 """
     StretchedExponential <: Entropy
-    StretchedExponential(η = 2.0, base = 2)
+    StretchedExponential(; η = 2.0, base = 2)
 
 The stretched exponential, or Anteneodo-Plastino, entropy (Anteneodo &
 Plastino, 1999[^Anteneodo1999]), used with [`entropy`](@ref) to compute
