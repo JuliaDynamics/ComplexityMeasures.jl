@@ -216,7 +216,8 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
-    mini, edgelengths = minima_edgelengths(pts, ϵ)
+    bin_encoder = bin_encoder(pts, ϵ)
+    mini, edgelengths = bin_encoder.mini, bin_encoder.edgelengths
 
     # The L points visits a total of L bins, which are the following bins:
     visited_bins = encode_as_bin(pts, mini, edgelengths)
