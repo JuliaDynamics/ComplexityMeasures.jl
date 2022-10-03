@@ -156,20 +156,19 @@ of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
 ```@example stretched_exponential_example
+using Entropies, SpecialFunctions, CairoMakie
 ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
 
-nf = maxentropy_stretched_exponential
-hs_norm = [[entropy_stretched_exponential(p, η = η) / gamma((η + 1)/η) for p in ps] for η in ηs]
+hs_norm = [[entropy(StretchedExponential( η = η), p) / gamma((η + 1)/η) for p in ps] for η in ηs]
 fig = Figure()
-ax = Axis(fig[1,1]; ylabel = "x")
+ax = Axis(fig[1,1]; xlabel = "p", ylabel = "H(p)")
+pp = [p[1] for p in ps]
 
-for h in hs_norm
-    lines!(ax, t, x; color = Cycled(1), label = "h=$(h=round(h_x, sigdigits = 5))");
+for (i, η) in enumerate(ηs)
+    lines!(ax, pp, hs_norm[i], label = "η=$η")
 end
-CairoMakie.plot([p[1] for p in ps], hs_norm, 
-    labels = permutedims(["η=$η" for η in ηs]))
-CairoMakie.xlabel!("p"); CairoMakie.ylabel!("H(p)")
+fig
 ```
 
 [^Anteneodo1999]: Anteneodo, C., & Plastino, A. R. (1999). Maximum entropy approach to
