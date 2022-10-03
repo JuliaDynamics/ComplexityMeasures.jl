@@ -168,6 +168,7 @@ pp = [p[1] for p in ps]
 for (i, η) in enumerate(ηs)
     lines!(ax, pp, hs_norm[i], label = "η=$η")
 end
+axislegend(ax)
 fig
 ```
 
