@@ -34,7 +34,7 @@ Base.@kwdef struct StretchedExponential{Q, B} <: Entropy
     end
 end
 
-function _se(pᵢ, η, base)
+function stretched_exponential(pᵢ, η, base)
     x = (η + 1)/η
     # Note gamma_inc(a, b) returns (lower, upper) incomplete gamma functions,
     # scaled by 1/Γ(b), so we multiply by gamma(x) to obtain the non-normalized
@@ -48,7 +48,7 @@ end
 
 function entropy(e::StretchedExponential, prob::Probabilities)
     probs = Iterators.filter(!iszero, prob.p)
-    return sum(_se(pᵢ, e.η, e.base) for pᵢ in probs)
+    return sum(stretched_exponential(pᵢ, e.η, e.base) for pᵢ in probs)
 end
 
 function maximum(e::StretchedExponential, L::Int)
