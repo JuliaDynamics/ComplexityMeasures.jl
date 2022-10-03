@@ -16,9 +16,10 @@ with `b ∈ ℛ, b > 0`, where the terms outside the sum ensures that ``H_C(0) =
 [^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
     entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
 """
-struct Curado{B} <: Entropy
-    b::B
-    function Curado(; b::B = 1.0) where B <: Real
+Base.@kwdef struct Curado{B} <: Entropy
+    b::B = 1.0
+
+    function Curado(b::B) where B <: Real
         b > 0 || throw(ArgumentError("Need b > 0. Got b=$(b)."))
         return new{B}(b)
     end
