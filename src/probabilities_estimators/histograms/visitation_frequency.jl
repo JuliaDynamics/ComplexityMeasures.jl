@@ -8,16 +8,6 @@ The supertype of all binning schemes.
 abstract type AbstractBinning end
 
 """
-    AbstractBinEncoder
-
-The supertype of all binning encoders, which are used with `symbolize` to "encode"
-a data point into its bin. The function `bin_encoder(x, b)` takes in an AbstractBinning
-and returns the encoder.
-"""
-abstract type AbstractBinEncoder end
-
-
-"""
     ValueHistogram(b::AbstractBinning) <: ProbabilitiesEstimator
 
 A probability estimator based on binning the values of the data as dictated by
@@ -46,13 +36,10 @@ const VisitationFrequency = ValueHistogram
 function probabilities(x::Array_or_Dataset, est::ValueHistogram)
     probabilities(x, est.binning)
 end
-function probabilities(x::Array_or_Dataset)
-    return Probabilities(fasthist(copy(x)))
-end
-
-include("rectangular_binning.jl")
-include("histogram_estimation.jl")
 
 function probabilities_and_events(x, est::ValueHistogram)
     return probabilities_and_events(x, est.binning)
 end
+
+include("rectangular_binning.jl")
+include("histogram_estimation.jl")

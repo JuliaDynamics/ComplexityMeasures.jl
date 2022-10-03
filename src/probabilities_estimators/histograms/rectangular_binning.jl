@@ -92,10 +92,11 @@ function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
     hist = fasthist(bins)
     return Probabilities(hist), bins, encoder
 end
+
 function probabilities_and_events(x, ϵ::RectangularBinning)
     probs, bins, encoder = fasthist(x, ϵ)
-    (mini, edgelengths) = encoder
-    sort!(unique!(bins))
-    b = map(b -> b .* edgelengths .+ mini, bins)
-    return probs, b
+    (; mini, edgelengths) = encoder
+    unique!(bins) # `bins` is already sorted from `fasthist`
+    events = map(b -> b .* edgelengths .+ mini, bins)
+    return probs, events
 end
