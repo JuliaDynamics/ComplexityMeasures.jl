@@ -23,6 +23,12 @@ Tsallis
 Shannon
 ```
 
+## Curado entropy
+
+```@docs
+Curado
+```
+
 ## Stretched exponental entropy
 
 ```@docs

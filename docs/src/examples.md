@@ -148,6 +148,30 @@ fig
 
 Here, we show the sensitivity of the various entropies to variations in their parameters.
 
+### Curado entropy
+
+Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
+how the [Curado](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
+`Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
+
+```@example stretched_exponential_example
+using Entropies, CairoMakie
+bs = [1.0, 1.5, 2.0, 3.0, 4.0, 10.0]
+ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
+hs = [[entropy(Curado(; b = b), p) for p in ps] for b in bs]
+fig = Figure()
+ax = Axis(fig[1,1]; xlabel = "p", ylabel = "H(p)")
+pp = [p[1] for p in ps]
+for (i, b) in enumerate(bs)
+    lines!(ax, pp, hs[i], label = "b=$b", color = Cycled(i))
+end
+axislegend(ax)
+fig
+```
+
+[^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
+    entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
+
 ### Stretched exponential entropy
 
 Here, we reproduce the example from Anteneodo & Plastino (1999)[^Anteneodo1999], showing
