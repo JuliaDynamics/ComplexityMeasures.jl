@@ -23,17 +23,17 @@ Tsallis
 Shannon
 ```
 
+## Stretched exponental entropy
+
+```@docs
+StretchedExponential
+```
+
 ## Normalized entropies
 
 ```@docs
 maximum(::Entropy, ::Any, ::ProbabilitiesEstimator)
 entropy_normalized
-```
-
-## Stretched exponental entropy
-
-```@docs
-entropy_stretched_exponential
 ```
 
 ## Indirect entropies
