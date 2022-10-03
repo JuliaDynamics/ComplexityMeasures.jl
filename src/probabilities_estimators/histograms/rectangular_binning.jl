@@ -74,7 +74,7 @@ end
 # This function is the same as `symbolize`.
 function encode_as_bins(x::Vector_or_Dataset, b::RectangularBinEncoder)
     (; mini, edgelengths) = b
-    # Map each datapoint to its bin edge (hence, we are symbolizing the x here)
+    # Map each data point to its bin edge (hence, we are symbolizing each xᵢ ∈ x here)
     # (notice that this also works for vector x, and broadcasting is ignored)
     bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), x)
     return bins
