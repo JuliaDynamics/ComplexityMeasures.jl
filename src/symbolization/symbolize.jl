@@ -1,5 +1,8 @@
-export symbolize
+export symbolize, SymbolizationScheme
 
+"""
+An abstract type for symbolization schemes.
+"""
 abstract type SymbolizationScheme end
 
 """

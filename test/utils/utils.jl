@@ -1,4 +1,4 @@
 @testset "Utility methods" begin
-    testfile("binning.jl")
+    testfile("fasthist.jl")
     testfile("symbolization.jl")
 end
