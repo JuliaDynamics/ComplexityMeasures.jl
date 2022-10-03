@@ -27,29 +27,39 @@ function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})
 end
 
 
+
 """
-    bin_encoder(x, binning_scheme::RectangularBinning) → r::RectangularBinEncoder
+    RectangularBinEncoder(x, binning::RectangularBinning) <: SymbolizationScheme
 
 Find the minima along each dimension, and compute appropriate
 edge lengths for each dimension of `x` given a rectangular binning.
-Put them in a `RectangularBinEncoder` that can be then used to map points into bins.
+Put them in an `RectangularBinEncoder` that can be then used to map points into bins
+via [`symbolize`](@ref).
 """
-function bin_encoder(x::AbstractDataset{D,T}, b::RectangularBinning) where {D, T}
+struct RectangularBinEncoder{M, E} <: SymbolizationScheme
+    binning::RectangularBinning # type specialization isn't useful here; we don't use this.
+    mini::M # fields are either static vectors or numbers
+    edgelengths::E
+end
+
+function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning) where {D, T}
     # This function always returns static vectors and is type stable
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
     v = ones(SVector{D,T})
-    if ϵ isa Float64 || ϵ isa Vector{<:AbstractFloat}
+    if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
         edgelengths = ϵ .* v
     elseif ϵ isa Int || ϵ isa Vector{Int}
         edgeslengths_nonadjusted = @. (maxi - mini)/ϵ
         # just taking the next float here is enough to ensure boxes cover data
         edgelengths = nextfloat.(edgeslengths_nonadjusted)
+    else
+        error("Invalid ϵ for binning of a dataset")
     end
-    RectangularBinEncoder(mini, edgelengths)
+    RectangularBinEncoder(b, mini, edgelengths)
 end
 
-function bin_encoder(x::AbstractVector{<:Real}, b::RectangularBinning)
+function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning)
     # This function always returns numbers and is type stable
     ϵ = b.ϵ
     mini, maxi = extrema(x)
@@ -57,28 +67,28 @@ function bin_encoder(x::AbstractVector{<:Real}, b::RectangularBinning)
         edgelength = ϵ
     elseif ϵ isa Int
         edgeslength_nonadjusted = (maxi - mini)/ϵ
-        # just taking the next float here should be enough
+        # just taking the next float here is enough
         edgelength = nextfloat(edgeslength_nonadjusted)
-        # edgelengths = ((axismaxima + (edgeslengths_nonadjusted ./ 100)) - axisminima) ./ ϵ
     else
         error("Invalid ϵ for binning of a vector")
     end
-    RectangularBinEncoder(mini, edgelength)
+    RectangularBinEncoder(b, mini, edgelength)
 end
 
-struct RectangularBinEncoder{M, E} <: AbstractBinEncoder
-    mini::M # fields are either static vectors or numbers
-    edgelengths::E
-end
-
-# This function is the same as `symbolize`.
-function encode_as_bins(x::Vector_or_Dataset, b::RectangularBinEncoder)
+# This function encodes the points of x into bins, i.e., it symbolizes
+function symbolize(x::Vector_or_Dataset, b::RectangularBinEncoder)
     (; mini, edgelengths) = b
     # Map each data point to its bin edge (hence, we are symbolizing each xᵢ ∈ x here)
-    # (notice that this also works for vector x, and broadcasting is ignored)
     bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), x)
     return bins
 end
-function symbolize(x::Vector_or_Dataset, b::RectangularBinEncoder)
-    return encode_as_bins(x, b)
+
+
+
+# Internal function method extension for `probabilities`
+function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+    encoder = RectangularBinEncoder(x, ϵ)
+    bins = symbolize(x, encoder)
+    hist = fasthist(bins)
+    return Probabilities(hist), bins, encoder
 end

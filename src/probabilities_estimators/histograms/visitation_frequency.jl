@@ -38,6 +38,7 @@ end
 
 """
     VisitationFrequency
+
 An alias for [`ValueHistogram`](@ref).
 """
 const VisitationFrequency = ValueHistogram
