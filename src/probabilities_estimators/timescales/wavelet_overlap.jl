@@ -11,8 +11,8 @@ according to Rosso et al. (2001)[^Rosso2001].
 
 The probability `p[i]` is the relative energy for the `i`-th wavelet scale.
 To obtain a better understanding of what these probabilities mean, we prepared
-a notebook you can [view online](
-https://github.com/kahaaga/waveletentropy_example/blob/main/wavelet_entropy_example.ipynb).
+a notebook you can
+[view online](https://github.com/kahaaga/waveletentropy_example/blob/main/wavelet_entropy_example.ipynb).
 As such, this estimator only works for timeseries input.
 
 By default the wavelet `Wavelets.WT.Daubechies{12}()`

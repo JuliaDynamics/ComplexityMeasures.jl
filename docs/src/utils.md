@@ -14,8 +14,6 @@ symbolize
 
 ### Symbolization schemes
 
-The following symbolization schemes are currently implemented.
-
 ```@docs
 GaussianSymbolization
 OrdinalPattern
@@ -27,8 +25,8 @@ OrdinalPattern
 Entropies.encode_motif
 ```
 
-#### [Maximum entropy](@id maximum_entropy)
+## Alphabet length
 
 ```@docs
-maxentropy_stretched_exponential
+alphabet_length
 ```

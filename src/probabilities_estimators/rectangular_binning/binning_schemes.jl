@@ -23,7 +23,6 @@ abstract type RectangularBinningScheme <: BinningScheme end
 Instructions for creating a rectangular box partition using the binning scheme `ϵ`.
 Binning instructions are deduced from the type of `ϵ`.
 
-
 Rectangular binnings may be automatically adjusted to the data in which the `RectangularBinning`
 is applied, as follows:
 

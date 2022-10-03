@@ -1,7 +1,8 @@
-# Complexity measures
+# [Complexity measures](@id complexity_measures)
 
-## Sample entropy
+## Reverse dispersion entropy
 
-## Approximate entropy
-
-## Disequilibrium
+```@docs
+reverse_dispersion
+distance_to_whitenoise
+```
