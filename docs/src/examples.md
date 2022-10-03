@@ -243,9 +243,9 @@ obtained by Pincus (1991).
 using Entropies, DynamicalSystems, CairoMakie
 
 # Equation 13 in Pincus (1991)
-function eom_henon(x, p, n)
+function eom_henon(u, p, n)
     R = p[1]
-    x, y = (x...,)
+    x, y = u
     dx = R*y + 1 - 1.4*x^2
     dy = 0.3*R*x
 
