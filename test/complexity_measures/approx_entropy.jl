@@ -1,16 +1,42 @@
+using DynamicalSystemsBase
+using Statistics
 
 @test_throws ArgumentError approx_entropy(Dataset(rand(100, 3)))
 
-# "Analytical tests" - compare with results from the `approximateEntropy` function
-# in MATLAB (which uses natural logarithms)
-x = [0, 1, 0, 1, 0, 1, 0] # A regular signal that should have approx entropy close to zero
-m, τ, r  = 2, 2, 0.5
-res_x_matlab = -0.036497498714443
-res_x_ent = approx_entropy(x; r, m, τ, base = MathConstants.e)
-@test round(res_x_ent, digits = 5) == round(res_x_matlab, digits = 5)
+# Here, we try to reproduce Pincus' results within reasonable accuracy
+# for the Henon map. He doesn't give initial conditions, so we just check that our
+#  results +- 1σ approaches what he gets for this system for time series length 1000).
+# ---------------------------------------------------------------------------
+# Equation 13 in Pincus (1991)
+function eom_henon(u, p, n)
+    R = p[1]
+    x, y = (u...,)
+    dx = R*y + 1 - 1.4*x^2
+    dy = 0.3*R*x
 
-y = repeat([collect(-0.5:0.1:0.5); collect(0.4:-0.1:-0.4)], 5)
-m, τ, r = 2, 1, 0.3
-res_y_matlab = 0.195753687224351
-res_y_ent = approx_entropy(y; r, m, τ, base = MathConstants.e)
-@test round(res_y_ent, digits = 5) == round(res_y_matlab, digits = 5)
+    return SVector{2}(dx, dy)
+end
+henon(; u₀ = rand(2), R = 0.8) = DiscreteDynamicalSystem(eom_henon, u₀, [R])
+
+# For some initial conditions, the Henon map as specified here blows up,
+# so we need to check for infinite values.
+containsinf(x) = any(isinf.(x))
+
+function calculate_hs(; nreps = 50, L = 1000)
+    # Calculate approx entropy for 50 different initial conditions
+    hs = zeros(nreps)
+    k = 1
+    while k <= nreps
+        sys = henon(u₀ = rand(2), R = 0.8)
+        t = trajectory(sys, L, Ttr = 5000)
+
+        if !any([containsinf(tᵢ) for tᵢ in t])
+            x = t[:, 1]
+            hs[k] = approx_entropy(x, r = 0.05, m = 2)
+            k += 1
+        end
+    end
+    return hs
+end
+hs = calculate_hs()
+@test mean(hs) - std(hs) <= 0.385 <= mean(hs) + std(hs)
