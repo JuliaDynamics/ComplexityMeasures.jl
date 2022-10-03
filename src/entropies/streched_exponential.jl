@@ -24,14 +24,14 @@ function, and ``\\Gamma(\\cdot) = \\Gamma(\\cdot, 0)`` is the Gamma function. Re
     stretched exponential probability distributions. Journal of Physics A: Mathematical
     and General, 32(7), 1089.
 """
-struct StretchedExponential{Q, B} <: Entropy
-    η::Q
-    base::B
-end
+Base.@kwdef struct StretchedExponential{Q, B} <: Entropy
+    η::Q = 2.0
+    base::B = 2
 
-function StretchedExponential(; η = 2, base = 2)
-    η >= 0 || throw(ArgumentError("Need η ≥ 0. Got η=$(η)."))
-    StretchedExponential(η, base)
+    function StretchedExponential(η::Q, base::B) where {Q <: Real, B <: Real}
+        η >= 0 || throw(ArgumentError("Need η ≥ 0. Got η=$(η)."))
+        new{Q, B}(η, base)
+    end
 end
 
 function _se(pᵢ, η, base)
