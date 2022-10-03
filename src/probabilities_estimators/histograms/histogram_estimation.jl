@@ -28,11 +28,11 @@ function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
 end
 
 """
-    fasthist(x, eltype::T = Int) where T <: Number → c::Vector{Q}
+    fasthist(x) → c::Vector{Int}
 
 Count the occurrences `c` of the unique data values in `x`,
 
-Returns a `Vector{T}`, where `cᵢ ∈ c` is the number of times the value
+Returns a `Vector{Int}`, where `cᵢ ∈ c` is the number of times the value
 `sort!(unique(x))[i]` occurs. Hence, this method is useful mostly when
 `x` contains integer or categorical data. The sorted values themselves
 are not returned - only their frequencies.
@@ -41,9 +41,9 @@ Prior to counting, `x` is sorted, so this function also mutates `x`.
 Therefore, it is called with `copy` in higher level API when necessary.
 This function works for any `x` for which `sort!(x)` works.
 """
-function fasthist(x, eltype::Type{T} = Int) where T <: Number
+function fasthist(x)
     L = length(x)
-    hist = Vector{T}()
+    hist = Vector{Int}()
     # Reserve enough space for histogram:
     sizehint!(hist, L)
     # Fill the histogram by counting consecutive equal values:
@@ -51,11 +51,11 @@ function fasthist(x, eltype::Type{T} = Int) where T <: Number
     prev_val, count = x[1], 0
     for val in x
         if val == prev_val
-            count += one(eltype)
+            count += 1
         else
             push!(hist, count)
             prev_val = val
-            count = one(eltype)
+            count = 1
         end
     end
 
