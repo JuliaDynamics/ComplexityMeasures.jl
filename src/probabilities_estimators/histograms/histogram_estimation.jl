@@ -30,16 +30,16 @@ end
 """
     fasthist(x) → c::Vector{Int}
 
-Count the occurrences `c` of the unique data values in `x`.
-Return them as raw data, i.e., `Vector{Int}`.
+Count the occurrences `c` of the unique data values in `x`,
 
-Useful mostly when `x` contains integer or categorical data.
-The actual values the counts correspond to are `sort!(unique(x))`, but are not
-returned.
+Returns a `Vector{Int}`, where `cᵢ ∈ c` is the number of times the value
+`sort!(unique(x))[i]` occurs. Hence, this method is useful mostly when
+`x` contains integer or categorical data. The sorted values themselves
+are not returned - only their frequencies.
 
+Prior to counting, `x` is sorted, so this function also mutates `x`.
+Therefore, it is called with `copy` in higher level API when necessary.
 This function works for any `x` for which `sort!(x)` works.
-So, it also mutates `x`. That's why it's called with `copy` in higher level
-API when necessary.
 """
 function fasthist(x)
     L = length(x)
