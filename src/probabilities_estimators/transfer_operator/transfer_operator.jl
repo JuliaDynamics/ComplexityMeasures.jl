@@ -188,7 +188,7 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
     encoder = bin_encoder(pts, ϵ)
 
     # The L points visits a total of L bins, which are the following bins:
-    visited_bins = encode_as_bins(x, encoder)
+    visited_bins = encode_as_bins(pts, encoder)
     sort_idxs = sortperm(visited_bins)
 
     # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
