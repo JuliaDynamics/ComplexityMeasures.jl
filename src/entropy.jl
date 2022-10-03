@@ -31,6 +31,7 @@ entropies". Currently implemented types are:
 - [`Renyi`](@ref).
 - [`Tsallis`](@ref).
 - [`Shannon`](@ref), which is a subcase of the above two in the limit `q → 1`.
+- [`Curado`](@ref).
 
 The entropy (first argument) is optional: if not given, `Shannon()` is used instead.
 
