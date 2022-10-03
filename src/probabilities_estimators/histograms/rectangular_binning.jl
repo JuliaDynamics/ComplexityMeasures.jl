@@ -28,7 +28,7 @@ end
 
 
 """
-    bin_encoder(x, binning_scheme::RectangularBinning)
+    bin_encoder(x, binning_scheme::RectangularBinning) → r::RectangularBinEncoder
 
 Find the minima along each dimension, and compute appropriate
 edge lengths for each dimension of `x` given a rectangular binning.
