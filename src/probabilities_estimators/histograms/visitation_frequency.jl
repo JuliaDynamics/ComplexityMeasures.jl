@@ -51,4 +51,3 @@ end
 
 include("rectangular_binning.jl")
 include("histogram_estimation.jl")
-include("count_box_visits.jl")
