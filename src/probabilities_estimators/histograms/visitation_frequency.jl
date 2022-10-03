@@ -30,9 +30,6 @@ This allows computation of probabilities (histograms) of high-dimensional
 datasets and with small box sizes `ε` without memory overflow and with maximum performance.
 To obtain the bin information along with the probabilities, use [`binhist`](@ref).
 
-The events in [`probabilities_and_events`](@ref) are the smallest value each bin can hold
-(i.e., the corner).
-
 See also: [`RectangularBinning`](@ref).
 """
 struct ValueHistogram{RB<:AbstractBinning} <: ProbabilitiesEstimator
@@ -41,6 +38,7 @@ end
 
 """
     VisitationFrequency
+
 An alias for [`ValueHistogram`](@ref).
 """
 const VisitationFrequency = ValueHistogram
@@ -48,11 +46,13 @@ const VisitationFrequency = ValueHistogram
 function probabilities(x::Array_or_Dataset, est::ValueHistogram)
     probabilities(x, est.binning)
 end
-
-function probabilities_and_events(x, est::ValueHistogram)
-    return probabilities_and_events(x, est.binning)
+function probabilities(x::Array_or_Dataset)
+    return Probabilities(fasthist(copy(x)))
 end
 
 include("rectangular_binning.jl")
 include("histogram_estimation.jl")
-include("count_box_visits.jl")
+
+function probabilities_and_events(x, est::ValueHistogram)
+    return probabilities_and_events(x, est.binning)
+end

@@ -1,5 +1,5 @@
 using Entropies
-using DelayEmbeddings, Test
+using Entropies.DelayEmbeddings, Test
 using Random
 
 @testset "Rectangular binning" begin
@@ -33,6 +33,22 @@ using Random
         p = probabilities(x, b)
         @test length(p) == 100 + 1
         @test p[end] ≈ 1/100_000 atol = 1e-5
+    end
+
+    @testset "vector" begin
+        x = rand(Random.MersenneTwister(1234), 100_000)
+        push!(x, 0, 1)
+        n = 10 # boxes cover 0 - 1 in steps of slightly more than 0.1
+        ε = nextfloat(0.1) # this guarantees that we get the same as the `n` above!
+        binnings = RectangularBinning.((n, ε))
+        for bin in binnings
+            p = probabilities(x, bin)
+            est = ValueHistogram(bin)
+            p2 = probabilities(x, est)
+            @test p == p2
+            @test length(p) == 10
+            @test all(e -> 0.09 ≤ e ≤ 0.11, p)
+        end
     end
 end
 
