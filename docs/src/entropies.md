@@ -23,6 +23,12 @@ Tsallis
 Shannon
 ```
 
+## Stretched exponental entropy
+
+```@docs
+StretchedExponential
+```
+
 ## Normalized entropies
 
 ```@docs
