@@ -51,11 +51,6 @@ function entropy(e::StretchedExponential, prob::Probabilities)
     return sum(_se(pᵢ, e.η, e.base) for pᵢ in probs)
 end
 
-function entropy(e::StretchedExponential, x, est::ProbabilitiesEstimator; kwargs...)
-    p = probabilities(x, est)
-    entropy(e, p; kwargs...)
-end
-
 function maximum(e::StretchedExponential, L::Int)
     x = (e.η + 1)/e.η
     Γx = gamma(x)
