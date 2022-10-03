@@ -1,5 +1,7 @@
 # TODO: This needs its own docpage I feel.
 using DelayEmbeddings, SparseArrays
+using StaticArrays
+
 include("GroupSlices.jl")
 
 export
@@ -8,7 +10,7 @@ export
     transfermatrix
 
 """
-    TransferOperator(ϵ::RectangularBinning) <: BinningProbabilitiesEstimator
+    TransferOperator(ϵ::RectangularBinning) <: ProbabilitiesEstimator
 
 A probability estimator based on binning data into rectangular boxes dictated by
 the binning scheme `ϵ`, then approxmating the transfer (Perron-Frobenius) operator
@@ -69,7 +71,7 @@ See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
 
 [^Diego2019]: Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
 """
-struct TransferOperator{R} <: BinningProbabilitiesEstimator
+struct TransferOperator{R} <: ProbabilitiesEstimator
     ϵ::R
 end
 
@@ -125,6 +127,7 @@ function inds_in_terms_of_unique(x, sorted::Bool)
 end
 
 inds_in_terms_of_unique(x::AbstractDataset) = inds_in_terms_of_unique(x.data)
+
 
 """
     TransferOperatorApproximationRectangular(to, ϵ::RectangularBinning, mini, edgelengths,
@@ -182,10 +185,10 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
-    mini, edgelengths = Entropies.minima_edgelengths(pts, ϵ)
+    encoder = bin_encoder(pts, ϵ)
 
     # The L points visits a total of L bins, which are the following bins:
-    visited_bins = Entropies.encode_as_bin(pts, mini, edgelengths)
+    visited_bins = encode_as_bins(pts, encoder)
     sort_idxs = sortperm(visited_bins)
 
     # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
@@ -288,9 +291,9 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
     # Compute the coordinates of the visited bins. bins[i] corresponds to the i-th
     # row/column of the transfer operator
     unique!(visited_bins)
-    bins = [β .* edgelengths .+ mini for β in visited_bins]
+    bins = [β .* encoder.edgelengths .+ encoder.mini for β in visited_bins]
 
-    TransferOperatorApproximationRectangular(TO, ϵ, mini, edgelengths, bins,
+    TransferOperatorApproximationRectangular(TO, ϵ, encoder.mini, encoder.edgelengths, bins,
         sort_idxs, visitors)
 end
 
