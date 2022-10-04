@@ -1,4 +1,5 @@
 export RectangularBinning
+export RectangularBinEncoder
 
 """
     RectangularBinning(ϵ) <: AbstractBinning
