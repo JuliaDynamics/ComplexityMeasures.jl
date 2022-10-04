@@ -24,5 +24,11 @@ using Entropies, Test
         est = PowerSpectrum()
         ents = [entropy(Renyi(), w, est) for w in (x,y,z)]
         @test ents[1] < ents[2] < ents[3]
+        # Test event stuff (analytically, using sine wave)
+        probs, events = probabilities_and_events(x, est)
+        @test length(events) == length(probs) == 501
+        @test events[1] ≈ 0 atol=1e-16 # 0 frequency, i.e., mean value
+        @test probs[1] ≈ 0 atol=1e-16  # sine wave has 0 mean value
+        @test events[end] == 0.5 # Nyquist frequency, 1/2 the sampling rate (Which is 1)
     end
 end

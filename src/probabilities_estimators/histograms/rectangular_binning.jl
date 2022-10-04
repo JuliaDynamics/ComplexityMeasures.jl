@@ -1,4 +1,5 @@
 export RectangularBinning
+export RectangularBinEncoder
 
 """
     RectangularBinning(ϵ) <: AbstractBinning
@@ -20,13 +21,28 @@ struct RectangularBinning{E} <: AbstractBinning
 end
 
 function probabilities(x::Vector_or_Dataset, binning::RectangularBinning)
-    fasthist(x, binning)[1]
+    fasthist!(x, binning)[1]
 end
+
 function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})
     probabilities(x, RectangularBinning(ε))
 end
 
+# Internal function method extension for `probabilities`
+function fasthist!(x::Vector_or_Dataset, ϵ::AbstractBinning)
+    encoder = RectangularBinEncoder(x, ϵ)
+    bins = symbolize(x, encoder)
+    hist = fasthist!(bins)
+    return Probabilities(hist), bins, encoder
+end
 
+function probabilities_and_events(x, ϵ::RectangularBinning)
+    probs, bins, encoder = fasthist!(x, ϵ)
+    (; mini, edgelengths) = encoder
+    unique!(bins) # `bins` is already sorted from `fasthist!`
+    events = map(b -> b .* edgelengths .+ mini, bins)
+    return probs, events
+end
 
 """
     RectangularBinEncoder(x, binning::RectangularBinning) <: SymbolizationScheme
@@ -56,6 +72,7 @@ function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning) w
     else
         error("Invalid ϵ for binning of a dataset")
     end
+
     RectangularBinEncoder(b, mini, edgelengths)
 end
 
@@ -72,23 +89,16 @@ function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning)
     else
         error("Invalid ϵ for binning of a vector")
     end
+
     RectangularBinEncoder(b, mini, edgelength)
 end
 
-# This function encodes the points of x into bins, i.e., it symbolizes
-function symbolize(x::Vector_or_Dataset, b::RectangularBinEncoder)
+function encode_as_bin(point, b::RectangularBinEncoder)
     (; mini, edgelengths) = b
-    # Map each data point to its bin edge (hence, we are symbolizing each xᵢ ∈ x here)
-    bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), x)
-    return bins
+    # Map a data point to its bin edge
+    return floor.(Int, (point .- mini) ./ edgelengths)
 end
 
-
-
-# Internal function method extension for `probabilities`
-function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
-    encoder = RectangularBinEncoder(x, ϵ)
-    bins = symbolize(x, encoder)
-    hist = fasthist(bins)
-    return Probabilities(hist), bins, encoder
+function symbolize(x::Vector_or_Dataset, b::RectangularBinEncoder)
+    return map(point -> encode_as_bin(point, b), x)
 end
