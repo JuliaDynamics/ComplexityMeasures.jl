@@ -21,10 +21,10 @@ for N in Ns
     for i = 1:nreps
         pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
 
-        push!(kl, entropy_kozachenkoleonenko(pts, w = 0, k = 1))
+        push!(kl, entropy(KozachenkoLeonenko(w = 0, k = 1, base = MathConstants.e), pts))
         # with k = 1, Kraskov is virtually identical to
         # Kozachenko-Leonenko, so pick a higher number of neighbors
-        push!(kr, entropy_kraskov(pts, w = 0, k = 3))
+        push!(kr, entropy(Kraskov(w = 0, k = 3, base = MathConstants.e), pts))
     end
     push!(Ekl, kl)
     push!(Ekr, kr)
@@ -47,6 +47,7 @@ fig
 [^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy estimator with applications in systems biology. Entropy, 18(1), 13.
 
 ## Permutation entropy example
+
 This example reproduces an example from Bandt and Pompe (2002), where the permutation
 entropy is compared with the largest Lyapunov exponents from time series of the chaotic
 logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
@@ -61,22 +62,18 @@ N_lyap, N_ent = 100000, 10000
 m, τ = 6, 1 # Symbol size/dimension and embedding lag
 
 # Generate one time series for each value of the logistic parameter r
-lyaps = Float64[]
-hs_perm = Float64[]
-hs_wtperm = Float64[]
-hs_ampperm = Float64[]
+lyaps, hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
 
-base = Base.MathConstants.e
-for r in rs
+for (i, r) in enumerate(rs)
     ds.p[1] = r
-    push!(lyaps, lyapunov(ds, N_lyap))
+    lyaps[i] = lyapunov(ds, N_lyap)
 
     x = trajectory(ds, N_ent) # time series
-    hperm = Entropies.entropy_renyi(x, SymbolicPermutation(m = m, τ = τ), base = base)
-    hwtperm = Entropies.entropy_renyi(x, SymbolicWeightedPermutation(m = m, τ = τ), base = base)
-    hampperm = Entropies.entropy_renyi(x, SymbolicAmplitudeAwarePermutation(m = m, τ = τ), base = base)
+    hperm = entropy(x, SymbolicPermutation(; m, τ))
+    hwtperm = entropy(x, SymbolicWeightedPermutation(; m, τ))
+    hampperm = entropy(x, SymbolicAmplitudeAwarePermutation(; m, τ))
 
-    push!(hs_perm, hperm); push!(hs_wtperm, hwtperm); push!(hs_ampperm, hampperm)
+    hs_perm[i] = hperm; hs_wtperm[i] = hwtperm; hs_ampperm[i] = hampperm
 end
 
 fig = Figure()
@@ -96,8 +93,8 @@ end
 fig
 ```
 
-
 ## Kernel density example
+
 Here, we draw some random points from a 2D normal distribution. Then, we use kernel density estimation to associate a probability to each point `p`, measured by how many points are within radius `1.5` of `p`. Plotting the actual points, along with their associated probabilities estimated by the KDE procedure, we get the following surface plot.
 
 ```@example MAIN
@@ -117,6 +114,7 @@ fig
 ```
 
 ## Wavelet entropy example
+
 The scale-resolved wavelet entropy should be lower for very regular signals (most of the
 energy is contained at one scale) and higher for very irregular signals (energy spread
 more out across scales).
@@ -146,12 +144,68 @@ for a in (ax, ay); hidexdecorations!(a; grid=false); end
 fig
 ```
 
+## Properties of different entropies
+
+Here, we show the sensitivity of the various entropies to variations in their parameters.
+
+### Curado entropy
+
+Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
+how the [Curado](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
+`Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
+
+```@example stretched_exponential_example
+using Entropies, CairoMakie
+bs = [1.0, 1.5, 2.0, 3.0, 4.0, 10.0]
+ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
+hs = [[entropy(Curado(; b = b), p) for p in ps] for b in bs]
+fig = Figure()
+ax = Axis(fig[1,1]; xlabel = "p", ylabel = "H(p)")
+pp = [p[1] for p in ps]
+for (i, b) in enumerate(bs)
+    lines!(ax, pp, hs[i], label = "b=$b", color = Cycled(i))
+end
+axislegend(ax)
+fig
+```
+
+[^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
+    entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
+
+### Stretched exponential entropy
+
+Here, we reproduce the example from Anteneodo & Plastino (1999)[^Anteneodo1999], showing
+how the stretched exponential entropy changes as function of the parameter `η` for a range
+of two-element probability distributions given by
+`Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
+
+```@example stretched_exponential_example
+using Entropies, SpecialFunctions, CairoMakie
+ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
+ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
+
+hs_norm = [[entropy(StretchedExponential( η = η), p) / gamma((η + 1)/η) for p in ps] for η in ηs]
+fig = Figure()
+ax = Axis(fig[1,1]; xlabel = "p", ylabel = "H(p)")
+pp = [p[1] for p in ps]
+
+for (i, η) in enumerate(ηs)
+    lines!(ax, pp, hs_norm[i], label = "η=$η")
+end
+axislegend(ax)
+fig
+```
+
+[^Anteneodo1999]: Anteneodo, C., & Plastino, A. R. (1999). Maximum entropy approach to
+    stretched exponential probability distributions. Journal of Physics A: Mathematical
+    and General, 32(7), 1089.
+
 ## [Dispersion and reverse dispersion entropy](@id dispersion_examples)
 
 Here we reproduce parts of figure 3 in Li et al. (2019), computing reverse and regular dispersion entropy for a time series consisting of normally distributed noise with a single spike in the middle of the signal. We compute the entropies over a range subsets of the data, using a sliding window consisting of 70 data points, stepping the window 10 time steps at a time.
 
-Note: the results here are not exactly the same as in the original paper, because Li et 
-al. (2019) base their examples on randomly generated numbers and do not provide code that 
+Note: the results here are not exactly the same as in the original paper, because Li et
+al. (2019) base their examples on randomly generated numbers and do not provide code that
 specify random number seeds.
 
 ```@example
@@ -175,7 +229,7 @@ est_de = Dispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
 
 for (i, window) in enumerate(windows)
     rdes[i] = reverse_dispersion(y[window], est_de; normalize = true)
-    des[i] = entropy_renyi_norm(y[window], est_de)
+    des[i] = entropy_normalized(Renyi(), y[window], est_de)
 end
 
 fig = Figure()
@@ -202,3 +256,29 @@ fig
 [^Rostaghi2016]: Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
+
+## Normalized entropy for comparing different signals
+
+When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the [Wavelet entropy example](@ref) (where we use the spectral entropy instead of the wavelet entropy):
+
+```@example MAIN
+using DynamicalSystems
+N1, N2, a = 101, 100001, 10
+
+for N in (N1, N2)
+    local t = LinRange(0, 2*a*π, N)
+    local x = sin.(t) # periodic
+    local y = sin.(t .+ cos.(t/0.5)) # periodic, complex spectrum
+    local z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
+    local w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
+
+    for q in (x, y, z, w)
+        h = entropy(q, PowerSpectrum())
+        n = entropy_normalized(q, PowerSpectrum())
+        println("entropy: $(h), normalized: $(n).")
+    end
+end
+```
+
+You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
+For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.

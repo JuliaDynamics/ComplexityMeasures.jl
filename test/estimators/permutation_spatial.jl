@@ -14,14 +14,14 @@ using Entropies, Test
     @test length(ps) == 3
     @test sort(ps) == [0.25, 0.25, 0.5]
 
-    h = entropy_renyi(x, est, base = 2)
+    h = entropy(Renyi(base = 2), x, est)
     @test h == 1.5
 
     # In fact, doesn't matter how we order the stencil,
     # the symbols will always be equal in top-left and bottom-right
     stencil = CartesianIndex.([(1,0), (1,1), (0,1)])
     est = SpatialSymbolicPermutation(stencil, x, false)
-    @test entropy_renyi(x, est, base = 2) == 1.5
+    @test entropy(Renyi(base = 2), x, est) == 1.5
 
     # But for sanity, let's ensure we get a different number
     # for a different stencil

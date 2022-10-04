@@ -9,4 +9,4 @@ estimator to [`probabilities`](@ref).
 """
 struct CountOccurrences <: ProbabilitiesEstimator end
 
-probabilities(x::AbstractDataset, ::CountOccurrences) = probabilities(x)
+probabilities(x::Array_or_Dataset, ::CountOccurrences) = probabilities(x)
