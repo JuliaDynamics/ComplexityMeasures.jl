@@ -39,10 +39,10 @@ The length of the stencil decides the order of the permutation entropy, and the 
 within the stencil dictates the order that pixels are compared with.
 The pixel without any offset is always first in the order.
 
-For rectangular/ cuboid stencils, one can also pass two `NTuple`s `extent` and `lag`,
-from which an appropriate stencil will be created. 
-`extent` defines how many points should be considered in each direction, and `lag`
-defines the offset between them.
+For rectangular/ cuboid stencils, one can also pass two `NTuple{D, T}`s `extent` and `lag`
+for D-dimensional data, from which an appropriate stencil is be created. 
+`extent[i]` defines how many points are be considered along the `i`th axis, and `lag[i]`
+defines the spacing between the points along this axis.
 The above example can also be achieved using
 
 ```julia
@@ -101,26 +101,14 @@ function SpatialSymbolicPermutation(
 end
 
 function SpatialSymbolicPermutation(
-    extent::NTuple{2, Int}, lag::NTuple{2, Int}, x::AbstractArray, p::Bool = true
-    )
-    # generate 2d stencil
-    stencil = CartesianIndex.([(i*lag[1], j*lag[2])
-                               for i in 0:extent[1]-1
-                               for j in 0:extent[2]-1])
-    # remove (0,0) index because that's the convention
-    popfirst!(stencil)
-    SpatialSymbolicPermutation(stencil, x, p)
-end
-
-function SpatialSymbolicPermutation(
-    extent::NTuple{3, Int}, lag::NTuple{3, Int}, x::AbstractArray, p::Bool = true
-    )
+    extent::NTuple{D, Int}, lag::NTuple{D, Int}, x::AbstractArray, p::Bool = true
+    ) where D
     # generate 3d stencil
-    stencil = CartesianIndex.([(i*lag[1], j*lag[2], k*lag[3])
-                               for i in 0:extent[1]-1
-                               for j in 0:extent[2]-1
-                               for k in 0:extent[3]-1])
-    # remove (0,0,0) index because that's the convention
+    # start by generating a list of iterators for each dimension
+    iters = [0:lag[i]:extent[i]-1 for i in 1:D]
+    # then generate the stencil. We use an iterator product that we basically only reshape after that
+    stencil = CartesianIndex.(vcat(collect(Iterators.product(iters...))...))
+    # remove (0,0,...) index because that's the convention
     popfirst!(stencil)
     SpatialSymbolicPermutation(stencil, x, p)
 end
