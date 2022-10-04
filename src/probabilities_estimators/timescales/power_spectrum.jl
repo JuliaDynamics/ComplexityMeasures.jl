@@ -37,7 +37,7 @@ end
 
 function probabilities_and_events(x::Array_or_Dataset, est::PowerSpectrum)
     probs = probabilities(x, est)
-    events = AbstractFFTs.rfftfreq(length(x))
+    events = FFTW.rfftfreq(length(x))
     return probs, events
 end
 

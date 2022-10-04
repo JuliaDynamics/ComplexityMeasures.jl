@@ -124,4 +124,6 @@ Return `probs, events`. `probs` is exactly [`probabilities`](@ref)`(x, est)`.
 Naturally, the element type of `events` depends on the estimator.
 Each estimator's docstring describes what kind of events it returns.
 """
-function probabilities_and_events end
+function probabilities_and_events(::Array_or_Dataset, est::ProbabilitiesEstimator)
+    error("Events not yet implemented for estimator $(nameof(typeof(est))).")
+end
