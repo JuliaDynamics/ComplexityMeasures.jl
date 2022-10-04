@@ -51,9 +51,3 @@ using Random
         end
     end
 end
-
-# TODO: Fix these, or implement them. What are they?
-# @testset "Counting visits" begin
-#     @test Entropies.marginal_visits(D, RectangularBinning(0.2), 1:2) isa Vector{<:AbstractVector{Int}}
-#     @test Entropies.joint_visits(D, RectangularBinning(0.2)) isa Vector{<:AbstractVector{Int}}
-# end
