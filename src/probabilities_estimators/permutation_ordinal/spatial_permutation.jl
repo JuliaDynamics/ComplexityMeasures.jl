@@ -2,6 +2,7 @@ export SpatialSymbolicPermutation
 
 """
     SpatialSymbolicPermutation(stencil, x, periodic = true)
+    SpatialSymbolicPermutation(extent, lag, x, periodic = true)
 
 A symbolic, permutation-based probabilities/entropy estimator for spatiotemporal systems.
 
