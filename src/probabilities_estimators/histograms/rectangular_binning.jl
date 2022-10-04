@@ -75,12 +75,13 @@ function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning)
     RectangularBinEncoder(b, mini, edgelength)
 end
 
-# This function encodes the points of x into bins, i.e., it symbolizes
-function symbolize(x::Vector_or_Dataset, b::RectangularBinEncoder)
+function encode_as_bin(point, b::RectangularBinEncoder)
     (; mini, edgelengths) = b
-    # Map each data point to its bin edge (hence, we are symbolizing each xᵢ ∈ x here)
-    bins = map(point -> floor.(Int, (point .- mini) ./ edgelengths), x)
-    return bins
+    # Map a data point to its bin edge
+    return (point .- mini) ./ edgelengths
+end
+function symbolize(x::Vector_or_Dataset, b::RectangularBinEncoder)
+    return map(point -> encode_as_bin(point, b), x)
 end
 
 
