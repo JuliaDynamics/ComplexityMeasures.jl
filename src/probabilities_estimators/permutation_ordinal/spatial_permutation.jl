@@ -12,12 +12,22 @@ The input data `x` are high-dimensional arrays, for example 2D arrays [^Ribeiro2
 A _stencil_ defines what local area around each pixel to
 consider, and compute the ordinal pattern within the stencil. Stencils are given as
 vectors of `CartesianIndex` which encode the _offsets_ of the pixes to include in the
-stencil, with respect to the current pixel. For example
+stencil, with respect to the current pixel, or integer arrays of the same dimensionality
+as the data. For example
 
 ```julia
 data = [rand(50, 50) for _ in 1:50]
 x = data[1] # first "time slice" of a spatial system evolution
 stencil = CartesianIndex.([(0,1), (1,1), (1,0)])
+est = SpatialSymbolicPermutation(stencil, x)
+```
+
+or equivalently
+
+```julia
+data = [rand(50, 50) for _ in 1:50]
+x = data[1] # first "time slice" of a spatial system evolution
+stencil = [1 1; 1 1]
 est = SpatialSymbolicPermutation(stencil, x)
 ```
 
@@ -27,6 +37,18 @@ Notice that no offset (meaning the pixel itself) is always included automaticall
 The length of the stencil decides the order of the permutation entropy, and the ordering
 within the stencil dictates the order that pixels are compared with.
 The pixel without any offset is always first in the order.
+
+For rectangular/ cuboid stencils, one can also pass two `NTuple`s `extent` and `lag`,
+from which an appropriate stencil will be created. 
+`extent` defines how many points should be considered in each direction, and `lag`
+defines the offset between them.
+The above example can also be achieved using
+
+```julia
+data = [rand(50, 50) for _ in 1:50]
+x = data[1] # first "time slice" of a spatial system evolution
+est = SpatialSymbolicPermutation((2, 2), (1, 1), x)
+```
 
 After having defined `est`, one calculates the spatial permutation entropy
 by calling [`entropy`](@ref) with `est`, and with the array data.
@@ -75,6 +97,43 @@ function SpatialSymbolicPermutation(
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
     SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid)
+end
+
+function SpatialSymbolicPermutation(
+    extent::NTuple{2, Int}, lag::NTuple{2, Int}, x::AbstractArray, p::Bool = true
+    )
+    # generate 2d stencil
+    stencil = CartesianIndex.([(i*lag[1], j*lag[2])
+                               for i in 0:extent[1]-1
+                               for j in 0:extent[2]-1])
+    # remove (0,0) index because that's the convention
+    popfirst!(stencil)
+    SpatialSymbolicPermutation(stencil, x, p)
+end
+
+function SpatialSymbolicPermutation(
+    extent::NTuple{3, Int}, lag::NTuple{3, Int}, x::AbstractArray, p::Bool = true
+    )
+    # generate 3d stencil
+    stencil = CartesianIndex.([(i*lag[1], j*lag[2], k*lag[3])
+                               for i in 0:extent[1]-1
+                               for j in 0:extent[2]-1
+                               for k in 0:extent[3]-1])
+    # remove (0,0,0) index because that's the convention
+    popfirst!(stencil)
+    SpatialSymbolicPermutation(stencil, x, p)
+end
+
+function SpatialSymbolicPermutation(
+    stencil::Array{Int, D}, x::AbstractArray, p::Bool = true
+    ) where D
+    # translate D-dim array into stencil of cartesian indices (of dimension D)
+    stencil = [idx - CartesianIndex(Tuple(ones(Int, D))) for idx in findall(Bool.(stencil))]
+    # subtract first coordinate from everything to get a stencil that contains (0,0)
+    stencil = [idx - stencil[1] for idx in stencil]
+    # remove (0,0) index because that's the convention
+    popfirst!(stencil)
+    SpatialSymbolicPermutation(stencil, x, p)
 end
 
 # This source code is a modification of the code of Agents.jl that finds neighbors

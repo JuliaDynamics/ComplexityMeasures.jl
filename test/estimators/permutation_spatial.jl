@@ -31,7 +31,18 @@ using Entropies, Test
     @test ps[1] == 1/3
     @test ps[2] == 2/3
 
+    # let's also check we get the same value as above
+    # if we specify extent and lag instead of stencil
+    est = SpatialSymbolicPermutation((2,2), (1,1), x, false)
+    @test entropy(Renyi(base = 2), x, est) == 1.5
+
+    # and let's also test the matrix-way of specifying the stencil
+    stencil = [1 1; 1 1]
+    est = SpatialSymbolicPermutation(stencil, x, false)
+    @test entropy(Renyi(base = 2), x, est) == 1.5
+    
     # TODO: Symbolize tests once its part of the API.
+
 
     # Also test that it works for arbitrarily high-dimensional arrays
     stencil = CartesianIndex.([(0,1,0), (0,0,1), (1,0,0)])
@@ -46,4 +57,19 @@ using Entropies, Test
     w = shuffle!(Random.MersenneTwister(42), collect(z))
     ps = probabilities(w, est)
     @test length(ps) > 1
+
+    # check that the 3d-cuboid version also works as expected
+    # this stencil is a cuboid
+    stencil = CartesianIndex.([(0,1,0), (0,0,1), (1,0,0),
+                               (0,1,1), (1,0,1), (1,1,0),
+                               (1,1,1)])
+    est1 = SpatialSymbolicPermutation(stencil, w, false)
+    # which would correspond to this 
+    est2 = SpatialSymbolicPermutation((2,2,2), (1,1,1), w, false)
+    @test entropy(Renyi(), w, est1) == entropy(Renyi(), w, est2)
+
+    # and to this stencil written as a matrix
+    stencil = [1; 1;; 1; 1;;; 1; 1;; 1; 1]
+    est3 = SpatialSymbolicPermutation(stencil, w, false)
+    @test entropy(Renyi(), w, est1) == entropy(Renyi(), w, est3)
 end
