@@ -14,12 +14,12 @@ struct CountOccurrences <: ProbabilitiesEstimator end
 
 probabilities(x::Array_or_Dataset, ::CountOccurrences) = probabilities(x)
 function probabilities(x::Array_or_Dataset)
-    return Probabilities(fasthist(copy(x)))
+    return Probabilities(fasthist!(copy(x)))
 end
 
 function probabilities_and_events(x::Array_or_Dataset, ::CountOccurrences)
     z = copy(x)
-    probs = Probabilities(fasthist(z))
-    # notice that `z` is now sorted within `fasthist`!
+    probs = Probabilities(fasthist!(z))
+    # notice that `z` is now sorted within `fasthist!`!
     return probs, unique!(z)
 end

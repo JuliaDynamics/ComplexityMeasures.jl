@@ -18,7 +18,9 @@ This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
 and a linear space complexity (`l` for `l = dimension(x)`).
 This allows computation of probabilities (histograms) of high-dimensional
 datasets and with small box sizes `ε` without memory overflow and with maximum performance.
-To obtain the bin information along with the probabilities, use [`binhist`](@ref).
+
+To obtain the bin information along with the probabilities,
+use [`probabilities_and_events`](@ref). The events correspond to the bin corners.
 
 See also: [`RectangularBinning`](@ref).
 """
