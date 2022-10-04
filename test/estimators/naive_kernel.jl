@@ -18,3 +18,6 @@ p_direct = probabilities(pts, est_direct)
 
 @test entropy(Renyi(), pts, est_direct) isa Real
 @test entropy(Renyi(), pts, est_tree) isa Real
+
+probs, z = probabilities_and_events(pts, est_tree)
+@test z == pts

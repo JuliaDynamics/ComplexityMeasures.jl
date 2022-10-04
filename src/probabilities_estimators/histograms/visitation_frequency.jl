@@ -8,16 +8,6 @@ The supertype of all binning schemes.
 abstract type AbstractBinning end
 
 """
-    AbstractBinEncoder
-
-The supertype of all binning encoders, which are used with `symbolize` to "encode"
-a data point into its bin. The function `bin_encoder(x, b)` takes in an AbstractBinning
-and returns the encoder.
-"""
-abstract type AbstractBinEncoder end
-
-
-"""
     ValueHistogram(b::AbstractBinning) <: ProbabilitiesEstimator
 
 A probability estimator based on binning the values of the data as dictated by
@@ -28,7 +18,9 @@ This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
 and a linear space complexity (`l` for `l = dimension(x)`).
 This allows computation of probabilities (histograms) of high-dimensional
 datasets and with small box sizes `ε` without memory overflow and with maximum performance.
-To obtain the bin information along with the probabilities, use [`binhist`](@ref).
+
+To obtain the bin information along with the probabilities,
+use [`probabilities_and_events`](@ref). The events correspond to the bin corners.
 
 See also: [`RectangularBinning`](@ref).
 """
@@ -46,8 +38,9 @@ const VisitationFrequency = ValueHistogram
 function probabilities(x::Array_or_Dataset, est::ValueHistogram)
     probabilities(x, est.binning)
 end
-function probabilities(x::Array_or_Dataset)
-    return Probabilities(fasthist(copy(x)))
+
+function probabilities_and_events(x, est::ValueHistogram)
+    return probabilities_and_events(x, est.binning)
 end
 
 include("rectangular_binning.jl")
