@@ -113,7 +113,7 @@ function _symbolize_for_dispersion(x, est::Dispersion)
         symbols = symbolize(x, est.symbolization)
     end
 
-    return symbols
+    return symbols::Vector{Int}
 end
 
 function probabilities(x::AbstractVector, est::Dispersion)
