@@ -287,43 +287,76 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 
 In Zhou et al. (2022), [`missing_dispersion`](@ref) is used to detect nonlinearity in 
 time series by comparing the ``N_{MDP}`` for a time series `x` to ``N_{MDP}`` values for 
-an ensemble of surrogates of `x`. Here's an example:
+an ensemble of surrogates of `x`. If ``N_{MDP} > ``q_{MDP}^{WIAAFT}``, where
+``q_{MDP}^{WIAAFT}`` is some `q`-th quantile of the surrogate ensemble, then it is 
+taken as evidence for nonlinearity.
 
 ```@example
-using DynamicalSystemsBase: Systems.logistic
+using CairoMakie
+using DynamicalSystemsBase
 using Entropies
 using TimeseriesSurrogates
-using CairoMakie
 using Statistics
 
-sys = logistic()
-est = Dispersion(m = 5, symbolization = GaussianSymbolization(c = 5))
-
+est = Dispersion(m = 3, symbolization = GaussianSymbolization(c = 7))
+sys = Systems.logistic(0.6; r = 4.0)
+normalize = true
 Ls = collect(100:100:1000)
-N = 1000
+nL = length(Ls)
 nreps = 50
-msps = zeros(length(Ls))
-msps_surr = [zeros(nreps) for L in Ls]
+method = WLS(IAAFT(), rescale = true)
+
+r_det, r_noise = zeros(length(Ls)), zeros(length(Ls))
+r_det_surr, r_noise_surr = [zeros(nreps) for L in Ls], [zeros(nreps) for L in Ls]
+y = rand(maximum(Ls))
 
 for (i, L) in enumerate(Ls)
-    x = trajectory(sys, N, Ttr = 1000)
-    s = surrogenerator(x, IAAFT())
-    msps[i] = missing_dispersion(s(), est = est, normalize = true)
-    msps_surr[i] .= [missing_dispersion(s(), est = est, normalize = true) for j = 1:nreps]
+    # Deterministic time series
+    x = trajectory(sys, L, Ttr = 5000)
+    s = surrogenerator(x[:, 1], method)
+    r_det[i] = missing_dispersion(x; est, normalize)
+    r_det_surr[i][:] = [missing_dispersion(s(); est, normalize) for j = 1:nreps]
+   
+    # Random time series
+    r_noise[i] = missing_dispersion(y[1:L]; est, normalize)
+    sy = surrogenerator(y[1:L], method)
+    r_noise_surr[i][:] = [missing_dispersion(sy(); est, normalize) for j = 1:nreps]
 end
 
-fig = Figure();
+
+fig = Figure()
 ax = Axis(fig[1, 1], 
     xlabel = "Time series length (L)", 
-    ylabel = "# missing dispersion patterns"
+    ylabel = "# missing dispersion patterns (normalized)"
 )
 
-lines!(ax, Ls, msps, label = "Original time series")
-lines!(ax, mean.(msps_surr), Ls, msps, label = "mean(surrogate ensemble)")
+lines!(ax, Ls, r_det, label = "logistic(x0 = 0.6; r = 4.0)", color = :black)
+lines!(ax, Ls, r_noise, label = "Uniform noise", color = :red)
+for i = 1:nL
+    if i == 1
+        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black, 
+            label = "WIAAFT surrogates (logistic)")
+         boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red, 
+            label = "WIAAFT surrogates (noise)")
+    else
+        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black)
+        boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red)
+    end
+end
 axislegend(position = :rc)
+ylims!(0, 1.1)
 
 fig
 ```
+
+We don't need to actually to compute the quantiles here to see that for the logistic
+map, across all time series lengths, the ``N_{MDP}`` values are above the extremal values 
+of the ``N_{MDP}`` values for the surrogate ensembles. Thus, we
+conclude that the logistic map time series has nonlinearity (well, of course).
+
+For the univariate noise time series, there is considerable overlap between ``N_{MDP}``
+for the surrogate distributions and the original signal, so we can't claim nonlinearity
+for this signal.
 
 [^Zhou2022]: Zhou, Q., Shang, P., & Zhang, B. (2022). Using missing dispersion patterns
     to detect determinism and nonlinearity in time series data. Nonlinear Dynamics, 1-20.
