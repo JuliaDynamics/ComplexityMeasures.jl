@@ -27,9 +27,9 @@ Stencils are passed in one of the following three ways:
     which is almost always the case.
     Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
     (directions here correspond to the way Julia prints matrices by default).
-    The length of the stencil decides the order of the permutation entropy, and the ordering
-    within the stencil dictates the order that pixels are compared with.
-    The pixel without any offset is always first in the order.
+    The number of included points in a stencil (`m`) determines the length of the vectors
+    to be symbolized, i.e. there are `m!` possible ordinal patterns around each pixel.
+    When passing a stencil as a vector of `CartesianIndex`, `m = length(stencil)`.
 
 2. As a `D`-dimensional array (where `D` matches the dimensionality of the input data)
     containing `0`s and `1`s, where if `stencil[index] == 1`, the corresponding pixel is
