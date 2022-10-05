@@ -102,7 +102,7 @@ function dispersion_histogram(x::AbstractDataset, N, m, τ)
 end
 
 # A helper function that is also re-used for the `missing_dispersion` complexity measure
-function _symbolize_for_dispersion(x, est::Dispersion)
+function symbolize_for_dispersion(x, est::Dispersion)
     if est.check_unique
         if length(unique(x)) == 1
             symbols = repeat([1], length(x))
@@ -117,7 +117,7 @@ function _symbolize_for_dispersion(x, est::Dispersion)
 end
 
 function probabilities(x::AbstractVector, est::Dispersion)
-    symbols = _symbolize_for_dispersion(x, est)
+    symbols = symbolize_for_dispersion(x, est)
 
     N = length(x)
 
