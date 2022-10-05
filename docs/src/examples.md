@@ -282,3 +282,48 @@ end
 
 You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.
+
+## Missing dispersion patterns
+
+In Zhou et al. (2022), [`missing_dispersion`](@ref) is used to detect nonlinearity in 
+time series by comparing the ``N_{MDP}`` for a time series `x` to ``N_{MDP}`` values for 
+an ensemble of surrogates of `x`. Here's an example:
+
+```@example
+using DynamicalSystemsBase: Systems.logistic
+using Entropies
+using TimeseriesSurrogates
+using CairoMakie
+using Statistics
+
+sys = logistic()
+est = Dispersion(m = 5, symbolization = GaussianSymbolization(c = 5))
+
+Ls = collect(100:100:1000)
+N = 1000
+nreps = 50
+msps = zeros(length(Ls))
+msps_surr = [zeros(nreps) for L in Ls]
+
+for (i, L) in enumerate(Ls)
+    x = trajectory(sys, N, Ttr = 1000)
+    s = surrogenerator(x, IAAFT())
+    msps[i] = missing_dispersion(s(), est = est, normalize = true)
+    msps_surr[i] .= [missing_dispersion(s(), est = est, normalize = true) for j = 1:nreps]
+end
+
+fig = Figure();
+ax = Axis(fig[1, 1], 
+    xlabel = "Time series length (L)", 
+    ylabel = "# missing dispersion patterns"
+)
+
+lines!(ax, Ls, msps, label = "Original time series")
+lines!(ax, mean.(msps_surr), Ls, msps, label = "mean(surrogate ensemble)")
+axislegend(position = :rc)
+
+fig
+```
+
+[^Zhou2022]: Zhou, Q., Shang, P., & Zhang, B. (2022). Using missing dispersion patterns
+    to detect determinism and nonlinearity in time series data. Nonlinear Dynamics, 1-20.
