@@ -2,7 +2,6 @@ export SpatialSymbolicPermutation
 
 """
     SpatialSymbolicPermutation(stencil, x, periodic = true)
-    SpatialSymbolicPermutation(extent, lag, x, periodic = true)
 
 A symbolic, permutation-based probabilities/entropy estimator for spatiotemporal systems.
 
@@ -11,45 +10,50 @@ The input data `x` are high-dimensional arrays, for example 2D arrays [^Ribeiro2
 `x` is given because we need to know its size for optimization and bound checking.
 
 A _stencil_ defines what local area around each pixel to
-consider, and compute the ordinal pattern within the stencil. Stencils are given as
-vectors of `CartesianIndex` which encode the _offsets_ of the pixes to include in the
-stencil, with respect to the current pixel, or integer arrays of the same dimensionality
-as the data. For example
+consider, and compute the ordinal pattern within the stencil.
+Stencils are passed in one of the following three ways:
 
-```julia
-data = [rand(50, 50) for _ in 1:50]
-x = data[1] # first "time slice" of a spatial system evolution
-stencil = CartesianIndex.([(0,1), (1,1), (1,0)])
-est = SpatialSymbolicPermutation(stencil, x)
-```
+1. as vectors of `CartesianIndex` which encode the pixels to include in the
+    stencil, with respect to the current pixel, or integer arrays of the same dimensionality
+    as the data. For example
 
-or equivalently
+    ```julia
+    data = [rand(50, 50) for _ in 1:50]
+    x = data[1] # first "time slice" of a spatial system evolution
+    stencil = CartesianIndex.([(0,0), (0,1), (1,1), (1,0)])
+    est = SpatialSymbolicPermutation(stencil, x)
+    ```
+    Don't forget to include 0 offset if you want to include the point itself, 
+    which is almost always the case.
+    Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
+    (directions here correspond to the way Julia prints matrices by default).
+    The length of the stencil decides the order of the permutation entropy, and the ordering
+    within the stencil dictates the order that pixels are compared with.
+    The pixel without any offset is always first in the order.
 
-```julia
-data = [rand(50, 50) for _ in 1:50]
-x = data[1] # first "time slice" of a spatial system evolution
-stencil = [1 1; 1 1]
-est = SpatialSymbolicPermutation(stencil, x)
-```
+2. as a `D`-dimensional array (where `D` matches the dimensionality of the input data)
+    containing `0`s and `1`s, where every pixel with a one is included.
+    To generate the same estimator as in 1., for example
 
-Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
-(directions here correspond to the way Julia prints matrices by default).
-Notice that no offset (meaning the pixel itself) is always included automatically.
-The length of the stencil decides the order of the permutation entropy, and the ordering
-within the stencil dictates the order that pixels are compared with.
-The pixel without any offset is always first in the order.
+    ```julia
+    data = [rand(50, 50) for _ in 1:50]
+    x = data[1] # first "time slice" of a spatial system evolution
+    stencil = [1 1; 1 1]
+    est = SpatialSymbolicPermutation(stencil, x)
+    ```
 
-For rectangular/ cuboid stencils, one can also pass two `NTuple{D, T}`s `extent` and `lag`
-for D-dimensional data, from which an appropriate stencil is be created. 
-`extent[i]` defines how many points are be considered along the `i`th axis, and `lag[i]`
-defines the spacing between the points along this axis.
-The above example can also be achieved using
+3. as a `Tuple` containing two `Tuple`s of length `D` for `D`-dimensional data.
+    The first tuple specifies the `extent` of the stencil, where `extent[i]` 
+    dictates the number of pixels to be included along the `i`th axis and `lag[i]`
+    their respective separation.
+    This method can only generate cuboid stencils. To create the same estimator as
+    in the previous examples, use here
 
-```julia
-data = [rand(50, 50) for _ in 1:50]
-x = data[1] # first "time slice" of a spatial system evolution
-est = SpatialSymbolicPermutation((2, 2), (1, 1), x)
-```
+    ```julia
+    data = [rand(50, 50) for _ in 1:50]
+    x = data[1] # first "time slice" of a spatial system evolution
+    est = SpatialSymbolicPermutation(((2, 2), (1, 1)), x)
+    ```
 
 After having defined `est`, one calculates the spatial permutation entropy
 by calling [`entropy`](@ref) with `est`, and with the array data.
@@ -80,8 +84,6 @@ end
 function SpatialSymbolicPermutation(
         stencil::Vector{CartesianIndex{D}}, x::AbstractArray, p::Bool = true
     ) where {D}
-    # Ensure that no offset is part of the stencil
-    stencil = pushfirst!(copy(stencil), CartesianIndex{D}(zeros(Int, D)...))
     arraysize = size(x)
     @assert length(arraysize) == D "Indices and input array must match dimensionality!"
     # Store valid indices for later iteration
@@ -101,15 +103,15 @@ function SpatialSymbolicPermutation(
 end
 
 function SpatialSymbolicPermutation(
-    extent::NTuple{D, Int}, lag::NTuple{D, Int}, x::AbstractArray, p::Bool = true
-    ) where D
+    stencil::NTuple{2, NTuple{D, T}}, x::AbstractArray, p::Bool = true
+    ) where {D, T}
+    # get extent and lag from stencil
+    extent, lag = stencil
     # generate 3d stencil
     # start by generating a list of iterators for each dimension
     iters = [0:lag[i]:extent[i]-1 for i in 1:D]
     # then generate the stencil. We use an iterator product that we basically only reshape after that
     stencil = CartesianIndex.(vcat(collect(Iterators.product(iters...))...))
-    # remove (0,0,...) index because that's the convention
-    popfirst!(stencil)
     SpatialSymbolicPermutation(stencil, x, p)
 end
 
@@ -120,8 +122,6 @@ function SpatialSymbolicPermutation(
     stencil = [idx - CartesianIndex(Tuple(ones(Int, D))) for idx in findall(Bool.(stencil))]
     # subtract first coordinate from everything to get a stencil that contains (0,0)
     stencil = [idx - stencil[1] for idx in stencil]
-    # remove (0,0) index because that's the convention
-    popfirst!(stencil)
     SpatialSymbolicPermutation(stencil, x, p)
 end
 
