@@ -323,7 +323,6 @@ for (i, L) in enumerate(Ls)
     r_noise_surr[i][:] = [missing_dispersion(sy(); est, normalize) for j = 1:nreps]
 end
 
-
 fig = Figure()
 ax = Axis(fig[1, 1], 
     xlabel = "Time series length (L)", 
@@ -357,6 +356,9 @@ conclude that the logistic map time series has nonlinearity (well, of course).
 For the univariate noise time series, there is considerable overlap between ``N_{MDP}``
 for the surrogate distributions and the original signal, so we can't claim nonlinearity
 for this signal.
+
+Of course, to robustly reject the null hypothesis, we'd need to generate a sufficient number
+of surrogate realizations, and actually compute quantiles to compare with.
 
 [^Zhou2022]: Zhou, Q., Shang, P., & Zhang, B. (2022). Using missing dispersion patterns
     to detect determinism and nonlinearity in time series data. Nonlinear Dynamics, 1-20.
