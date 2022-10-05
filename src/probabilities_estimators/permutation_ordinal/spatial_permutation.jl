@@ -11,6 +11,9 @@ The input data `x` are high-dimensional arrays, for example 2D arrays [^Ribeiro2
 
 A _stencil_ defines what local area (which points) around each pixel to
 consider, and compute ordinal patterns from.
+The number of included points in a stencil (`m`) determines the length of the vectors
+to be symbolized, i.e. there are `m!` possible ordinal patterns around each pixel.
+
 Stencils are passed in one of the following three ways:
 
 1. As vectors of `CartesianIndex` which encode the pixels to include in the
@@ -27,8 +30,6 @@ Stencils are passed in one of the following three ways:
     which is almost always the case.
     Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
     (directions here correspond to the way Julia prints matrices by default).
-    The number of included points in a stencil (`m`) determines the length of the vectors
-    to be symbolized, i.e. there are `m!` possible ordinal patterns around each pixel.
     When passing a stencil as a vector of `CartesianIndex`, `m = length(stencil)`.
 
 2. As a `D`-dimensional array (where `D` matches the dimensionality of the input data)
@@ -42,6 +43,7 @@ Stencils are passed in one of the following three ways:
     stencil = [1 1; 1 1]
     est = SpatialSymbolicPermutation(stencil, x)
     ```
+    When passing a stencil as a `D`-dimensional array, `m = sum(stencil)`
 
 3. As a `Tuple` containing two `Tuple`s, both of length `D`, for `D`-dimensional data.
     The first tuple specifies the `extent` of the stencil, where `extent[i]` 
@@ -55,6 +57,7 @@ Stencils are passed in one of the following three ways:
     x = data[1] # first "time slice" of a spatial system evolution
     est = SpatialSymbolicPermutation(((2, 2), (1, 1)), x)
     ```
+    When passing a stencil using `extent` and `lag`, `m = prod(extent)!`.
 
 After having defined `est`, one calculates the spatial permutation entropy
 by calling [`entropy`](@ref) with `est`, and with the array data.
