@@ -14,6 +14,15 @@ consider, and compute ordinal patterns from.
 The number of included points in a stencil (`m`) determines the length of the vectors
 to be symbolized, i.e. there are `m!` possible ordinal patterns around each pixel.
 
+Example usage:
+```julia
+data = [rand(50, 50) for _ in 1:50]
+x = data[1] # first "time slice" of a spatial system evolution
+stencil = ...
+est = SpatialSymbolicPermutation(stencil, x)
+```
+
+
 Stencils are passed in one of the following three ways:
 
 1. As vectors of `CartesianIndex` which encode the pixels to include in the
@@ -21,10 +30,7 @@ Stencils are passed in one of the following three ways:
     as the data. For example
 
     ```julia
-    data = [rand(50, 50) for _ in 1:50]
-    x = data[1] # first "time slice" of a spatial system evolution
     stencil = CartesianIndex.([(0,0), (0,1), (1,1), (1,0)])
-    est = SpatialSymbolicPermutation(stencil, x)
     ```
     Don't forget to include the zero offset index if you want to include the point itself, 
     which is almost always the case.
@@ -38,10 +44,7 @@ Stencils are passed in one of the following three ways:
     To generate the same estimator as in 1., use
 
     ```julia
-    data = [rand(50, 50) for _ in 1:50]
-    x = data[1] # first "time slice" of a spatial system evolution
     stencil = [1 1; 1 1]
-    est = SpatialSymbolicPermutation(stencil, x)
     ```
     When passing a stencil as a `D`-dimensional array, `m = sum(stencil)`
 
@@ -53,9 +56,7 @@ Stencils are passed in one of the following three ways:
     in the previous examples, use here
 
     ```julia
-    data = [rand(50, 50) for _ in 1:50]
-    x = data[1] # first "time slice" of a spatial system evolution
-    est = SpatialSymbolicPermutation(((2, 2), (1, 1)), x)
+    stencil = ((2, 2), (1, 1))
     ```
     When passing a stencil using `extent` and `lag`, `m = prod(extent)!`.
 
@@ -86,9 +87,10 @@ struct SpatialSymbolicPermutation{D,P,V} <: ProbabilitiesEstimator
     valid::V
 end
 function SpatialSymbolicPermutation(
-        stencil::Vector{CartesianIndex{D}}, x::AbstractArray, p::Bool = true
-    ) where {D}
+        stencil, x::AbstractArray, p::Bool = true
+    )
     arraysize = size(x)
+    stencil, D = stencil_to_offsets(stencil)
     @assert length(arraysize) == D "Indices and input array must match dimensionality!"
     # Store valid indices for later iteration
     if p
@@ -106,9 +108,10 @@ function SpatialSymbolicPermutation(
     SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid)
 end
 
-function SpatialSymbolicPermutation(
-    stencil::NTuple{2, NTuple{D, T}}, x::AbstractArray, p::Bool = true
-    ) where {D, T}
+# get stencil in the form of vectors of cartesian indices from either input type
+stencil_to_offsets(stencil::Vector{CartesianIndex{D}}) where D = stencil, D
+
+function stencil_to_offsets(stencil::NTuple{2, NTuple{D, T}}) where {D, T}
     # get extent and lag from stencil
     extent, lag = stencil
     # generate a D-dimensional stencil
@@ -116,17 +119,15 @@ function SpatialSymbolicPermutation(
     iters = [0:lag[i]:extent[i]-1 for i in 1:D]
     # then generate the stencil. We use an iterator product that we basically only reshape after that
     stencil = CartesianIndex.(vcat(collect(Iterators.product(iters...))...))
-    SpatialSymbolicPermutation(stencil, x, p)
+    return stencil, D
 end
 
-function SpatialSymbolicPermutation(
-    stencil::Array{Int, D}, x::AbstractArray, p::Bool = true
-    ) where D
+function stencil_to_offsets(stencil::Array{Int, D}) where D
     # translate D-dim array into stencil of cartesian indices (of dimension D)
     stencil = [idx - CartesianIndex(Tuple(ones(Int, D))) for idx in findall(Bool.(stencil))]
     # subtract first coordinate from everything to get a stencil that contains (0,0)
     stencil = [idx - stencil[1] for idx in stencil]
-    SpatialSymbolicPermutation(stencil, x, p)
+    return stencil, D
 end
 
 # This source code is a modification of the code of Agents.jl that finds neighbors
