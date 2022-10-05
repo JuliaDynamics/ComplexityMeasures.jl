@@ -9,11 +9,11 @@ The input data `x` are high-dimensional arrays, for example 2D arrays [^Ribeiro2
 [^Schlemmer2018]. This approach is also known as _spatiotemporal permutation entropy_.
 `x` is given because we need to know its size for optimization and bound checking.
 
-A _stencil_ defines what local area around each pixel to
-consider, and compute the ordinal pattern within the stencil.
+A _stencil_ defines what local area (which points) around each pixel to
+consider, and compute ordinal patterns from.
 Stencils are passed in one of the following three ways:
 
-1. as vectors of `CartesianIndex` which encode the pixels to include in the
+1. As vectors of `CartesianIndex` which encode the pixels to include in the
     stencil, with respect to the current pixel, or integer arrays of the same dimensionality
     as the data. For example
 
@@ -23,7 +23,7 @@ Stencils are passed in one of the following three ways:
     stencil = CartesianIndex.([(0,0), (0,1), (1,1), (1,0)])
     est = SpatialSymbolicPermutation(stencil, x)
     ```
-    Don't forget to include 0 offset if you want to include the point itself, 
+    Don't forget to include the zero offset index if you want to include the point itself, 
     which is almost always the case.
     Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
     (directions here correspond to the way Julia prints matrices by default).
@@ -31,9 +31,10 @@ Stencils are passed in one of the following three ways:
     within the stencil dictates the order that pixels are compared with.
     The pixel without any offset is always first in the order.
 
-2. as a `D`-dimensional array (where `D` matches the dimensionality of the input data)
-    containing `0`s and `1`s, where every pixel with a one is included.
-    To generate the same estimator as in 1., for example
+2. As a `D`-dimensional array (where `D` matches the dimensionality of the input data)
+    containing `0`s and `1`s, where if `stencil[index] == 1`, the corresponding pixel is
+    included, and if `stencil[index] == 0`, it is not included.
+    To generate the same estimator as in 1., use
 
     ```julia
     data = [rand(50, 50) for _ in 1:50]
@@ -42,11 +43,11 @@ Stencils are passed in one of the following three ways:
     est = SpatialSymbolicPermutation(stencil, x)
     ```
 
-3. as a `Tuple` containing two `Tuple`s of length `D` for `D`-dimensional data.
+3. As a `Tuple` containing two `Tuple`s, both of length `D`, for `D`-dimensional data.
     The first tuple specifies the `extent` of the stencil, where `extent[i]` 
     dictates the number of pixels to be included along the `i`th axis and `lag[i]`
-    their respective separation.
-    This method can only generate cuboid stencils. To create the same estimator as
+    the separation of pixels along the same axis.
+    This method can only generate (hyper)rectangular stencils. To create the same estimator as
     in the previous examples, use here
 
     ```julia
@@ -107,7 +108,7 @@ function SpatialSymbolicPermutation(
     ) where {D, T}
     # get extent and lag from stencil
     extent, lag = stencil
-    # generate 3d stencil
+    # generate a D-dimensional stencil
     # start by generating a list of iterators for each dimension
     iters = [0:lag[i]:extent[i]-1 for i in 1:D]
     # then generate the stencil. We use an iterator product that we basically only reshape after that

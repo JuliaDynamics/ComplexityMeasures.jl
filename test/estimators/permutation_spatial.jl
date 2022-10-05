@@ -60,8 +60,8 @@ using Entropies, Test
     ps = probabilities(w, est)
     @test length(ps) > 1
 
-    # check that the 3d-cuboid version also works as expected
-    # this stencil is a cuboid
+    # check that the 3d-hyperrectangle version also works as expected
+    # this stencil is a hyperrectangle
     stencil = CartesianIndex.([(0,0,0), (0,1,0), (0,0,1),
                                (1,0,0), (0,1,1), (1,0,1),
                                (1,1,0), (1,1,1)])
