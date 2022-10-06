@@ -27,7 +27,7 @@ function entropy_permutation(x; base = 2, kwargs...)
 end
 
 """
-    entropy_spatial_permutation(x, stencil, periodic = true; kwargs...)
+    entropy_spatial_permutation(x, stencil; periodic = true; kwargs...)
 
 Compute the spatial permutation entropy of `x` given the `stencil`.
 Here `x` must be a matrix or higher dimensional `Array` containing spatial data.

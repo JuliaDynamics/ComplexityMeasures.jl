@@ -1,7 +1,7 @@
 export SpatialSymbolicPermutation
 
 """
-    SpatialSymbolicPermutation(stencil, x, periodic = true)
+    SpatialSymbolicPermutation(stencil, x; periodic = true)
 
 A symbolic, permutation-based probabilities/entropy estimator for spatiotemporal systems.
 
@@ -21,7 +21,6 @@ x = data[1] # first "time slice" of a spatial system evolution
 stencil = ...
 est = SpatialSymbolicPermutation(stencil, x)
 ```
-
 
 Stencils are passed in one of the following three ways:
 
