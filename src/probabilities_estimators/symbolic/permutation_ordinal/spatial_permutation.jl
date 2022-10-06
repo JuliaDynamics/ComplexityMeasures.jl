@@ -80,26 +80,20 @@ array. If `periodic = false`, pixels whose stencil exceeds the array bounds are 
     Schlemmer et al. (2018). Spatiotemporal Permutation Entropy as a Measure for
     Complexity of Cardiac Arrhythmia. https://doi.org/10.3389/fphy.2018.00039
 """
-struct SpatialSymbolicPermutation{D,P,V} <: ProbabilitiesEstimator
+struct SpatialSymbolicPermutation{D,P,V} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
     valid::V
 end
-function SpatialSymbolicPermutation(stencil, x::AbstractArray, periodic::Bool = true)
-    stencil, arraysize, valid, D = preprocess_spatial(stencil, x, periodic)
+function SpatialSymbolicPermutation(stencil, x::AbstractArray{T, D};
+        periodic::Bool = true) where {T, D}
+    stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
 
     SpatialSymbolicPermutation{D, periodic, typeof(valid)}(
         stencil, copy(stencil), arraysize, valid
     )
 end
-
-pixels_in_stencil(pixel, est::SpatialSymbolicPermutation{D,false}) where {D} =
-    get_pixels_nonperiodic(pixel, est)
-
-pixels_in_stencil(pixel, est::SpatialSymbolicPermutation{D,true}) where {D} =
-    get_pixels_periodic(pixel, est, D)
-
 
 function Entropies.probabilities(x, est::SpatialSymbolicPermutation)
     # TODO: This can be literally a call to `symbolize` and then

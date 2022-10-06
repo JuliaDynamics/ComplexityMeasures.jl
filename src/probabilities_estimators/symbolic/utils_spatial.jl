@@ -1,5 +1,7 @@
 # This file contains functions that are common to all spatial symbolic estimators.
 # --------------------------------------------------------------------------------
+# A convenience abstract type that makes common dispatch for pixel retrieval easier.
+abstract type SpatialProbEst{D, P} <: ProbabilitiesEstimator end
 
 # get stencil in the form of vectors of cartesian indices from either input type
 stencil_to_offsets(stencil::Vector{CartesianIndex{D}}) where D = stencil, D
@@ -54,19 +56,19 @@ function preprocess_spatial(stencil, x::AbstractArray, periodic::Bool = true)
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
 
-    return stencil, arraysize, valid, D
+    return stencil, arraysize, valid
 end
 
 # This source code is a modification of the code of Agents.jl that finds neighbors
 # in grid-like spaces. It's the code of `nearby_positions` in `grid_general.jl`.
-function get_pixels_nonperiodic(pixel, est)
+function pixels_in_stencil(pixel, est::SpatialProbEst{D,false}) where {D}
     @inbounds for i in eachindex(est.stencil)
         est.viewer[i] = est.stencil[i] + pixel
     end
     return est.viewer
 end
 
-function get_pixels_periodic(pixel, est, D)
+function pixels_in_stencil(pixel, est::SpatialProbEst{D,true}) where {D}
     @inbounds for i in eachindex(est.stencil)
         # It's annoying that we have to change to tuple and then to CartesianIndex
         # because iteration over cartesian indices is not allowed. But oh well.

@@ -41,7 +41,7 @@ entropy(Renyi(;kwargs...), x, est)
 See [`SpatialSymbolicPermutation`](@ref) for more info, or how to encode stencils.
 """
 function entropy_spatial_permutation(x, stencil, periodic = true; kwargs...)
-    est = SpatialSymbolicPermutation(stencil, x, periodic)
+    est = SpatialSymbolicPermutation(stencil, x; periodic)
     entropy(Renyi(;kwargs...), x, est)
 end
 

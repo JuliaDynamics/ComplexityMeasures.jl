@@ -56,26 +56,25 @@ See also: [`SpatioTemporalPermutation`](@ref), [`GaussianSymbolization`](@ref),
     Parameter Analysis of Multiscale Two-Dimensional Fuzzy and Dispersion Entropy
     Measures Using Machine Learning Classification. Entropy, 23(10), 1303.
 """
-struct SpatialDispersion{D,P,V,S<:SymbolizationScheme} <: ProbabilitiesEstimator
+struct SpatialDispersion{D,P,V,S<:SymbolizationScheme} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
     valid::V
     symbolization::S
-    periodic::Bool
     skip_symbolization::Bool
     L::Union{Nothing, Int}
 end
 
-function SpatialDispersion(stencil, x::AbstractArray;
+function SpatialDispersion(stencil, x::AbstractArray{T, D};
         periodic::Bool = true,
         symbolization::S = GaussianSymbolization(c = 5),
         skip_symbolization::Bool = false,
-        L::Union{Nothing, Int} = nothing) where S
-    stencil, arraysize, valid, D = preprocess_spatial(stencil, x, periodic)
+        L::Union{Nothing, Int} = nothing) where {S, T, D}
+    stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
 
     SpatialDispersion{D, periodic, typeof(valid), S}(
-        stencil, copy(stencil), arraysize, valid, symbolization, periodic,
+        stencil, copy(stencil), arraysize, valid, symbolization,
         skip_symbolization, L,
     )
 end
@@ -88,12 +87,6 @@ function Base.show(io::IO, est::SpatialDispersion{D}) where {D}
     print(io, "\nSymbolization: $(est.symbolization)")
     print(io, """\nBoundaries: $(est.periodic ? "Periodic" : "Non-periodic")""")
 end
-
-pixels_in_stencil(pixel, est::SpatialDispersion{D,false}) where {D} =
-    get_pixels_nonperiodic(pixel, est)
-
-pixels_in_stencil(pixel, est::SpatialDispersion{D,true}) where {D} =
-    get_pixels_periodic(pixel, est, D)
 
 function symbol_distribution(x::AbstractArray{T, N}, est::SpatialDispersion) where {T, N}
     if est.skip_symbolization
