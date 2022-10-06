@@ -52,9 +52,6 @@ See also: [`SpatioTemporalPermutation`](@ref), [`GaussianSymbolization`](@ref),
 [^Azami2019]: Azami, H., da Silva, L. E. V., Omoto, A. C. M., & Humeau-Heurtier, A. (2019).
     Two-dimensional dispersion entropy: An information-theoretic method for irregularity
     analysis of images. Signal Processing: Image Communication, 75, 178-187.
-[^Furlong2021]: Furlong, R., Hilal, M., O’brien, V., & Humeau-Heurtier, A. (2021).
-    Parameter Analysis of Multiscale Two-Dimensional Fuzzy and Dispersion Entropy
-    Measures Using Machine Learning Classification. Entropy, 23(10), 1303.
 """
 struct SpatialDispersion{D,P,V,S<:SymbolizationScheme} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}
