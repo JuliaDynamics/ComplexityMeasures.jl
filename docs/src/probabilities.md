@@ -20,8 +20,7 @@ ValueHistogram
 RectangularBinning
 ```
 
-
-## Permutation (symbolic)
+## Symbolic (permutation)
 
 ```@docs
 SymbolicPermutation
@@ -30,10 +29,11 @@ SymbolicAmplitudeAwarePermutation
 SpatialSymbolicPermutation
 ```
 
-## Dispersion (symbolic)
+## Symbolic (dispersion)
 
 ```@docs
 Dispersion
+SpatialDispersion
 ```
 
 ## Transfer operator (binning)

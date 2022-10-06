@@ -65,14 +65,26 @@ function map_to_category(yⱼ, c)
     return zⱼ
 end
 
-function symbolize(x::AbstractVector, s::GaussianSymbolization)
+function symbolize(x::AbstractArray, symbolization::GaussianSymbolization)
+    s = similar(x, Int)
+    symbolize!(s, x, symbolization)
+end
+
+# Note: we always provide a *vector* as the pre-allocated symbol container. Manipulate
+# dimensions separately if needed.
+function symbolize!(s::AbstractArray{Int, N}, x::AbstractArray{T, N},
+        symbolization::GaussianSymbolization) where {T, N}
+
     σ = Statistics.std(x)
     μ = Statistics.mean(x)
+    c = symbolization.c
 
-    # We only need the value of the integral (not the error), so
-    # index first element returned from quadgk
     k = 1/(σ*sqrt(2π))
-    yⱼs = [k * first(quadgk(x -> g(x, μ, σ), -Inf, xᵢ)) for xᵢ in x]
-
-    return map_to_category.(yⱼs, s.c)
+    for (i, xᵢ) in enumerate(x)
+        # We only need the value of the integral (not the error), so
+        # index first element returned from quadgk
+        yᵢ = k * first(quadgk(x -> g(x, μ, σ), -Inf, xᵢ))
+        s[i] = map_to_category(yᵢ, c)
+    end
+    return s
 end

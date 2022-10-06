@@ -32,7 +32,7 @@ Stencils are passed in one of the following three ways:
     ```julia
     stencil = CartesianIndex.([(0,0), (0,1), (1,1), (1,0)])
     ```
-    Don't forget to include the zero offset index if you want to include the point itself, 
+    Don't forget to include the zero offset index if you want to include the point itself,
     which is almost always the case.
     Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
     (directions here correspond to the way Julia prints matrices by default).
@@ -49,7 +49,7 @@ Stencils are passed in one of the following three ways:
     When passing a stencil as a `D`-dimensional array, `m = sum(stencil)`
 
 3. As a `Tuple` containing two `Tuple`s, both of length `D`, for `D`-dimensional data.
-    The first tuple specifies the `extent` of the stencil, where `extent[i]` 
+    The first tuple specifies the `extent` of the stencil, where `extent[i]`
     dictates the number of pixels to be included along the `i`th axis and `lag[i]`
     the separation of pixels along the same axis.
     This method can only generate (hyper)rectangular stencils. To create the same estimator as
@@ -86,69 +86,20 @@ struct SpatialSymbolicPermutation{D,P,V} <: ProbabilitiesEstimator
     arraysize::Dims{D}
     valid::V
 end
-function SpatialSymbolicPermutation(
-        stencil, x::AbstractArray, p::Bool = true
+function SpatialSymbolicPermutation(stencil, x::AbstractArray, periodic::Bool = true)
+    stencil, arraysize, valid, D = preprocess_spatial(stencil, x, periodic)
+
+    SpatialSymbolicPermutation{D, periodic, typeof(valid)}(
+        stencil, copy(stencil), arraysize, valid
     )
-    arraysize = size(x)
-    stencil, D = stencil_to_offsets(stencil)
-    @assert length(arraysize) == D "Indices and input array must match dimensionality!"
-    # Store valid indices for later iteration
-    if p
-        valid = CartesianIndices(x)
-    else
-        # collect maximum offsets in each dimension for limiting ranges
-        maxoffsets = [maximum(s[i] for s in stencil) for i in 1:D]
-        # Safety check
-        minoffsets = [min(0, minimum(s[i] for s in stencil)) for i in 1:D]
-        ranges = Iterators.product(
-            [(1-minoffsets[i]):(arraysize[i]-maxoffsets[i]) for i in 1:D]...
-        )
-        valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
-    end
-    SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid)
 end
 
-# get stencil in the form of vectors of cartesian indices from either input type
-stencil_to_offsets(stencil::Vector{CartesianIndex{D}}) where D = stencil, D
+pixels_in_stencil(pixel, est::SpatialSymbolicPermutation{D,false}) where {D} =
+    get_pixels_nonperiodic(pixel, est)
 
-function stencil_to_offsets(stencil::NTuple{2, NTuple{D, T}}) where {D, T}
-    # get extent and lag from stencil
-    extent, lag = stencil
-    # generate a D-dimensional stencil
-    # start by generating a list of iterators for each dimension
-    iters = [0:lag[i]:extent[i]-1 for i in 1:D]
-    # then generate the stencil. We use an iterator product that we basically only reshape after that
-    stencil = CartesianIndex.(vcat(collect(Iterators.product(iters...))...))
-    return stencil, D
-end
+pixels_in_stencil(pixel, est::SpatialSymbolicPermutation{D,true}) where {D} =
+    get_pixels_periodic(pixel, est, D)
 
-function stencil_to_offsets(stencil::Array{Int, D}) where D
-    # translate D-dim array into stencil of cartesian indices (of dimension D)
-    stencil = [idx - CartesianIndex(Tuple(ones(Int, D))) for idx in findall(Bool.(stencil))]
-    # subtract first coordinate from everything to get a stencil that contains (0,0)
-    stencil = [idx - stencil[1] for idx in stencil]
-    return stencil, D
-end
-
-# This source code is a modification of the code of Agents.jl that finds neighbors
-# in grid-like spaces. It's the code of `nearby_positions` in `grid_general.jl`.
-function pixels_in_stencil(pixel, spatperm::SpatialSymbolicPermutation{D,false}) where {D}
-    @inbounds for i in eachindex(spatperm.stencil)
-        spatperm.viewer[i] = spatperm.stencil[i] + pixel
-    end
-    return spatperm.viewer
-end
-
-function pixels_in_stencil(pixel, spatperm::SpatialSymbolicPermutation{D,true}) where {D}
-    @inbounds for i in eachindex(spatperm.stencil)
-        # It's annoying that we have to change to tuple and then to CartesianIndex
-        # because iteration over cartesian indices is not allowed. But oh well.
-        spatperm.viewer[i] = CartesianIndex{D}(
-            mod1.(Tuple(spatperm.stencil[i] + pixel), spatperm.arraysize)
-        )
-    end
-    return spatperm.viewer
-end
 
 function Entropies.probabilities(x, est::SpatialSymbolicPermutation)
     # TODO: This can be literally a call to `symbolize` and then
@@ -171,4 +122,9 @@ function Base.show(io::IO, est::SpatialSymbolicPermutation{D}) where {D}
     print(io, "Spatial permutation estimator for $D-dimensional data. Stencil:")
     print(io, "\n")
     show(io, MIME"text/plain"(), est.stencil)
+end
+
+function alphabet_length(est::SpatialSymbolicPermutation)
+    m = stencil_length(est.stencil)
+    return factorial(m)
 end
