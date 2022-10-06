@@ -13,16 +13,7 @@ import Base.maximum
 
 A dispersion-based probabilities/entropy estimator for `N`-dimensional spatiotemporal
 systems, based on Azami et al. (2019)'s 2D square dispersion entropy estimator,
-but here generalized for `N`-dimensional input data `x`, as well as arbitrary `stencil`s
-and `symbolization` schemes.
-
-The `symbolization` scheme dictates how raw data are symbolized, while `stencil` defines
-what local area (hyperrectangle), or which points within this area, to include around each
-hypervoxel (i.e. pixel in 2D) (see [`SpatioTemporalPermutation`](@ref) for details).
-
-If `skip_symbolization == true`, `symbolization` is ignored, and dispersion patterns are
-computed directly from `x`, under the assumption that `L` is the alphabet length for `x`
-(useful for categorical or integer data).
+but here generalized for `N`-dimensional input data `x`.
 
 The argument `periodic` decides whether the stencil should wrap around at the end of the
 array. If `periodic = false`, pixels whose stencil exceeds the array bounds are skipped.
@@ -33,8 +24,13 @@ Estimating probabilities/entropies from higher-dimensional data is conceptually 
 The steps are
 
 1. Discretize each value (hypervoxel) in `x` relative to all other values `xᵢ ∈ x` using the
-    provided `symbolization` scheme.
-2. Use `stencil` to extract relevant discretized points around each hypervoxel.
+    provided `symbolization` scheme. If `skip_symbolization == true`, `symbolization` is
+    ignored, and dispersion patterns are computed directly from `x`, under the assumption
+    that `L` is the alphabet length for `x` (useful for categorical or integer data).
+2. Use `stencil` to extract relevant discretized points around each hypervoxel. The
+    `stencil` defines what local area (hyperrectangle), or which points within this area,
+    to include around each hypervoxel (i.e. pixel in 2D) (see
+    [`SpatioTemporalPermutation`](@ref) for details).
 3. Construct a symbol string from these points.
 4. Take the sum-normalized histogram of the symbol strings as a probability distribution.
 5. Optionally, compute entropy from this probability distribution.
