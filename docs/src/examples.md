@@ -307,7 +307,8 @@ stencil = ((2, 2), (1, 1))
 est_disp = SpatialDispersion(stencil, original; 
     symbolization = GaussianSymbolization(c = 5), 
     periodic = false)
-est_perm = SpatialSymbolicPermutation(stencil, original, false)
+est_perm = SpatialSymbolicPermutation(stencil, original;
+    periodic = false)
 hs_disp = [entropy_normalized(img, est_disp) for img in noisy_imgs]
 hs_perm = [entropy_normalized(img, est_perm) for img in noisy_imgs]
 
