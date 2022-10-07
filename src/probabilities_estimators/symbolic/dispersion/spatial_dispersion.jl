@@ -21,7 +21,6 @@ array. If `periodic = false`, pixels whose stencil exceeds the array bounds are 
 ## Description
 
 Estimating probabilities/entropies from higher-dimensional data is conceptually simple.
-The steps are
 
 1. Discretize each value (hypervoxel) in `x` relative to all other values `xᵢ ∈ x` using the
     provided `symbolization` scheme. If `skip_symbolization == true`, `symbolization` is
@@ -33,7 +32,8 @@ The steps are
     [`SpatioTemporalPermutation`](@ref) for details).
 3. Construct a symbol string from these points.
 4. Take the sum-normalized histogram of the symbol strings as a probability distribution.
-5. Optionally, compute entropy from this probability distribution.
+5. Optionally, compute [`entropy`](@ref) or [`entropy_normalized`](@ref) from this
+    probability distribution.
 
 ## Application on time series
 
@@ -46,7 +46,7 @@ est = SpatialDispersion(stencil, first(imgs))
 h_vs_t = entropy_normalized.(imgs, Ref(est))
 ```
 
-See also: [`SpatioTemporalPermutation`](@ref), [`GaussianSymbolization`](@ref),
+See also: [`SpatialSymbolicPermutation`](@ref), [`GaussianSymbolization`](@ref),
 [`symbolize`](@ref).
 
 [^Azami2019]: Azami, H., da Silva, L. E. V., Omoto, A. C. M., & Humeau-Heurtier, A. (2019).

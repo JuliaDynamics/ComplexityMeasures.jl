@@ -71,6 +71,8 @@ h_vs_t = entropy.(data, est) # broadcasting with `.`
 The argument `periodic` decides whether the stencil should wrap around at the end of the
 array. If `periodic = false`, pixels whose stencil exceeds the array bounds are skipped.
 
+See also: [`SpatialDispersion`](@ref).
+
 [^Ribeiro2012]:
     Ribeiro et al. (2012). Complexity-entropy causality plane as a complexity measure
     for two-dimensional patterns. https://doi.org/10.1371/journal.pone.0040689
