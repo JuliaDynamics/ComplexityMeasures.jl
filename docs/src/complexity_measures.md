@@ -6,3 +6,9 @@
 reverse_dispersion
 distance_to_whitenoise
 ```
+
+## Fuzzy entropy
+
+```@docs
+fuzzy_entropy
+```
