@@ -1,3 +1,6 @@
+using DelayEmbeddings
+using StaticArrays
+
 @testset "Ordinal patterns" begin
     @test Entropies.encode_motif([2, 3, 1]) isa Int
     @test 0 <= Entropies.encode_motif([2, 3, 1]) <= factorial(3) - 1
@@ -59,5 +62,100 @@ end
     for i = 1:50
         s = sortperm([1, 2, 3, 2], lt = Entropies.isless_rand)
         @test s == [1, 2, 4, 3] || s == [1, 4, 2, 3]
+    end
+end
+
+@testset "Equal-width intervals (rectangular binning)" begin
+    N = 10 # each dimension is divides [min, max] into N chunks
+    @testset "User-defined grid" begin
+        # For datasets
+        # --------------------------------
+        D = Dataset([-1.0, 0.0, 1.0], [-1.0, 0.0, 1.0])
+        r = (1 - (-1)) / N
+
+        # (-1, 1) range for all dims.
+        binning_same = FixedRectangularBinning(-1.0, 1.0, N)
+
+        # (axismins[1], axismaxs[1]) gives the range for the 1st dim.
+        axismins, axismaxs = (-1.0, -1.0), (1.0, 1.0)
+        binning_diff = FixedRectangularBinning(axismins, axismaxs, N)
+
+        # Verify that grids are as expected.
+        symb_diff = RectangularBinEncoder(D, binning_diff)
+        symb_same = RectangularBinEncoder(D, binning_same)
+        @test all(@. symb_diff.edgelengths ≈ r)
+        @test all(@. symb_same.edgelengths ≈ r)
+        @test all(@. symb_diff.mini ≈ -1.0)
+        @test all(@. symb_same.mini ≈ -1.0)
+
+        # bins are indexed from 0, so should get the following symbols
+        expected = [SVector(0,0), SVector(4, 4), SVector(9, 9)]
+        @test symbolize(D, symb_diff) ==
+            symbolize(D, symb_same) ==
+            expected
+
+        @test alphabet_length(symb_diff) == N^2
+        @test alphabet_length(symb_same) == N^2
+
+        # For univariate timeseries
+        # --------------------------------
+        # bins are indexed from 0, so should get [0, 4, 9] with N = 10
+        x = [-1.0, 0.0, 1.0]
+        symb_1D = RectangularBinEncoder(x, binning_same)
+
+        @test alphabet_length(symb_1D) == N
+        @test symb_1D.mini ≈ -1.0
+        @test symb_1D.edgelengths ≈ (1 - (-1)) / N
+        @test symbolize(x, symb_1D) == [0, 4, 9]
+    end
+
+    @testset "Grid defined by data" begin
+        D = Dataset([-1.0, 0.0, 1.0], [-1.0, 0.0, 1.0])
+        r = nextfloat((1.0 - (-1.0)) / N)
+        binning_int = RectangularBinning(N)
+        binning_intvec = RectangularBinning([N, N])
+        binning_float = RectangularBinning(r)
+        binning_floatvec = RectangularBinning([r, r])
+
+        symb_int = RectangularBinEncoder(D, binning_int)
+        symb_float = RectangularBinEncoder(D, binning_float)
+        symb_intvec = RectangularBinEncoder(D, binning_intvec)
+        symb_floatvec = RectangularBinEncoder(D, binning_floatvec)
+
+        @test symb_int.edgelengths ==
+            symb_float.edgelengths ==
+            symb_intvec.edgelengths ==
+            symb_floatvec.edgelengths
+        @test all(@. symb_int.edgelengths ≈ r)
+        @test all(@. symb_float.edgelengths ≈ r)
+        @test all(@. symb_intvec.edgelengths ≈ r)
+        @test all(@. symb_floatvec.edgelengths ≈ r)
+        @test all(@. symb_int.mini ≈ -1.0)
+        @test all(@. symb_float.mini ≈ -1.0)
+        @test all(@. symb_intvec.mini ≈ -1.0)
+        @test all(@. symb_floatvec.mini ≈ -1.0)
+
+        @test symbolize(D, symb_int) ==
+            symbolize(D, symb_intvec) ==
+            symbolize(D, symb_float) ==
+            symbolize(D, symb_floatvec) ==
+            [SVector(0,0), SVector(4,4), SVector(9,9)]
+
+
+        x = [-1.0, 0.0, 1.0]
+        r = (1.0 - (-1.0)) / N
+        binning_int = RectangularBinning(N)
+        binning_intvec = RectangularBinning([N])
+        symb_int = RectangularBinEncoder(x, binning_int)
+        symb_float = RectangularBinEncoder(x, binning_float)
+
+        @test all(@. symb_int.edgelengths ≈ r)
+        @test all(@. symb_float.edgelengths ≈ r)
+        @test all(@. symb_int.mini ≈ -1.0)
+        @test all(@. symb_float.mini ≈ -1.0)
+
+        @test symbolize(x, symb_int) ==
+            symbolize(x, symb_float) ==
+            [0, 4, 9]
     end
 end
