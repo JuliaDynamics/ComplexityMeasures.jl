@@ -32,7 +32,7 @@ Diversity probabilities are computed as follows.
 
 - [`probabilities_and_events`](@ref). Events are the corners of the cosine similarity bins.
     Each bin has width `nextfloat(2 / nbins)`.
-- [`alphabet_length`](@ref). There are always `nbins` possible states.
+- [`alphabet_length`](@ref). The total number of states is given by `nbins`.
 
 [^Wang2020]: Wang, X., Si, S., & Li, Y. (2020). Multiscale diversity entropy: A novel
     dynamical measure for fault diagnosis of rotating machinery. IEEE Transactions on
