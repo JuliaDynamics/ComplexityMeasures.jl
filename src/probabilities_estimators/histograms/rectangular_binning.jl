@@ -106,6 +106,14 @@ struct RectangularBinEncoder{B, M, E} <: SymbolizationScheme
     edgelengths::E
 end
 
+function Base.show(io::IO, x::RectangularBinEncoder)
+    return print(io, "RectangularBinEncoder\n" *
+        "  binning: $(x.binning) \n" *
+        "  box corners: $(x.mini)\n" *
+        "  edgelengths: $(x.edgelengths)"
+    )
+end
+
 function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning) where {D, T}
     # This function always returns static vectors and is type stable
     ϵ = b.ϵ
