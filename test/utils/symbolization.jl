@@ -96,7 +96,8 @@ end
 
         @test alphabet_length(symb_diff) == N^2
         @test alphabet_length(symb_same) == N^2
-
+        @test alphabet_length(D, symb_diff) == N^2
+        @test alphabet_length(D, symb_same) == N^2
         # For univariate timeseries
         # --------------------------------
         # bins are indexed from 0, so should get [0, 4, 9] with N = 10
@@ -104,6 +105,7 @@ end
         symb_1D = RectangularBinEncoder(x, binning_same)
 
         @test alphabet_length(symb_1D) == N
+        @test alphabet_length(x, symb_1D) == N
         @test symb_1D.mini ≈ -1.0
         @test symb_1D.edgelengths ≈ (1 - (-1)) / N
         @test symbolize(x, symb_1D) == [0, 4, 9]
@@ -157,5 +159,31 @@ end
         @test symbolize(x, symb_int) ==
             symbolize(x, symb_float) ==
             [0, 4, 9]
+    end
+
+    @testset "Alphabet length" begin
+        X = Dataset(rand(10, 3))
+        x = rand(10)
+        rbN = RectangularBinning(5)
+        rbNs = RectangularBinning([5, 3, 4])
+        rbF = RectangularBinning(0.5)
+        rbFs = RectangularBinning([0.5, 0.4, 0.3])
+
+        symbolization_xN = RectangularBinEncoder(x, rbN)
+        symbolization_xF = RectangularBinEncoder(x, rbF)
+        symbolization_XN = RectangularBinEncoder(X, rbN)
+        symbolization_XNs = RectangularBinEncoder(X, rbNs)
+        symbolization_XF = RectangularBinEncoder(X, rbF)
+        symbolization_XFs = RectangularBinEncoder(X, rbFs)
+
+        @test alphabet_length(x, symbolization_xN) == 5
+        @test_throws ArgumentError alphabet_length(x, symbolization_xF)
+        @test_throws ArgumentError alphabet_length(x, symbolization_xF)
+        @test_throws ArgumentError alphabet_length(x, symbolization_XNs)
+
+        @test alphabet_length(X, symbolization_XN) == 5^3
+        @test alphabet_length(X, symbolization_XNs) == 5*3*4
+        @test_throws ArgumentError alphabet_length(X, symbolization_XF)
+        @test_throws ArgumentError alphabet_length(X, symbolization_XFs)
     end
 end

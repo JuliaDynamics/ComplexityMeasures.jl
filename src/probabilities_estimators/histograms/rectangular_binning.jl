@@ -185,13 +185,39 @@ function RectangularBinEncoder(::AbstractDataset{D, T},
     RectangularBinEncoder(b, mini, edgelengths)
 end
 
-# When the grid is fixed, we can always deduce the total number of bins.
+const al = alphabet_length
+# tedious to write out, but easier to test systematically.
+const RB{T} = RectangularBinning{T} where T
+const RB_NONALLOWED{T} = RectangularBinning{T} where T <: Union{Float64, Vector{Float64}}
+
+alphabet_length(x, symbolization::RectangularBinEncoder{<:RB_NONALLOWED{Q}}) where {Q} =
+    throw(ArgumentError("alphabet_length can't be deduced from RectangularBinning{$Q}"))
+# multiple-axis bins don't make sense for univariate input.
+alphabet_length(::AbstractVector, symbolization::RectangularBinEncoder{RB{Vector{Int}}}) =
+    throw(ArgumentError("alphabet_length is ambiguous for Vectors with RectangularBinning{Vector{Int}}"))
+alphabet_length(::AbstractVector, symbolization::RectangularBinEncoder{RB{Int}}) =
+    symbolization.binning.ϵ
+alphabet_length(::AbstractDataset{D}, symbolization::RectangularBinEncoder{RB{Int}}) where {D} =
+    symbolization.binning.ϵ^D
+alphabet_length(::AbstractDataset{D}, symbolization::RectangularBinEncoder{RB{Vector{Int}}}) where {D} =
+    prod(symbolization.binning.ϵ)
+
+const NONDEDUCIBLE = Union{T, Vector{T}} where T <: AbstractFloat
+alphabet_length(x, symbolization::RectangularBinEncoder{RB{<:Q}}) where {Q <: NONDEDUCIBLE} =
+    throw(ArgumentError("alphabet_length can't be deduced from RectangularBinning{$Q}"))
+
+# When the grid is fixed by the user, we can always deduce the total number of bins,
+# even just from the binning itself - symbolization info not needed.
 alphabet_length(::AbstractVector, b::FixedRectangularBinning) = b.N
 alphabet_length(::AbstractDataset{D, T}, b::FixedRectangularBinning) where {D, T} = b.N^D
-alphabet_length(est::RectangularBinEncoder{B, T}) where {B <: FixedRectangularBinning, T <: SVector{D}} where D =
-    est.binning.N^D
-alphabet_length(est::RectangularBinEncoder{B, T}) where {B <: FixedRectangularBinning, T <: Number} =
-    est.binning.N
+alphabet_length(symbolization::RectangularBinEncoder{B, T}) where {B <: FixedRectangularBinning, T <: Number} =
+    symbolization.binning.N
+alphabet_length(symbolization::RectangularBinEncoder{B, T}) where {B <: FixedRectangularBinning, T <: SVector{D}} where D =
+    symbolization.binning.N^D
+alphabet_length(x::AbstractVector, symbolization::RectangularBinEncoder{B, T}) where {B <: FixedRectangularBinning, T <: Number} =
+    symbolization.binning.N
+alphabet_length(x::AbstractDataset{D}, symbolization::RectangularBinEncoder{B, T}) where {B <: FixedRectangularBinning, T <: SVector{D}} where D =
+    symbolization.binning.N^D
 
 function encode_as_bin(point, b::RectangularBinEncoder)
     (; mini, edgelengths) = b
