@@ -22,7 +22,6 @@ stencil = ...
 est = SpatialSymbolicPermutation(stencil, x)
 ```
 
-
 Stencils are passed in one of the following three ways:
 
 1. As vectors of `CartesianIndex` which encode the pixels to include in the
@@ -32,7 +31,7 @@ Stencils are passed in one of the following three ways:
     ```julia
     stencil = CartesianIndex.([(0,0), (0,1), (1,1), (1,0)])
     ```
-    Don't forget to include the zero offset index if you want to include the point itself, 
+    Don't forget to include the zero offset index if you want to include the point itself,
     which is almost always the case.
     Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
     (directions here correspond to the way Julia prints matrices by default).
@@ -49,7 +48,7 @@ Stencils are passed in one of the following three ways:
     When passing a stencil as a `D`-dimensional array, `m = sum(stencil)`
 
 3. As a `Tuple` containing two `Tuple`s, both of length `D`, for `D`-dimensional data.
-    The first tuple specifies the `extent` of the stencil, where `extent[i]` 
+    The first tuple specifies the `extent` of the stencil, where `extent[i]`
     dictates the number of pixels to be included along the `i`th axis and `lag[i]`
     the separation of pixels along the same axis.
     This method can only generate (hyper)rectangular stencils. To create the same estimator as
@@ -66,7 +65,7 @@ To apply this to timeseries of spatial data, simply loop over the call, e.g.:
 
 ```julia
 h = entropy(x, est)
-h_vs_t = entropy.(data, est) # broadcasting with `.`
+h_vs_t = [entropy(d, est) for d in data]
 ```
 
 The argument `periodic` decides whether the stencil should wrap around at the end of the
