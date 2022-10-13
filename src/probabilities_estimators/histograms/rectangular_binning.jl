@@ -86,7 +86,7 @@ function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning)
         edgelength = ϵ
     elseif ϵ isa Int
         edgeslength_nonadjusted = (maxi - mini)/ϵ
-        # Round-off occurs when ncoding bins. Applying `nextfloat` twice seems to still
+        # Round-off occurs when encoding bins. Applying `nextfloat` twice seems to still
         # ensure that bins cover data. See comment above.
         edgelength = nextfloat(edgeslength_nonadjusted, 2)
     else
