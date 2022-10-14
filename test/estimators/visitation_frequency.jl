@@ -73,5 +73,15 @@ using Random
         b = RectangularBinning(N)
         @test length(probabilities(x1, b)) == N
         @test length(probabilities(x2, b)) == N
+
+        rb1 = RectangularBinEncoder(x1, b, n_eps = 1)
+        rb2 = RectangularBinEncoder(x1, b, n_eps = 2)
+        @test Entropies.encode_as_bin(maximum(x1), rb1) == 9
+        @test Entropies.encode_as_bin(maximum(x1), rb2) == 9
+
+        rb1 = RectangularBinEncoder(x2, b, n_eps = 1)
+        rb2 = RectangularBinEncoder(x2, b, n_eps = 2)
+        @test Entropies.encode_as_bin(maximum(x2), rb1) == 9
+        @test Entropies.encode_as_bin(maximum(x2), rb2) == 9
     end
 end
