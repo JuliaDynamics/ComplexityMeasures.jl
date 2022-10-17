@@ -6,11 +6,20 @@ export statistical_complexity
 """
     statistical_complexity(x, est, distance = JSDivergence(), normalize = true, entropy_func=Renyi())
 
-This function calculates the statistical complexity of a time series `x` as defined by Rosso et al. [^Rosso2007], 
-with leaving some freedom in the distance measure to the uniform distribution (default is originally used JSDivergence)
-and the entropy of choice (default is originally used Renyi entropy).
+This function calculates the statistical complexity of a time series `x` as defined by Rosso et al. [^Rosso2007].
+It calculates the statistical complexity based on permutation patterns. The statistical complexity ``C_{JS}[P]`` 
+is defined based on the distribution ``P`` of ordinal patterns
+```math
+C_{JS}[P] = Q_J[P, P_e] H_S[P]
+```
+where ``Q_J`` is originally the normalized Jensen-Shannon divergence of the ordinal distribution to a uniform distribution,
+and ``H_S`` is the normalized permutation entropy.
 
+In this implementation, the distance measure defaults to the Jensen-Shannon divergence, but other (semi-)metrics can also be
+chosen. The type of entropy defaults to the Renyi entropy.
 
+If `normalize = true`, the complexity is divided by the maximum distance of the ordinal distribution to a uniform distribution,
+otherwise this normalization step is skipped.
 
 [^Rosso2007] Rosso et al. (2007). Distinguishing noise from chaos. https://doi.org/10.1103/PhysRevLett.99.154102
 """
@@ -37,5 +46,5 @@ function statistical_complexity(x::AbstractArray, est::ProbabilitiesEstimator;
         return dist / evaluate(distance, determ, uniform) * entropy_normalized(entropy_func, x, est)
     end
 
-    return dist
+    return dist * entropy_normalized(entropy_func, x, est)
 end
