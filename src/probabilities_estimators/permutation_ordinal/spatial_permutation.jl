@@ -58,7 +58,7 @@ Stencils are passed in one of the following three ways:
     ```julia
     stencil = ((2, 2), (1, 1))
     ```
-    When passing a stencil using `extent` and `lag`, `m = prod(extent)!`.
+    When passing a stencil using `extent` and `lag`, `m = prod(extent)`.
 
 After having defined `est`, one calculates the spatial permutation entropy
 by calling [`entropy`](@ref) with `est`, and with the array data.
@@ -85,7 +85,14 @@ struct SpatialSymbolicPermutation{D,P,V} <: ProbabilitiesEstimator
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
     valid::V
+    m::Int
 end
+
+# helper functions to get an "m" property also for the spatial version
+get_m(stencil::Vector{CartesianIndex{D}}) where {D} = length(stencil)
+get_m(stencil::NTuple{2, NTuple{D, T}}) where {D, T} = prod(stencil[1])
+get_m(stencil::Array{Int, D}) where D = sum(stencil)
+
 function SpatialSymbolicPermutation(
         stencil, x::AbstractArray, p::Bool = true
     )
@@ -105,7 +112,7 @@ function SpatialSymbolicPermutation(
         )
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
-    SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid)
+    SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid, get_m(stencil))
 end
 
 # get stencil in the form of vectors of cartesian indices from either input type
@@ -172,3 +179,5 @@ function Base.show(io::IO, est::SpatialSymbolicPermutation{D}) where {D}
     print(io, "\n")
     show(io, MIME"text/plain"(), est.stencil)
 end
+
+alphabet_length(est::SpatialSymbolicPermutation)::Int = factorial(est.m)

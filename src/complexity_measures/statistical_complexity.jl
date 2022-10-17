@@ -14,10 +14,10 @@ and the entropy of choice (default is originally used Renyi entropy).
 
 [^Rosso2007] Rosso et al. (2007). Distinguishing noise from chaos. https://doi.org/10.1103/PhysRevLett.99.154102
 """
-function statistical_complexity(x::AbstractVector, est::PermutationProbabilityEstimator;
-                                distance = JSDivergence(),
+function statistical_complexity(x::AbstractArray, est::ProbabilitiesEstimator;
+                                distance::SemiMetric = JSDivergence(),
                                 normalize::Bool = true,
-                                entropy_func = Renyi()) 
+                                entropy_func::Entropy = Renyi()) 
 
     # get probabilities from data
     probs = probabilities(x, est)
