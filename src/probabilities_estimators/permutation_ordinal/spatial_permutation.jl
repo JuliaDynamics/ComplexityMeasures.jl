@@ -22,7 +22,6 @@ stencil = ...
 est = SpatialSymbolicPermutation(stencil, x)
 ```
 
-
 Stencils are passed in one of the following three ways:
 
 1. As vectors of `CartesianIndex` which encode the pixels to include in the
@@ -66,7 +65,7 @@ To apply this to timeseries of spatial data, simply loop over the call, e.g.:
 
 ```julia
 h = entropy(x, est)
-h_vs_t = entropy.(data, est) # broadcasting with `.`
+h_vs_t = [entropy(d, est) for d in data]
 ```
 
 The argument `periodic` decides whether the stencil should wrap around at the end of the
@@ -113,6 +112,28 @@ function SpatialSymbolicPermutation(
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
     SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid, get_m(stencil))
+end
+
+# get stencil in the form of vectors of cartesian indices from either input type
+stencil_to_offsets(stencil::Vector{CartesianIndex{D}}) where D = stencil, D
+
+function stencil_to_offsets(stencil::NTuple{2, NTuple{D, T}}) where {D, T}
+    # get extent and lag from stencil
+    extent, lag = stencil
+    # generate a D-dimensional stencil
+    # start by generating a list of iterators for each dimension
+    iters = [0:lag[i]:extent[i]-1 for i in 1:D]
+    # then generate the stencil. We use an iterator product that we basically only reshape after that
+    stencil = CartesianIndex.(vcat(collect(Iterators.product(iters...))...))
+    return stencil, D
+end
+
+function stencil_to_offsets(stencil::Array{Int, D}) where D
+    # translate D-dim array into stencil of cartesian indices (of dimension D)
+    stencil = [idx - CartesianIndex(Tuple(ones(Int, D))) for idx in findall(Bool.(stencil))]
+    # subtract first coordinate from everything to get a stencil that contains (0,0)
+    stencil = [idx - stencil[1] for idx in stencil]
+    return stencil, D
 end
 
 # get stencil in the form of vectors of cartesian indices from either input type
