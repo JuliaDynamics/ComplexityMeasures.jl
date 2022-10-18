@@ -1,8 +1,8 @@
 using Distances
 
-export statistical_complexity, maximum_complexity_entropy, minimum_complexity_entropy
+export StatisticalComplexity, maximum_complexity_entropy, minimum_complexity_entropy
 
-evaluate(distance::SemiMetric, a::Probabilities, b::Probabilities) = evaluate(distance, vec(a), vec(b))
+evaluate(distance::SemiMetric, a::Probabilities, b::Probabilities) = Distances.evaluate(distance, vec(a), vec(b))
 
 """
     StatisticalComplexity <: ComplexityMeasure
@@ -61,16 +61,13 @@ Base.@kwdef struct StatisticalComplexity <: ComplexityMeasure
     entropy::Entropy = Renyi()
 end
 
-alphabet_length(c::StatisticalComplexity) = alphabet_length(c.est.m)
+alphabet_length(c::StatisticalComplexity) = alphabet_length(c.est)
 
 function complexity(c::StatisticalComplexity, p::Probabilities; h::Float64) 
-
     L = alphabet_length(c)
     # fill with the probability distribution zeros for empty bins, 
     # we need this to compare to a uniform distribution of m! patterns
-    # we put p at the end because it might be just a float, and append
-    # is not defined for this order of arguments
-    append!(zeros(L-length(p)), p.p)
+    p = Probabilities(cat(zeros(L-length(p)), p.p, dims=1))
     # normalization is done automatically by Probabilities
     uniform = Probabilities(ones(L))
 
@@ -87,12 +84,22 @@ function complexity(c::StatisticalComplexity, x::AbstractArray)
     complexity(c, p; h)
 end
 
+function complexity_normalized(c::StatisticalComplexity, p::Probabilities; h::Float64)
+    comp = complexity(c, p; h)
+    L = alphabet_length(c)
+    uniform = Probabilities(ones(L))
+    # generate "deterministic" distribution (only one completely full bin)
+    determ = Probabilities(Base.append!(zeros(L-1), 1.0))
+    # distance to this distribution is the maximum possible distance to a uniform distribution
+    return comp / evaluate(c.distance, determ, uniform)
+end
+
 function complexity_normalized(c::StatisticalComplexity, x::AbstractArray)
     comp = complexity(c, x)
     L = alphabet_length(c)
     uniform = Probabilities(ones(L))
     # generate "deterministic" distribution (only one completely full bin)
-    determ = Probabilities(append!(zeros(L-1), 1.0))
+    determ = Probabilities(Base.append!(zeros(L-1), 1.0))
     # distance to this distribution is the maximum possible distance to a uniform distribution
     return comp / evaluate(c.distance, determ, uniform)
 end
@@ -134,9 +141,9 @@ function maximum_complexity_entropy(c::StatisticalComplexity; num::Int=1)
                 p[j] = (1-prob_params[k]) / (L-i)
             end
             p_k = Probabilities(p)
-            h = entropy(c.entropy.base, p_k) / norm
+            h = entropy(c.entropy, p_k) / norm
             hs[i, k] = h
-            cs[i, k] = complexity(c, p_k; h)
+            cs[i, k] = complexity_normalized(c, p_k; h)
         end
     end
     hs = vcat(hs...)
@@ -177,9 +184,9 @@ function minimum_complexity_entropy(c::StatisticalComplexity; num::Int=1000)
         p_i = ones(L) * (1-prob_params[i]) / (L-1)
         p_i[1] = prob_params[i]
         p_i = Probabilities(p_i)
-        h = entropy(c.entropy.base, p_i) / norm
+        h = entropy(c.entropy, p_i) / norm
         push!(hs, h)
-        push!(cs, complexity(c, p_i; h))
+        push!(cs, complexity_normalized(c, p_i; h))
     end
     return reverse(hs), reverse(cs)
 end

@@ -111,7 +111,7 @@ function SpatialSymbolicPermutation(
         )
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
-    SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid, get_m(stencil))
+    SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid, stencil_length(stencil))
 end
 
 # get stencil in the form of vectors of cartesian indices from either input type
