@@ -2,7 +2,7 @@ using Distances
 
 export StatisticalComplexity, maximum_complexity_entropy, minimum_complexity_entropy
 
-evaluate(distance::SemiMetric, a::Probabilities, b::Probabilities) = Distances.evaluate(distance, vec(a), vec(b))
+evaluate(distance::SemiMetric, a::Probabilities, b::Probabilities) = Distances.evaluate(distance, a.p, b.p)
 
 """
     StatisticalComplexity <: ComplexityMeasure
