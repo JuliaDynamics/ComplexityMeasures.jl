@@ -2,7 +2,7 @@
 
 ```@docs
 complexity
-complexity_normalized!
+complexity_normalized
 ```
 
 ## Reverse dispersion entropy
