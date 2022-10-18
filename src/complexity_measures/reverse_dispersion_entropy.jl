@@ -63,7 +63,7 @@ given the parameters of `estimator` (which must be known beforehand).
 If `normalize == true`, then normalize the value to the interval `[0, 1]` by using the
 parameters of `estimator`.
 
-Used to compute reverse dispersion entropy([`reverse_dispersion`](@ref);
+Used to compute reverse dispersion entropy([`ReverseDispersion`](@ref);
 Li et al., 2019[^Li2019]).
 
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
