@@ -53,7 +53,7 @@ Base.@kwdef struct GaussianSymbolization{I <: Integer} <: SymbolizationScheme
     c::I = 3
 end
 
-alphabet_length(symbolization::GaussianSymbolization) = s.c
+alphabet_length(symbolization::GaussianSymbolization) = symbolization.c
 
 g(xᵢ, μ, σ) = exp((-(xᵢ - μ)^2)/(2σ^2))
 

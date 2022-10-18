@@ -72,17 +72,23 @@ Li et al., 2019[^Li2019]).
 function distance_to_whitenoise(p::Probabilities, est::ReverseDispersion; normalize = false)
     # We can safely skip non-occurring symbols, because they don't contribute
     # to the sum in eq. 3 in Li et al. (2019)
-    return sum(abs2, p) - (1 / alphabet_length(est))
+    Hrde = sum(abs2, p) - (1 / alphabet_length(est))
+
+    if normalize
+        return Hrde / (1 - (1 / alphabet_length(est)))
+    else
+        return Hrde
+    end
 end
 
 function complexity(c::ReverseDispersion, x)
-    p = probabilities(x, c)
-    # The following step combines distance information with the probabilities, yielding
-    # something which is no longer a set of probabilities.
-    Hrde = distance_to_whitenoise(p, c, normalize = c.normalize)
-    return Hrde
+    (; symbolization, m, τ, check_unique) = c
+    p = probabilities(x, Dispersion(; symbolization, m, τ, check_unique))
+    return distance_to_whitenoise(p, c, normalize = false)
 end
 
 function complexity_normalized(c::ReverseDispersion, x)
-    return complexity(c, x) / (1 - (1 / alphabet_length(c)))
+    (; symbolization, m, τ, check_unique) = c
+    p = probabilities(x, Dispersion(; symbolization, m, τ, check_unique))
+    return distance_to_whitenoise(p, c, normalize = true)
 end
