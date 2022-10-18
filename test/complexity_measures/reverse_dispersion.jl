@@ -1,10 +1,10 @@
 x = rand(100)
-@test reverse_dispersion(x) isa Real
-@test 0.0 <= reverse_dispersion(x, normalize = true) <= 1.0
+@test complexity(ReverseDispersion(), x) isa Real
+@test 0.0 <= complexity_normalized(ReverseDispersion(), x) <= 1.0
 
 @testset "Distance to whitenoise" begin
     m, n_classes = 2, 2
-    est = Dispersion(m = m, symbolization = GaussianSymbolization(c = n_classes))
+    est = ReverseDispersion(m = m, symbolization = GaussianSymbolization(c = n_classes))
 
         # Reverse dispersion entropy is 0 when all probabilities are identical and equal
     # to 1/(n_classes^m).
@@ -12,7 +12,7 @@ x = rand(100)
     Hrde_minimal = distance_to_whitenoise(flat_dist, est, normalize = false)
     @test round(Hrde_minimal, digits = 7) ≈ 0.0
 
-        # Reverse dispersion entropy is maximal when there is only one non-zero dispersal
+    # Reverse dispersion entropy is maximal when there is only one non-zero dispersal
     # pattern. Then reverse dispersion entropy is
     # 1 - 1/(n_classes^m). When normalizing to this value, the RDE should be 1.0.
     m, n_classes = 2, 2
