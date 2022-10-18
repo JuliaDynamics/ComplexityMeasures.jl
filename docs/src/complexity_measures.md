@@ -1,4 +1,4 @@
-# [Complexity API](@id complexity_measures)
+# [Complexity measures API](@id complexity_measures)
 
 ```@docs
 complexity
