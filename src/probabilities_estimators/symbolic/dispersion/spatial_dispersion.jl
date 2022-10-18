@@ -77,12 +77,12 @@ function SpatialDispersion(stencil, x::AbstractArray{T, D};
 end
 
 # Pretty printing
-function Base.show(io::IO, est::SpatialDispersion{D}) where {D}
+function Base.show(io::IO, est::SpatialDispersion{D,P,V,S}) where {D,P,V,S}
     println(io, "Spatial dispersion estimator for $D-dimensional data.")
     print(io, "Stencil: ")
     show(io, MIME"text/plain"(), est.stencil)
     print(io, "\nSymbolization: $(est.symbolization)")
-    print(io, """\nBoundaries: $(est.periodic ? "Periodic" : "Non-periodic")""")
+    print(io, """\nBoundaries: $(P ? "Periodic" : "Non-periodic")""")
 end
 
 function symbol_distribution(x::AbstractArray{T, N}, est::SpatialDispersion) where {T, N}
