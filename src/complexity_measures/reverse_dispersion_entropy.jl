@@ -45,7 +45,7 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
 """
-struct ReverseDispersion{S <: SymbolizationScheme} <: ComplexityMeasure
+Base.@kwdef struct ReverseDispersion{S <: SymbolizationScheme} <: ComplexityMeasure
     symbolization::S = GaussianSymbolization(c = 5)
     m::Int = 2
     τ::Int = 1
