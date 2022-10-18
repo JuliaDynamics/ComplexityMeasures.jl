@@ -88,9 +88,9 @@ struct SpatialSymbolicPermutation{D,P,V} <: ProbabilitiesEstimator
 end
 
 # helper functions to get an "m" property also for the spatial version
-get_m(stencil::Vector{CartesianIndex{D}}) where {D} = length(stencil)
-get_m(stencil::NTuple{2, NTuple{D, T}}) where {D, T} = prod(stencil[1])
-get_m(stencil::Array{Int, D}) where D = sum(stencil)
+stencil_length(stencil::Vector{CartesianIndex{D}}) where {D} = length(stencil)
+stencil_length(stencil::NTuple{2, NTuple{D, T}}) where {D, T} = prod(stencil[1])
+stencil_length(stencil::Array{Int, D}) where D = sum(stencil)
 
 function SpatialSymbolicPermutation(
         stencil, x::AbstractArray, p::Bool = true

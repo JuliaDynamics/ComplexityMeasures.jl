@@ -26,6 +26,7 @@ function Probabilities(x::AbstractVector{<:Integer})
     return Probabilities(x ./ s, true)
 end
 
+append!(dist::Probabilities{T}, a::Probabilities{T}) where T = append!(dist.p, a.p)
 
 # extend base Vector interface:
 for f in (:length, :size, :eachindex, :eltype,
