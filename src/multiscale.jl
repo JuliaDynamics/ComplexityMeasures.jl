@@ -211,3 +211,36 @@ function multiscale(e::Entropy, alg::Composite, x::AbstractVector, est::Probabil
 
     return hs
 end
+
+
+
+function multiscale(e::ComplexityMeasure, alg::Regular, x::AbstractVector;
+        maxscale::Int = 8, normalize = false)
+
+    downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
+    complexities = zeros(Float64, maxscale)
+    if normalize
+        complexities = complexity_normalized.(Ref(e), downscaled_timeseries)
+    else
+        complexities .= complexity.(Ref(e), downscaled_timeseries)
+    end
+
+    return complexities
+end
+
+function multiscale(e::ComplexityMeasure, alg::Composite, x::AbstractVector;
+        maxscale::Int = 10, normalize = false)
+
+    downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
+    complexities = zeros(Float64, maxscale)
+    for s in 1:maxscale
+        if normalize
+            complexities[s] =
+                mean(complexity_normalized.(Ref(e), downscaled_timeseries[s], Ref(est)))
+        else
+            complexities[s] = mean(entropy.(Ref(e), downscaled_timeseries[s], Ref(est)))
+        end
+    end
+
+    return complexities
+end
