@@ -1,42 +1,13 @@
-export reverse_dispersion
+export ReverseDispersion
 export distance_to_whitenoise
 
-# Note: this is not an entropy estimator, so we don't use the entropy_xxx_norm interface
-# for normalization, even though we rely on `alphabet_length`.
 """
-    distance_to_whitenoise(p::Probabilities, estimator::Dispersion; normalize = false)
+    ReverseDispersion <: ComplexityMeasure
+    ReverseDispersion(; m = 2, τ = 1, check_unique = true,
+        symbolization::SymbolizationScheme = GaussianSymbolization(c = 5)
+    )
 
-Compute the distance of the probability distribution `p` from a uniform distribution,
-given the parameters of `estimator` (which must be known beforehand).
-
-If `normalize == true`, then normalize the value to the interval `[0, 1]` by using the
-parameters of `estimator`.
-
-Used to compute reverse dispersion entropy([`reverse_dispersion`](@ref);
-Li et al., 2019[^Li2019]).
-
-[^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
-    complexity measure for sensor signal. Sensors, 19(23), 5203.
-"""
-function distance_to_whitenoise(p::Probabilities, est::Dispersion; normalize = false)
-    # We can safely skip non-occurring symbols, because they don't contribute
-    # to the sum in eq. 3 in Li et al. (2019)
-    Hrde = sum(abs2, p) - (1 / alphabet_length(est))
-
-    if normalize
-        return Hrde / (1 - (1 / alphabet_length(est)))
-    else
-        return Hrde
-    end
-end
-
-# Note again: this is a *complexity measure*, not an entropy estimator, so we don't use
-# the entropy_xxx_norm interface for normalization, even though we rely on `alphabet_length`.
-"""
-    reverse_dispersion(x::AbstractVector{T}, est::Dispersion = Dispersion();
-        normalize = true) where T <: Real
-
-Compute the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019].
+Estimator for the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019].
 
 ## Description
 
@@ -54,23 +25,64 @@ embedding dimension `m` and embedding delay `τ`.
 Recommended parameter values[^Li2018] are `m ∈ [2, 3]`, `τ = 1` for the embedding, and
 `c ∈ [3, 4, …, 8]` categories for the Gaussian mapping.
 
-If `normalize == true`, then the reverse dispersion entropy is normalized to `[0, 1]`.
+If normalizing, then the reverse dispersion entropy is normalized to `[0, 1]`.
 
 The minimum value of ``H_{rde}`` is zero and occurs precisely when the dispersion
 pattern distribution is flat, which occurs when all ``p_i``s are equal to ``1/c^m``.
 Because ``H_{rde} \\geq 0``, ``H_{rde}`` can therefore be said to be a measure of how far
 the dispersion pattern probability distribution is from white noise.
 
+## Data requirements
+
+Like for [`Dispersion`](@ref), the input must have more than one unique element for the
+default Gaussian mapping symbolization to be well-defined. Li et al. (2018) recommends
+that `x` has at least 1000 data points.
+
+If `check_unique == true` (default), then it is checked that the input has
+more than one unique value. If `check_unique == false` and the input only has one
+unique element, then a `InexactError` is thrown when trying to compute probabilities.
+
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
 """
-function reverse_dispersion(x::AbstractVector{T}, est::Dispersion = Dispersion();
-        normalize = true) where T <: Real
+struct ReverseDispersion{S <: SymbolizationScheme} <: ComplexityMeasure
+    symbolization::S = GaussianSymbolization(c = 5)
+    m::Int = 2
+    τ::Int = 1
+    check_unique::Bool = false
+end
 
-    p = probabilities(x, est)
+alphabet_length(est::ReverseDispersion)::Int = alphabet_length(est.symbolization) ^ est.m
 
-    # The following step combines distance information with the probabilities, so
-    # from here on, it is not possible to use `renyi_entropy` or similar methods, because
-    # we're not dealing with probabilities anymore.
-    Hrde = distance_to_whitenoise(p, est, normalize = normalize)
+"""
+    distance_to_whitenoise(p::Probabilities, estimator::ReverseDispersion; normalize = false)
+
+Compute the distance of the probability distribution `p` from a uniform distribution,
+given the parameters of `estimator` (which must be known beforehand).
+
+If `normalize == true`, then normalize the value to the interval `[0, 1]` by using the
+parameters of `estimator`.
+
+Used to compute reverse dispersion entropy([`reverse_dispersion`](@ref);
+Li et al., 2019[^Li2019]).
+
+[^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
+    complexity measure for sensor signal. Sensors, 19(23), 5203.
+"""
+function distance_to_whitenoise(p::Probabilities, est::ReverseDispersion; normalize = false)
+    # We can safely skip non-occurring symbols, because they don't contribute
+    # to the sum in eq. 3 in Li et al. (2019)
+    return sum(abs2, p) - (1 / alphabet_length(est))
+end
+
+function complexity(c::ReverseDispersion, x)
+    p = probabilities(x, c)
+    # The following step combines distance information with the probabilities, yielding
+    # something which is no longer a set of probabilities.
+    Hrde = distance_to_whitenoise(p, c, normalize = c.normalize)
+    return Hrde
+end
+
+function complexity_normalized(c::ReverseDispersion, x)
+    return complexity(c, x) / (1 - (1 / alphabet_length(c)))
 end
