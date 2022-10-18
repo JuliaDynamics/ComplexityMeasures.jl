@@ -163,19 +163,31 @@ function downsample(method::Composite, x::AbstractVector{T}, s::Int, args...; kw
 end
 
 """
-    multiscale(e::Entropy, alg::MultiScaleAlgorithm, x::AbstractVector, est::ProbabilitiesEstimator;
-        scalemax::Int = 8, normalize = false)
+    multiscale(e::Entropy, alg::MultiScaleAlgorithm, x::AbstractVector,
+        est::ProbabilitiesEstimator;
+        scalemax::Int = 8,
+        normalize = false)
 
-Compute the multi-scale entropy (Costa et al., 2002)[^Costa2002] of type `e` of
-timeseries `x` using the given probabilities estimator `est`
+Compute the multi-scale entropy (Costa et al., 2002)[^Costa2002] of type `e` for
+timeseries `x`, using downsampling algorithm `alg`, and probabilities estimator `est`.
+
+If `normalize == true`, then compute normalized entropy.
+
+    multiscale(c::ComplexityMeasure, alg::MultiScaleAlgorithm, x::AbstractVector;
+        scalemax::Int = 8,
+        normalize = false)
+
+Compute the multi-scale complexity measure `c` for the timeseries `x`, using
+using downsampling algorithm `alg`.
+
+If `normalize == true`, then compute the normalized version of the complexity measure.
+
+## Description
 
 Utilizes [`downsample`](@ref) to compute the entropy of coarse-grained, downsampled
-versions of `x` for scale factors `1:maxscale`. The length of the most severely
-downsampled version of `x` is `N ÷ maxscale`, while for scale factor `1`, the original
-time series is considered.
-
-If `normalize == true`, then compute normalized entropy (if that is possible for this
-particular combination of entropy type and probability estimator).
+versions of `x` for scale factors `1:maxscale`. If `N = length(x)`, then the length of the
+most severely downsampled version of `x` is `N ÷ scalemax`, while for scale factor `1`,
+the original time series is considered.
 
 [^Costa2002]: Costa, M., Goldberger, A. L., & Peng, C. K. (2002). Multiscale entropy
     analysis of complex physiologic time series. Physical review letters, 89(6), 068102.
