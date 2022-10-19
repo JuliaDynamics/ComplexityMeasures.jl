@@ -18,9 +18,18 @@ function genentropy(probs::Probabilities; q = 1.0, base = MathConstants.e)
     return entropy(Renyi(q, base), probs)
 end
 
-function genentropy(x, est; q = 1.0, base = MathConstants.e)
+function genentropy(x::Array_or_Dataset, ε::Real; q = 1.0, base = MathConstants.e)
     @warn """
-    `genentropy(x, est; q, base)` is a deprecated function in
+    `genentropy(x::Array_or_Dataset, ε::Real; q, base)` is a deprecated function in
+    Entropies.jl v2.0. Use instead: `entropy(Renyi(q, base), probabilities(x, ε))`,
+    or `entropy(probabilities(x, ε))` if `q, base` have their default values.
+    """
+    return entropy(Renyi(q, base), probabilities(x, ε))
+end
+
+function genentropy(x::Array_or_Dataset, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
+    @warn """
+    `genentropy(x::Array_or_Dataset, est::ProbabilitiesEstimator; q, base)` is a deprecated function in
     Entropies.jl v2.0. Use instead: `entropy(Renyi(q, base), x, est)`,
     or `entropy(x, est)` if `q, base` have their default values.
     """
