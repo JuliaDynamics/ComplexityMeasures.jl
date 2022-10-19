@@ -76,7 +76,7 @@ using Random
 
         rb1 = RectangularBinEncoder(x2, b, n_eps = 1)
         rb2 = RectangularBinEncoder(x2, b, n_eps = 2)
-        @test_throws Entropies.encode_as_bin(maximum(x2), rb1) == 10 # shouldn't occur, but does when tolerance is too low
+        @test Entropies.encode_as_bin(maximum(x2), rb1) == 10 # shouldn't occur, but does when tolerance is too low
         @test Entropies.encode_as_bin(maximum(x2), rb2) == 9
     end
 
