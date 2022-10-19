@@ -55,10 +55,10 @@ statistical_complexity = complexity(c, p; h=permutation_entropy)
             [Distinguishing noise from chaos](https://doi.org/10.1103/PhysRevLett.99.154102).
             Physical review letters, 99(15), 154102. 
 """
-Base.@kwdef struct StatisticalComplexity <: ComplexityMeasure
-    est::ProbabilitiesEstimator = SymbolicPermutation()
-    distance::SemiMetric = JSDivergence()
-    entropy::Entropy = Renyi()
+Base.@kwdef struct StatisticalComplexity{P<:ProbabilitiesEstimator, M, E <: Entropy} <: ComplexityMeasure
+    est::P= SymbolicPermutation()
+    distance::M = JSDivergence()
+    entropy::E = Renyi()
 end
 
 alphabet_length(c::StatisticalComplexity) = alphabet_length(c.est)
