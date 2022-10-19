@@ -7,6 +7,10 @@ The supertype of all binning schemes.
 """
 abstract type AbstractBinning end
 
+# We need binning to be defined first to add it as a field to a struct
+include("rectangular_binning.jl")
+include("histogram_estimation.jl")
+
 """
     ValueHistogram(b::AbstractBinning) <: ProbabilitiesEstimator
 
@@ -41,6 +45,8 @@ An alias for [`ValueHistogram`](@ref).
 """
 const VisitationFrequency = ValueHistogram
 
+# This method is only valid for rectangular binnings, as `fasthist`
+# is only valid for rectangular binnings. For more binnings, it needs to be extended.
 function probabilities(x::Array_or_Dataset, est::ValueHistogram{<:RectangularBinning})
     fasthist(x, est.binning)[1]
 end
@@ -52,6 +58,3 @@ function probabilities_and_events(x, est::ValueHistogram)
     events = map(b -> b .* edgelengths .+ mini, bins)
     return probs, events
 end
-
-include("rectangular_binning.jl")
-include("histogram_estimation.jl")
