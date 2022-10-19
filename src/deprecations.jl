@@ -1,4 +1,13 @@
 @deprecate TimeScaleMODWT WaveletOverlap
+
+function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})
+    @warn """
+    `probabilities(x::Vector_or_Dataset, ε::Real)`
+    is deprecated, use `probabilities(x, ValueHistogram(ε))`.
+    """
+    probabilities(x, ValueHistogram(ε))
+end
+
 export genentropy, permentropy
 
 function permentropy(x; τ = 1, m = 3, base = MathConstants.e)
@@ -21,10 +30,10 @@ end
 function genentropy(x::Array_or_Dataset, ε::Real; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(x::Array_or_Dataset, ε::Real; q, base)` is a deprecated function in
-    Entropies.jl v2.0. Use instead: `entropy(Renyi(q, base), probabilities(x, ε))`,
-    or `entropy(probabilities(x, ε))` if `q, base` have their default values.
+    Entropies.jl v2.0. Use instead: `entropy(Renyi(q, base), x, ValueHistogram(ε))`,
+    or `entropy(x, ValueHistogram(ε))` if `q, base` have their default values.
     """
-    return entropy(Renyi(q, base), probabilities(x, ε))
+    return entropy(Renyi(q, base), x, ValueHistogram(ε))
 end
 
 function genentropy(x::Array_or_Dataset, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)

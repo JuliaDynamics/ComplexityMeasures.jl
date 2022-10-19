@@ -26,11 +26,11 @@ See also: [`RectangularBinning`](@ref).
 
     ValueHistogram(ϵ::Union{Real,Vector})
 
-This is a convenience method that accepts as input the input of [`RectangularBinning`](@ref)
+This is a convenience method that accepts same input as [`RectangularBinning`](@ref)
 and initializes this binning directly.
 """
-struct ValueHistogram{RB<:AbstractBinning} <: ProbabilitiesEstimator
-    binning::RB
+struct ValueHistogram{B<:AbstractBinning} <: ProbabilitiesEstimator
+    binning::B
 end
 ValueHistogram(ϵ::Union{Real,Vector}) = ValueHistogram(RectangularBinning(ϵ))
 
@@ -41,12 +41,16 @@ An alias for [`ValueHistogram`](@ref).
 """
 const VisitationFrequency = ValueHistogram
 
-function probabilities(x::Array_or_Dataset, est::ValueHistogram)
-    probabilities(x, est.binning)
+function probabilities(x::Array_or_Dataset, est::ValueHistogram{<:RectangularBinning})
+    fasthist(x, est.binning)[1]
 end
 
 function probabilities_and_events(x, est::ValueHistogram)
-    return probabilities_and_events(x, est.binning)
+    probs, bins, encoder = fasthist(x, est.binning)
+    (; mini, edgelengths) = encoder
+    unique!(bins) # `bins` is already sorted from `fasthist!`
+    events = map(b -> b .* edgelengths .+ mini, bins)
+    return probs, events
 end
 
 include("rectangular_binning.jl")
