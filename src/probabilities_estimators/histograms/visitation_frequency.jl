@@ -23,10 +23,16 @@ To obtain the bin information along with the probabilities,
 use [`probabilities_and_events`](@ref). The events correspond to the bin corners.
 
 See also: [`RectangularBinning`](@ref).
+
+    ValueHistogram(ϵ::Union{Real,Vector})
+
+This is a convenience method that accepts as input the input of [`RectangularBinning`](@ref)
+and initializes this binning directly.
 """
 struct ValueHistogram{RB<:AbstractBinning} <: ProbabilitiesEstimator
     binning::RB
 end
+ValueHistogram(ϵ::Union{Real,Vector}) = ValueHistogram(RectangularBinning(ϵ))
 
 """
     VisitationFrequency
