@@ -1,8 +1,13 @@
-# [Complexity measures](@id complexity_measures)
+# [Complexity measures API](@id complexity_measures)
+
+```@docs
+complexity
+complexity_normalized
+```
 
 ## Reverse dispersion entropy
 
 ```@docs
-reverse_dispersion
+ReverseDispersion
 distance_to_whitenoise
 ```

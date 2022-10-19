@@ -21,7 +21,7 @@ include("entropy.jl")
 include("symbolization/symbolize.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
-include("complexity_measures/complexity_measures.jl")
+include("complexity.jl")
 
 include("deprecations.jl")
 

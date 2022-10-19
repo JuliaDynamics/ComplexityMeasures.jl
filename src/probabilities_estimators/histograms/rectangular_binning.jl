@@ -20,30 +20,6 @@ struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
 end
 
-function probabilities(x::Vector_or_Dataset, binning::RectangularBinning)
-    fasthist!(x, binning)[1]
-end
-
-function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})
-    probabilities(x, RectangularBinning(ε))
-end
-
-# Internal function method extension for `probabilities`
-function fasthist!(x::Vector_or_Dataset, ϵ::AbstractBinning)
-    encoder = RectangularBinEncoder(x, ϵ)
-    bins = symbolize(x, encoder)
-    hist = fasthist!(bins)
-    return Probabilities(hist), bins, encoder
-end
-
-function probabilities_and_events(x, ϵ::RectangularBinning)
-    probs, bins, encoder = fasthist!(x, ϵ)
-    (; mini, edgelengths) = encoder
-    unique!(bins) # `bins` is already sorted from `fasthist!`
-    events = map(b -> b .* edgelengths .+ mini, bins)
-    return probs, events
-end
-
 """
     RectangularBinEncoder(x, binning::RectangularBinning) <: SymbolizationScheme
 

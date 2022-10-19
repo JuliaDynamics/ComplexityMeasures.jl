@@ -19,10 +19,8 @@ using Random
 
     for bin in binnings
         @testset "ϵ = $(bin.ϵ)" begin
-            p = probabilities(x, bin)
             est = ValueHistogram(bin)
-            p2 = probabilities(x, est)
-            @test p == p2
+            p = probabilities(x, est)
             @test length(p) == 100
             @test all(e -> 0.009 ≤ e ≤ 0.011, p)
         end
@@ -30,7 +28,7 @@ using Random
 
     @testset "Check rogue 1s" begin
         b = RectangularBinning(0.1) # no `nextfloat` here, so the rogue (1, 1) is in extra bin!
-        p = probabilities(x, b)
+        p = probabilities(x, ValueHistogram(b))
         @test length(p) == 100 + 1
         @test p[end] ≈ 1/100_000 atol = 1e-5
     end
@@ -42,10 +40,7 @@ using Random
         ε = nextfloat(0.1) # this guarantees that we get the same as the `n` above!
         binnings = RectangularBinning.((n, ε))
         for bin in binnings
-            p = probabilities(x, bin)
-            est = ValueHistogram(bin)
-            p2 = probabilities(x, est)
-            @test p == p2
+            p = probabilities(x, ValueHistogram(bin))
             @test length(p) == 10
             @test all(e -> 0.09 ≤ e ≤ 0.11, p)
         end
@@ -83,5 +78,12 @@ using Random
         rb2 = RectangularBinEncoder(x2, b, n_eps = 2)
         @test_throws Entropies.encode_as_bin(maximum(x2), rb1) == 10 # shouldn't occur, but does when tolerance is too low
         @test Entropies.encode_as_bin(maximum(x2), rb2) == 9
+    end
+
+    @testset "interface" begin
+        x = ones(3)
+        p = probabilities(x, ValueHistogram(0.1))
+        @test p isa Probabilities
+        @test_throws MethodError entropy(x, 0.1)
     end
 end
