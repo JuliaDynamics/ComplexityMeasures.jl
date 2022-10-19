@@ -4,6 +4,10 @@
 Entropies
 ```
 
+!!! info
+    You are reading the development version of the documentation of Entropies.jl,
+    that will become version 2.0.
+
 ## API & terminology
 
 !!! note

@@ -58,20 +58,6 @@ Calculate probabilities representing `x` based on the provided estimator.
 The probabilities may, or may not be ordered, and may, or may not contain 0s, see the
 documentation of the individual estimators for more.
 Configuration options are always given as arguments to the chosen estimator.
-
-
-    probabilities(x::Array_or_Dataset, ε::AbstractFloat) → p::Probabilities
-
-Convenience syntax which provides probabilities for `x` based on rectangular binning
-(i.e. performing a histogram). In short, the state space is divided into boxes of length
-`ε`, and formally we use `est = ValueHistogram(RectangularBinning(ε))`
-as an estimator, see [`ValueHistogram`](@ref).
-
-
-    probabilities(x::Array_or_Dataset, n::Int) → p::Probabilities
-
-Same as the above method, but now each dimension of the data is binned into `n` equal
-sized bins instead of bins of length `ε::AbstractFloat`.
 """
 function probabilities end
 # See visitation_frequency.jl and rectangular_binning.jl (all in histograms folder)
