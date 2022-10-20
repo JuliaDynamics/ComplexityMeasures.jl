@@ -34,7 +34,7 @@ struct RectangularBinEncoder{M, E} <: SymbolizationScheme
     edgelengths::E
 end
 
-function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning) where {D, T}
+function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning; n_eps = 2) where {D, T}
     # This function always returns static vectors and is type stable
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
@@ -43,8 +43,10 @@ function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning) w
         edgelengths = ϵ .* v
     elseif ϵ isa Int || ϵ isa Vector{Int}
         edgeslengths_nonadjusted = @. (maxi - mini)/ϵ
-        # just taking the next float here is enough to ensure boxes cover data
-        edgelengths = nextfloat.(edgeslengths_nonadjusted)
+        # Just taking nextfloat once here isn't enough for bins to cover data when using
+        # `encode_as_bin` later, because subtraction and division leads to loss
+        # of precision. We need a slightly bigger number, so apply nextfloat twice.
+        edgelengths = nextfloat.(edgeslengths_nonadjusted, n_eps)
     else
         error("Invalid ϵ for binning of a dataset")
     end
@@ -52,7 +54,7 @@ function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning) w
     RectangularBinEncoder(b, mini, edgelengths)
 end
 
-function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning)
+function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning; n_eps = 2)
     # This function always returns numbers and is type stable
     ϵ = b.ϵ
     mini, maxi = extrema(x)
@@ -60,8 +62,9 @@ function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning)
         edgelength = ϵ
     elseif ϵ isa Int
         edgeslength_nonadjusted = (maxi - mini)/ϵ
-        # just taking the next float here is enough
-        edgelength = nextfloat(edgeslength_nonadjusted)
+        # Round-off occurs when encoding bins. Applying `nextfloat` twice seems to still
+        # ensure that bins cover data. See comment above.
+        edgelength = nextfloat(edgeslength_nonadjusted, n_eps)
     else
         error("Invalid ϵ for binning of a vector")
     end
