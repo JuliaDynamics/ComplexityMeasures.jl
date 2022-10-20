@@ -66,9 +66,6 @@ using Random
         x2 = [0.4125754262679051, 0.52844411982339560, 0.4535277505543355, 0.25502420827802674, 0.77862522996085940, 0.6081939026664078, 0.2628674795466387, 0.18846258495465185, 0.93320375283233840, 0.40093871561247874, 0.8032730760974603, 0.3531608285217499, 0.018436525139752136, 0.55541857934068420, 0.9907521337888632, 0.15382361136212420, 0.01774321666660561, 0.67569337507728300, 0.06130971689608822, 0.31417161558476836]
         N = 10
         b = RectangularBinning(N)
-        @test length(probabilities(x1, b)) == N
-        @test length(probabilities(x2, b)) == N
-
         rb1 = RectangularBinEncoder(x1, b, n_eps = 1)
         rb2 = RectangularBinEncoder(x1, b, n_eps = 2)
         @test Entropies.encode_as_bin(maximum(x1), rb1) == 10 # shouldn't occur, but does when tolerance is too low
