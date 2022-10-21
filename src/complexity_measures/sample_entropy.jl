@@ -11,13 +11,10 @@ export SampleEntropy
 
 An estimator for the sample entropy complexity measure (Richman & Moorman,
 2000)[^Richman2000], using radius `r`, embedding dimension `m`, embedding lag `τ`.
+used with [`complexity`](@ref) and [`complexity_normalized`](@ref).
 
-Providing a univariate timeseries `x` to the constructors automatically determines `r`
-as `0.2 * Statistics.std(x)`.
-
-!!! note "Flexible embedding lag"
-    The original algorithm fixes `τ = 1`. All formulas here are modified to account for
-    any `τ`.
+Providing a univariate timeseries `x` to the constructors automatically determines the
+radius `r` as `0.2 * Statistics.std(x)`.
 
 ## Description
 
@@ -58,6 +55,10 @@ a conditional probability of 0 and an infinite value of SampEn(m,r,N)".
 In these cases, `NaN` is returned.
 
 If computing the normalized measure, then the resulting sample entropy is on `[0, 1]`.
+
+!!! note "Flexible embedding lag"
+    The original algorithm fixes `τ = 1`. All formulas here are modified to account for
+    any `τ`.
 
 [^Richman2000]: Richman, J. S., & Moorman, J. R. (2000). Physiological time-series
     analysis using approximate entropy and sample entropy. American Journal of
