@@ -120,7 +120,7 @@ function complexity(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
     end
 end
 
-function complexity_normalized(c::SampleEntropy, x)
+function complexity_normalized(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
     (; m, τ, metric, r) = c
 
     sampen = complexity(c, x)
