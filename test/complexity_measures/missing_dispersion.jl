@@ -1,4 +1,3 @@
-using Distributions
 # Analytical test from Zhou et al., (2022).
 # -----------------------------------------
 
@@ -12,14 +11,14 @@ s = [3, 2, 1, 1, 1, 2, 3, 3, 2, 1, 3, 1]
 # In the following, I'll assume that this is a typo from their side, because the
 # symbolization they claim to use is the same as for the `Dispersion` estimator,
 # which we analytically test elsewhere using test cases from the original paper.
-est = Dispersion(symbolization = GaussianSymbolization(c = 3), m = 2)
-
+dispest = Dispersion(symbolization = GaussianSymbolization(c = 3), m = 2)
+est = MissingDispersionPatterns(dispest)
 # If we take *our* symbolized sequence with m = 2,
 # s = [3, 2, 1, 1, 1, 2, 3, 3, 2, 1, 3, 1],
 # then the symbols (3, 1) and (2, 2) don't occur, so the number of missing dispersion
 # patterns is 2, not 1 (as in the paper).
-@test missing_dispersion(x, est = est, normalize = false) == 2.0
-@test missing_dispersion(x, est = est, normalize = true) == 2/9
+@test complexity(est, x) == 2.0
+@test complexity_normalized(est, x) == 2/9
 
 # For uniformly distributed noise, with sufficiently low-dimensional embeddings and
 # few enough categories for the symbolization, it is expected that all dispersion patterns
@@ -28,16 +27,18 @@ est = Dispersion(symbolization = GaussianSymbolization(c = 3), m = 2)
 cs = [2, 3]
 ms = [2, 3]
 for (c, m) in zip(cs, ms)
-    est = Dispersion(symbolization = GaussianSymbolization(c = c), m = m)
-    @test missing_dispersion(rand(1000000), est = est) == 0.0
+    local d = Dispersion(symbolization = GaussianSymbolization(c = c), m = m)
+    local est = MissingDispersionPatterns(d)
+    @test complexity(est, rand(1000000)) == 0.0
 end
 
-# For uniformly distributed noise, provided time series length N >> c^m, it is expected
+# For normally distributed noise, provided time series length N >> c^m, it is expected
 # that all dispersion patterns are eventually encountered, so the number of missing
 # dispersion patterns would be 0, regardless of parameters.
 cs = [2, 3, 4, 5]
 ms = [2, 3, 4, 5]
 for (c, m) in zip(cs, ms)
-    est = Dispersion(symbolization = GaussianSymbolization(c = c), m = m)
-    @test missing_dispersion(rand(Normal(), c^m*100), est = est) == 0.0
+    local d = Dispersion(symbolization = GaussianSymbolization(c = c), m = m)
+    local est = MissingDispersionPatterns(d)
+    @test complexity(est, randn(c^m * 100)) == 0.0
 end

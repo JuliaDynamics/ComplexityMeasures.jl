@@ -285,10 +285,10 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 
 ## Missing dispersion patterns
 
-In Zhou et al. (2022), [`missing_dispersion`](@ref) is used to detect nonlinearity in 
-time series by comparing the ``N_{MDP}`` for a time series `x` to ``N_{MDP}`` values for 
-an ensemble of surrogates of `x`. If ``N_{MDP} > ``q_{MDP}^{WIAAFT}``, where
-``q_{MDP}^{WIAAFT}`` is some `q`-th quantile of the surrogate ensemble, then it is 
+In Zhou et al. (2022), [`MissingDispersionPatterns`](@ref) is used to detect nonlinearity
+in time series by comparing the ``N_{MDP}`` for a time series `x` to ``N_{MDP}`` values for
+an ensemble of surrogates of `x`. If ``N_{MDP} > q_{MDP}^{WIAAFT}``, where
+``q_{MDP}^{WIAAFT}`` is some `q`-th quantile of the surrogate ensemble, then it is
 taken as evidence for nonlinearity.
 
 ```@example
@@ -298,13 +298,14 @@ using Entropies
 using TimeseriesSurrogates
 using Statistics
 
-est = Dispersion(m = 3, symbolization = GaussianSymbolization(c = 7))
+d = Dispersion(m = 3, symbolization = GaussianSymbolization(c = 7))
+est = MissingDispersionPatterns(d)
 sys = Systems.logistic(0.6; r = 4.0)
 normalize = true
 Ls = collect(100:100:1000)
 nL = length(Ls)
 nreps = 50
-method = WLS(IAAFT(), rescale = true)
+method = WLS(IAAFT(), true)
 
 r_det, r_noise = zeros(length(Ls)), zeros(length(Ls))
 r_det_surr, r_noise_surr = [zeros(nreps) for L in Ls], [zeros(nreps) for L in Ls]
@@ -312,15 +313,15 @@ y = rand(maximum(Ls))
 
 for (i, L) in enumerate(Ls)
     # Deterministic time series
-    x = trajectory(sys, L, Ttr = 5000)
-    s = surrogenerator(x[:, 1], method)
-    r_det[i] = missing_dispersion(x; est, normalize)
-    r_det_surr[i][:] = [missing_dispersion(s(); est, normalize) for j = 1:nreps]
+    x = trajectory(sys, L - 1, Ttr = 5000)
+    sx = surrogenerator(x, method)
+    r_det[i] = complexity_normalized(est, x)
+    r_det_surr[i][:] = [complexity_normalized(est, sx()) for j = 1:nreps]
    
     # Random time series
-    r_noise[i] = missing_dispersion(y[1:L]; est, normalize)
+    r_noise[i] = complexity_normalized(est, y[1:L])
     sy = surrogenerator(y[1:L], method)
-    r_noise_surr[i][:] = [missing_dispersion(sy(); est, normalize) for j = 1:nreps]
+    r_noise_surr[i][:] = [complexity_normalized(est, sy()) for j = 1:nreps]
 end
 
 fig = Figure()

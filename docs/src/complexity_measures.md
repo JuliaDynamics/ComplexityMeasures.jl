@@ -15,5 +15,5 @@ distance_to_whitenoise
 ## Missing dispersion patterns
 
 ```@docs
-missing_dispersion
+MissingDispersionPatterns
 ```
