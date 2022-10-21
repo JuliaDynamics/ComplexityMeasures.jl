@@ -141,13 +141,3 @@ function complexity_normalized(c::SampleEntropy, x)
         return scale(sampen, lowerbound, upperbound, 0.0, 1.0)
     end
 end
-
-complexity(est::SampleEntropy, x) =
-    throw(ArgumentError(
-        "Sample entropy is currently not defined for input of type $(typeof(x))."
-    ))
-
-complexity_normalized(est::SampleEntropy, x) =
-    throw(ArgumentError(
-        "Normalized sample entropy is currently not defined for input of type $(typeof(x))."
-    ))
