@@ -297,9 +297,12 @@ x = repeat([-5:5 |> collect; 4:-1:-4 |> collect], N ÷ 20);
 y = sin.(t .+ cos.(t/0.5));
 z = rand(N)
 
-h_x = sample_entropy(x)
-h_y = sample_entropy(y)
-h_z = sample_entropy(z)
+cx = SampleEntropy(x)
+cy = SampleEntropy(y)
+cz = SampleEntropy(z)
+h_x = complexity(cx, x)
+h_y = complexity(cy, y)
+h_z = complexity(cz, z)
 
 fig = Figure()
 ax = Axis(fig[1,1]; ylabel = "x")
@@ -330,9 +333,10 @@ x_periodic .= (x_periodic .- mean(x_periodic)) ./ std(x_periodic)
 rs = 10 .^ range(-1, 0, length = 30)
 base = 2
 m = 2
-hs_U = [sample_entropy(x_U, m = m, r = r) for r in rs]
-hs_N = [sample_entropy(x_N, m = m, r = r) for r in rs]
-hs_periodic = [sample_entropy(x_periodic, m = m, r = r) for r in rs]
+c = 
+hs_U = [complexity(SampleEntropy(m = m, r = r), x_U) for r in rs]
+hs_N = [complexity(SampleEntropy(m = m, r = r), x_N) for r in rs]
+hs_periodic = [complexity(SampleEntropy(m = m, r = r), x_periodic) for r in rs]
 
 fig = Figure()
 # Time series
