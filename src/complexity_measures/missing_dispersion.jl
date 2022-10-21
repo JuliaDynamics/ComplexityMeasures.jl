@@ -30,7 +30,7 @@ See also: [`Dispersion`](@ref), [`ReverseDispersion`](@ref), [`alphabet_length`]
 [^Zhou2022]: Zhou, Q., Shang, P., & Zhang, B. (2022). Using missing dispersion patterns
     to detect determinism and nonlinearity in time series data. Nonlinear Dynamics, 1-20.
 """
-struct MissingDispersionPatterns{D}
+struct MissingDispersionPatterns{D} <: ComplexityMeasure
     est::D
 
     function MissingDispersionPatterns(est::D) where {D <: Union{Dispersion, ReverseDispersion}}
