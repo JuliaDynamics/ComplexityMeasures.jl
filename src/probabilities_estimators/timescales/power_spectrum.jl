@@ -13,6 +13,10 @@ The closer the spectrum is to flat, i.e., white noise, the higher the entropy. H
 you can't compare entropies of timeseries with different length, because the binning
 in spectral space depends on the length of the input.
 
+The events in [`probabilities_and_events`](@ref) are just the frequencies in Fourier
+space. They should be multiplied with the sampling rate of the signal, which is assumed
+to be `1`.
+
 [^Llanos2016]:
     Llanos et al., _Power spectral entropy as an information-theoretic correlate of manner
     of articulation in American English_, [The Journal of the Acoustical Society of America
@@ -29,6 +33,12 @@ function probabilities(x::Array_or_Dataset, ::PowerSpectrum)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
     f = FFTW.rfft(x)
     Probabilities(abs2.(f))
+end
+
+function probabilities_and_events(x::Array_or_Dataset, est::PowerSpectrum)
+    probs = probabilities(x, est)
+    events = FFTW.rfftfreq(length(x))
+    return probs, events
 end
 
 function alphabet_length(x::Array_or_Dataset, ::PowerSpectrum)
