@@ -334,9 +334,9 @@ rs = 10 .^ range(-1, 0, length = 30)
 base = 2
 m = 2
 c = 
-hs_U = [complexity(SampleEntropy(m = m, r = r), x_U) for r in rs]
-hs_N = [complexity(SampleEntropy(m = m, r = r), x_N) for r in rs]
-hs_periodic = [complexity(SampleEntropy(m = m, r = r), x_periodic) for r in rs]
+hs_U = [complexity_normalized(SampleEntropy(m = m, r = r), x_U) for r in rs]
+hs_N = [complexity_normalized(SampleEntropy(m = m, r = r), x_N) for r in rs]
+hs_periodic = [complexity_normalized(SampleEntropy(m = m, r = r), x_periodic) for r in rs]
 
 fig = Figure()
 # Time series
@@ -344,6 +344,7 @@ a1 = Axis(fig[1,1]; xlabel = "r", ylabel = "Sample entropy")
 lines!(a1, rs, hs_U, label = "Uniform noise, U(0, 1)")
 lines!(a1, rs, hs_N, label = "Gaussian noise, N(0, 1)")
 lines!(a1, rs, hs_periodic, label = "Periodic signal")
+axislegend()
 
 fig
 ```
