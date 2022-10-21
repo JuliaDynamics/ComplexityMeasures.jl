@@ -1,3 +1,5 @@
+using Random
+rng = MersenneTwister(1234)
 # Analytical test from Zhou et al., (2022).
 # -----------------------------------------
 
@@ -32,7 +34,7 @@ for (c, m) in zip(cs, ms)
     @test complexity(est, rand(1000000)) == 0.0
 end
 
-# For normally distributed noise, provided time series length N >> c^m, it is expected
+# For time series of length N >> c^m, it is expected
 # that all dispersion patterns are eventually encountered, so the number of missing
 # dispersion patterns would be 0, regardless of parameters.
 cs = [2, 3, 4, 5]
@@ -40,5 +42,5 @@ ms = [2, 3, 4, 5]
 for (c, m) in zip(cs, ms)
     local d = Dispersion(symbolization = GaussianSymbolization(c = c), m = m)
     local est = MissingDispersionPatterns(d)
-    @test complexity(est, randn(c^m * 100)) == 0.0
+    @test complexity(est, randn(rng, c^m * 100) |> collect) == 0
 end
