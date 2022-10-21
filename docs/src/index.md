@@ -4,6 +4,10 @@
 Entropies
 ```
 
+!!! info
+    You are reading the development version of the documentation of Entropies.jl,
+    that will become version 2.0.
+
 ## API & terminology
 
 !!! note
@@ -42,7 +46,7 @@ Thus, any of the implemented [probabilities estimators](@ref probabilities_estim
 
 Other complexity measures, which strictly speaking don't compute entropies, and may or may not explicitly compute probability distributions, appear in the [Complexity measures](@ref complexity_measures) section.
 
-## Input data for Entropies.jl
+## [Input data for Entropies.jl](@id input_data)
 
 The input data type typically depend on the probability estimator chosen. In general though, the standard DynamicalSystems.jl approach is taken and as such we have three types of input data:
 

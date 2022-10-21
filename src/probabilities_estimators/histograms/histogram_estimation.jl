@@ -3,7 +3,7 @@
 # The function _is_ part of the DEV API, and could be used downstream.
 # (It is documented and tested).
 """
-    fasthist(x) → c::Vector{Int}
+    fasthist!(x) → c::Vector{Int}
 
 Count the occurrences `c` of the unique data values in `x`,
 so that `c[i]` is the number of times the value
@@ -14,10 +14,10 @@ Prior to counting, `x` is sorted, so this function also mutates `x`.
 Therefore, it is called with `copy` in higher level API when necessary.
 This function works for any `x` for which `sort!(x)` works.
 """
-function fasthist(x)
+function fasthist!(x)
     L = length(x)
     hist = Vector{Int}()
-    # Reserve enough space for histogram:
+    # Reserve enough space for histogram (Base suggests this improves performance):
     sizehint!(hist, L)
     # Fill the histogram by counting consecutive equal values:
     sort!(x; alg = QuickSort)
@@ -37,10 +37,10 @@ function fasthist(x)
     return hist
 end
 
-# To be renamed into `events_and_probabilities`
-function binhist(x, ϵ::RectangularBinning)
-    hist, bins, mini, edgelengths = fasthist(x, ϵ)
-    unique!(bins)
-    b = [β .* edgelengths .+ mini for β in bins]
-    return hist, b
+# This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
+function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+    encoder = RectangularBinEncoder(x, ϵ)
+    bins = symbolize(x, encoder)
+    hist = fasthist!(bins)
+    return Probabilities(hist), bins, encoder
 end
