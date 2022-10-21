@@ -285,12 +285,6 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 
 ## Missing dispersion patterns
 
-In Zhou et al. (2022), [`MissingDispersionPatterns`](@ref) is used to detect nonlinearity
-in time series by comparing the ``N_{MDP}`` for a time series `x` to ``N_{MDP}`` values for
-an ensemble of surrogates of `x`. If ``N_{MDP} > q_{MDP}^{WIAAFT}``, where
-``q_{MDP}^{WIAAFT}`` is some `q`-th quantile of the surrogate ensemble, then it is
-taken as evidence for nonlinearity.
-
 ```@example
 using CairoMakie
 using DynamicalSystemsBase

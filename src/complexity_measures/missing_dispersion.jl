@@ -28,6 +28,14 @@ computed. The authors recommend that
 `alphabet_length(est.symbolization)^est.m << length(x) - est.m*est.τ + 1`` to avoid
 undersampling.
 
+## Usage
+
+In Zhou et al. (2022), [`MissingDispersionPatterns`](@ref) is used to detect nonlinearity
+in time series by comparing the ``N_{MDP}`` for a time series `x` to ``N_{MDP}`` values for
+an ensemble of surrogates of `x`. If ``N_{MDP} > q_{MDP}^{WIAAFT}``, where
+``q_{MDP}^{WIAAFT}`` is some `q`-th quantile of the surrogate ensemble, then it is
+taken as evidence for nonlinearity.
+
 See also: [`Dispersion`](@ref), [`ReverseDispersion`](@ref), [`alphabet_length`](@ref).
 
 [^Zhou2022]: Zhou, Q., Shang, P., & Zhang, B. (2022). Using missing dispersion patterns
