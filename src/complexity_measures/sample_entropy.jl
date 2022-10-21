@@ -90,8 +90,6 @@ function computeprobs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * Statisti
 
     N = length(x)
     pts = genembed(x, 0:τ:(k - 1)*τ)
-    # For each `k`-dimensional xᵢ ∈ pts, locate its within-range-`r` nearest neighbors,
-    # excluding the point `xₖ` as a neighbor to itself.
     tree = KDTree(pts, metric)
 
     # Pᵐ := The probability that two sequences will match for k points.
@@ -115,8 +113,6 @@ function complexity(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
     A = computeprobs(x; m = m, τ = τ, r = r, metric = metric, k = m + 1)
     B = computeprobs(x; m = m, τ = τ, r = r, metric = metric, k = m)
 
-    # Conditional probability of 0 -> SampEn = ∞, or no regularity has been detected.
-    # In these cases, we skip normalization.
     if A == 0.0 || B == 0.0
         return NaN
     else
@@ -128,17 +124,17 @@ function complexity_normalized(c::SampleEntropy, x)
     (; m, τ, metric, r) = c
 
     sampen = complexity(c, x)
-    # Richman & Moorman (2000) provide constraints for the possible nonzero values
-    # of the sample entropy. We use these values to scale sample entropy to the
-    # unit interval.
-    # Here, the constraints have been modified to account for `τ != 1`.
-    # The `N - m*τ` terms account for the outer sums, while the `N - m*τ - 1`
-    # terms account for the inner sums (subtracting one due to self-exclusion).
-    # For τ = 1, this recovers the normalization from Richman & Moorman (2000).
-    # The absolute value accounts for negative lags.
-    if isnan(sampen)
+    if isnan(sampen) || isinf(sampen)
         return sampen
     else
+        # Richman & Moorman (2000) provide constraints for the possible nonzero values
+        # of the sample entropy. We use these values to scale sample entropy to the
+        # unit interval.
+        # Here, the constraints have been modified to account for `τ != 1`.
+        # The `N - m*τ` terms account for the outer sums, while the `N - m*τ - 1`
+        # terms account for the inner sums (subtracting one due to self-exclusion).
+        # For τ = 1, this recovers the normalization from Richman & Moorman (2000).
+        # The absolute value accounts for negative lags.
         N = length(x)
         lowerbound = 1/(2*(N - m*abs(τ) - 1) * (N - m*abs(τ)))
         upperbound = log(N - m*abs(τ)) + log(N - m*abs(τ) - 1) - log(2)
@@ -149,4 +145,9 @@ end
 complexity(est::SampleEntropy, x) =
     throw(ArgumentError(
         "Sample entropy is currently not defined for input of type $(typeof(x))."
+    ))
+
+complexity_normalized(est::SampleEntropy, x) =
+    throw(ArgumentError(
+        "Normalized sample entropy is currently not defined for input of type $(typeof(x))."
     ))
