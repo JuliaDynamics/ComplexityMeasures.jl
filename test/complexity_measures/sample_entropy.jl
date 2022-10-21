@@ -12,3 +12,6 @@ x = repeat([-5:5 |> collect; 4:-1:-4 |> collect], N ÷ 20);
 x = rand(N)
 @test round(complexity(c, x), digits = 2) > round(0.0, digits = 2)
 @test round(complexity_normalized(c, x), digits = 2) > round(0.0, digits = 2)
+
+# Automatically deducing radius
+@test round(complexity(SampleEntropy(x, m = 2, τ = 1), x), digits = 2) > round(0.0, digits = 2)
