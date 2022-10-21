@@ -125,6 +125,8 @@ function complexity(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
 end
 
 function complexity_normalized(c::SampleEntropy, x)
+    (; m, τ, metric, r) = c
+
     sampen = complexity(c, x)
     # Richman & Moorman (2000) provide constraints for the possible nonzero values
     # of the sample entropy. We use these values to scale sample entropy to the
