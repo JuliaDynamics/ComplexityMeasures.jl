@@ -68,11 +68,10 @@ Base.@kwdef struct SampleEntropy{I, R, M} <: ComplexityMeasure
     τ::I = 1
     metric::M = Chebyshev()
     r::R = 0.1
-
-    function SampleEntropy(x::AbstractVector; m = 2, τ = 1, metric = Chebyshev())
-        r = 0.2 * Statistics.std(x)
-        new(m, τ, metric, r)
-    end
+end
+function SampleEntropy(x::AbstractVector; m::Int = 2, τ::Int = 1, metric = Chebyshev())
+    r = 0.2 * Statistics.std(x)
+    SampleEntropy(; m, τ, metric, r)
 end
 
 # See comment in https://github.com/JuliaDynamics/Entropies.jl/pull/71 for why
@@ -111,7 +110,7 @@ function scale(x, min_range, max_range, min_target, max_target)
 end
 
 function complexity(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
-    (; m, τ, metric, r) = est
+    (; m, τ, metric, r) = c
 
     A = computeprobs(x; m = m, τ = τ, r = r, metric = metric, k = m + 1)
     B = computeprobs(x; m = m, τ = τ, r = r, metric = metric, k = m)
