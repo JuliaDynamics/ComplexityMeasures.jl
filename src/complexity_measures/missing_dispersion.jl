@@ -2,6 +2,7 @@ using DelayEmbeddings
 export MissingDispersionPatterns
 
 """
+    MissingDispersionPatterns <: ComplexityMeasure
     MissingDispersionPatterns(est::Dispersion())
 
 An estimator for the number of missing dispersion patterns (``N_{MDP}``), a complexity
