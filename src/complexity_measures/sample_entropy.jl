@@ -10,8 +10,7 @@ export SampleEntropy
     SampleEntropy(x::AbstractVector; m = 2, τ = 1, metric = Chebyshev())
 
 An estimator for the sample entropy complexity measure (Richman & Moorman,
-2000)[^Richman2000], using radius `r`, embedding dimension `m`, embedding lag `τ`.
-used with [`complexity`](@ref) and [`complexity_normalized`](@ref).
+2000)[^Richman2000], used with [`complexity`](@ref) and [`complexity_normalized`](@ref).
 
 Providing a univariate timeseries `x` to the constructors automatically determines the
 radius `r` as `0.2 * Statistics.std(x)`.
@@ -24,7 +23,8 @@ Sample entropy is defined as
 SampEn(m, r) = \\lim_{N \\to \\infty} \\left[ -\\ln \\dfrac{A^{m+1}(r)}{B^m(r)} \\right],
 ```
 
-An *estimator* for sample entropy is
+An *estimator* for sample entropy using radius `r`, embedding dimension `m`,
+embedding lag `τ` is
 
 ```math
 SampEn(m,r, N) = -\\ln{\\dfrac{A(r, N)}{B(r, N)}}.
