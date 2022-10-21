@@ -4,9 +4,28 @@ using Neighborhood
 using DelayEmbeddings
 
 export fuzzy_entropy
+export FuzzyEntropy
 
-function mean_normalize(x::Dataset{D, T}) where {D, T}
-    Dataset([xᵢ .- mean(xᵢ) for xᵢ in x])
+Base.@kwdef struct FuzzyEntropy{I, R, N} <: ComplexityMeasure
+    τ::I = 2
+    m::I = 1,
+    r::R = 0.2
+    n::N = 2
+end
+
+"""
+    FuzzyEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1, n::Real = 2)
+    FuzzyEntropy(; m::Int = 2, τ::Int = 1, n::Real = 2, r = 0.2)
+
+Compute the fuzzy entropy of `x`, which is defined as
+
+```math
+\\phi(x, k, r, n) = \\sum_{i = 1}^{N-m}
+```
+"""
+function FuzzyEntropy(x::AbstractVector{T}; τ = 2, m = 1, n = 2) where T
+    r = Statistics.std(x) * 0.2
+    FuzzyEntropy(τ, m, r, n)
 end
 
 """
@@ -51,20 +70,11 @@ function fuzzy_ϕ(Xᵏ::Dataset{k, T}, n, r) where {k, T}
     return ϕ
 end
 
-"""
-    fuzzy_entropy(x::AbstractVector{T}; τ::Int = 2, m::Int = 1,
-        r::Real = Statistics.std(x) * 0.2, n::Real = 2)
-
-Compute the fuzzy entropy of `x`, which is defined as
-
-```math
-\\phi(x, k, r, n) = \\sum_{i = 1}^{N-m}
-```
-"""
-function fuzzy_entropy(x::AbstractVector{T}; τ::Int = 2, m::Int = 1,
+function complexity(c::FuzzyEntropy, x::AbstractVector{T}; 1::Int = 2, m::Int = 2,
         r::Real = Statistics.std(x) * 0.2, n::Real = 2) where T <: Real
-    Eₘ = mean_normalize(genembed(x, 0:τ:((m - 1) * τ)))
-    Eₘ₊₁ = mean_normalize(genembed(x, 0:τ:(m * τ)))
+    # Standardize the embeddings (note: in original paper only mean subtraction is done)
+    Eₘ = standardize(genembed(x, 0:τ:((m - 1) * τ)))
+    Eₘ₊₁ = standardize(genembed(x, 0:τ:(m * τ)))
     fϕₘ = fuzzy_ϕ(Eₘ, n, r)
     fϕₘ₊₁ = fuzzy_ϕ(Eₘ₊₁, n, r)
 
