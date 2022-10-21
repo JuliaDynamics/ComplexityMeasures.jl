@@ -17,7 +17,7 @@ This function works for any `x` for which `sort!(x)` works.
 function fasthist!(x)
     L = length(x)
     hist = Vector{Int}()
-    # Reserve enough space for histogram:
+    # Reserve enough space for histogram (Base suggests this improves performance):
     sizehint!(hist, L)
     # Fill the histogram by counting consecutive equal values:
     sort!(x; alg = QuickSort)
@@ -35,4 +35,12 @@ function fasthist!(x)
     # Shrink histogram capacity to fit its size:
     sizehint!(hist, length(hist))
     return hist
+end
+
+# This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
+function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+    encoder = RectangularBinEncoder(x, ϵ)
+    bins = symbolize(x, encoder)
+    hist = fasthist!(bins)
+    return Probabilities(hist), bins, encoder
 end
