@@ -3,11 +3,13 @@ export MissingDispersionPatterns
 
 """
     MissingDispersionPatterns <: ComplexityMeasure
-    MissingDispersionPatterns(est::Dispersion())
+    MissingDispersionPatterns(; est = Dispersion())
 
 An estimator for the number of missing dispersion patterns (``N_{MDP}``), a complexity
 measure which can be used to detect nonlinearity in time series (Zhou et al.,
-2022)[^Zhou2022], used with [`complexity`](@ref) or [`complexity_normalized](@ref)`.
+2022)[^Zhou2022], using the dispersion pattern estimator `c`.
+
+Used with [`complexity`](@ref) or [`complexity_normalized](@ref)`.
 
 ## Description
 
@@ -53,11 +55,11 @@ function count_nonoccurring(x::AbstractVector{T}, est) where T
     return L, n_not_occurring
 end
 
-function complexity(est::MissingDispersionPatterns, x::AbstractVector{T}) where T
-    return count_nonoccurring(x, est.est)[2]
+function complexity(c::MissingDispersionPatterns, x::AbstractVector{T}) where T
+    return count_nonoccurring(x, c.est)[2]
 end
 
-function complexity_normalized(est::MissingDispersionPatterns, x::AbstractVector{T}) where T
-    L, n_not_occurring = count_nonoccurring(x, est.est)
+function complexity_normalized(c::MissingDispersionPatterns, x::AbstractVector{T}) where T
+    L, n_not_occurring = count_nonoccurring(x, c.est)
     return n_not_occurring / L
 end
