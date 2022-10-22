@@ -1,7 +1,7 @@
 using DynamicalSystemsBase
 using Statistics
 
-@test_throws ArgumentError approx_entropy(Dataset(rand(100, 3)))
+@test_throws ArgumentError complexity(ApproxEntropy(), Dataset(rand(100, 3)))
 
 # Here, we try to reproduce Pincus' results within reasonable accuracy
 # for the Henon map. He doesn't give initial conditions, so we just check that our
@@ -25,6 +25,7 @@ containsinf(x) = any(isinf.(x))
 function calculate_hs(; nreps = 50, L = 1000)
     # Calculate approx entropy for 50 different initial conditions
     hs = zeros(nreps)
+    hs_conv = zeros(nreps)
     k = 1
     while k <= nreps
         sys = henon(u₀ = rand(2), R = 0.8)
@@ -32,11 +33,14 @@ function calculate_hs(; nreps = 50, L = 1000)
 
         if !any([containsinf(tᵢ) for tᵢ in t])
             x = t[:, 1]
-            hs[k] = approx_entropy(x, r = 0.05, m = 2)
+            hs[k] = complexity(ApproxEntropy(r = 0.05, m = 2), x)
+            hs_conv[k] = approx_entropy(x, r = 0.05, m = 2)
             k += 1
         end
     end
-    return hs
+    return hs, hs_conv
 end
-hs = calculate_hs()
+hs, hs_conv = calculate_hs()
+
 @test mean(hs) - std(hs) <= 0.385 <= mean(hs) + std(hs)
+@test mean(hs_conv) - std(hs_conv) <= 0.385 <= mean(hs_conv) + std(hs_conv)

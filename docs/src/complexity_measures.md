@@ -1,4 +1,4 @@
-# [Complexity measures API](@id complexity_measures)
+## [Complexity measures API](@id complexity_measures)
 
 ```@docs
 complexity
@@ -13,6 +13,14 @@ distance_to_whitenoise
 ```
 
 ## Approximate entropy
+
+```@docs
+ApproxEntropy
+```
+
+## Convenience functions
+
+We provide a few convenience functions for widely used "entropy-like" complexity measures, such as "approximate entropy". Other arbitrary specialized convenience functions can easily be defined in a couple lines of code.
 
 ```@docs
 approx_entropy

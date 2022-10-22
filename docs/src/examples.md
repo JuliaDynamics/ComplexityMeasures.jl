@@ -320,6 +320,8 @@ apens_08 = [zeros(nreps) for i = 1:length(ts_lengths)]
 # so we need to check for infinite values.
 containsinf(x) = any(isinf.(x))
 
+c = ApproxEntropy(r = 0.05, m = 2)
+
 for (i, L) in enumerate(ts_lengths)
     k = 1
     while k <= nreps
@@ -328,8 +330,7 @@ for (i, L) in enumerate(ts_lengths)
 
         if !any([containsinf(tᵢ) for tᵢ in t])
             x, y = columns(t)
-            apen = approx_entropy(x, r = 0.05, m = 2)
-            apens_08[i][k] = apen
+            apens_08[i][k] = complexity(c, x)
             k += 1
         end
     end
