@@ -1,8 +1,7 @@
 using DelayEmbeddings
-using Neighborhood
+using Neighborhood: inrangecount
 using Distances
 using Statistics
-using Neighborhood.NearestNeighbors: inrangecount
 
 export ApproxEntropy
 export approx_entropy
