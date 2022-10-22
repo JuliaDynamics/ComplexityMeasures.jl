@@ -6,22 +6,32 @@ using DelayEmbeddings
 export fuzzy_entropy
 export FuzzyEntropy
 
-Base.@kwdef struct FuzzyEntropy{I, R, N} <: ComplexityMeasure
+Base.@kwdef struct FuzzyEntropy{I, N, R} <: ComplexityMeasure
     τ::I = 2
     m::I = 1,
-    r::R = 0.2
     n::N = 2
+    r::R
 end
 
 """
     FuzzyEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1, n::Real = 2)
     FuzzyEntropy(; m::Int = 2, τ::Int = 1, n::Real = 2, r = 0.2)
 
-Compute the fuzzy entropy of `x`, which is defined as
+Compute the fuzzy entropy irregularity measure (Chen et al., 2007) of timeseries `x,
+used with [`complexity`](@ref).
+
+
+## Description
+
+which is defined as
 
 ```math
 \\phi(x, k, r, n) = \\sum_{i = 1}^{N-m}
 ```
+
+[^Chen2007]: Chen, W., Wang, Z., Xie, H., & Yu, W. (2007). Characterization of surface EMG
+    signal based on fuzzy entropy. IEEE Transactions on neural systems and rehabilitation
+    engineering, 15(2), 266-272.
 """
 function FuzzyEntropy(x::AbstractVector{T}; τ = 2, m = 1, n = 2) where T
     r = Statistics.std(x) * 0.2
