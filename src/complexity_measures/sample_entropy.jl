@@ -1,6 +1,7 @@
 using DelayEmbeddings
 using Statistics
-using Neighborhood.NearestNeighbors: inrangecount, Chebyshev
+using Neighborhood.NearestNeighbors: Chebyshev
+using Neighborhood: inrangecount
 
 export SampleEntropy
 
