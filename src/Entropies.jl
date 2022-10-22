@@ -13,14 +13,15 @@ module Entropies
 using DelayEmbeddings
 using DelayEmbeddings: AbstractDataset, Dataset, dimension
 export AbstractDataset, Dataset
-const Array_or_Dataset = Union{<:AbstractArray, <:AbstractDataset}
+const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
+const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
 
 include("probabilities.jl")
 include("entropy.jl")
 include("symbolization/symbolize.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
-include("complexity_measures/complexity_measures.jl")
+include("complexity.jl")
 
 include("deprecations.jl")
 

@@ -14,9 +14,8 @@ Bandt & Pompe (2002)[^BandtPompe2002] to compute permutation entropy.
 If applied to a univariate time series, then the time series is first embedded using
 embedding delay `τ` and dimension `m`, and then converted to a symbol time series using
 [`symbolize`](@ref) with [`OrdinalPattern`](@ref), from which probabilities are
-estimated. If applied to a `Dataset`, then the data is assumed to be
-pre-symbolized, `τ` and `m` are ignored, and probabilities are computed directly from
-the state vectors.
+estimated. If applied to a `Dataset`, then `τ` and `m` are ignored, and probabilities are
+computed directly from the state vectors.
 
 !!! note "Handling equal values in ordinal patterns"
     In Bandt & Pompe (2002), equal values are ordered after their order of appearance, but

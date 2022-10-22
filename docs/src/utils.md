@@ -17,6 +17,7 @@ symbolize
 ```@docs
 GaussianSymbolization
 OrdinalPattern
+RectangularBinEncoder
 ```
 
 ### Encoding ordinal patterns

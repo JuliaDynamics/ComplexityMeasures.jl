@@ -26,6 +26,8 @@ when the dimensionality of the data is much smaller than the data length.
 The keyword `w` stands for the Theiler window, and excludes indices ``s``
 that are within ``|i - s| ≤ w`` from the given point ``X_i``.
 
+The events for [`probabilities_and_events`](@ref) are the input data themselves.
+
 [^PrichardTheiler1995]:
     Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis.
     Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
@@ -47,4 +49,8 @@ function probabilities(x::AbstractDataset, est::NaiveKernel)
     idxs = bulkisearch(ss, x.data, WithinRange(est.ϵ), theiler)
     p = Float64.(length.(idxs))
     return Probabilities(p)
+end
+
+function probabilities_and_events(x::AbstractDataset, est::NaiveKernel)
+    return probabilities(x, est), x
 end

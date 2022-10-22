@@ -45,7 +45,7 @@ function entropy(e::Renyi, probs::Probabilities)
     non0_probs = Iterators.filter(!iszero, probs.p)
     logf = log_with_base(base)
     if q ≈ 0
-        return logf(length(non0_probs))
+        return logf(count(!iszero, probs))
     elseif q ≈ 1
         return -sum(x*logf(x) for x in non0_probs)
     elseif isinf(q)

@@ -98,7 +98,7 @@ function embed_symbols(symbols::AbstractVector, m, τ)
 end
 
 function dispersion_histogram(x::AbstractDataset, N, m, τ)
-    return _non0hist(x.data, (N - (m - 1)*τ))
+    return fasthist!(x) ./ (N - (m - 1)*τ)
 end
 
 function probabilities(x::AbstractVector, est::Dispersion)
