@@ -6,7 +6,7 @@ export SampleEntropy
 
 """
     SampleEntropy(; r::Real = 0.2 * Statistics.std(x), m::Int = 2, τ::Int = 1,
-        metric = Chebyshev()
+        metric = Chebyshev())
     SampleEntropy(x::AbstractVector; m = 2, τ = 1, metric = Chebyshev())
 
 An estimator for the sample entropy complexity measure (Richman & Moorman,
