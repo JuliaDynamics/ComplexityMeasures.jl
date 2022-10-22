@@ -1,3 +1,5 @@
+@test_throws UndefKeywordError SampleEntropy()
+
 # Analytical examples seem to be lacking in the literature. As a next-best-test,
 # we just check that we get a sample entropy sufficiently close to zero for a completely
 # regular signal.
