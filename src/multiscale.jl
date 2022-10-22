@@ -224,8 +224,6 @@ function multiscale(e::Entropy, alg::Composite, x::AbstractVector, est::Probabil
     return hs
 end
 
-
-
 function multiscale(e::ComplexityMeasure, alg::Regular, x::AbstractVector;
         maxscale::Int = 8, normalize = false)
 
