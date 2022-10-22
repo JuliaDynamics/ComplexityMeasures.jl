@@ -1,7 +1,8 @@
 using DynamicalSystemsBase
 using Statistics
 
-@test_throws ArgumentError complexity(ApproxEntropy(), Dataset(rand(100, 3)))
+@test_throws UndefKeywordError ApproxEntropy()
+@test_throws ArgumentError complexity(ApproxEntropy(r = 0.2), Dataset(rand(100, 3)))
 
 # Here, we try to reproduce Pincus' results within reasonable accuracy
 # for the Henon map. He doesn't give initial conditions, so we just check that our
