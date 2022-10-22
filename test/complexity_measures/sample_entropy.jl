@@ -1,5 +1,5 @@
 # Analytical examples seem to be lacking in the literature. As a next-best-test,
-# we just check that we get a sample sufficiently close to zero for a completely
+# we just check that we get a sample entropy sufficiently close to zero for a completely
 # regular signal.
 N = 6000
 c = SampleEntropy(m = 2, τ = 1, r = 0.1)

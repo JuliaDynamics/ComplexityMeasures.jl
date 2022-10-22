@@ -297,12 +297,7 @@ x = repeat([-5:5 |> collect; 4:-1:-4 |> collect], N ÷ 20);
 y = sin.(t .+ cos.(t/0.5));
 z = rand(N)
 
-cx = SampleEntropy(x)
-cy = SampleEntropy(y)
-cz = SampleEntropy(z)
-h_x = complexity(cx, x)
-h_y = complexity(cy, y)
-h_z = complexity(cz, z)
+h_x, h_y, h_z = map(t -> complexity(SampleEntropy(t), t), (x, y, z))
 
 fig = Figure()
 ax = Axis(fig[1,1]; ylabel = "x")
