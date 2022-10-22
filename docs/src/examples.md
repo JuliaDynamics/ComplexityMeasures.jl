@@ -282,3 +282,34 @@ end
 
 You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.
+
+## Fuzzy entropy
+
+Here, we use [`FuzzyEntropy`](@ref) with [`complexity`](@ref) to reproduce figure 2 from Chen et al. (2007).
+
+```@example
+using Entropies
+using Statistics
+using CairoMakie
+
+nreps = 100
+L = 100
+rs = [0.05; 0.1:0.1:1.0 |> collect]
+fz = [zeros(nreps) for r in rs]
+for (i, r) in enumerate(rs)
+    c = FuzzyEntropy(m = 2, r = r, n = 2)
+    for j = 1:nreps
+        fz[i][j] = complexity(c, rand(L))
+    end
+end
+
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel = "log(r)", ylabel = "Fuzzy entropy")
+lines!(ax, log.(rs), quantile.(fz, 0.5))
+band!(ax, log.(rs), quantile.(fz, 0.975), quantile.(fz, 0.025))
+fig
+```
+
+As in their example, the fuzzy entropy decreases log-linearly with increasing radius for
+uniform noise. However, since they do not provide reproducible data for their examples,
+we can't test exactly if we're able to obtain the same results.
