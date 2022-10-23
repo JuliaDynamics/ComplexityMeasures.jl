@@ -28,7 +28,8 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("entropies/nearest_neighbors_direct.jl")
 
     # Multiscale analysis
-    testfile("multiscale/multiscale_entropy.jl")
+    testfile("multiscale/downsampling.jl")
+    testfile("multiscale/multiscale.jl")
 
     # Various
     testfile("complexity_measures/complexity_measures.jl")
