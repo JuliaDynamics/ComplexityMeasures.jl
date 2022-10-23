@@ -358,6 +358,66 @@ for i = 1:n
 end
 
 scatter!(a2, ts_lengths, [0.337, 0.385, NaN, 0.394]; 
-    label = "Pincus (1991)", color = :black)
+    label = "Pincus (1991)", color = :black
+fig
+```
+
+## Sample entropy
+
+Completely regular signals should have sample entropy approaching zero, while
+less regular signals should have higher sample entropy.
+
+```@example
+using DynamicalSystems, CairoMakie
+N, a = 2000, 10
+t = LinRange(0, 2*a*π, N)
+
+x = repeat([-5:5 |> collect; 4:-1:-4 |> collect], N ÷ 20);
+y = sin.(t .+ cos.(t/0.5));
+z = rand(N)
+
+h_x, h_y, h_z = map(t -> complexity(SampleEntropy(t), t), (x, y, z))
+
+fig = Figure()
+ax = Axis(fig[1,1]; ylabel = "x")
+lines!(ax, t, x; color = Cycled(1), label = "h=$(h=round(h_x, sigdigits = 5))");
+ay = Axis(fig[2,1]; ylabel = "y")
+lines!(ay, t, y; color = Cycled(2), label = "h=$(h=round(h_y, sigdigits = 5))");
+az = Axis(fig[3,1]; ylabel = "z", xlabel = "time")
+lines!(az, t, z; color = Cycled(3), label = "h=$(h=round(h_z, sigdigits = 5))");
+for a in (ax, ay, az); axislegend(a); end
+for a in (ax, ay); hidexdecorations!(a; grid=false); end
+fig
+```
+
+Next, we compare the sample entropy obtained for different values of the radius `r` for
+uniform noise, normally distributed noise, and a periodic signal.
+
+```@example
+using Entropies, CairoMakie, Distributions
+N = 2000
+x_U = rand(N)
+x_N = rand(Normal(0, 3), N)
+x_periodic = repeat(rand(20), N ÷ 20)
+
+x_U .= (x_U .- mean(x_U)) ./ std(x_U)
+x_N .= (x_N .- mean(x_N)) ./ std(x_N)
+x_periodic .= (x_periodic .- mean(x_periodic)) ./ std(x_periodic)
+
+rs = 10 .^ range(-1, 0, length = 30)
+base = 2
+m = 2
+c = 
+hs_U = [complexity_normalized(SampleEntropy(m = m, r = r), x_U) for r in rs]
+hs_N = [complexity_normalized(SampleEntropy(m = m, r = r), x_N) for r in rs]
+hs_periodic = [complexity_normalized(SampleEntropy(m = m, r = r), x_periodic) for r in rs]
+
+fig = Figure()
+# Time series
+a1 = Axis(fig[1,1]; xlabel = "r", ylabel = "Sample entropy")
+lines!(a1, rs, hs_U, label = "Uniform noise, U(0, 1)")
+lines!(a1, rs, hs_N, label = "Gaussian noise, N(0, 1)")
+lines!(a1, rs, hs_periodic, label = "Periodic signal")
+axislegend()
 fig
 ```
