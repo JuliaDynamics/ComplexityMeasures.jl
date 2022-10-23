@@ -97,9 +97,9 @@ function multiscale(e::ComplexityMeasure, alg::Composite, x::AbstractVector;
     for s in 1:maxscale
         if normalize
             complexities[s] =
-                mean(complexity_normalized.(Ref(e), downscaled_timeseries[s], Ref(est)))
+                mean(complexity_normalized.(Ref(e), downscaled_timeseries[s]))
         else
-            complexities[s] = mean(entropy.(Ref(e), downscaled_timeseries[s], Ref(est)))
+            complexities[s] = mean(complexity.(Ref(e), downscaled_timeseries[s]))
         end
     end
 

@@ -17,10 +17,10 @@ mcn = multiscale(e, Composite(),  x, est; maxscale, normalize = true)
 @test length(mcn) == 5
 
 c = ReverseDispersion()
-mcr = multiscale(c, Regular(),  x; maxscale, normalize = false)
-mcc = multiscale(c, Composite(),  x, est; maxscale, normalize = false)
-mcrn = multiscale(c, Regular(),  x; maxscale, normalize = true)
-mccn = multiscale(c, Composite(),  x, est; maxscale, normalize = true)
+mcr = multiscale(c, Regular(), x; maxscale, normalize = false)
+mcc = multiscale(c, Composite(), x; maxscale, normalize = false)
+mcrn = multiscale(c, Regular(), x; maxscale, normalize = true)
+mccn = multiscale(c, Composite(), x; maxscale, normalize = true)
 @test mcr isa Vector{T} where T <: Real
 @test mcc isa Vector{T} where T <: Real
 @test mcrn isa Vector{T} where T <: Real
