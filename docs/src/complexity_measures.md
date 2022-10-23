@@ -18,10 +18,17 @@ distance_to_whitenoise
 ApproximateEntropy
 ```
 
+## Sample entropy
+
+```@docs
+SampleEntropy
+```
+
 ## Convenience functions
 
-We provide a few convenience functions for widely used "entropy-like" complexity measures, such as "approximate entropy". Other arbitrary specialized convenience functions can easily be defined in a couple lines of code.
+We provide a few convenience functions for widely used "entropy-like" complexity measures. Other arbitrary specialized convenience functions can easily be defined in a couple lines of code.
 
 ```@docs
 approx_entropy
+sample_entropy
 ```

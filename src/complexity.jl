@@ -17,6 +17,7 @@ be any of the following measures:
 
 - [`ReverseDispersion`](@ref).
 - [`ApproximateEntropy`](@ref).
+- [`SampleEntropy`](@ref).
 """
 function complexity(c::C, x) where C <: ComplexityMeasure
     T = typeof(x)
