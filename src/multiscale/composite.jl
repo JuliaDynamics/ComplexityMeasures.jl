@@ -50,9 +50,10 @@ end
 
 function downsample(method::Composite, x::AbstractVector{T}, s::Int, args...; kwargs...) where T
     f = method.f
+    ET = eltype(one(1.0)) # consistently return floats, even if input is e.g. integer-valued
 
     if s == 1
-        return [x]
+        return ET.(x)
     else
         N = length(x)
         # note: there must be a typo or error in Wu et al. (2013), because if we use
@@ -61,7 +62,7 @@ function downsample(method::Composite, x::AbstractVector{T}, s::Int, args...; kw
         # there are of selecting non-overlapping windows of length `s`. Hence,
         # we use floor((N - s + 1) / s) instead.
         L = floor(Int, (N - s + 1) / s)
-        ys = [zeros(T, L) for i = 1:s]
+        ys = [zeros(ET, L) for i = 1:s]
         for k = 1:s
             for t = 1:L
                 inds = ((t - 1)*s + k):(t * s + k - 1)
@@ -72,6 +73,7 @@ function downsample(method::Composite, x::AbstractVector{T}, s::Int, args...; kw
     end
 end
 
+# TODO: make a separate multiscale_normalized?
 function multiscale(e::Entropy, alg::Composite, x::AbstractVector, est::ProbabilitiesEstimator;
     maxscale::Int = 10, normalize = false)
 

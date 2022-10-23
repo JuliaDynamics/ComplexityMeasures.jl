@@ -49,15 +49,17 @@ end
 function downsample(method::Regular, x::AbstractVector{T}, s::Int, args...; kwargs...) where T
     f = method.f
 
+    ET = eltype(one(1.0)) # consistently return floats, even if input is e.g. integer-valued
     if s == 1
         return x
     else
         N = length(x)
         L = floor(Int, N / s)
-        ys = zeros(T, L)
+        ys = zeros(ET, L)
 
         for t = 1:L
             inds = ((t - 1)*s + 1):(t * s)
+            @show inds
             ys[t] = @views f(x[inds], args...; kwargs...)
         end
         return ys
@@ -77,6 +79,7 @@ function multiscale(e::Entropy, alg::Regular, x::AbstractVector, est::Probabilit
 
     return hs
 end
+# TODO: make a separate multiscale_normalized?
 
 function multiscale(e::ComplexityMeasure, alg::Regular, x::AbstractVector;
         maxscale::Int = 8, normalize = false)
