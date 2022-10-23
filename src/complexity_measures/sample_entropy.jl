@@ -72,14 +72,18 @@ Base.@kwdef struct SampleEntropy{I, R, M} <: ComplexityMeasure
     τ::I = 1
     metric::M = Chebyshev()
     r::R
-end
-function SampleEntropy(x::AbstractVector; m::Int = 2, τ::Int = 1, metric = Chebyshev())
-    r = 0.2 * Statistics.std(x)
-    SampleEntropy(; m, τ, metric, r)
-end
 
-function SampleEntropy(; r, m::Int = 2, τ::Int = 1, metric = Chebyshev())
-    SampleEntropy(; m, τ, metric, r)
+    function SampleEntropy(m::I, τ::I, metric::M, r::R) where {I, R, M, B}
+        m >= 1 || throw(ArgumentError("m must be >= 1. Got m=$(m)."))
+        r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
+        new{I, R, M}(m, τ, metric, r)
+    end
+
+    function SampleEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1,
+            metric = Chebyshev()) where T
+        r = 0.2 * Statistics.std(x)
+        SampleEntropy(m, τ, metric, r)
+    end
 end
 
 # See comment in https://github.com/JuliaDynamics/Entropies.jl/pull/71 for why
