@@ -30,6 +30,9 @@ The return type depends on `algorithm`. For example:
 """
 downsample(method::MultiScaleAlgorithm, x, s::Int)
 
+downsample(alg::MultiScaleAlgorithm, x::AbstractDataset, args...; kwargs...) =
+    Dataset(map(t -> downsample(alg, t, args...; kwargs...), columns(x))...)
+
 """
     multiscale(e::Entropy, alg, x, est; maxscale = 8, normalize = false)
     multiscale(c::ComplexityMeasure, alg, x; maxscale = 8, normalize = false)
