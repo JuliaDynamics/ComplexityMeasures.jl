@@ -81,17 +81,14 @@ Base.@kwdef struct ApproximateEntropy{I, M, B, R} <: ComplexityMeasure
         r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
         new{I, M, B, R}(m, τ, metric, base, r)
     end
+    function ApproximateEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1,
+            metric = Chebyshev(), base = MathConstants.e) where T
+        r = 0.2 * Statistics.std(x)
+        ApproximateEntropy(m, τ, metric, base, r)
+    end
 end
 
-function ApproximateEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1, metric = Chebyshev(),
-        base = MathConstants.e) where T
-    r = 0.2 * Statistics.std(x)
-    ApproximateEntropy(m, τ, metric, base, r)
-end
 
-function ApproximateEntropy(; r, m::Int = 2, τ::Int = 1, metric = Chebyshev())
-    ApproximateEntropy(m, τ, metric, base, r)
-end
 
 function complexity(c::ApproximateEntropy, x::AbstractVector{T}) where T
     (; m, τ, r, base) = c

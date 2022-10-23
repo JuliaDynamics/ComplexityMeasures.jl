@@ -225,10 +225,11 @@ des = zeros(length(windows))
 pes = zeros(length(windows))
 
 m, c = 2, 6
+est_rd = ReverseDispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
 est_de = Dispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
 
 for (i, window) in enumerate(windows)
-    rdes[i] = reverse_dispersion(y[window], est_de; normalize = true)
+    rdes[i] = complexity_normalized(est_rd, y[window])
     des[i] = entropy_normalized(Renyi(), y[window], est_de)
 end
 
