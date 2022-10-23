@@ -359,7 +359,7 @@ for i = 1:n
 end
 
 scatter!(a2, ts_lengths, [0.337, 0.385, NaN, 0.394]; 
-    label = "Pincus (1991)", color = :black
+    label = "Pincus (1991)", color = :black)
 fig
 ```
 
