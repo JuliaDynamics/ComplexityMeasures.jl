@@ -73,5 +73,17 @@ methods are defined,
 """
 function multiscale end
 
+function multiscale(e::Entropy, x, est::ProbabilitiesEstimator)
+    msg = "`multiscale` entropy not implemented for $e $est on data type $(typeof(x))"
+    throw(ArgumentError(msg))
+end
+
+function multiscale(c::ComplexityMeasure, x)
+    msg = "`multiscale` complexity not implemented for $c and data type $(typeof(x))"
+    throw(ArgumentError(msg))
+end
+
+
+
 include("multiscale/regular.jl")
 include("multiscale/composite.jl")
