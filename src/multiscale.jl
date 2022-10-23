@@ -76,6 +76,15 @@ methods are defined,
 """
 function multiscale end
 
+"""
+    multiscale(e::Entropy, alg, x, est; maxscale = 8)
+    multiscale(c::ComplexityMeasure, alg, x; maxscale = 8)
+
+The same as [`multiscale`](@ref), but normalizes the entropy or complexity measure.
+"""
+function multiscale_normalized end
+
+
 function multiscale(e::Entropy, x, est::ProbabilitiesEstimator)
     msg = "`multiscale` entropy not implemented for $e $est on data type $(typeof(x))"
     throw(ArgumentError(msg))
