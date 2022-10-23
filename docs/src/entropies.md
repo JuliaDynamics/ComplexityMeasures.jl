@@ -1,4 +1,4 @@
-## Entropy API
+## [Entropy API](@id entropies_list)
 
 ```@docs
 entropy
