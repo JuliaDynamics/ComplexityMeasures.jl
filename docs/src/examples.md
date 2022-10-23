@@ -408,7 +408,6 @@ x_periodic .= (x_periodic .- mean(x_periodic)) ./ std(x_periodic)
 rs = 10 .^ range(-1, 0, length = 30)
 base = 2
 m = 2
-c = 
 hs_U = [complexity_normalized(SampleEntropy(m = m, r = r), x_U) for r in rs]
 hs_N = [complexity_normalized(SampleEntropy(m = m, r = r), x_N) for r in rs]
 hs_periodic = [complexity_normalized(SampleEntropy(m = m, r = r), x_periodic) for r in rs]
