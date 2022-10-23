@@ -15,7 +15,7 @@ distance_to_whitenoise
 ## Approximate entropy
 
 ```@docs
-ApproxEntropy
+ApproximateEntropy
 ```
 
 ## Convenience functions

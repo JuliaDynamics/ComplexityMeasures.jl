@@ -16,7 +16,7 @@ Estimate the complexity measure `c` for [input data](@ref input_data) `x`, where
 be any of the following measures:
 
 - [`ReverseDispersion`](@ref).
-- [`ApproxEntropy`](@ref).
+- [`ApproximateEntropy`](@ref).
 """
 function complexity(c::C, x) where C <: ComplexityMeasure
     T = typeof(x)

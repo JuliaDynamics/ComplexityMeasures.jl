@@ -1,8 +1,8 @@
 using DynamicalSystemsBase
 using Statistics
 
-@test_throws UndefKeywordError ApproxEntropy()
-@test_throws ArgumentError complexity(ApproxEntropy(r = 0.2), Dataset(rand(100, 3)))
+@test_throws UndefKeywordError ApproximateEntropy()
+@test_throws ArgumentError complexity(ApproximateEntropy(r = 0.2), Dataset(rand(100, 3)))
 
 # Here, we try to reproduce Pincus' results within reasonable accuracy
 # for the Henon map. He doesn't give initial conditions, so we just check that our
@@ -34,7 +34,7 @@ function calculate_hs(; nreps = 50, L = 1000)
 
         if !any([containsinf(tᵢ) for tᵢ in t])
             x = t[:, 1]
-            hs[k] = complexity(ApproxEntropy(r = 0.05, m = 2), x)
+            hs[k] = complexity(ApproximateEntropy(r = 0.05, m = 2), x)
             hs_conv[k] = approx_entropy(x, r = 0.05, m = 2)
             k += 1
         end

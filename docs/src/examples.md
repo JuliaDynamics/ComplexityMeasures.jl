@@ -320,7 +320,7 @@ apens_08 = [zeros(nreps) for i = 1:length(ts_lengths)]
 # so we need to check for infinite values.
 containsinf(x) = any(isinf.(x))
 
-c = ApproxEntropy(r = 0.05, m = 2)
+c = ApproximateEntropy(r = 0.05, m = 2)
 
 for (i, L) in enumerate(ts_lengths)
     k = 1
