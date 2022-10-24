@@ -24,7 +24,7 @@ Diversity probabilities are computed as follows.
 2. Compute ``D = \\{d(\\bf x_t, \\bf x_{t+1}) \\}_{t=1}^{N-mτ-1}``,
     where ``d(\\cdot, \\cdot)`` is the cosine similarity between two `m`-dimensional
     vectors in the embedding.
-3. Bin ``D`` into `nbins` equally sized subintervals.
+3. Divide the interval `[-1, 1]` into `nbins` equally sized subintervals.
 4. Construct a histogram of cosine similarities ``d \\in D`` over those subintervals.
 5. Sum-normalize the histogram to obtain probabilities.
 
@@ -69,7 +69,6 @@ end
 function probabilities_and_events(x::AbstractVector{T}, est::Diversity) where T <: Real
     ds, binning = similarities_and_binning(x, est)
     bin_estimator = ValueHistogram(binning)
-
     return probabilities_and_events(ds, bin_estimator.binning)
 end
 
