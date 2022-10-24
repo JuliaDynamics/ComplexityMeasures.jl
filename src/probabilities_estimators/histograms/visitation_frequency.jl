@@ -51,6 +51,10 @@ function probabilities(x::Array_or_Dataset, est::ValueHistogram{<:RectangularBin
     fasthist(x, est.binning)[1]
 end
 
+function probabilities(x::Array_or_Dataset, est::ValueHistogram{<:FixedRectangularBinning})
+    fasthist(x, est.binning)[1]
+end
+
 function probabilities_and_events(x, est::ValueHistogram)
     probs, bins, encoder = fasthist(x, est.binning)
     (; mini, edgelengths) = encoder

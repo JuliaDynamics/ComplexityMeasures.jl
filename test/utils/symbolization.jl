@@ -124,10 +124,10 @@ end
         symb_intvec = RectangularBinEncoder(D, binning_intvec)
         symb_floatvec = RectangularBinEncoder(D, binning_floatvec)
 
-        @test symb_int.edgelengths ==
-            symb_float.edgelengths ==
-            symb_intvec.edgelengths ==
-            symb_floatvec.edgelengths
+        @test round.(symb_int.edgelengths, digits = 15) ==
+            round.(symb_float.edgelengths, digits = 15) ==
+            round.(symb_intvec.edgelengths, digits = 15) ==
+            round.(symb_floatvec.edgelengths, digits = 15)
         @test all(@. symb_int.edgelengths ≈ r)
         @test all(@. symb_float.edgelengths ≈ r)
         @test all(@. symb_intvec.edgelengths ≈ r)
