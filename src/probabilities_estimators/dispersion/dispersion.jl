@@ -101,7 +101,8 @@ function dispersion_histogram(x::AbstractDataset, N, m, τ)
     return fasthist!(x) ./ (N - (m - 1)*τ)
 end
 
-# A helper function that is also re-used for the `missing_dispersion` complexity measure
+# A helper function that makes sure the algorithm doesn't crash when input contains
+# a singular value.
 function symbolize_for_dispersion(x, est::Dispersion)
     if est.check_unique
         if length(unique(x)) == 1
