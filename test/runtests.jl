@@ -1,8 +1,6 @@
 using Test
 # TODO: None of these packages should be used here. Instead, the files they are needed
 using Entropies
-using Entropies.DelayEmbeddings
-using Entropies.DelayEmbeddings.StaticArrays
 
 defaultname(file) = uppercasefirst(replace(splitext(basename(file))[1], '_' => ' '))
 testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include(file); end

@@ -1,5 +1,5 @@
-using DelayEmbeddings
-using StaticArrays
+using DelayEmbeddings: genembed, Dataset
+using StaticArrays: SVector
 
 @testset "Ordinal patterns" begin
     @test Entropies.encode_motif([2, 3, 1]) isa Int
