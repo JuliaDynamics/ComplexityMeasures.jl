@@ -9,7 +9,8 @@ An estimator for the number of missing dispersion patterns (``N_{MDP}``), a comp
 measure which can be used to detect nonlinearity in time series (Zhou et al.,
 2022)[^Zhou2022].
 
-Used with [`complexity`](@ref) or [`complexity_normalized`](@ref).
+Used with [`complexity`](@ref) or [`complexity_normalized`](@ref), whose implementation
+uses [`missing_symbols`](@ref).
 
 ## Description
 
@@ -46,19 +47,10 @@ Base.@kwdef struct MissingDispersionPatterns{D} <: ComplexityMeasure
     est::D = Dispersion()
 end
 
-function count_nonoccurring(x::AbstractVector, est)
-    τ, m = est.τ, est.m
-    probs = probabilities(x, est)
-    L = alphabet_length(x, est)
-    O = count(!iszero, probs)
-    return L - O
-end
-
 function complexity(c::MissingDispersionPatterns, x::AbstractVector{T}) where T
-    return count_nonoccurring(x, c.est)
+    return missing_symbols(x, c.est)
 end
 
 function complexity_normalized(c::MissingDispersionPatterns, x::AbstractVector{T}) where T
-    NO = count_nonoccurring(x, c.est)
-    return NO / alphabet_length(x, c.est)
+    return missing_symbols(x, c.est) / alphabet_length(x, c.est)
 end
