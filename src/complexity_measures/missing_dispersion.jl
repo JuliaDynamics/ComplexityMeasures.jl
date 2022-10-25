@@ -51,8 +51,7 @@ function count_nonoccurring(x::AbstractVector{T}, est) where T
     probs = probabilities(x, est)
     L = alphabet_length(x, est)
     O = count(!iszero, probs)
-    NO = L - O
-    return NO
+    return L - O
 end
 
 function complexity(c::MissingDispersionPatterns, x::AbstractVector{T}) where T
