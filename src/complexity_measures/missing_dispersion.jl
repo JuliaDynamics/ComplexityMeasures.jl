@@ -46,7 +46,7 @@ Base.@kwdef struct MissingDispersionPatterns{D} <: ComplexityMeasure
     est::D = Dispersion()
 end
 
-function count_nonoccurring(x::AbstractVector{T}, est) where T
+function count_nonoccurring(x::AbstractVector, est)
     τ, m = est.τ, est.m
     probs = probabilities(x, est)
     L = alphabet_length(x, est)
