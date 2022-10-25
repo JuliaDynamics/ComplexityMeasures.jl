@@ -1,4 +1,4 @@
-using DelayEmbeddings
+using Entropies.DelayEmbeddings
 
 @testset "Ordinal patterns" begin
     @test Entropies.encode_motif([2, 3, 1]) isa Int
