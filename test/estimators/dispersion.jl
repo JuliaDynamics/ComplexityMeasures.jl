@@ -12,10 +12,10 @@ using Entropies, Test
             c = 4
             m = 4
             τ = 1
-            s = GaussianSymbolization(c = c)
+            s = GaussianMapping(c = c)
 
             # Symbols should be in the set [1, 2, …, c].
-            symbols = Entropies.symbolize(x, s)
+            symbols = Entropies.outcomes(x, s)
             @test all([s ∈ collect(1:c) for s in symbols])
 
             # Dispersion patterns should have a normalized histogram that sums to 1.0.
@@ -29,7 +29,7 @@ using Entropies, Test
         # We here start from pre-computed symbols `s`.
         x = [0.82,0.75,0.21,0.94,0.52,0.05,0.241,0.75,0.35,0.43,0.11,0.87]
         m, n_classes = 2, 3
-        est = Dispersion(m = m, symbolization = GaussianSymbolization(c = n_classes))
+        est = Dispersion(m = m, discretization =  GaussianMapping(c = n_classes))
 
         # Take only the non-zero probabilities from the paper (in `dispersion_histogram`,
         # we don't count zero-probability bins, so eliminate zeros for comparison).

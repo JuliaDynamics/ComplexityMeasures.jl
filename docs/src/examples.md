@@ -225,8 +225,8 @@ des = zeros(length(windows))
 pes = zeros(length(windows))
 
 m, c = 2, 6
-est_rd = ReverseDispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
-est_de = Dispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
+est_rd = ReverseDispersion(discretization = GaussianMapping(c), m = m, τ = 1)
+est_de = Dispersion(discretization = GaussianMapping(c), m = m, τ = 1)
 
 for (i, window) in enumerate(windows)
     rdes[i] = complexity_normalized(est_rd, y[window])
@@ -293,7 +293,7 @@ using Entropies
 using TimeseriesSurrogates
 using Statistics
 
-d = Dispersion(m = 3, symbolization = GaussianSymbolization(c = 7))
+d = Dispersion(m = 3, discretization = GaussianMapping(c = 7))
 est = MissingDispersionPatterns(d)
 sys = Systems.logistic(0.6; r = 4.0)
 normalize = true

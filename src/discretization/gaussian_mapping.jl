@@ -1,16 +1,18 @@
 using Statistics, QuadGK
 
-export GaussianSymbolization
+export GaussianMapping
 
 """
-    GaussianSymbolization(; c::Int = 3)
+    GaussianMapping <: Discretization
+    GaussianMapping(; c::Int = 3)
 
-A symbolization scheme where the elements of `x` are symbolized into `c` distinct integer
-categories using the normal cumulative distribution function (NCDF).
+A discretization scheme where the elements of `x` are discretized into `c` distinct integer
+categories using the normal cumulative distribution function (NCDF), used with
+[`outcomes`](@ref).
 
 ## Algorithm
 
-Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. `GaussianSymbolization`
+Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. `GaussianMapping`
 first maps each ``x_i`` to a new real number ``y_i \\in [0, 1]`` by using the normal
 cumulative distribution function (CDF), ``x_i \\to y_i : y_i = \\dfrac{1}{ \\sigma
     \\sqrt{2 \\pi}} \\int_{-\\infty}^{x_i} e^{(-(x_i - \\mu)^2)/(2 \\sigma^2)} dx``,
@@ -26,9 +28,9 @@ series ``S = \\{ s_i \\}_{i=1}^N``, where ``s_i \\in [1, 2, \\ldots, c]``.
 
 # Usage
 
-    symbolize(x::AbstractVector, s::GaussianSymbolization)
+    outcomes(x::AbstractVector, s::GaussianMapping)
 
-Map the elements of `x` to a symbol time series according to the Gaussian symbolization
+Map the elements of `x` to a symbol time series according to the Gaussian discretization
 scheme `s`.
 
 ## Examples
@@ -36,7 +38,7 @@ scheme `s`.
 ```jldoctest; setup = :(using Entropies)
 julia> x = [0.1, 0.4, 0.7, -2.1, 8.0, 0.9, -5.2];
 
-julia> Entropies.symbolize(x, GaussianSymbolization(c = 5))
+julia> Entropies.outcomes(x, GaussianMapping(c = 5))
 7-element Vector{Int64}:
  3
  3
@@ -47,13 +49,13 @@ julia> Entropies.symbolize(x, GaussianSymbolization(c = 5))
  1
 ```
 
-See also: [`symbolize`](@ref).
+See also: [`outcomes`](@ref).
 """
-Base.@kwdef struct GaussianSymbolization{I <: Integer} <: SymbolizationScheme
+Base.@kwdef struct GaussianMapping{I <: Integer} <: Discretization
     c::I = 3
 end
 
-alphabet_length(symbolization::GaussianSymbolization) = symbolization.c
+total_outcomes(discretization::GaussianMapping) = discretization.c
 
 g(xᵢ, μ, σ) = exp((-(xᵢ - μ)^2)/(2σ^2))
 
@@ -67,7 +69,7 @@ function map_to_category(yⱼ, c)
     return zⱼ
 end
 
-function symbolize(x::AbstractVector, s::GaussianSymbolization)
+function outcomes(x::AbstractVector, s::GaussianMapping)
     σ = Statistics.std(x)
     μ = Statistics.mean(x)
 

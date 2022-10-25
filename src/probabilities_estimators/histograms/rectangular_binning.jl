@@ -1,5 +1,5 @@
 export RectangularBinning
-export RectangularBinEncoder
+export RectangularBinMapping
 
 """
     RectangularBinning(ϵ) <: AbstractBinning
@@ -21,20 +21,29 @@ struct RectangularBinning{E} <: AbstractBinning
 end
 
 """
-    RectangularBinEncoder(x, binning::RectangularBinning) <: SymbolizationScheme
+    RectangularBinMapping <: Discretization
 
-Find the minima along each dimension, and compute appropriate
-edge lengths for each dimension of `x` given a rectangular binning.
-Put them in an `RectangularBinEncoder` that can be then used to map points into bins
-via [`symbolize`](@ref).
+A discretization scheme where the [outcome space](@ref terminology) is a set of
+rectangular bins, which identified by their minima and edgelengths.
+
+Used in [`outcomes`](@ref).
+
+    RectangularBinMapping(x, binning::RectangularBinning)
+
+Find the minima along each dimension, and compute appropriate edge lengths for each
+dimension of `x`, given a rectangular binning. Put the minima and edgelengths in a
+`RectangularBinMapping` that can be then used to map points into bins via
+[`outcomes`](@ref).
+
+See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinEncoder{M, E} <: SymbolizationScheme
+struct RectangularBinMapping{M, E} <: Discretization
     binning::RectangularBinning # type specialization isn't useful here; we don't use this.
     mini::M # fields are either static vectors or numbers
     edgelengths::E
 end
 
-function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning; n_eps = 2) where {D, T}
+function RectangularBinMapping(x::AbstractDataset{D,T}, b::RectangularBinning; n_eps = 2) where {D, T}
     # This function always returns static vectors and is type stable
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
@@ -51,10 +60,10 @@ function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning; n
         error("Invalid ϵ for binning of a dataset")
     end
 
-    RectangularBinEncoder(b, mini, edgelengths)
+    RectangularBinMapping(b, mini, edgelengths)
 end
 
-function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning; n_eps = 2)
+function RectangularBinMapping(x::AbstractVector{<:Real}, b::RectangularBinning; n_eps = 2)
     # This function always returns numbers and is type stable
     ϵ = b.ϵ
     mini, maxi = extrema(x)
@@ -69,15 +78,15 @@ function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning;
         error("Invalid ϵ for binning of a vector")
     end
 
-    RectangularBinEncoder(b, mini, edgelength)
+    RectangularBinMapping(b, mini, edgelength)
 end
 
-function encode_as_bin(point, b::RectangularBinEncoder)
+function encode_as_bin(point, b::RectangularBinMapping)
     (; mini, edgelengths) = b
     # Map a data point to its bin edge
     return floor.(Int, (point .- mini) ./ edgelengths)
 end
 
-function symbolize(x::Vector_or_Dataset, b::RectangularBinEncoder)
+function outcomes(x::Vector_or_Dataset, b::RectangularBinMapping)
     return map(point -> encode_as_bin(point, b), x)
 end

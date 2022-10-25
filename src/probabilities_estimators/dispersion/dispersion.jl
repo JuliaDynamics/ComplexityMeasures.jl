@@ -2,14 +2,14 @@ using DelayEmbeddings
 export Dispersion
 
 """
-    Dispersion(; symbolization = GaussianSymbolization(c = 5), m = 2, τ = 1,
+    Dispersion(; discretization =  GaussianMapping(c = 5), m = 2, τ = 1,
         check_unique = true)
 
 A probability estimator based on dispersion patterns, originally used by
 Rostaghi & Azami, 2016[^Rostaghi2016] to compute the "dispersion entropy", which
 characterizes the complexity and irregularity of a time series.
 
-Relative frequencies of dispersion patterns are computed using the symbolization scheme
+Relative frequencies of dispersion patterns are computed using the discretization scheme
 `s` with embedding dimension `m` and embedding delay `τ`. Recommended parameter
 values[^Li2018] are `m ∈ [2, 3]`, `τ = 1` for the embedding, and `c ∈ [3, 4, …, 8]`
 categories for the Gaussian symbol mapping.
@@ -17,10 +17,10 @@ categories for the Gaussian symbol mapping.
 ## Description
 
 Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. First, this time series
-is symbolized using `symbolization`, which default to [`GaussianSymbolization`](@ref),
-which uses the normal cumulative distribution function (CDF) for symbolization.
+is discretized using `symbolization`, which default to [`GaussianMapping`](@ref),
+which uses the normal cumulative distribution function (CDF) for discretization.
 Other choices of CDFs are also possible, but Entropies.jl currently only implements
-[`GaussianSymbolization`](@ref), which was used in Rostaghi & Azami (2016). This step
+[`GaussianMapping`](@ref), which was used in Rostaghi & Azami (2016). This step
 results in an integer-valued symbol time series ``S = \\{ s_i \\}_{i=1}^N``, where
 ``s_i \\in [1, 2, \\ldots, c]``.
 
@@ -55,7 +55,7 @@ If `check_unique == true` (default), then it is checked that the input has
 more than one unique value. If `check_unique == false` and the input only has one
 unique element, then a `InexactError` is thrown when trying to compute probabilities.
 
-See also: [`entropy_dispersion`](@ref), [`GaussianSymbolization`](@ref).
+See also: [`entropy_dispersion`](@ref), [`GaussianMapping`](@ref).
 
 !!! note "Why 'dispersion patterns'?"
     Each embedding vector is called a "dispersion pattern". Why? Let's consider the case
@@ -73,8 +73,8 @@ See also: [`entropy_dispersion`](@ref), [`GaussianSymbolization`](@ref).
 [^Rostaghi2016]: Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.
 [^Li2018]: Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale dispersion entropy and wavelet threshold denoising. Entropy, 21(1), 11.
 """
-Base.@kwdef struct Dispersion{S <: SymbolizationScheme} <: ProbabilitiesEstimator
-    symbolization::S = GaussianSymbolization(c = 5)
+Base.@kwdef struct Dispersion{S <: Discretization} <: ProbabilitiesEstimator
+    discretization::S = GaussianMapping(c = 5)
     m::Int = 2
     τ::Int = 1
     check_unique::Bool = false
@@ -108,10 +108,10 @@ function symbolize_for_dispersion(x, est::Dispersion)
         if length(unique(x)) == 1
             symbols = repeat([1], length(x))
         else
-            symbols = symbolize(x, est.symbolization)
+            symbols = outcomes(x, est.discretization)
         end
     else
-        symbols = symbolize(x, est.symbolization)
+        symbols = outcomes(x, est.discretization)
     end
 
     return symbols::Vector{Int}
@@ -130,4 +130,4 @@ function probabilities(x::AbstractVector, est::Dispersion)
     p = Probabilities(hist)
 end
 
-alphabet_length(est::Dispersion)::Int = est.symbolization.c ^ est.m
+total_outcomes(est::Dispersion)::Int = est.discretization.c ^ est.m

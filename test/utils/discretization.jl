@@ -4,7 +4,7 @@ using Entropies.DelayEmbeddings
     @test Entropies.encode_motif([2, 3, 1]) isa Int
     @test 0 <= Entropies.encode_motif([2, 3, 1]) <= factorial(3) - 1
 
-    scheme = OrdinalPattern(m = 5, τ = 1)
+    scheme = OrdinalMapping(m = 5, τ = 1)
     N = 100
     x = Dataset(repeat([1.1 2.2 3.3], N))
     y = Dataset(rand(N, 5))
@@ -12,27 +12,27 @@ using Entropies.DelayEmbeddings
 
     # Without pre-allocation
     D = genembed(z, [0, -1, -2])
-    scheme = OrdinalPattern(m = 5, τ = 2)
+    scheme = OrdinalMapping(m = 5, τ = 2)
 
-    @test Entropies.symbolize(z, scheme) isa Vector{<:Int}
-    @test Entropies.symbolize(D, scheme) isa Vector{<:Int}
+    @test Entropies.outcomes(z, scheme) isa Vector{<:Int}
+    @test Entropies.outcomes(D, scheme) isa Vector{<:Int}
 
 
     # With pre-allocation
     N = 100
     x = rand(N)
-    scheme = OrdinalPattern(m = 5, τ = 2)
+    scheme = OrdinalMapping(m = 5, τ = 2)
     s = fill(-1, N-(scheme.m-1)*scheme.τ)
 
     # if symbolization has occurred, s must have been filled with integers in
     # the range 0:(m!-1)
-    @test all(Entropies.symbolize!(s, x, scheme) .>= 0)
-    @test all(0 .<= Entropies.symbolize!(s, x, scheme) .< factorial(scheme.m))
+    @test all(Entropies.outcomes!(s, x, scheme) .>= 0)
+    @test all(0 .<= Entropies.outcomes!(s, x, scheme) .< factorial(scheme.m))
 
     m = 4
     D = Dataset(rand(N, m))
     s = fill(-1, length(D))
-    @test all(0 .<= Entropies.symbolize!(s, D, scheme) .< factorial(m))
+    @test all(0 .<= Entropies.outcomes!(s, D, scheme) .< factorial(m))
 end
 
 @testset "Gaussian symbolization" begin
@@ -42,16 +42,16 @@ end
     c = 4
     m = 4
     τ = 1
-    s = GaussianSymbolization(c = c)
+    s = GaussianMapping(c = c)
 
     # Symbols should be in the set [1, 2, …, c].
-    symbols = Entropies.symbolize(x, s)
+    symbols = Entropies.outcomes(x, s)
     @test all([s ∈ collect(1:c) for s in symbols])
 
     # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper.
     y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
-    scheme = GaussianSymbolization(3)
-    s = symbolize(y, scheme)
+    scheme = GaussianMapping(3)
+    s = outcomes(y, scheme)
     @test s == [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
 end
 
@@ -74,9 +74,9 @@ end
     #    (4, 2, 1) -> (3, 2, 1)
     #    (2, 1, 0) -> (3, 2, 1),
     # so there are three occurring patterns and m! - 3 = 3*2*1 - 3 = 3 missing patterns
-    @test missing_symbols(x, SymbolicPermutation(; m, τ)) == 3
+    @test missing_outcomes(x, SymbolicPermutation(; m, τ)) == 3
 
     m, τ = 2, 1
     y = [1, 2, 1, 2] # only two patterns, none missing
-    @test missing_symbols(x, SymbolicPermutation(; m, τ)) == 0
+    @test missing_outcomes(x, SymbolicPermutation(; m, τ)) == 0
 end

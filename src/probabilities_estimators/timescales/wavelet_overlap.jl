@@ -19,6 +19,12 @@ By default the wavelet `Wavelets.WT.Daubechies{12}()`
 is used. Otherwise, you may choose a wavelet from the `Wavelets` package
 (it must subtype `OrthoWaveletClass`).
 
+# Outcomes
+
+The outcomes for `WaveletOverlap` are the integers `1, 2, …, N` enumerating the
+wavelet scales. Use [`probabilities_and_outcomes`](@ref) to obtain these together
+with the probabilities.
+
 [^Rosso2001]:
     Rosso et al. (2001). Wavelet entropy: a new tool for analysis of short duration
     brain electrical signals. Journal of neuroscience methods, 105(1), 65-75.
