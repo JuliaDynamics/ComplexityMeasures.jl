@@ -26,8 +26,9 @@ RectangularBinEncoder
 Entropies.encode_motif
 ```
 
-## Alphabet length
+## State-space properties
 
 ```@docs
 alphabet_length
+missing_symbols
 ```

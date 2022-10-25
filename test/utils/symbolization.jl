@@ -1,3 +1,5 @@
+using Entropies.DelayEmbeddings
+
 @testset "Ordinal patterns" begin
     @test Entropies.encode_motif([2, 3, 1]) isa Int
     @test 0 <= Entropies.encode_motif([2, 3, 1]) <= factorial(3) - 1
@@ -60,4 +62,21 @@ end
         s = sortperm([1, 2, 3, 2], lt = Entropies.isless_rand)
         @test s == [1, 2, 4, 3] || s == [1, 4, 2, 3]
     end
+end
+
+@testset "Missing symbols" begin
+    x = [1, 2, 3, 4, 2, 1, 0]
+    m, τ = 3, 1
+    # With these parameters, embedding vectors and ordinal patterns are
+    #    (1, 2, 3) -> (1, 2, 3)
+    #    (2, 3, 4) -> (1, 2, 3)
+    #    (3, 4, 2) -> (3, 1, 2)
+    #    (4, 2, 1) -> (3, 2, 1)
+    #    (2, 1, 0) -> (3, 2, 1),
+    # so there are three occurring patterns and m! - 3 = 3*2*1 - 3 = 3 missing patterns
+    @test missing_symbols(x, SymbolicPermutation(; m, τ)) == 3
+
+    m, τ = 2, 1
+    y = [1, 2, 1, 2] # only two patterns, none missing
+    @test missing_symbols(x, SymbolicPermutation(; m, τ)) == 0
 end

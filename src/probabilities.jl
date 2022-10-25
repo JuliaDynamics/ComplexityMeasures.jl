@@ -2,6 +2,7 @@ export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
 export probabilities_and_events
 export alphabet_length
+export missing_symbols
 
 """
     Probabilities(x) → p
@@ -112,4 +113,23 @@ Each estimator's docstring describes what kind of events it returns.
 """
 function probabilities_and_events(::Array_or_Dataset, est::ProbabilitiesEstimator)
     error("Events not yet implemented for estimator $(nameof(typeof(est))).")
+end
+
+"""
+    missing_symbols(x, est::ProbabilitiesEstimator) → n_missing::Int
+
+Estimate a probability distribution for `x` using the given estimator, then count the number
+of missing (i.e. zero-probability) states.
+
+Works for estimators that implement [`alphabet_length`](@ref).
+
+See also: [`MissingDispersionPatterns`](@ref).
+"""
+function missing_symbols end
+
+function missing_symbols(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+    probs = probabilities(x, est)
+    L = alphabet_length(x, est)
+    O = count(!iszero, probs)
+    return L - O
 end

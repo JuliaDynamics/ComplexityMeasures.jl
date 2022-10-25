@@ -101,7 +101,9 @@ function dispersion_histogram(x::AbstractDataset, N, m, τ)
     return fasthist!(x) ./ (N - (m - 1)*τ)
 end
 
-function probabilities(x::AbstractVector, est::Dispersion)
+# A helper function that makes sure the algorithm doesn't crash when input contains
+# a singular value.
+function symbolize_for_dispersion(x, est::Dispersion)
     if est.check_unique
         if length(unique(x)) == 1
             symbols = repeat([1], length(x))
@@ -111,6 +113,13 @@ function probabilities(x::AbstractVector, est::Dispersion)
     else
         symbols = symbolize(x, est.symbolization)
     end
+
+    return symbols::Vector{Int}
+end
+
+function probabilities(x::AbstractVector, est::Dispersion)
+    symbols = symbolize_for_dispersion(x, est)
+
     N = length(x)
 
     # We must use genembed, not embed, to make sure the zero lag is included
