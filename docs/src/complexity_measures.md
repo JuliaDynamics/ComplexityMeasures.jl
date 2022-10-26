@@ -12,6 +12,12 @@ ReverseDispersion
 distance_to_whitenoise
 ```
 
+## Missing dispersion patterns
+
+```@docs
+MissingDispersionPatterns
+```
+
 ## Approximate entropy
 
 ```@docs

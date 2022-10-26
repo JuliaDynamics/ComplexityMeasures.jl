@@ -143,7 +143,6 @@ end
             symbolize(D, symb_floatvec) ==
             [SVector(0,0), SVector(4,4), SVector(9,9)]
 
-
         x = [-1.0, 0.0, 1.0]
         r = (1.0 - (-1.0)) / N
         binning_int = RectangularBinning(N)
@@ -186,4 +185,21 @@ end
         @test_throws ArgumentError alphabet_length(X, symbolization_XF)
         @test_throws ArgumentError alphabet_length(X, symbolization_XFs)
     end
+end
+
+@testset "Missing symbols" begin
+    x = [1, 2, 3, 4, 2, 1, 0]
+    m, τ = 3, 1
+    # With these parameters, embedding vectors and ordinal patterns are
+    #    (1, 2, 3) -> (1, 2, 3)
+    #    (2, 3, 4) -> (1, 2, 3)
+    #    (3, 4, 2) -> (3, 1, 2)
+    #    (4, 2, 1) -> (3, 2, 1)
+    #    (2, 1, 0) -> (3, 2, 1),
+    # so there are three occurring patterns and m! - 3 = 3*2*1 - 3 = 3 missing patterns
+    @test missing_symbols(x, SymbolicPermutation(; m, τ)) == 3
+
+    m, τ = 2, 1
+    y = [1, 2, 1, 2] # only two patterns, none missing
+    @test missing_symbols(x, SymbolicPermutation(; m, τ)) == 0
 end

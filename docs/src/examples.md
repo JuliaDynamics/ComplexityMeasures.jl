@@ -284,6 +284,81 @@ end
 You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.
 
+## Missing dispersion patterns
+
+```@example
+using CairoMakie
+using DynamicalSystemsBase
+using Entropies
+using TimeseriesSurrogates
+using Statistics
+
+d = Dispersion(m = 3, symbolization = GaussianSymbolization(c = 7))
+est = MissingDispersionPatterns(d)
+sys = Systems.logistic(0.6; r = 4.0)
+normalize = true
+Ls = collect(100:100:1000)
+nL = length(Ls)
+nreps = 50
+method = WLS(IAAFT(), true)
+
+r_det, r_noise = zeros(length(Ls)), zeros(length(Ls))
+r_det_surr, r_noise_surr = [zeros(nreps) for L in Ls], [zeros(nreps) for L in Ls]
+y = rand(maximum(Ls))
+
+for (i, L) in enumerate(Ls)
+    # Deterministic time series
+    x = trajectory(sys, L - 1, Ttr = 5000)
+    sx = surrogenerator(x, method)
+    r_det[i] = complexity_normalized(est, x)
+    r_det_surr[i][:] = [complexity_normalized(est, sx()) for j = 1:nreps]
+   
+    # Random time series
+    r_noise[i] = complexity_normalized(est, y[1:L])
+    sy = surrogenerator(y[1:L], method)
+    r_noise_surr[i][:] = [complexity_normalized(est, sy()) for j = 1:nreps]
+end
+
+fig = Figure()
+ax = Axis(fig[1, 1], 
+    xlabel = "Time series length (L)", 
+    ylabel = "# missing dispersion patterns (normalized)"
+)
+
+lines!(ax, Ls, r_det, label = "logistic(x0 = 0.6; r = 4.0)", color = :black)
+lines!(ax, Ls, r_noise, label = "Uniform noise", color = :red)
+for i = 1:nL
+    if i == 1
+        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black, 
+            label = "WIAAFT surrogates (logistic)")
+         boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red, 
+            label = "WIAAFT surrogates (noise)")
+    else
+        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black)
+        boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red)
+    end
+end
+axislegend(position = :rc)
+ylims!(0, 1.1)
+
+fig
+```
+
+We don't need to actually to compute the quantiles here to see that for the logistic
+map, across all time series lengths, the ``N_{MDP}`` values are above the extremal values 
+of the ``N_{MDP}`` values for the surrogate ensembles. Thus, we
+conclude that the logistic map time series has nonlinearity (well, of course).
+
+For the univariate noise time series, there is considerable overlap between ``N_{MDP}``
+for the surrogate distributions and the original signal, so we can't claim nonlinearity
+for this signal.
+
+Of course, to robustly reject the null hypothesis, we'd need to generate a sufficient number
+of surrogate realizations, and actually compute quantiles to compare with.
+
+[^Zhou2022]: Zhou, Q., Shang, P., & Zhang, B. (2022). Using missing dispersion patterns
+    to detect determinism and nonlinearity in time series data. Nonlinear Dynamics, 1-20.
+
 ## Approximate entropy
 
 Here, we reproduce the Henon map example with ``R=0.8`` from Pincus (1991),
