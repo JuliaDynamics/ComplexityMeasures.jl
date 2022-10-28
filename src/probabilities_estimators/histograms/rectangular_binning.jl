@@ -58,7 +58,7 @@ struct FixedRectangularBinning{E} <: AbstractBinning
     function FixedRectangularBinning(ϵmin::E1, ϵmax::E2, N::Int) where {E1 <: ValidFixedBinInputs, E2 <: ValidFixedBinInputs}
         f_ϵmin = float.(ϵmin)
         f_ϵmax = float.(ϵmax)
-        return new{typeof(f_ϵmin)}(float.(f_ϵmin), float.(f_ϵmax), N::Int)
+        return new{typeof(f_ϵmin)}(f_ϵmin, f_ϵmax, N::Int)
     end
 end
 
