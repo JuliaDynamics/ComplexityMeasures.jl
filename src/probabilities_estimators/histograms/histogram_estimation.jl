@@ -1,5 +1,5 @@
 # This is an internal function. It is not exported in the public API,
-# because `probabilities_and_events` is all the user would need.
+# because `probabilities_and_outcomes` is all the user would need.
 # The function _is_ part of the DEV API, and could be used downstream.
 # (It is documented and tested).
 """
@@ -39,8 +39,8 @@ end
 
 # This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
 function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
-    encoder = RectangularBinEncoder(x, ϵ)
-    bins = symbolize(x, encoder)
+    encoder = RectangularBinMapping(x, ϵ)
+    bins = outcomes(x, encoder)
     hist = fasthist!(bins)
     return Probabilities(hist), bins, encoder
 end

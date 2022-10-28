@@ -7,7 +7,6 @@ using Documenter
 using DocumenterTools: Themes
 using CairoMakie
 import Entropies.Wavelets
-using DynamicalSystems
 
 # %% JuliaDynamics theme
 # It includes themeing for the HTML build

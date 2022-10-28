@@ -85,7 +85,7 @@ function probabilities_and_events(x, ϵ::Floating_or_Fixed_RectBinning)
 end
 
 """
-    RectangularBinEncoder <: SymbolizationScheme
+    RectangularBinEncoder <: Encoding
     RectangularBinEncoder(x, binning::RectangularBinning)
     RectangularBinEncoder(x, binning::FixedRectangularBinning)
 
@@ -96,7 +96,7 @@ via [`symbolize`](@ref).
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinEncoder{B, M, E} <: SymbolizationScheme
+struct RectangularBinEncoder{B, M, E} <: Encoding
     binning::B # either RectangularBinning or FixedRectangularBinning
     mini::M # fields are either static vectors or numbers
     edgelengths::E

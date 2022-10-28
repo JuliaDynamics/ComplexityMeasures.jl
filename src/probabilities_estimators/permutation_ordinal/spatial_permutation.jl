@@ -12,7 +12,7 @@ The input data `x` are high-dimensional arrays, for example 2D arrays [^Ribeiro2
 A _stencil_ defines what local area (which points) around each pixel to
 consider, and compute ordinal patterns from.
 The number of included points in a stencil (`m`) determines the length of the vectors
-to be symbolized, i.e. there are `m!` possible ordinal patterns around each pixel.
+to be discretized, i.e. there are `m!` possible ordinal patterns around each pixel.
 
 Example usage:
 ```julia

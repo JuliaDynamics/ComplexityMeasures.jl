@@ -7,7 +7,7 @@ estimators nicely converge to the "true" entropy with increasing time series len
 For a uniform 1D distribution ``U(0, 1)``, the true entropy is `0`.
 
 ```@example MAIN
-using DynamicalSystems, CairoMakie, Statistics
+using DynamicalSystemsBase, CairoMakie, Statistics
 using Distributions: Uniform, Normal
 
 Ns = [100:100:500; 1000:1000:10000]
@@ -54,7 +54,7 @@ logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example MAIN
-using DynamicalSystems, CairoMakie
+using DynamicalSystemsBase, CairoMakie
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4
@@ -98,7 +98,7 @@ fig
 Here, we draw some random points from a 2D normal distribution. Then, we use kernel density estimation to associate a probability to each point `p`, measured by how many points are within radius `1.5` of `p`. Plotting the actual points, along with their associated probabilities estimated by the KDE procedure, we get the following surface plot.
 
 ```@example MAIN
-using DynamicalSystems, CairoMakie, Distributions
+using DynamicalSystemsBase, CairoMakie, Distributions
 𝒩 = MvNormal([1, -4], 2)
 N = 500
 D = Dataset(sort([rand(𝒩) for i = 1:N]))
@@ -120,7 +120,7 @@ energy is contained at one scale) and higher for very irregular signals (energy 
 more out across scales).
 
 ```@example MAIN
-using DynamicalSystems, CairoMakie
+using DynamicalSystemsBase, CairoMakie
 N, a = 1000, 10
 t = LinRange(0, 2*a*π, N)
 
@@ -209,7 +209,7 @@ al. (2019) base their examples on randomly generated numbers and do not provide 
 specify random number seeds.
 
 ```@example
-using Entropies, DynamicalSystems, Random, CairoMakie, Distributions
+using Entropies, DynamicalSystemsBase, Random, CairoMakie, Distributions
 
 n = 1000
 ts = 1:n
@@ -225,8 +225,8 @@ des = zeros(length(windows))
 pes = zeros(length(windows))
 
 m, c = 2, 6
-est_rd = ReverseDispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
-est_de = Dispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
+est_rd = ReverseDispersion(encoding = GaussianMapping(c), m = m, τ = 1)
+est_de = Dispersion(encoding = GaussianMapping(c), m = m, τ = 1)
 
 for (i, window) in enumerate(windows)
     rdes[i] = complexity_normalized(est_rd, y[window])
@@ -263,7 +263,7 @@ fig
 When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the [Wavelet entropy example](@ref) (where we use the spectral entropy instead of the wavelet entropy):
 
 ```@example MAIN
-using DynamicalSystems
+using DynamicalSystemsBase
 N1, N2, a = 101, 100001, 10
 
 for N in (N1, N2)
@@ -293,14 +293,14 @@ using Entropies
 using TimeseriesSurrogates
 using Statistics
 
-d = Dispersion(m = 3, symbolization = GaussianSymbolization(c = 7))
+d = Dispersion(m = 3, encoding = GaussianMapping(c = 7))
 est = MissingDispersionPatterns(d)
 sys = Systems.logistic(0.6; r = 4.0)
 normalize = true
 Ls = collect(100:100:1000)
 nL = length(Ls)
 nreps = 50
-method = WLS(IAAFT(), true)
+method = WLS(IAAFT(), rescale = true)
 
 r_det, r_noise = zeros(length(Ls)), zeros(length(Ls))
 r_det_surr, r_noise_surr = [zeros(nreps) for L in Ls], [zeros(nreps) for L in Ls]
@@ -364,7 +364,7 @@ of surrogate realizations, and actually compute quantiles to compare with.
 Here, we reproduce the Henon map example with ``R=0.8`` from Pincus (1991),
 comparing our values with relevant values from table 1 in Pincus (1991).
 
-We use `DiscreteDynamicalSystem` from `DynamicalSystems.jl` to represent the map,
+We use `DiscreteDynamicalSystem` from `DynamicalSystemsBase` to represent the map,
 and use the `trajectory` function from the same package to iterate the map
 for different initial conditions, for multiple time series lengths.
 
@@ -372,7 +372,7 @@ Finally, we summarize our results in box plots and compare the values to those
 obtained by Pincus (1991).
 
 ```@example
-using Entropies, DynamicalSystems, CairoMakie
+using Entropies, DynamicalSystemsBase, CairoMakie
 
 # Equation 13 in Pincus (1991)
 function eom_henon(u, p, n)
@@ -444,7 +444,7 @@ Completely regular signals should have sample entropy approaching zero, while
 less regular signals should have higher sample entropy.
 
 ```@example
-using DynamicalSystems, CairoMakie
+using DynamicalSystemsBase, CairoMakie
 N, a = 2000, 10
 t = LinRange(0, 2*a*π, N)
 

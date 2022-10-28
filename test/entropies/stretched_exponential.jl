@@ -20,4 +20,4 @@ b = 2
 x = [repeat([0, 1], 5); 0]
 est = SymbolicPermutation(m = 2)
 @test entropy(StretchedExponential(η = η, base = b), x, est) ≈
-    maximum(StretchedExponential(η = η, base = b), alphabet_length(est))
+    maximum(StretchedExponential(η = η, base = b), total_outcomes(est))

@@ -6,29 +6,26 @@
 Entropies.binhist
 ```
 
-## Symbolization
+## [Outcomes](@ref outcomes)
+
+### Encoding
 
 ```@docs
-symbolize
+outcomes(x, ::Encoding)
+total_outcomes(::Encoding)
+GaussianMapping
+OrdinalMapping
+RectangularBinMapping
 ```
 
-### Symbolization schemes
+### Missing outcomes
 
 ```@docs
-GaussianSymbolization
-OrdinalPattern
-RectangularBinEncoder
+missing_outcomes
 ```
 
 ### Encoding ordinal patterns
 
 ```@docs
 Entropies.encode_motif
-```
-
-## State-space properties
-
-```@docs
-alphabet_length
-missing_symbols
 ```
