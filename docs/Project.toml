@@ -13,6 +13,4 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 TimeseriesSurrogates = "c804724b-8c18-5caa-8579-6025a0767c70"
 
 [compat]
-DelayEmbeddings = "2.3.4"
-DynamicalSystems = "< 2.3.1"
 TimeseriesSurrogates = "2"
