@@ -6,13 +6,12 @@
 Entropies.binhist
 ```
 
-## [Outcomes](@ref outcomes)
+## [Outcomes](@id outcomes)
 
 ### Encoding
 
 ```@docs
 outcomes(x, ::Encoding)
-total_outcomes(::Encoding)
 GaussianMapping
 OrdinalMapping
 RectangularBinMapping

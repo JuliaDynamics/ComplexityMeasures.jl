@@ -1,4 +1,4 @@
-export RectangularBinEncoder
+export RectangularBinMapping
 export RectangularBinning
 export FixedRectangularBinning
 
@@ -70,13 +70,13 @@ end
 
 # Internal function method extension for `probabilities`
 function fasthist!(x::Vector_or_Dataset, ϵ::AbstractBinning)
-    encoder = RectangularBinEncoder(x, ϵ)
-    bins = symbolize(x, encoder)
+    encoder = RectangularBinMapping(x, ϵ)
+    bins = outcomes(x, encoder)
     hist = fasthist!(bins)
     return Probabilities(hist), bins, encoder
 end
 
-function probabilities_and_events(x, ϵ::Floating_or_Fixed_RectBinning)
+function probabilities_and_outcomes(x, ϵ::Floating_or_Fixed_RectBinning)
     probs, bins, encoder = fasthist!(x, ϵ)
     (; mini, edgelengths) = encoder
     unique!(bins) # `bins` is already sorted from `fasthist!`
@@ -85,45 +85,45 @@ function probabilities_and_events(x, ϵ::Floating_or_Fixed_RectBinning)
 end
 
 """
-    RectangularBinEncoder <: Encoding
-    RectangularBinEncoder(x, binning::RectangularBinning)
-    RectangularBinEncoder(x, binning::FixedRectangularBinning)
+    RectangularBinMapping <: Encoding
+    RectangularBinMapping(x, binning::RectangularBinning)
+    RectangularBinMapping(x, binning::FixedRectangularBinning)
 
 Find the minima along each dimension, and compute appropriate
 edge lengths for each dimension of `x` given a rectangular binning.
-Put them in an `RectangularBinEncoder` that can be then used to map points into bins
-via [`symbolize`](@ref).
+Put them in an `RectangularBinMapping` that can be then used to map points into bins
+via [`outcomes`](@ref).
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinEncoder{B, M, E} <: Encoding
+struct RectangularBinMapping{B, M, E} <: Encoding
     binning::B # either RectangularBinning or FixedRectangularBinning
     mini::M # fields are either static vectors or numbers
     edgelengths::E
 end
 
-function Base.show(io::IO, x::RectangularBinEncoder)
-    return print(io, "RectangularBinEncoder\n" *
+function Base.show(io::IO, x::RectangularBinMapping)
+    return print(io, "RectangularBinMapping\n" *
         "  binning: $(x.binning) \n" *
         "  box corners: $(x.mini)\n" *
         "  edgelengths: $(x.edgelengths)"
     )
 end
 
-function encode_as_bin(point, b::RectangularBinEncoder)
+function encode_as_bin(point, b::RectangularBinMapping)
     (; mini, edgelengths) = b
     # Map a data point to its bin edge
     return floor.(Int, (point .- mini) ./ edgelengths)
 end
 
-function symbolize(x::Vector_or_Dataset, b::RectangularBinEncoder)
+function outcomes(x::Vector_or_Dataset, b::RectangularBinMapping)
     return map(point -> encode_as_bin(point, b), x)
 end
 
 ##################################################################
 # Encoding bins using a *floating* (i.e. controlled by data) grid
 ##################################################################
-function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning;
+function RectangularBinMapping(x::AbstractDataset{D,T}, b::RectangularBinning;
         n_eps = 2) where {D, T}
     # This function always returns static vectors and is type stable
     ϵ = b.ϵ
@@ -141,10 +141,10 @@ function RectangularBinEncoder(x::AbstractDataset{D,T}, b::RectangularBinning;
         error("Invalid ϵ for binning of a dataset")
     end
 
-    RectangularBinEncoder(b, mini, edgelengths)
+    RectangularBinMapping(b, mini, edgelengths)
 end
 
-function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning; n_eps = 2)
+function RectangularBinMapping(x::AbstractVector{<:Real}, b::RectangularBinning; n_eps = 2)
     # This function always returns numbers and is type stable
     ϵ = b.ϵ
     mini, maxi = extrema(x)
@@ -159,11 +159,11 @@ function RectangularBinEncoder(x::AbstractVector{<:Real}, b::RectangularBinning;
         error("Invalid ϵ for binning of a vector")
     end
 
-    RectangularBinEncoder(b, mini, edgelength)
+    RectangularBinMapping(b, mini, edgelength)
 end
 
 
-const RBE = RectangularBinEncoder
+const RBE = RectangularBinMapping
 const RB = RectangularBinning
 const NONDEDUCIBLE{T} = Union{
     RB{T},
@@ -190,7 +190,7 @@ total_outcomes(::AbstractDataset{D}, symbolization::RBE{RB{Vector{Int}}}) where 
 ##################################################################
 # Encoding bins using a fixed (user-specified) grid
 ##################################################################
-function RectangularBinEncoder(::AbstractVector{<:Real},
+function RectangularBinMapping(::AbstractVector{<:Real},
         b::FixedRectangularBinning{E}; n_eps = 2) where E
 
     # This function always returns numbers and is type stable
@@ -203,10 +203,10 @@ function RectangularBinEncoder(::AbstractVector{<:Real},
         error("Invalid ϵmin or ϵmax for binning of a vector")
     end
 
-    RectangularBinEncoder(b, mini, edgelength)
+    RectangularBinMapping(b, mini, edgelength)
 end
 
-function RectangularBinEncoder(::AbstractDataset{D, T},
+function RectangularBinMapping(::AbstractDataset{D, T},
         b::FixedRectangularBinning{E}, n_eps = 2) where {D, T, E}
     # This function always returns static vectors and is type stable
     ϵmin, ϵmax = b.ϵmin, b.ϵmax
@@ -223,7 +223,7 @@ function RectangularBinEncoder(::AbstractDataset{D, T},
     edgelengths_nonadjusted = @. (maxi .- mini) / b.N
     edgelengths = nextfloat.(edgelengths_nonadjusted, n_eps)
 
-    RectangularBinEncoder(b, mini, edgelengths)
+    RectangularBinMapping(b, mini, edgelengths)
 end
 
 

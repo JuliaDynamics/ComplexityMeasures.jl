@@ -11,7 +11,7 @@ est = Diversity(; nbins, m, τ)
 
 # Diversity divides the interval [-1, 1] into nbins subintervals.
 binsize = (1-(-1))/10
-probs, events = probabilities_and_events(x, est)
+probs, events = probabilities_and_outcomes(x, est)
 
 ds = [0.605, 0.698, 0.924, 0.930] # value from Wang et al. (2020)
 # These distances should be in the following distance bins: [8, 8, 9, 9],

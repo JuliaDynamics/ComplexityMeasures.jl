@@ -30,7 +30,7 @@ Diversity probabilities are computed as follows.
 
 ## Implements
 
-- [`probabilities_and_events`](@ref). Events are the corners of the cosine similarity bins.
+- [`probabilities_and_outcomes`](@ref). Events are the corners of the cosine similarity bins.
     Each bin has width `nextfloat(2 / nbins)`.
 - [`total_outcomes`](@ref). The total number of states is given by `nbins`.
 
@@ -66,10 +66,10 @@ function probabilities(x::AbstractVector{T}, est::Diversity) where T <: Real
     return probabilities(ds, bin_estimator.binning)
 end
 
-function probabilities_and_events(x::AbstractVector{T}, est::Diversity) where T <: Real
+function probabilities_and_outcomes(x::AbstractVector{T}, est::Diversity) where T <: Real
     ds, binning = similarities_and_binning(x, est)
     bin_estimator = ValueHistogram(binning)
-    return probabilities_and_events(ds, bin_estimator.binning)
+    return probabilities_and_outcomes(ds, bin_estimator.binning)
 end
 
 total_outcomes(est::Diversity) = est.nbins

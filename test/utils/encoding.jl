@@ -81,8 +81,8 @@ end
         binning_diff = FixedRectangularBinning(axismins, axismaxs, N)
 
         # Verify that grids are as expected.
-        symb_diff = RectangularBinEncoder(D, binning_diff)
-        symb_same = RectangularBinEncoder(D, binning_same)
+        symb_diff = RectangularBinMapping(D, binning_diff)
+        symb_same = RectangularBinMapping(D, binning_same)
         @test all(@. symb_diff.edgelengths ≈ r)
         @test all(@. symb_same.edgelengths ≈ r)
         @test all(@. symb_diff.mini ≈ -1.0)
@@ -90,8 +90,8 @@ end
 
         # bins are indexed from 0, so should get the following symbols
         expected = [SVector(0,0), SVector(4, 4), SVector(9, 9)]
-        @test symbolize(D, symb_diff) ==
-            symbolize(D, symb_same) ==
+        @test outcomes(D, symb_diff) ==
+            outcomes(D, symb_same) ==
             expected
 
         @test total_outcomes(symb_diff) == N^2
@@ -102,13 +102,13 @@ end
         # --------------------------------
         # bins are indexed from 0, so should get [0, 4, 9] with N = 10
         x = [-1.0, 0.0, 1.0]
-        symb_1D = RectangularBinEncoder(x, binning_same)
+        symb_1D = RectangularBinMapping(x, binning_same)
 
         @test total_outcomes(symb_1D) == N
         @test total_outcomes(x, symb_1D) == N
         @test symb_1D.mini ≈ -1.0
         @test symb_1D.edgelengths ≈ (1 - (-1)) / N
-        @test symbolize(x, symb_1D) == [0, 4, 9]
+        @test outcomes(x, symb_1D) == [0, 4, 9]
     end
 
     @testset "Grid defined by data" begin
@@ -119,10 +119,10 @@ end
         binning_float = RectangularBinning(r)
         binning_floatvec = RectangularBinning([r, r])
 
-        symb_int = RectangularBinEncoder(D, binning_int)
-        symb_float = RectangularBinEncoder(D, binning_float)
-        symb_intvec = RectangularBinEncoder(D, binning_intvec)
-        symb_floatvec = RectangularBinEncoder(D, binning_floatvec)
+        symb_int = RectangularBinMapping(D, binning_int)
+        symb_float = RectangularBinMapping(D, binning_float)
+        symb_intvec = RectangularBinMapping(D, binning_intvec)
+        symb_floatvec = RectangularBinMapping(D, binning_floatvec)
 
         @test round.(symb_int.edgelengths, digits = 15) ==
             round.(symb_float.edgelengths, digits = 15) ==
@@ -137,26 +137,26 @@ end
         @test all(@. symb_intvec.mini ≈ -1.0)
         @test all(@. symb_floatvec.mini ≈ -1.0)
 
-        @test symbolize(D, symb_int) ==
-            symbolize(D, symb_intvec) ==
-            symbolize(D, symb_float) ==
-            symbolize(D, symb_floatvec) ==
+        @test outcomes(D, symb_int) ==
+            outcomes(D, symb_intvec) ==
+            outcomes(D, symb_float) ==
+            outcomes(D, symb_floatvec) ==
             [SVector(0,0), SVector(4,4), SVector(9,9)]
 
         x = [-1.0, 0.0, 1.0]
         r = (1.0 - (-1.0)) / N
         binning_int = RectangularBinning(N)
         binning_intvec = RectangularBinning([N])
-        symb_int = RectangularBinEncoder(x, binning_int)
-        symb_float = RectangularBinEncoder(x, binning_float)
+        symb_int = RectangularBinMapping(x, binning_int)
+        symb_float = RectangularBinMapping(x, binning_float)
 
         @test all(@. symb_int.edgelengths ≈ r)
         @test all(@. symb_float.edgelengths ≈ r)
         @test all(@. symb_int.mini ≈ -1.0)
         @test all(@. symb_float.mini ≈ -1.0)
 
-        @test symbolize(x, symb_int) ==
-            symbolize(x, symb_float) ==
+        @test outcomes(x, symb_int) ==
+            outcomes(x, symb_float) ==
             [0, 4, 9]
     end
 
@@ -168,12 +168,12 @@ end
         rbF = RectangularBinning(0.5)
         rbFs = RectangularBinning([0.5, 0.4, 0.3])
 
-        symbolization_xN = RectangularBinEncoder(x, rbN)
-        symbolization_xF = RectangularBinEncoder(x, rbF)
-        symbolization_XN = RectangularBinEncoder(X, rbN)
-        symbolization_XNs = RectangularBinEncoder(X, rbNs)
-        symbolization_XF = RectangularBinEncoder(X, rbF)
-        symbolization_XFs = RectangularBinEncoder(X, rbFs)
+        symbolization_xN = RectangularBinMapping(x, rbN)
+        symbolization_xF = RectangularBinMapping(x, rbF)
+        symbolization_XN = RectangularBinMapping(X, rbN)
+        symbolization_XNs = RectangularBinMapping(X, rbNs)
+        symbolization_XF = RectangularBinMapping(X, rbF)
+        symbolization_XFs = RectangularBinMapping(X, rbFs)
 
         @test total_outcomes(x, symbolization_xN) == 5
         @test_throws ArgumentError total_outcomes(x, symbolization_xF)
