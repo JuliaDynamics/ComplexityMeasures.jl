@@ -7,7 +7,7 @@ est = Diversity(; nbins, m, τ)
 @test probabilities(x, est) == [0.5, 0.5]
 @test round(entropy_normalized(x, est), digits = 4) == 0.3010
 
-@test alphabet_length(est) == 10
+@test total_outcomes(est) == 10
 
 # Diversity divides the interval [-1, 1] into nbins subintervals.
 binsize = (1-(-1))/10

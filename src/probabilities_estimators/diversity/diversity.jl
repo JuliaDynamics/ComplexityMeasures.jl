@@ -32,7 +32,7 @@ Diversity probabilities are computed as follows.
 
 - [`probabilities_and_events`](@ref). Events are the corners of the cosine similarity bins.
     Each bin has width `nextfloat(2 / nbins)`.
-- [`alphabet_length`](@ref). The total number of states is given by `nbins`.
+- [`total_outcomes`](@ref). The total number of states is given by `nbins`.
 
 [^Wang2020]: Wang, X., Si, S., & Li, Y. (2020). Multiscale diversity entropy: A novel
     dynamical measure for fault diagnosis of rotating machinery. IEEE Transactions on
@@ -72,4 +72,4 @@ function probabilities_and_events(x::AbstractVector{T}, est::Diversity) where T 
     return probabilities_and_events(ds, bin_estimator.binning)
 end
 
-alphabet_length(est::Diversity) = est.nbins
+total_outcomes(est::Diversity) = est.nbins

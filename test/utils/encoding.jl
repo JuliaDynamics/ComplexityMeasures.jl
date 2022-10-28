@@ -94,18 +94,18 @@ end
             symbolize(D, symb_same) ==
             expected
 
-        @test alphabet_length(symb_diff) == N^2
-        @test alphabet_length(symb_same) == N^2
-        @test alphabet_length(D, symb_diff) == N^2
-        @test alphabet_length(D, symb_same) == N^2
+        @test total_outcomes(symb_diff) == N^2
+        @test total_outcomes(symb_same) == N^2
+        @test total_outcomes(D, symb_diff) == N^2
+        @test total_outcomes(D, symb_same) == N^2
         # For univariate timeseries
         # --------------------------------
         # bins are indexed from 0, so should get [0, 4, 9] with N = 10
         x = [-1.0, 0.0, 1.0]
         symb_1D = RectangularBinEncoder(x, binning_same)
 
-        @test alphabet_length(symb_1D) == N
-        @test alphabet_length(x, symb_1D) == N
+        @test total_outcomes(symb_1D) == N
+        @test total_outcomes(x, symb_1D) == N
         @test symb_1D.mini ≈ -1.0
         @test symb_1D.edgelengths ≈ (1 - (-1)) / N
         @test symbolize(x, symb_1D) == [0, 4, 9]
@@ -175,15 +175,15 @@ end
         symbolization_XF = RectangularBinEncoder(X, rbF)
         symbolization_XFs = RectangularBinEncoder(X, rbFs)
 
-        @test alphabet_length(x, symbolization_xN) == 5
-        @test_throws ArgumentError alphabet_length(x, symbolization_xF)
-        @test_throws ArgumentError alphabet_length(x, symbolization_xF)
-        @test_throws ArgumentError alphabet_length(x, symbolization_XNs)
+        @test total_outcomes(x, symbolization_xN) == 5
+        @test_throws ArgumentError total_outcomes(x, symbolization_xF)
+        @test_throws ArgumentError total_outcomes(x, symbolization_xF)
+        @test_throws ArgumentError total_outcomes(x, symbolization_XNs)
 
-        @test alphabet_length(X, symbolization_XN) == 5^3
-        @test alphabet_length(X, symbolization_XNs) == 5*3*4
-        @test_throws ArgumentError alphabet_length(X, symbolization_XF)
-        @test_throws ArgumentError alphabet_length(X, symbolization_XFs)
+        @test total_outcomes(X, symbolization_XN) == 5^3
+        @test total_outcomes(X, symbolization_XNs) == 5*3*4
+        @test_throws ArgumentError total_outcomes(X, symbolization_XF)
+        @test_throws ArgumentError total_outcomes(X, symbolization_XFs)
     end
 end
 

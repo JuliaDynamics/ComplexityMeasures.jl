@@ -170,21 +170,21 @@ const NONDEDUCIBLE{T} = Union{
     RBE{RB{T}}
     } where T <: Union{Q, Vector{Q}} where Q <: AbstractFloat
 
-function alphabet_length(x, symbolization::NONDEDUCIBLE)
-    msg = "alphabet_length can't be deduced from $NONDEDUCIBLE"
+function total_outcomes(x, symbolization::NONDEDUCIBLE)
+    msg = "total_outcomes can't be deduced from $NONDEDUCIBLE"
     throw(ArgumentError(msg))
 end
 
 # multiple-axis bins don't make sense for univariate input.
-function alphabet_length(::AbstractVector,symbolization::RBE{RB{Vector{Int}}})
-    msg = "alphabet_length is ambiguous for Vectors with RectangularBinning{Vector{Int}}"
+function total_outcomes(::AbstractVector,symbolization::RBE{RB{Vector{Int}}})
+    msg = "total_outcomes is ambiguous for Vectors with RectangularBinning{Vector{Int}}"
     throw(ArgumentError(msg))
 end
-alphabet_length(::AbstractVector,symbolization::RBE{RB{Int}}) =
+total_outcomes(::AbstractVector,symbolization::RBE{RB{Int}}) =
     symbolization.binning.ϵ
-alphabet_length(::AbstractDataset{D}, symbolization::RBE{RB{Int}}) where {D} =
+total_outcomes(::AbstractDataset{D}, symbolization::RBE{RB{Int}}) where {D} =
     symbolization.binning.ϵ^D
-alphabet_length(::AbstractDataset{D}, symbolization::RBE{RB{Vector{Int}}}) where {D} =
+total_outcomes(::AbstractDataset{D}, symbolization::RBE{RB{Vector{Int}}}) where {D} =
     prod(symbolization.binning.ϵ)
 
 ##################################################################
@@ -230,13 +230,13 @@ end
 # When the grid is fixed by the user, we can always deduce the total number of bins,
 # even just from the binning itself - symbolization info not needed.
 const FRB = FixedRectangularBinning
-alphabet_length(::AbstractVector, b::FRB) = b.N
-alphabet_length(::AbstractDataset{D, T}, b::FRB) where {D, T} = b.N^D
-alphabet_length(symbolization::RBE{B, T}) where {B <: FRB, T <: Number} =
+total_outcomes(::AbstractVector, b::FRB) = b.N
+total_outcomes(::AbstractDataset{D, T}, b::FRB) where {D, T} = b.N^D
+total_outcomes(symbolization::RBE{B, T}) where {B <: FRB, T <: Number} =
     symbolization.binning.N
-alphabet_length(symbolization::RBE{B, T}) where {B <: FRB, T <: SVector{D}} where D =
+total_outcomes(symbolization::RBE{B, T}) where {B <: FRB, T <: SVector{D}} where D =
     symbolization.binning.N^D
-alphabet_length(x::AbstractVector, symbolization::RBE{B, T}) where {B <: FRB, T <: Number} =
+total_outcomes(x::AbstractVector, symbolization::RBE{B, T}) where {B <: FRB, T <: Number} =
     symbolization.binning.N
-alphabet_length(x::AbstractDataset{D}, symbolization::RBE{B, T}) where {B <: FRB, T <: SVector{D}} where D =
+total_outcomes(x::AbstractDataset{D}, symbolization::RBE{B, T}) where {B <: FRB, T <: SVector{D}} where D =
     symbolization.binning.N^D
