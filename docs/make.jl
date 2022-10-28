@@ -32,7 +32,14 @@ Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__,
 # %% Build docs
 ENV["JULIA_DEBUG"] = "Documenter"
 
-PAGES = include("toc.jl")
+ENTROPIES_PAGES = [
+    "index.md",
+    "probabilities.md",
+    "entropies.md",
+    "complexity_measures.md",
+    "examples.md",
+    "utils.md",
+]
 include("style.jl")
 
 makedocs(
@@ -46,7 +53,7 @@ makedocs(
         ),
     sitename = "Entropies.jl",
     authors = "Kristian Agasøster Haaga, George Datseris",
-    pages = PAGES,
+    pages = ENTROPIES_PAGES,
     doctest = CI,
     draft = false,
 )

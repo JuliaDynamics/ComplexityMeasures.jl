@@ -1,4 +1,4 @@
-# Examples
+# Entropies.jl Examples
 
 ## Nearest neighbor direct entropy example
 
