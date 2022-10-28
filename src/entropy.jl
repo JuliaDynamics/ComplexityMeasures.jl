@@ -90,14 +90,14 @@ Return the maximum value `m` of the given entropy type based on the given estima
 and the given input `x` (whose values are not important, but layout and type are).
 
 This function only works if the maximum value is dedicable, which is possible only
-when the estimator has a known [`alphabet_length`](@ref).
+when the estimator has a known [`total_outcomes`](@ref).
 
     maximum(e::Entropy, L::Int) → m::Real
 
 Alternatively, compute the maximum entropy from the alphabet length `L` directly.
 """
 function Base.maximum(e::Entropy, x, est::ProbabilitiesEstimator)
-    L = alphabet_length(x, est)
+    L = total_outcomes(x, est)
     return maximum(e, L)
 end
 function Base.maximum(e::Entropy, ::Int)
@@ -113,7 +113,7 @@ If `e` is not given, it defaults to `Shannon()`.
 
 Notice that unlike for [`entropy`](@ref), here there is no method
 `entropy_normalized(e::Entropy, probs::Probabilities)` because there is no way to know
-the amount of _possible_ events (i.e., the [`alphabet_length`](@ref)) from `probs`.
+the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs`.
 """
 function entropy_normalized(e::Entropy, x, est::ProbabilitiesEstimator)
     return entropy(e, x, est)/maximum(e, x, est)

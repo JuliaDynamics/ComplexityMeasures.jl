@@ -1,10 +1,17 @@
 # [Probabilities](@id probabilities_estimators)
 
+## Probabilities API
+
 ```@docs
+ProbabilitiesEstimator
+```
+
+```@docs
+Probabilities
 probabilities
 probabilities!
-Probabilities
-ProbabilitiesEstimator
+probabilities_and_outcomes
+total_outcomes
 ```
 
 ## Count occurrences (counting)
@@ -19,7 +26,6 @@ CountOccurrences
 ValueHistogram
 RectangularBinning
 ```
-
 
 ## Permutation (symbolic)
 

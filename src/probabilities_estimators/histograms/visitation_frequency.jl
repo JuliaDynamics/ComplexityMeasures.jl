@@ -16,22 +16,26 @@ include("histogram_estimation.jl")
 
 A probability estimator based on binning the values of the data as dictated by
 the binning scheme `b` and formally computing their histogram, i.e.,
-the frequencies of points in the bins. Alias to this is `VisitationFrequency`.
-
-This method has a linearithmic time complexity (`n log(n)` for `n = length(x)`)
-and a linear space complexity (`l` for `l = dimension(x)`).
-This allows computation of probabilities (histograms) of high-dimensional
-datasets and with small box sizes `ε` without memory overflow and with maximum performance.
-
-To obtain the bin information along with the probabilities,
-use [`probabilities_and_events`](@ref). The events correspond to the bin corners.
-
-See also: [`RectangularBinning`](@ref).
+the frequencies of points in the bins. An alias to this is `VisitationFrequency`.
 
     ValueHistogram(ϵ::Union{Real,Vector})
 
-This is a convenience method that accepts same input as [`RectangularBinning`](@ref)
+A convenience method that accepts same input as [`RectangularBinning`](@ref)
 and initializes this binning directly.
+
+The `ValueHistogram` estimator has a linearithmic time complexity
+(`n log(n)` for `n = length(x)`) and a linear space complexity (`l` for `l = dimension(x)`).
+This allows computation of probabilities (histograms) of high-dimensional
+datasets and with small box sizes `ε` without memory overflow and with maximum performance.
+
+# Outcomes
+
+The outcomes `Ω` for `ValueHistogram` is the set of unique bins constructed
+from `b`. Each bin is identified by its left (lowest-value) corner.
+Use [`probabilities_and_outcomes`](@ref) to obtain bins together
+with the probabilities.
+
+See also: [`RectangularBinning`](@ref).
 """
 struct ValueHistogram{B<:AbstractBinning} <: ProbabilitiesEstimator
     binning::B
@@ -51,10 +55,17 @@ function probabilities(x::Array_or_Dataset, est::ValueHistogram{<:RectangularBin
     fasthist(x, est.binning)[1]
 end
 
-function probabilities_and_events(x, est::ValueHistogram)
+function probabilities_and_outcomes(x, est::ValueHistogram)
     probs, bins, encoder = fasthist(x, est.binning)
     (; mini, edgelengths) = encoder
     unique!(bins) # `bins` is already sorted from `fasthist!`
     events = map(b -> b .* edgelengths .+ mini, bins)
     return probs, events
+end
+
+function outcomes(x, est::ValueHistogram)
+    probs, bins, encoder = fasthist(x, est.binning)
+    (; mini, edgelengths) = encoder
+    unique!(bins) # `bins` is already sorted from `fasthist!`
+    return map(b -> b .* edgelengths .+ mini, bins)
 end
