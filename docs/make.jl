@@ -39,6 +39,7 @@ ENTROPIES_PAGES = [
     "complexity_measures.md",
     "examples.md",
     "utils.md",
+    "devdocs.md",
 ]
 include("style.jl")
 
