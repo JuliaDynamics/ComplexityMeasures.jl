@@ -58,7 +58,7 @@ and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 using Entropies
 using DynamicalSystemsBase
 using ChaosTools
-CairoMakie
+using CairoMakie
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4
