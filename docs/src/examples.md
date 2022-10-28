@@ -300,7 +300,7 @@ normalize = true
 Ls = collect(100:100:1000)
 nL = length(Ls)
 nreps = 50
-method = WLS(IAAFT(), true)
+method = WLS(IAAFT(), rescale = true)
 
 r_det, r_noise = zeros(length(Ls)), zeros(length(Ls))
 r_det_surr, r_noise_surr = [zeros(nreps) for L in Ls], [zeros(nreps) for L in Ls]
