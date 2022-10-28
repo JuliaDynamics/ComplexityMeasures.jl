@@ -18,13 +18,6 @@ Binning instructions are deduced from the type of `ϵ` as follows:
     intervals that cover all data.
 4. `ϵ::Vector{Float64}` divides the i-th coordinate axis into intervals of fixed size
     `ϵ[i]`, starting from the axis minima until the data is completely covered by boxes.
-
-!!! note "Be aware when mixing methods"
-    If the range of the data along some dimension is `[r1, r2]`, then
-    `RectangularBinning(N)` results in a bin edge length of
-    `nextfloat(r2 - r1) / N)`. `nextfloat` is used to ensure data are completely
-    covered. Keep this in mind if you're switching between the `ϵ::Int` and `ϵ::Float64`
-    ways of constructing grids.
 """
 struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
@@ -230,6 +223,7 @@ end
 # When the grid is fixed by the user, we can always deduce the total number of bins,
 # even just from the binning itself - symbolization info not needed.
 const FRB = FixedRectangularBinning
+total_outcomes(b::FRB) = b.N
 total_outcomes(::AbstractVector, b::FRB) = b.N
 total_outcomes(::AbstractDataset{D, T}, b::FRB) where {D, T} = b.N^D
 total_outcomes(symbolization::RBE{B, T}) where {B <: FRB, T <: Number} =
