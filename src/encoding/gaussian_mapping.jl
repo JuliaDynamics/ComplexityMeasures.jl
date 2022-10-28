@@ -3,10 +3,10 @@ using Statistics, QuadGK
 export GaussianMapping
 
 """
-    GaussianMapping <: Discretization
+    GaussianMapping <: Encoding
     GaussianMapping(; c::Int = 3)
 
-A discretization scheme where the elements of `x` are discretized into `c` distinct integer
+A encoding scheme where the elements of `x` are discretized into `c` distinct integer
 categories using the normal cumulative distribution function (NCDF), used with
 [`outcomes`](@ref).
 
@@ -30,7 +30,7 @@ series ``S = \\{ s_i \\}_{i=1}^N``, where ``s_i \\in [1, 2, \\ldots, c]``.
 
     outcomes(x::AbstractVector, s::GaussianMapping)
 
-Map the elements of `x` to a symbol time series according to the Gaussian discretization
+Map the elements of `x` to a symbol time series according to the Gaussian encoding
 scheme `s`.
 
 ## Examples
@@ -51,11 +51,11 @@ julia> Entropies.outcomes(x, GaussianMapping(c = 5))
 
 See also: [`outcomes`](@ref).
 """
-Base.@kwdef struct GaussianMapping{I <: Integer} <: Discretization
+Base.@kwdef struct GaussianMapping{I <: Integer} <: Encoding
     c::I = 3
 end
 
-total_outcomes(discretization::GaussianMapping) = discretization.c
+total_outcomes(encoding::GaussianMapping) = encoding.c
 
 g(xᵢ, μ, σ) = exp((-(xᵢ - μ)^2)/(2σ^2))
 

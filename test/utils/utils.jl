@@ -1,4 +1,4 @@
 @testset "Utility methods" begin
     testfile("fasthist.jl")
-    testfile("discretization.jl")
+    testfile("encoding.jl")
 end

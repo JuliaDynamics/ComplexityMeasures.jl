@@ -21,9 +21,9 @@ struct RectangularBinning{E} <: AbstractBinning
 end
 
 """
-    RectangularBinMapping <: Discretization
+    RectangularBinMapping <: Encoding
 
-A discretization scheme where the [outcome space](@ref terminology) is a set of
+A encoding scheme where the [outcome space](@ref terminology) is a set of
 rectangular bins, which identified by their minima and edgelengths.
 
 Used in [`outcomes`](@ref).
@@ -37,7 +37,7 @@ dimension of `x`, given a rectangular binning. Put the minima and edgelengths in
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinMapping{M, E} <: Discretization
+struct RectangularBinMapping{M, E} <: Encoding
     binning::RectangularBinning # type specialization isn't useful here; we don't use this.
     mini::M # fields are either static vectors or numbers
     edgelengths::E

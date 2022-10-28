@@ -8,11 +8,11 @@ Entropies.binhist
 
 ## [Outcomes](@ref outcomes)
 
-### Discretization
+### Encoding
 
 ```@docs
-outcomes(x, ::Discretization)
-total_outcomes(::Discretization)
+outcomes(x, ::Encoding)
+total_outcomes(::Encoding)
 GaussianMapping
 OrdinalMapping
 RectangularBinMapping

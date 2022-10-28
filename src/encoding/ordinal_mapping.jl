@@ -1,10 +1,10 @@
 export OrdinalMapping
 
 """
-    OrdinalMapping <: Discretization
+    OrdinalMapping <: Encoding
     OrdinalMapping(m = 3, τ = 1; lt = est.lt)
 
-A discretization scheme that converts the input time series to ordinal patterns, which are
+A encoding scheme that converts the input time series to ordinal patterns, which are
 then encoded to integers using [`encode_motif`](@ref), used with
 [`outcomes`](@ref).
 
@@ -43,7 +43,7 @@ s = outcomes(D, OrdinalMapping())
 
 See also: [`outcomes`](@ref).
 """
-Base.@kwdef struct OrdinalMapping <: Discretization
+Base.@kwdef struct OrdinalMapping <: Encoding
     m::Int = 3
     τ::Int = 1
     lt::Function = isless_rand

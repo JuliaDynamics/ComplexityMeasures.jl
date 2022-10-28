@@ -4,7 +4,7 @@ export distance_to_whitenoise
 """
     ReverseDispersion <: ComplexityMeasure
     ReverseDispersion(; m = 2, τ = 1, check_unique = true,
-        discretization::Discretization = GaussianMapping(c = 5)
+        encoding::Encoding = GaussianMapping(c = 5)
     )
 
 Estimator for the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019].
@@ -19,7 +19,7 @@ H_{rde} = \\sum_{i = 1}^{c^m} \\left(p_i - \\dfrac{1}{{c^m}} \\right)^2 =
 ```
 where the probabilities ``p_i`` are obtained precisely as for the [`Dispersion`](@ref)
 probability estimator. Relative frequencies of dispersion patterns are computed using the
-given `discretization` scheme , which defaults to discretization using the normal cumulative
+given `encoding` scheme , which defaults to encoding using the normal cumulative
 distribution function (NCDF), as implemented by [`GaussianMapping`](@ref), using
 embedding dimension `m` and embedding delay `τ`.
 Recommended parameter values[^Li2018] are `m ∈ [2, 3]`, `τ = 1` for the embedding, and
@@ -35,7 +35,7 @@ the dispersion pattern probability distribution is from white noise.
 ## Data requirements
 
 Like for [`Dispersion`](@ref), the input must have more than one unique element for the
-default Gaussian mapping discretization to be well-defined. Li et al. (2018) recommends
+default Gaussian encoding to be well-defined. Li et al. (2018) recommends
 that `x` has at least 1000 data points.
 
 If `check_unique == true` (default), then it is checked that the input has
@@ -45,14 +45,14 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
 """
-Base.@kwdef struct ReverseDispersion{S <: Discretization} <: ComplexityMeasure
-    discretization::S = GaussianMapping(c = 5)
+Base.@kwdef struct ReverseDispersion{S <: Encoding} <: ComplexityMeasure
+    encoding::S = GaussianMapping(c = 5)
     m::Int = 2
     τ::Int = 1
     check_unique::Bool = false
 end
 
-total_outcomes(est::ReverseDispersion)::Int = total_outcomes(est.discretization) ^ est.m
+total_outcomes(est::ReverseDispersion)::Int = total_outcomes(est.encoding) ^ est.m
 
 """
     distance_to_whitenoise(p::Probabilities, estimator::ReverseDispersion; normalize = false)
@@ -82,13 +82,13 @@ function distance_to_whitenoise(p::Probabilities, est::ReverseDispersion; normal
 end
 
 function complexity(c::ReverseDispersion, x)
-    (; discretization, m, τ, check_unique) = c
-    p = probabilities(x, Dispersion(; discretization, m, τ, check_unique))
+    (; encoding, m, τ, check_unique) = c
+    p = probabilities(x, Dispersion(; encoding, m, τ, check_unique))
     return distance_to_whitenoise(p, c, normalize = false)
 end
 
 function complexity_normalized(c::ReverseDispersion, x)
-    (; discretization, m, τ, check_unique) = c
-    p = probabilities(x, Dispersion(; discretization, m, τ, check_unique))
+    (; encoding, m, τ, check_unique) = c
+    p = probabilities(x, Dispersion(; encoding, m, τ, check_unique))
     return distance_to_whitenoise(p, c, normalize = true)
 end

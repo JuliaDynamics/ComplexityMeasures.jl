@@ -4,7 +4,7 @@ x = rand(100)
 
 @testset "Distance to whitenoise" begin
     m, n_classes = 2, 2
-    est = ReverseDispersion(m = m, discretization = GaussianMapping(c = n_classes))
+    est = ReverseDispersion(m = m, encoding = GaussianMapping(c = n_classes))
 
         # Reverse dispersion entropy is 0 when all probabilities are identical and equal
     # to 1/(n_classes^m).

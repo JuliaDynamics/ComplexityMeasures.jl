@@ -2,15 +2,15 @@ using DelayEmbeddings
 export Dispersion
 
 """
-    Dispersion(; discretization =  GaussianMapping(c = 5), m = 2, τ = 1,
+    Dispersion(; encoding =  GaussianMapping(c = 5), m = 2, τ = 1,
         check_unique = true)
 
 A probability estimator based on dispersion patterns, originally used by
 Rostaghi & Azami, 2016[^Rostaghi2016] to compute the "dispersion entropy", which
 characterizes the complexity and irregularity of a time series.
 
-Relative frequencies of dispersion patterns are computed using the discretization scheme
-`s` with embedding dimension `m` and embedding delay `τ`. Recommended parameter
+Relative frequencies of dispersion patterns are computed using the given `encoding` scheme
+with embedding dimension `m` and embedding delay `τ`. Recommended parameter
 values[^Li2018] are `m ∈ [2, 3]`, `τ = 1` for the embedding, and `c ∈ [3, 4, …, 8]`
 categories for the Gaussian symbol mapping.
 
@@ -18,7 +18,7 @@ categories for the Gaussian symbol mapping.
 
 Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. First, this time series
 is discretized using `symbolization`, which default to [`GaussianMapping`](@ref),
-which uses the normal cumulative distribution function (CDF) for discretization.
+which uses the normal cumulative distribution function (CDF) for encoding.
 Other choices of CDFs are also possible, but Entropies.jl currently only implements
 [`GaussianMapping`](@ref), which was used in Rostaghi & Azami (2016). This step
 results in an integer-valued symbol time series ``S = \\{ s_i \\}_{i=1}^N``, where
@@ -73,8 +73,8 @@ See also: [`entropy_dispersion`](@ref), [`GaussianMapping`](@ref).
 [^Rostaghi2016]: Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.
 [^Li2018]: Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale dispersion entropy and wavelet threshold denoising. Entropy, 21(1), 11.
 """
-Base.@kwdef struct Dispersion{S <: Discretization} <: ProbabilitiesEstimator
-    discretization::S = GaussianMapping(c = 5)
+Base.@kwdef struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
+    encoding::S = GaussianMapping(c = 5)
     m::Int = 2
     τ::Int = 1
     check_unique::Bool = false
@@ -108,10 +108,10 @@ function symbolize_for_dispersion(x, est::Dispersion)
         if length(unique(x)) == 1
             symbols = repeat([1], length(x))
         else
-            symbols = outcomes(x, est.discretization)
+            symbols = outcomes(x, est.encoding)
         end
     else
-        symbols = outcomes(x, est.discretization)
+        symbols = outcomes(x, est.encoding)
     end
 
     return symbols::Vector{Int}
@@ -130,4 +130,4 @@ function probabilities(x::AbstractVector, est::Dispersion)
     p = Probabilities(hist)
 end
 
-total_outcomes(est::Dispersion)::Int = est.discretization.c ^ est.m
+total_outcomes(est::Dispersion)::Int = est.encoding.c ^ est.m
