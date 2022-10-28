@@ -21,7 +21,7 @@ is used. Otherwise, you may choose a wavelet from the `Wavelets` package
 
 # Outcomes
 
-The outcomes for `WaveletOverlap` are the integers `1, 2, …, N` enumerating the
+The outcomes `Ω` for `WaveletOverlap` are the integers `1, 2, …, N` enumerating the
 wavelet scales. Use [`probabilities_and_outcomes`](@ref) to obtain these together
 with the probabilities.
 

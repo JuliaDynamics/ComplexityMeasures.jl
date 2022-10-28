@@ -28,7 +28,7 @@ that are within ``|i - s| ≤ w`` from the given point ``X_i``.
 
 ## Outcomes
 
-The outcome space `Ω` for `NaiveKernel` are the input data themselves. Use
+The outcomes `Ω` for `NaiveKernel` are the input data themselves. Use
 [`probabilities_and_outcomes`](@ref) to obtain these together with the probabilities.
 
 [^PrichardTheiler1995]:

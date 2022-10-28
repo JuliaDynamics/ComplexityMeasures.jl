@@ -8,7 +8,7 @@ based on the amplitude-aware permutation entropy (Azami & Escudero, 2016).
 
 ## Outcomes
 
-Like for [`SymbolicPermutation`](@ref), the outcome space `Ω` or
+Like for [`SymbolicPermutation`](@ref), the outcomes `Ω` for
 `SymbolicAmplitudeAwarePermutation` is the set `{1, 2, …, factorial(m)}`, where each
 integer correspond to a unique ordinal pattern, but [`probabilities_and_outcomes`](@ref) is
 not yet implemented for this estimator.

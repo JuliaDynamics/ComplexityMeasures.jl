@@ -19,7 +19,7 @@ computed directly from the state vectors.
 
 ## Outcomes
 
-The outcome space `Ω` for `SymbolicPermutation` is the set `{1, 2, …, factorial(m)}`,
+The outcomes `Ω` for `SymbolicPermutation` is the set `{1, 2, …, factorial(m)}`,
 where each integer correspond to a unique ordinal pattern, but
 [`probabilities_and_outcomes`](@ref) is not yet implemented for this estimator.
 

@@ -15,7 +15,7 @@ in spectral space depends on the length of the input.
 
 # Outcomes
 
-The outcome space for `PowerSpectrum` is the set of frequencies is Fourier space. They
+The outcomes `Ω` for `PowerSpectrum` is the set of frequencies in Fourier space. They
 should be multiplied with the sampling rate of the signal, which is assumed to be `1`.
 Use [`probabilities_and_outcomes`](@ref) to obtain the frequencies together with the
 probabilities.

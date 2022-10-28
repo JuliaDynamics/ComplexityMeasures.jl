@@ -30,7 +30,7 @@ datasets and with small box sizes `ε` without memory overflow and with maximum 
 
 # Outcomes
 
-The outcome space `Ω` for `ValueHistogram` is the set of unique bins constructed
+The outcomes `Ω` for `ValueHistogram` is the set of unique bins constructed
 from `b`. Each bin is identified by its left (lowest-value) corner.
 Use [`probabilities_and_outcomes`](@ref) to obtain bins together
 with the probabilities.

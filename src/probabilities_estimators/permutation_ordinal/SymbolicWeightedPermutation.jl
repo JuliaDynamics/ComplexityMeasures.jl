@@ -11,7 +11,7 @@ based on the weighted permutation entropy (Fadlallah et al., 2013).
 
 ## Outcomes
 
-Like for [`SymbolicPermutation`](@ref), outcome space `Ω` for `SymbolicWeightedPermutation`
+Like for [`SymbolicPermutation`](@ref), the outcomes `Ω` for `SymbolicWeightedPermutation`
 is the set `{1, 2, …, factorial(m)}`, where each integer correspond to a unique ordinal
 pattern, but [`probabilities_and_outcomes`](@ref) is not yet implemented for this estimator.
 

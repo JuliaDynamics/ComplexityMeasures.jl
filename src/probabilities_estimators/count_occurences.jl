@@ -9,7 +9,7 @@ estimator to [`probabilities`](@ref).
 
 ## Outcomes
 
-The outcome space `Ω` contains the unique sorted values of the input. Use
+The outcomes `Ω` for `CountOccurrences` are the unique sorted values of the input. Use
 [`probabilities_and_outcomes`](@ref) to obtain these together with the probabilities.
 
 See also: [`probabilities_and_outcomes`](@ref).
