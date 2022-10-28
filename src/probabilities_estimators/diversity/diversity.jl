@@ -34,9 +34,10 @@ Diversity probabilities are computed as follows.
     Each bin has width `nextfloat(2 / nbins)`.
 - [`total_outcomes`](@ref). The total number of states is given by `nbins`.
 
-[^Wang2020]: Wang, X., Si, S., & Li, Y. (2020). Multiscale diversity entropy: A novel
+[^Wang2020]: 
+    Wang, X., Si, S., & Li, Y. (2020). Multiscale diversity entropy: A novel
     dynamical measure for fault diagnosis of rotating machinery. IEEE Transactions on
-        Industrial Informatics, 17(8), 5419-5429.
+    Industrial Informatics, 17(8), 5419-5429.
 """
 Base.@kwdef struct Diversity <: ProbabilitiesEstimator
     m::Int = 2
