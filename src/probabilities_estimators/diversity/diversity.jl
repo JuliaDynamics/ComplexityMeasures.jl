@@ -9,7 +9,7 @@ end
 """
     Diversity(; m::Int, τ::Int, nbins::Int)
 
-A probability estimator based on the cosine similarity, used with [`entropy`](@ref) to
+A [`ProbabilitiesEstimator`](@ref) based on the cosine similarity. It can be used with [`entropy`](@ref) to
 compute diversity entropy (Wang et al., 2020)[^Wang2020].
 
 The implementation here allows for `τ != 1`, which was not considered in the original paper.
