@@ -62,15 +62,12 @@ end
 
 function probabilities(x::AbstractVector{T}, est::Diversity) where T <: Real
     ds, binning = similarities_and_binning(x, est)
-    bin_estimator = ValueHistogram(binning)
-
-    return probabilities(ds, bin_estimator.binning)
+    return probabilities(ds, binning)
 end
 
 function probabilities_and_outcomes(x::AbstractVector{T}, est::Diversity) where T <: Real
     ds, binning = similarities_and_binning(x, est)
-    bin_estimator = ValueHistogram(binning)
-    return probabilities_and_outcomes(ds, bin_estimator.binning)
+    return probabilities_and_outcomes(ds, binning)
 end
 
 total_outcomes(est::Diversity) = est.nbins
