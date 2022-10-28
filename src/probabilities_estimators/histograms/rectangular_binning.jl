@@ -33,7 +33,7 @@ end
 const ValidFixedBinInputs = Union{Number, NTuple}
 
 """
-    FixedRectangularBinning <: AbstractBinning
+    FixedRectangularBinning <: Encoding
     FixedRectangularBinning(ϵmin::E, ϵmax::E, N::Int) where E
 
 Rectangular box partition of state space where the extent of the grid is explicitly
