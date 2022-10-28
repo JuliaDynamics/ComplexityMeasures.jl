@@ -35,6 +35,7 @@ Probabilities
 probabilities
 probabilities!
 probabilities_and_outcomes
+total_outcomes
 ```
 
 ## Count occurrences (counting)
