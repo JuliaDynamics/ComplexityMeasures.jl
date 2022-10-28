@@ -42,7 +42,7 @@ subintervals.
 
 Binning instructions are deduced from the types of `ϵmin`/`emax` as follows:
 
-1. `E::Float64` sets the grid range along all dimensions to to `[ϵmin, ϵmax]`.
+1. `E<:Float64` sets the grid range along all dimensions to to `[ϵmin, ϵmax]`.
 2. `E::NTuple{D, Float64}` sets ranges along each dimension individually, i.e.
     `[ϵmin[i], ϵmax[i]]` is the range along the `i`-th dimension.
 
