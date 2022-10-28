@@ -14,5 +14,5 @@ TimeseriesSurrogates = "c804724b-8c18-5caa-8579-6025a0767c70"
 
 [compat]
 DelayEmbeddings = "2.3.4"
-DynamicalSystems = "<= 2.3.0"
+DynamicalSystems = "< 2.3.1"
 TimeseriesSurrogates = "2"
