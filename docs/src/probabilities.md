@@ -2,14 +2,16 @@
 
 ## Probabilities API
 
-```@docs
-ProbabilitiesEstimator
-```
+The probabilities API is defined by
+- [ProbabilitiesEstimator](@ref)
+- [probabilities](@ref)
+- [probabilities_and_outcomes](@ref)
 
 ```@docs
-Probabilities
+ProbabilitiesEstimator
 probabilities
 probabilities!
+Probabilities
 probabilities_and_outcomes
 total_outcomes
 ```

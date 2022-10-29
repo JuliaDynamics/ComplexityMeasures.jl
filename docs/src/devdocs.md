@@ -1,5 +1,7 @@
 # Entropies.jl Dev Docs
 
+Good practices in developing a code base apply in every Pull Request. The [Good Scientific Code Workshop](https://github.com/JuliaDynamics/GoodScientificCodeWorkshop) is worth checking out for this.
+
 ## Adding a new `ProbabilitiesEstimator`
 1. Define your type and make it subtype `ProbabilitiesEstimator`.
 2. Add a docstring to your type following the style of the docstrings of other estimators.
