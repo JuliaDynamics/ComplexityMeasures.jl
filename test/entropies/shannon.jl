@@ -30,3 +30,7 @@ e = Vasicek(m = 100, base = 2)
 
 e = Vasicek(m = 100, base = MathConstants.e)
 @test round(entropy(e, randn(rng, 1000000)), digits = 2) == N
+
+e_correa = Correa(m = 100, base = MathConstants.e)
+@test round(entropy(e_correa, rand(rng, 1000000)), digits = 2) == U
+@test round(entropy(e_correa, randn(rng, 1000000)), digits = 2) == N
