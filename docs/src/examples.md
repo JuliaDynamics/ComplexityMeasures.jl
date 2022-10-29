@@ -1,5 +1,42 @@
 # Examples
 
+## Direct entropy (Vasicek)
+
+Here, we show how the [`Vasicek`](@ref) direct [`Shannon`](@ref) entropy estimator
+approaches zero for a uniform distribution on `[0, 1]`, which is the true
+entropy value for this distribution.
+
+```@example MAIN
+using Entropies
+using Statistics
+using CairoMakie
+
+Ns = [100:100:500; 1000:1000:10000; 50000; 100000]
+Hv = Vector{Vector{Float64}}(undef, 0)
+nreps = 30
+for N in Ns
+    kv = Float64[]
+    for i = 1:nreps
+        pts = rand(N)
+        # Scale `m` according to time series length
+        e = Vasicek(m = floor(Int, N / 100), base = MathConstants.e)
+        push!(kv, entropy(e, pts))
+    end
+    push!(Hv, kv)
+end
+
+fig = Figure()
+ax = Axis(fig[1,1]; 
+    ylabel = "entropy (nats)", 
+    xlabel = "Time series length", 
+    title = "Vasicek estimator of Shannon entropy")
+lines!(ax, Ns, mean.(Hv); color = Cycled(1))
+band!(ax, Ns, mean.(Hv) .+ std.(Hv), mean.(Hv) .- std.(Hv);
+color = (Main.COLORS[1], 0.5))
+
+fig
+```
+
 ## Nearest neighbor direct entropy example
 
 This example reproduces Figure in Charzyńska & Gambin (2016)[^Charzyńska2016]. Both
@@ -18,9 +55,9 @@ nreps = 50
 for N in Ns
     kl = Float64[]
     kr = Float64[]
+    kv = Float64[]
     for i = 1:nreps
         pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
-
         push!(kl, entropy(KozachenkoLeonenko(w = 0, k = 1, base = MathConstants.e), pts))
         # with k = 1, Kraskov is virtually identical to
         # Kozachenko-Leonenko, so pick a higher number of neighbors

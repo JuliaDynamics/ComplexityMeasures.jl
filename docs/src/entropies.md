@@ -51,6 +51,7 @@ Here we list functions which compute Shannon entropies via alternate means, with
 ```@docs
 Kraskov
 KozachenkoLeonenko
+Vasicek
 ```
 
 ## Convenience functions

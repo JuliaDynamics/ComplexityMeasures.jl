@@ -15,3 +15,4 @@ ball_volume(d::Int) = π^(d/2)/gamma((d/2)+1)
 
 include("KozachenkoLeonenko.jl")
 include("Kraskov.jl")
+include("Vasicek.jl")

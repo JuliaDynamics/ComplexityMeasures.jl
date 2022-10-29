@@ -1,3 +1,6 @@
+using Random
+rng = MersenneTwister(1234)
+
 x = rand(1000)
 xp = Probabilities(x)
 @test_throws MethodError entropy(Shannon(), x) isa Real
@@ -11,3 +14,19 @@ xp = Probabilities(x)
 
 # or minimal when only one probability is nonzero and equal to 1.0
 @test entropy(Shannon(), Probabilities([1.0, 0.0, 0.0, 0.0])) ≈ 0.0
+
+# -----------------
+# Direct estimators
+# -----------------
+# We just check if the estimator converge to true values for some distributions with
+# analytically derivable entropy.
+# Entropy to log with base b of a uniform distribution on [0, 1] = ln(1 - 0)/(ln(b)) = 0
+U = 0.00
+# Entropy with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
+N = round(0.5*log(2π) + 0.5, digits = 2)
+
+e = Vasicek(m = 100, base = 2)
+@test round(entropy(e, rand(rng, 1000000)), digits = 2) == U
+
+e = Vasicek(m = 100, base = MathConstants.e)
+@test round(entropy(e, randn(rng, 1000000)), digits = 2) == N
