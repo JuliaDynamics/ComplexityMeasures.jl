@@ -6,7 +6,7 @@ export Vasicek
 
 An indirect entropy estimator used in [`entropy`](@ref)`(Vasicek(), x)` to
 estimate the Shannon entropy of the timeseries `x` to the given
-`base` using the method from Vasicek (1995) [^Vasicek1995].
+`base` using the method from Vasicek (1976)[^Vasicek1976].
 
 ## Description
 
@@ -26,7 +26,7 @@ For small value of `m`, convergence is slow, so we recommend to scale `m` accord
 time series length `n` and use `m >= n/100` (this is just a heuristic based on the tests
 written for this package).
 
-[^Vasicek1995]:
+[^Vasicek1976]:
     Vasicek, O. (1976). A test for normality based on sample entropy. Journal of the Royal
     Statistical Society: Series B (Methodological), 38(1), 54-59.
 """
