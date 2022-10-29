@@ -32,7 +32,8 @@ Wavelets = "0.9"
 julia = "1.5"
 
 [extras]
+DynamicalSystemsBase = "6e36e845-645a-534a-86f2-f5d4aa5a06b4"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["DynamicalSystemsBase", "Test"]
