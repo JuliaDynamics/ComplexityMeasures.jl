@@ -104,7 +104,6 @@ Here, we draw some random points from a 2D normal distribution. Then, we use ker
 ```@example MAIN
 using Entropies
 using DelayEmbeddings
-using ChaosTools
 using DynamicalSystemsBase, CairoMakie, Distributions
 𝒩 = MvNormal([1, -4], 2)
 N = 500
@@ -298,7 +297,6 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 ```@example
 using CairoMakie
 using DynamicalSystemsBase
-using ChaosTools
 using Entropies
 using TimeseriesSurrogates
 using Statistics
@@ -322,7 +320,7 @@ for (i, L) in enumerate(Ls)
     sx = surrogenerator(x, method)
     r_det[i] = complexity_normalized(est, x)
     r_det_surr[i][:] = [complexity_normalized(est, sx()) for j = 1:nreps]
-   
+
     # Random time series
     r_noise[i] = complexity_normalized(est, y[1:L])
     sy = surrogenerator(y[1:L], method)
@@ -330,8 +328,8 @@ for (i, L) in enumerate(Ls)
 end
 
 fig = Figure()
-ax = Axis(fig[1, 1], 
-    xlabel = "Time series length (L)", 
+ax = Axis(fig[1, 1],
+    xlabel = "Time series length (L)",
     ylabel = "# missing dispersion patterns (normalized)"
 )
 
@@ -339,9 +337,9 @@ lines!(ax, Ls, r_det, label = "logistic(x0 = 0.6; r = 4.0)", color = :black)
 lines!(ax, Ls, r_noise, label = "Uniform noise", color = :red)
 for i = 1:nL
     if i == 1
-        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black, 
+        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black,
             label = "WIAAFT surrogates (logistic)")
-         boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red, 
+         boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red,
             label = "WIAAFT surrogates (noise)")
     else
         boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black)
@@ -355,7 +353,7 @@ fig
 ```
 
 We don't need to actually to compute the quantiles here to see that for the logistic
-map, across all time series lengths, the ``N_{MDP}`` values are above the extremal values 
+map, across all time series lengths, the ``N_{MDP}`` values are above the extremal values
 of the ``N_{MDP}`` values for the surrogate ensembles. Thus, we
 conclude that the logistic map time series has nonlinearity (well, of course).
 
@@ -435,8 +433,8 @@ lines!(a1, 1:length(x), x, label = "x")
 lines!(a1, 1:length(y), y, label = "y")
 
 # Approximate entropy values, compared to those of the original paper (black dots).
-a2 = Axis(fig[2, 1]; 
-    xlabel = "Time series length (L)", 
+a2 = Axis(fig[2, 1];
+    xlabel = "Time series length (L)",
     ylabel = "ApEn(m = 2, r = 0.05)")
 
 # hacky boxplot, but this seems to be how it's done in Makie at the moment
@@ -446,7 +444,7 @@ for i = 1:n
         width = 200)
 end
 
-scatter!(a2, ts_lengths, [0.337, 0.385, NaN, 0.394]; 
+scatter!(a2, ts_lengths, [0.337, 0.385, NaN, 0.394];
     label = "Pincus (1991)", color = :black)
 fig
 ```
