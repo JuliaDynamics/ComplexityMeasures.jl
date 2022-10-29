@@ -15,18 +15,20 @@ OrdinalPatternEncoding
 RectangularBinEncoding
 ```
 
+### Batch encoding
+
 ```@docs
 outcomes(x, ::Encoding)
 ```
 
-### Missing outcomes
-
-```@docs
-missing_outcomes
-```
-
-### Encoding ordinal patterns
+### Single-element encoding
 
 ```@docs
 Entropies.encode_motif
+```
+
+## Missing outcomes
+
+```@docs
+missing_outcomes
 ```
