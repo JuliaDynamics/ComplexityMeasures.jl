@@ -6,7 +6,7 @@ export Alizadeh
 
 An indirect entropy estimator used in [`entropy`](@ref)`(Alizadeh(), x)` to
 estimate the Shannon entropy of the timeseries `x` to the given
-`base` using the method from Alizadeh (2010)[^Alizadeh2010].
+`base` using the method from Alizadeh & Arghami (2010)[^Alizadeh2010].
 
 ## Description
 
