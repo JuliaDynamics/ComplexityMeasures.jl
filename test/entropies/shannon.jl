@@ -34,3 +34,7 @@ ee_n = Ebrahimi(m = 100, base = MathConstants.e)
 @test round(entropy(ev_n, randn(rng, 1000000)), digits = 2) == N
 @test round(entropy(ee, rand(rng, 1000000)), digits = 2) == U
 @test round(entropy(ee_n, randn(rng, 1000000)), digits = 2) == N
+
+ea = Alizadeh(m = 100, base = MathConstants.e)
+@test round(entropy(ea, rand(rng, 1000000)), digits = 2) == U
+@test round(entropy(ea, randn(rng, 1000000)), digits = 2) == N

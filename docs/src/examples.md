@@ -2,9 +2,9 @@
 
 ## Indirect entropy (order statistics)
 
-Here, we show how the [`Vasicek`](@ref) and [`Ebrahimi`](@ref) direct [`Shannon`](@ref) entropy estimators
-approach zero for a uniform distribution on `[0, 1]`, which is the true
-entropy value for this distribution.
+Here, we show how the [`Vasicek`](@ref), [`Ebrahimi`](@ref), and [`Alizadeh`](@ref) are
+direct [`Shannon`](@ref) entropy estimators approach zero for a uniform distribution on 
+`[0, 1]`, which is the true entropy value for this distribution.
 
 ```@example MAIN
 using Entropies
@@ -14,39 +14,51 @@ using CairoMakie
 Ns = [100:100:500; 1000:1000:10000; 50000; 100000]
 Hv = Vector{Vector{Float64}}(undef, 0)
 He = Vector{Vector{Float64}}(undef, 0)
+Ha = Vector{Vector{Float64}}(undef, 0)
 
 nreps = 30
 for N in Ns
     kv = Float64[]
     ke = Float64[]
+    ka = Float64[]
     for i = 1:nreps
         pts = rand(N)
         # Scale `m` according to time series length
         m = floor(Int, N / 100)
         ev = Vasicek(; m, base = MathConstants.e)
         ee = Ebrahimi(; m, base = MathConstants.e)
+        ea = Alizadeh(; m, base = MathConstants.e)
         push!(kv, entropy(ev, pts))
         push!(ke, entropy(ee, pts))
+        push!(ka, entropy(ea, pts))
     end
     push!(Hv, kv)
     push!(He, ke)
+    push!(Ha, ka)
 end
 
 fig = Figure()
-ax = Axis(fig[1,1]; 
+ax1 = Axis(fig[1,1]; 
     ylabel = "entropy (nats)", 
     xlabel = "Time series length", 
     title = "Vasicek estimator of Shannon entropy")
-lines!(ax, Ns, mean.(Hv); color = Cycled(1))
-band!(ax, Ns, mean.(Hv) .+ std.(Hv), mean.(Hv) .- std.(Hv);
+lines!(ax1, Ns, mean.(Hv); color = Cycled(1))
+band!(ax1, Ns, mean.(Hv) .+ std.(Hv), mean.(Hv) .- std.(Hv);
 color = (Main.COLORS[1], 0.5))
-ax = Axis(fig[2,1]; 
+ax2 = Axis(fig[2,1]; 
     ylabel = "entropy (nats)", 
     xlabel = "Time series length", 
     title = "Ebrahimi estimator of Shannon entropy")
-lines!(ax, Ns, mean.(He); color = Cycled(1))
-band!(ax, Ns, mean.(He) .+ std.(He), mean.(He) .- std.(He);
+lines!(ax2, Ns, mean.(He); color = Cycled(2))
+band!(ax2, Ns, mean.(He) .+ std.(He), mean.(He) .- std.(He);
 color = (Main.COLORS[2], 0.5))
+ax3 = Axis(fig[3,1]; 
+    ylabel = "Entropy (nats)", 
+    xlabel = "Time series length", 
+    title = "Alizadeh estimator of Shannon entropy")
+lines!(ax3, Ns, mean.(Ha); color = Cycled(3))
+band!(ax3, Ns, mean.(Ha) .+ std.(He), mean.(Ha) .- std.(Ha);
+color = (Main.COLORS[3], 0.5))
 fig
 ```
 

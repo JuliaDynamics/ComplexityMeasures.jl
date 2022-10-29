@@ -53,6 +53,7 @@ Kraskov
 KozachenkoLeonenko
 Vasicek
 Ebrahimi
+Alizadeh
 ```
 
 ## Convenience functions
