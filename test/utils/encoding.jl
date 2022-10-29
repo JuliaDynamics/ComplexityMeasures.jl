@@ -43,7 +43,7 @@ end
     c = 4
     m = 4
     τ = 1
-    s = GaussianEncoding(c = c)
+    s = GaussianCDFEncoding(c = c)
 
     # Symbols should be in the set [1, 2, …, c].
     symbols = Entropies.outcomes(x, s)
@@ -51,7 +51,7 @@ end
 
     # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper.
     y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
-    scheme = GaussianEncoding(3)
+    scheme = GaussianCDFEncoding(3)
     s = outcomes(y, scheme)
     @test s == [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
 end
