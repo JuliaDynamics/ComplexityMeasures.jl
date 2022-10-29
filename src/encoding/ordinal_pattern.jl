@@ -1,24 +1,24 @@
-export OrdinalMapping
+export OrdinalPatternEncoding
 
 """
-    OrdinalMapping <: Encoding
-    OrdinalMapping(m = 3, τ = 1; lt = est.lt)
+    OrdinalPatternEncoding <: Encoding
+    OrdinalPatternEncoding(m = 3, τ = 1; lt = est.lt)
 
 A encoding scheme that converts the input time series to ordinal patterns, which are
 then encoded to integers using [`encode_motif`](@ref), used with
 [`outcomes`](@ref).
 
 !!! note
-    `OrdinalMapping` is intended for symbolizing *time series*. If providing a short vector,
-    say `x = [2, 5, 2, 1, 3, 4]`, then `outcomes(x, OrdinalMapping(m = 2, τ = 1)` will
+    `OrdinalPatternEncoding` is intended for symbolizing *time series*. If providing a short vector,
+    say `x = [2, 5, 2, 1, 3, 4]`, then `outcomes(x, OrdinalPatternEncoding(m = 2, τ = 1)` will
     first embed `x`, then encode/symbolize each resulting *state vector*, not the original
     input. For symbolizing a single vector, use `sortperm` on it and use
     [`encode_motif`](@ref) on the resulting permutation indices.
 
 # Usage
 
-    outcomes(x, scheme::OrdinalMapping) → Vector{Int}
-    outcomes!(s, x, scheme::OrdinalMapping) → Vector{Int}
+    outcomes(x, scheme::OrdinalPatternEncoding) → Vector{Int}
+    outcomes!(s, x, scheme::OrdinalPatternEncoding) → Vector{Int}
 
 If applied to an `m`-dimensional `Dataset` `x`, then `m` and `τ` are ignored,
 and `m`-dimensional permutation patterns are obtained directly for each
@@ -38,12 +38,12 @@ If using the in-place variant with univariate input, `s` must obey
 ```julia
 using DelayEmbeddings, Entropies
 D = Dataset([rand(7) for i = 1:1000])
-s = outcomes(D, OrdinalMapping())
+s = outcomes(D, OrdinalPatternEncoding())
 ```
 
 See also: [`outcomes`](@ref).
 """
-Base.@kwdef struct OrdinalMapping <: Encoding
+Base.@kwdef struct OrdinalPatternEncoding <: Encoding
     m::Int = 3
     τ::Int = 1
     lt::Function = isless_rand
@@ -56,14 +56,14 @@ function fill_symbolvector!(s, x, sp, m::Int; lt::Function = isless_rand)
     end
 end
 
-function outcomes(x::AbstractDataset{m, T}, scheme::OrdinalMapping) where {m, T}
+function outcomes(x::AbstractDataset{m, T}, scheme::OrdinalPatternEncoding) where {m, T}
     m >= 2 || error("Data must be at least 2-dimensional to discretize. If data is a univariate time series, embed it using `genembed` first.")
     s = zeros(Int, length(x))
     outcomes!(s, x, scheme)
     return s
 end
 
-function outcomes(x::AbstractVector{T}, scheme::OrdinalMapping) where {T}
+function outcomes(x::AbstractVector{T}, scheme::OrdinalPatternEncoding) where {T}
     τs = tuple([scheme.τ*i for i = 0:scheme.m-1]...)
     x_emb = genembed(x, τs)
 
@@ -73,7 +73,7 @@ function outcomes(x::AbstractVector{T}, scheme::OrdinalMapping) where {T}
 end
 
 function outcomes!(s::AbstractVector{Int}, x::AbstractDataset{m, T},
-        scheme::OrdinalMapping) where {m, T}
+        scheme::OrdinalPatternEncoding) where {m, T}
 
     @assert length(s) == length(x)
 
@@ -84,7 +84,7 @@ function outcomes!(s::AbstractVector{Int}, x::AbstractDataset{m, T},
 end
 
 function outcomes!(s::AbstractVector{Int}, x::AbstractVector{T},
-        scheme::OrdinalMapping) where T
+        scheme::OrdinalPatternEncoding) where T
 
     τs = tuple([scheme.τ*i for i = 0:scheme.m-1]...)
     x_emb = genembed(x, τs)

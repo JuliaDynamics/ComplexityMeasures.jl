@@ -19,9 +19,9 @@ Optionally, write outcomes into the pre-allocated symbol vector `s` if the `sche
 allows for it. For usage examples, see individual encoding scheme docstrings.
 
 The following encoding schemes are currently implemented:
-- [`OrdinalMapping`](@ref).
-- [`GaussianMapping`](@ref).
-- [`RectangularBinMapping`](@ref).
+- [`OrdinalPatternEncoding`](@ref).
+- [`GaussianCDFEncoding`](@ref).
+- [`RectangularBinEncoding`](@ref).
 
 Used internally by the various [`ProbabilitiesEstimator`](@ref)s to define
 outcome spaces over which to compute probabilities.
@@ -36,5 +36,5 @@ total_outcomes(s::S) where S <: Encoding =
     throw(ArgumentError("`total_outcomes` not defined for $S."))
 
 include("utils.jl")
-include("gaussian_mapping.jl")
-include("ordinal_mapping.jl")
+include("gaussian_cdf.jl")
+include("ordinal_pattern.jl")

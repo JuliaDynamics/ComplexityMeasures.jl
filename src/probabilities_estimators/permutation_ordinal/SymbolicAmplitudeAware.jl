@@ -73,7 +73,7 @@ function AAPE(x; A::Real = 0.5, m::Int = length(x))
 end
 
 function probabilities(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePermutation) where {m, T}
-    πs = outcomes(x, OrdinalMapping(m = m, lt = est.lt)) # motif length controlled by dimension of input data
+    πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt)) # motif length controlled by dimension of input data
     wts = AAPE.(x.data, A = est.A, m = est.m)
 
     Probabilities(symprobs(πs, wts, normalize = true))
@@ -82,7 +82,7 @@ end
 function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutation) where {T<:Real}
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     emb = genembed(x, τs)
-    πs = outcomes(emb, OrdinalMapping(m = est.m, lt = est.lt))  # motif length controlled by estimator m
+    πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt))  # motif length controlled by estimator m
     wts = AAPE.(emb.data, A = est.A, m = est.m)
     p = symprobs(πs, wts, normalize = true)
     Probabilities(p)

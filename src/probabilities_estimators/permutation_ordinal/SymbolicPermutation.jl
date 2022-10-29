@@ -13,7 +13,7 @@ Bandt & Pompe (2002)[^BandtPompe2002] to compute permutation entropy.
 
 If applied to a univariate time series, then the time series is first embedded using
 embedding delay `τ` and dimension `m`, and then converted to a symbol time series using
-[`outcomes`](@ref) with [`OrdinalMapping`](@ref), from which probabilities are
+[`outcomes`](@ref) with [`OrdinalPatternEncoding`](@ref), from which probabilities are
 estimated. If applied to a `Dataset`, then `τ` and `m` are ignored, and probabilities are
 computed directly from the state vectors.
 
@@ -42,7 +42,7 @@ p = probabilities!(s_ts, x_ts, est)
 h = entropy!(s_ts, Renyi(),  x_ts, est)
 
 # For a pre-discretized `Dataset`
-x_symb = outcomes(x_ts, OrdinalMapping(m = 2, τ = 1))
+x_symb = outcomes(x_ts, OrdinalPatternEncoding(m = 2, τ = 1))
 x_d = genembed(x_symb, (0, -1, -2))
 s_d = zeros(Int, length(x_d))
 p = probabilities!(s_d, x_d, est)

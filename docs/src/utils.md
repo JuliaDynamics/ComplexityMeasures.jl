@@ -6,15 +6,17 @@
 Entropies.binhist
 ```
 
-## [Outcomes](@id outcomes)
+## [Encoding data](@id encoding)
 
-### Encoding
+```@docs
+Encoding
+GaussianCDFEncoding
+OrdinalPatternEncoding
+RectangularBinEncoding
+```
 
 ```@docs
 outcomes(x, ::Encoding)
-GaussianMapping
-OrdinalMapping
-RectangularBinMapping
 ```
 
 ### Missing outcomes

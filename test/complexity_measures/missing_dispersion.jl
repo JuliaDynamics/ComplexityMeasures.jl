@@ -13,7 +13,7 @@ s = [3, 2, 1, 1, 1, 2, 3, 3, 2, 1, 3, 1]
 # In the following, I'll assume that this is a typo from their side, because the
 # symbolization they claim to use is the same as for the `Dispersion` estimator,
 # which we analytically test elsewhere using test cases from the original paper.
-dispest = Dispersion(encoding = GaussianMapping(c = 3), m = 2)
+dispest = Dispersion(encoding = GaussianCDFEncoding(c = 3), m = 2)
 est = MissingDispersionPatterns(dispest)
 # If we take *our* discretized sequence with m = 2,
 # s = [3, 2, 1, 1, 1, 2, 3, 3, 2, 1, 3, 1],
@@ -29,7 +29,7 @@ est = MissingDispersionPatterns(dispest)
 cs = [2, 3]
 ms = [2, 3]
 for (c, m) in zip(cs, ms)
-    local d = Dispersion(encoding =  GaussianMapping(c = c), m = m)
+    local d = Dispersion(encoding =  GaussianCDFEncoding(c = c), m = m)
     local est = MissingDispersionPatterns(d)
     @test complexity(est, rand(1000000)) == 0.0
 end
@@ -40,7 +40,7 @@ end
 cs = [2, 3, 4, 5]
 ms = [2, 3, 4, 5]
 for (c, m) in zip(cs, ms)
-    local d = Dispersion(encoding =  GaussianMapping(c = c), m = m)
+    local d = Dispersion(encoding =  GaussianCDFEncoding(c = c), m = m)
     local est = MissingDispersionPatterns(d)
     @test complexity(est, randn(rng, c^m * 100) |> collect) == 0
 end

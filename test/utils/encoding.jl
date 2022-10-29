@@ -5,7 +5,7 @@ using StaticArrays: SVector
     @test Entropies.encode_motif([2, 3, 1]) isa Int
     @test 0 <= Entropies.encode_motif([2, 3, 1]) <= factorial(3) - 1
 
-    scheme = OrdinalMapping(m = 5, τ = 1)
+    scheme = OrdinalPatternEncoding(m = 5, τ = 1)
     N = 100
     x = Dataset(repeat([1.1 2.2 3.3], N))
     y = Dataset(rand(N, 5))
@@ -13,7 +13,7 @@ using StaticArrays: SVector
 
     # Without pre-allocation
     D = genembed(z, [0, -1, -2])
-    scheme = OrdinalMapping(m = 5, τ = 2)
+    scheme = OrdinalPatternEncoding(m = 5, τ = 2)
 
     @test Entropies.outcomes(z, scheme) isa Vector{<:Int}
     @test Entropies.outcomes(D, scheme) isa Vector{<:Int}
@@ -22,7 +22,7 @@ using StaticArrays: SVector
     # With pre-allocation
     N = 100
     x = rand(N)
-    scheme = OrdinalMapping(m = 5, τ = 2)
+    scheme = OrdinalPatternEncoding(m = 5, τ = 2)
     s = fill(-1, N-(scheme.m-1)*scheme.τ)
 
     # if symbolization has occurred, s must have been filled with integers in
@@ -43,7 +43,7 @@ end
     c = 4
     m = 4
     τ = 1
-    s = GaussianMapping(c = c)
+    s = GaussianCDFEncoding(c = c)
 
     # Symbols should be in the set [1, 2, …, c].
     symbols = Entropies.outcomes(x, s)
@@ -51,7 +51,7 @@ end
 
     # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper.
     y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
-    scheme = GaussianMapping(3)
+    scheme = GaussianCDFEncoding(3)
     s = outcomes(y, scheme)
     @test s == [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
 end
@@ -81,8 +81,8 @@ end
         binning_diff = FixedRectangularBinning(axismins, axismaxs, N)
 
         # Verify that grids are as expected.
-        symb_diff = RectangularBinMapping(D, binning_diff)
-        symb_same = RectangularBinMapping(D, binning_same)
+        symb_diff = RectangularBinEncoding(D, binning_diff)
+        symb_same = RectangularBinEncoding(D, binning_same)
         @test all(@. symb_diff.edgelengths ≈ r)
         @test all(@. symb_same.edgelengths ≈ r)
         @test all(@. symb_diff.mini ≈ -1.0)
@@ -102,7 +102,7 @@ end
         # --------------------------------
         # bins are indexed from 0, so should get [0, 4, 9] with N = 10
         x = [-1.0, 0.0, 1.0]
-        symb_1D = RectangularBinMapping(x, binning_same)
+        symb_1D = RectangularBinEncoding(x, binning_same)
 
         @test total_outcomes(symb_1D) == N
         @test total_outcomes(x, symb_1D) == N
@@ -119,10 +119,10 @@ end
         binning_float = RectangularBinning(r)
         binning_floatvec = RectangularBinning([r, r])
 
-        symb_int = RectangularBinMapping(D, binning_int)
-        symb_float = RectangularBinMapping(D, binning_float)
-        symb_intvec = RectangularBinMapping(D, binning_intvec)
-        symb_floatvec = RectangularBinMapping(D, binning_floatvec)
+        symb_int = RectangularBinEncoding(D, binning_int)
+        symb_float = RectangularBinEncoding(D, binning_float)
+        symb_intvec = RectangularBinEncoding(D, binning_intvec)
+        symb_floatvec = RectangularBinEncoding(D, binning_floatvec)
 
         @test round.(symb_int.edgelengths, digits = 15) ==
             round.(symb_float.edgelengths, digits = 15) ==
@@ -147,8 +147,8 @@ end
         r = (1.0 - (-1.0)) / N
         binning_int = RectangularBinning(N)
         binning_intvec = RectangularBinning([N])
-        symb_int = RectangularBinMapping(x, binning_int)
-        symb_float = RectangularBinMapping(x, binning_float)
+        symb_int = RectangularBinEncoding(x, binning_int)
+        symb_float = RectangularBinEncoding(x, binning_float)
 
         @test all(@. symb_int.edgelengths ≈ r)
         @test all(@. symb_float.edgelengths ≈ r)
@@ -168,12 +168,12 @@ end
         rbF = RectangularBinning(0.5)
         rbFs = RectangularBinning([0.5, 0.4, 0.3])
 
-        symbolization_xN = RectangularBinMapping(x, rbN)
-        symbolization_xF = RectangularBinMapping(x, rbF)
-        symbolization_XN = RectangularBinMapping(X, rbN)
-        symbolization_XNs = RectangularBinMapping(X, rbNs)
-        symbolization_XF = RectangularBinMapping(X, rbF)
-        symbolization_XFs = RectangularBinMapping(X, rbFs)
+        symbolization_xN = RectangularBinEncoding(x, rbN)
+        symbolization_xF = RectangularBinEncoding(x, rbF)
+        symbolization_XN = RectangularBinEncoding(X, rbN)
+        symbolization_XNs = RectangularBinEncoding(X, rbNs)
+        symbolization_XF = RectangularBinEncoding(X, rbF)
+        symbolization_XFs = RectangularBinEncoding(X, rbFs)
 
         @test total_outcomes(x, symbolization_xN) == 5
         @test_throws ArgumentError total_outcomes(x, symbolization_xF)

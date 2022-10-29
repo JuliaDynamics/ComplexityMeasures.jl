@@ -34,7 +34,7 @@ Diversity probabilities are computed as follows.
     Each bin has width `nextfloat(2 / nbins)`.
 - [`total_outcomes`](@ref). The total number of states is given by `nbins`.
 
-[^Wang2020]: 
+[^Wang2020]:
     Wang, X., Si, S., & Li, Y. (2020). Multiscale diversity entropy: A novel
     dynamical measure for fault diagnosis of rotating machinery. IEEE Transactions on
     Industrial Informatics, 17(8), 5419-5429.
@@ -62,12 +62,12 @@ end
 
 function probabilities(x::AbstractVector{T}, est::Diversity) where T <: Real
     ds, binning = similarities_and_binning(x, est)
-    return probabilities(ds, binning)
+    return fasthist(ds, binning)[1]
 end
 
 function probabilities_and_outcomes(x::AbstractVector{T}, est::Diversity) where T <: Real
     ds, binning = similarities_and_binning(x, est)
-    return probabilities_and_outcomes(ds, binning)
+    return probabilities_and_outcomes(ds, ValueHistogram(binning))
 end
 
 total_outcomes(est::Diversity) = est.nbins

@@ -40,7 +40,7 @@ update_message = """
 - In summary, all entropies and normalized entropies are computing using the
   `entropy` and `entropy_normalized` functions, which dispatch on entropy types such
   as `Renyi()`, `Shannon()` or `Tsallis()`.
-- New constructors for discretizing: `OrdinalMapping, GaussianMapping`.
+- New constructors for discretizing: `OrdinalPatternEncoding, GaussianCDFEncoding`.
 """
 
 if display_update
