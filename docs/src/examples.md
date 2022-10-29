@@ -1,6 +1,6 @@
 # Examples
 
-## Direct entropy (Vasicek)
+## Indirect entropy (Vasicek)
 
 Here, we show how the [`Vasicek`](@ref) direct [`Shannon`](@ref) entropy estimator
 approaches zero for a uniform distribution on `[0, 1]`, which is the true
