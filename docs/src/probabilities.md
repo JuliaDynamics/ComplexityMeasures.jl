@@ -27,6 +27,7 @@ CountOccurrences
 ```@docs
 ValueHistogram
 RectangularBinning
+FixedRectangularBinning
 ```
 
 ## Permutation (symbolic)
@@ -69,4 +70,10 @@ NaiveKernel
 ```@docs
 WaveletOverlap
 PowerSpectrum
+```
+
+## Diversity
+
+```@docs
+Diversity
 ```

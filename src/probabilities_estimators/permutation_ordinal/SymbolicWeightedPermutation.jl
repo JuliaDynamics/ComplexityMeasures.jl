@@ -86,7 +86,7 @@ end
 
 function probabilities(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation) where {m, T}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-    πs = outcomes(x, OrdinalMapping(m = m, lt = est.lt))  # motif length controlled by dimension of input data
+    πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
 
     Probabilities(symprobs(πs, wts, normalize = true))
@@ -95,7 +95,7 @@ end
 function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) where {T<:Real}
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     emb = genembed(x, τs)
-    πs = outcomes(emb, OrdinalMapping(m = est.m, lt = est.lt)) # motif length controlled by estimator m
+    πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt)) # motif length controlled by estimator m
     wts = weights_from_variance.(emb.data, est.m)
 
     Probabilities(symprobs(πs, wts, normalize = true))
