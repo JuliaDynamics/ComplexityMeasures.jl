@@ -1,9 +1,9 @@
 # Examples
 
-## Indirect entropy (Vasicek)
+## Indirect entropy (order statistics)
 
-Here, we show how the [`Vasicek`](@ref) direct [`Shannon`](@ref) entropy estimator
-approaches zero for a uniform distribution on `[0, 1]`, which is the true
+Here, we show how the [`Vasicek`](@ref) and [`Ebrahimi`](@ref) direct [`Shannon`](@ref) entropy estimators
+approach zero for a uniform distribution on `[0, 1]`, which is the true
 entropy value for this distribution.
 
 ```@example MAIN
@@ -13,16 +13,23 @@ using CairoMakie
 
 Ns = [100:100:500; 1000:1000:10000; 50000; 100000]
 Hv = Vector{Vector{Float64}}(undef, 0)
+He = Vector{Vector{Float64}}(undef, 0)
+
 nreps = 30
 for N in Ns
     kv = Float64[]
+    ke = Float64[]
     for i = 1:nreps
         pts = rand(N)
         # Scale `m` according to time series length
-        e = Vasicek(m = floor(Int, N / 100), base = MathConstants.e)
-        push!(kv, entropy(e, pts))
+        m = floor(Int, N / 100)
+        ev = Vasicek(; m, base = MathConstants.e)
+        ee = Ebrahimi(; m, base = MathConstants.e)
+        push!(kv, entropy(ev, pts))
+        push!(ke, entropy(ee, pts))
     end
     push!(Hv, kv)
+    push!(He, ke)
 end
 
 fig = Figure()
@@ -33,7 +40,13 @@ ax = Axis(fig[1,1];
 lines!(ax, Ns, mean.(Hv); color = Cycled(1))
 band!(ax, Ns, mean.(Hv) .+ std.(Hv), mean.(Hv) .- std.(Hv);
 color = (Main.COLORS[1], 0.5))
-
+ax = Axis(fig[2,1]; 
+    ylabel = "entropy (nats)", 
+    xlabel = "Time series length", 
+    title = "Ebrahimi estimator of Shannon entropy")
+lines!(ax, Ns, mean.(He); color = Cycled(1))
+band!(ax, Ns, mean.(He) .+ std.(He), mean.(He) .- std.(He);
+color = (Main.COLORS[2], 0.5))
 fig
 ```
 
