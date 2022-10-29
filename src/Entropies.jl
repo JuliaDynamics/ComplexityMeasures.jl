@@ -13,6 +13,7 @@ module Entropies
 using DelayEmbeddings
 using DelayEmbeddings: AbstractDataset, Dataset, dimension
 export AbstractDataset, Dataset
+export DelayEmbeddings
 const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
 const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
 
