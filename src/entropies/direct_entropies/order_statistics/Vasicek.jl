@@ -41,7 +41,7 @@ function entropy(e::Vasicek, x::AbstractVector{T}) where T
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
 
     ex = sort(x)
-    HVₘₙ = 0.0
+    HVₘₙ = zero(T)
     f = n / (2m)
     for i = 1:n
         dnext = ith_order_statistic(ex, i + m, n)
