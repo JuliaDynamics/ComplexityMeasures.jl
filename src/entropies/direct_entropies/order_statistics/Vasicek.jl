@@ -21,7 +21,7 @@ H_V(m, n) =
 
 ## Usage
 
-In practice, choice of `m` influences how fast the entropy convergence to the true value.
+In practice, choice of `m` influences how fast the entropy converges to the true value.
 For small value of `m`, convergence is slow, so we recommend to scale `m` according to the
 time series length `n` and use `m >= n/100` (this is just a heuristic based on the tests
 written for this package).
