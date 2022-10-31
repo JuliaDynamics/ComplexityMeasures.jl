@@ -1,7 +1,6 @@
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
 export probabilities_and_outcomes
-export outcomes
 export total_outcomes
 export missing_outcomes
 
@@ -94,41 +93,29 @@ To obtain the outcomes use [`outcomes`](@ref).
 The returned probabilities `p` may or may not be ordered, and may or may not
 contain 0s; see the documentation of the individual estimators for more.
 Configuration options are always given as arguments to the chosen estimator.
-`x` is typically an `Array` or a [`Dataset`](@ref); see [Input data for Entropies.jl](@ref).
+`x` is typically an `Array` or a `Dataset`; see [Input data for Entropies.jl](@ref).
 
     probabilities(x::Array_or_Dataset) → p::Probabilities
 
 Estimate probabilities by directly counting the elements of `x`, assuming that
-`Ω = sort(unique(x))`, i.e. that the outcome space is
-precisely equal to the elements of `x`. This is mostly useful when `x` contains
-categorical or integer data.
+`Ω = sort(unique(x))`, i.e. that the outcome space is the unique elements of `x`.
+This is mostly useful when `x` contains categorical or integer data.
 
 See also: [`Probabilities`](@ref), [`ProbabilitiesEstimator`](@ref).
 """
-function probabilities(::Array_or_Dataset, est::ProbabilitiesEstimator)
-    error("`not implemented for estimator of type $(typeof(est)).")
-end
-
-"""
-    outcomes(x, est::ProbabilitiesEstimator) → Ω::Vector
-Return a vector `Ω[i]` where `Ω[i]` is the outcome with probability `probs[i]`
-if `probs = probabilities(x, est)`.
-The element type of `Ω` depends on the estimator.
-"""
-function outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
-    error("`not implemented for estimator of type $(typeof(est)).")
+function probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+    return probabilities_and_outcomes(x, est)[1]
 end
 
 """
     probabilities_and_outcomes(x, est) → (probs, Ω::Vector)
 
-Convenience funtion that is exactly equal to calling [`probabilities`]
-and [`outcomes`](@ref) with input `x, est`. Should always be used
-instead of calling the individual outcomes if you need both outputs, due to
-possible performance gains.
+Return `probs, Ω`, where `probs = probabilities(x, est)` and
+`Ω[i]` is the outcome with probability `probs[i]`.
+The element type of `Ω` depends on the estimator.
 """
 function probabilities_and_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
-    return probabilities(x, est), outcomes(x, est)
+    error("not implemented for estimator of type $(typeof(est)).")
 end
 
 """
