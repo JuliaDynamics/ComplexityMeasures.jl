@@ -5,6 +5,9 @@ export outcomes
 export total_outcomes
 export missing_outcomes
 
+###########################################################################################
+# Types
+###########################################################################################
 """
     Probabilities <: AbstractVector
     Probabilities(x) → p
@@ -78,6 +81,9 @@ both the probabilities and the outcomes.
 """
 abstract type ProbabilitiesEstimator end
 
+###########################################################################################
+# probabilities and outcomes
+###########################################################################################
 """
     probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
 
@@ -98,9 +104,22 @@ categorical or integer data.
 
 See also: [`Probabilities`](@ref), [`ProbabilitiesEstimator`](@ref).
 """
-function probabilities end
-# See visitation_frequency.jl and rectangular_binning.jl (all in histograms folder)
-# for the dispatches of `probabilities` for the convenience methods shown above.
+function probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+    return probabilities_and_outcomes(x, est)[1]
+end
+
+"""
+    probabilities_and_outcomes(x, est) → (probs, Ω::Vector)
+
+Like [`probabilities`](@ref), but also return the outcomes associated with the computed
+probabilities.
+
+`probs` is exactly [`probabilities`](@ref)`(x, est)`, and `Ω[i]` is the outcome with
+probability `probs[i]`. Naturally, the element type of `outcomes` depends on the estimator.
+"""
+function probabilities_and_outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
+    error("Not yet implemented for estimator $(nameof(typeof(est))).")
+end
 
 """
     probabilities!(s, args...)
@@ -112,6 +131,9 @@ Only works for certain estimators. See for example [`SymbolicPermutation`](@ref)
 """
 function probabilities! end
 
+###########################################################################################
+# amount of outcomes
+###########################################################################################
 """
     total_outcomes([x::Array_or_Dataset,] est::ProbabilitiesEstimator) → Int
 
@@ -137,21 +159,6 @@ function total_outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
 end
 function total_outcomes(est::ProbabilitiesEstimator)
     error("`total_outcomes` not known/implemented for estimator of type $(typeof(est)).")
-end
-
-
-"""
-    probabilities_and_outcomes(x::Array_or_Dataset,
-        est::ProbabilitiesEstimator) → (probs::Probabilities, Ω::Vector)
-
-Like [`probabilities`](@ref), but also return the outcomes associated with the computed
-probabilities.
-
-`probs` is exactly [`probabilities`](@ref)`(x, est)`, and `Ω[i]` is the outcome with
-probability `probs[i]`. Naturally, the element type of `outcomes` depends on the estimator.
-"""
-function probabilities_and_outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
-    error("Outcomes not yet implemented for estimator $(nameof(typeof(est))).")
 end
 
 """
