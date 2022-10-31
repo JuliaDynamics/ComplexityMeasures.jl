@@ -1,4 +1,4 @@
-using DelayEmbeddings
+import DelayEmbeddings
 export Dispersion
 
 """
@@ -92,7 +92,7 @@ s_i^D = \\{s_i, s_{i+\\tau}, \\ldots, s_{i+(m-1)\\tau} \\}
 where ``i = 1, 2, \\ldots, N - (m - 1)\\tau`` and `N = length(s)`.
 """
 function embed_symbols(symbols::AbstractVector, m, τ)
-    return embed(symbols, m, τ)
+    return DelayEmbeddings.embed(symbols, m, τ)
 end
 
 function dispersion_histogram(x::AbstractDataset, N, m, τ)
