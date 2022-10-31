@@ -13,6 +13,7 @@ probabilities
 probabilities!
 Probabilities
 probabilities_and_outcomes
+outcomes
 total_outcomes
 ```
 

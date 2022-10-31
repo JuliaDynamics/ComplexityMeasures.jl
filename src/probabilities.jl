@@ -1,6 +1,6 @@
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
-export probabilities_and_outcomes
+export probabilities_and_outcomes, outcomes
 export total_outcomes
 export missing_outcomes
 
@@ -60,9 +60,9 @@ the outcome `ωᵢ`. Use [`probabilities_and_outcomes`](@ref) if you need
 both the probabilities and the outcomes.
 
 - [`CountOccurrences`](@ref).
-- [`Dispersion`](@ref).
 - [`ValueHistogram`](@ref).
 - [`TransferOperator`](@ref).
+- [`Dispersion`](@ref).
 - [`WaveletOverlap`](@ref).
 - [`PowerSpectrum`](@ref).
 - [`SymbolicPermutation`](@ref).
@@ -116,6 +116,16 @@ The element type of `Ω` depends on the estimator.
 """
 function probabilities_and_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
     error("not implemented for estimator of type $(typeof(est)).")
+end
+
+"""
+    outcomes(x, est::ProbabilitiesEstimator)
+Return all (unique) outcomes contained in `x` according to the given estimator.
+Equivalent with `probabilities_and_outcomes(x, est)[2]`, but for some estimators
+it may be explicitly extended for better performance.
+"""
+function outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+    return probabilities_and_outcomes(x, est)[2]
 end
 
 """
