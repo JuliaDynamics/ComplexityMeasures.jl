@@ -89,6 +89,7 @@ abstract type ProbabilitiesEstimator end
 
 Compute a probability distribution over the set of possible outcomes defined by the
 probabilities estimator `est`, given input data `x`.
+To obtain the outcomes use [`outcomes`](@ref).
 
 The returned probabilities `p` may or may not be ordered, and may or may not
 contain 0s; see the documentation of the individual estimators for more.
@@ -104,21 +105,30 @@ categorical or integer data.
 
 See also: [`Probabilities`](@ref), [`ProbabilitiesEstimator`](@ref).
 """
-function probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator)
-    return probabilities_and_outcomes(x, est)[1]
+function probabilities(::Array_or_Dataset, est::ProbabilitiesEstimator)
+    error("`not implemented for estimator of type $(typeof(est)).")
+end
+
+"""
+    outcomes(x, est::ProbabilitiesEstimator) → Ω::Vector
+Return a vector `Ω[i]` where `Ω[i]` is the outcome with probability `probs[i]`
+if `probs = probabilities(x, est)`.
+The element type of `Ω` depends on the estimator.
+"""
+function outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
+    error("`not implemented for estimator of type $(typeof(est)).")
 end
 
 """
     probabilities_and_outcomes(x, est) → (probs, Ω::Vector)
 
-Like [`probabilities`](@ref), but also return the outcomes associated with the computed
-probabilities.
-
-`probs` is exactly [`probabilities`](@ref)`(x, est)`, and `Ω[i]` is the outcome with
-probability `probs[i]`. Naturally, the element type of `outcomes` depends on the estimator.
+Convenience funtion that is exactly equal to calling [`probabilities`]
+and [`outcomes`](@ref) with input `x, est`. Should always be used
+instead of calling the individual outcomes if you need both outputs, due to
+possible performance gains.
 """
-function probabilities_and_outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
-    error("Not yet implemented for estimator $(nameof(typeof(est))).")
+function probabilities_and_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+    return probabilities(x, est), outcomes(x, est)
 end
 
 """
