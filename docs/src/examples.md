@@ -161,7 +161,7 @@ Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
 how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
-```@example MAIN stretched_exponential_example
+```@example MAIN
 using Entropies, CairoMakie
 bs = [1.0, 1.5, 2.0, 3.0, 4.0, 10.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
