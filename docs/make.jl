@@ -55,7 +55,7 @@ makedocs(
     sitename = "Entropies.jl",
     authors = "Kristian Agasøster Haaga, George Datseris",
     pages = ENTROPIES_PAGES,
-    doctest = CI,
+    doctest = false,
     draft = false,
 )
 
