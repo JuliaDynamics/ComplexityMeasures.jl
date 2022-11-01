@@ -14,21 +14,24 @@ using Distributions: Uniform, Normal
 Ns = [100:100:500; 1000:1000:10000]
 Ekl = Vector{Vector{Float64}}(undef, 0)
 Ekr = Vector{Vector{Float64}}(undef, 0)
+Ez = Vector{Vector{Float64}}(undef, 0)
 
 nreps = 50
 for N in Ns
     kl = Float64[]
     kr = Float64[]
+    kz = Float64[]
     for i = 1:nreps
         pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
-
         push!(kl, entropy(KozachenkoLeonenko(w = 0, base = MathConstants.e), pts))
         # with k = 1, Kraskov is virtually identical to
         # Kozachenko-Leonenko, so pick a higher number of neighbors
         push!(kr, entropy(Kraskov(w = 0, k = 3, base = MathConstants.e), pts))
+        push!(kz, entropy(Zhu(w = 0, base = MathConstants.e), pts))
     end
     push!(Ekl, kl)
     push!(Ekr, kr)
+    push!(Ez, kz)
 end
 
 fig = Figure()
@@ -41,6 +44,11 @@ ay = Axis(fig[2,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Kr
 lines!(ay, Ns, mean.(Ekr); color = Cycled(2))
 band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr);
 color = (Main.COLORS[2], 0.5))
+
+ay = Axis(fig[3,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Zhu")
+lines!(ay, Ns, mean.(Ez); color = Cycled(2))
+band!(ay, Ns, mean.(Ez) .+ std.(Ez), mean.(Ez) .- std.(Ez);
+color = (Main.COLORS[3], 0.5))
 
 fig
 ```
