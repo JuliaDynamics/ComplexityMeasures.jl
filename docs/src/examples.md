@@ -161,7 +161,7 @@ Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
 how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
-```@example stretched_exponential_example
+```@example MAIN stretched_exponential_example
 using Entropies, CairoMakie
 bs = [1.0, 1.5, 2.0, 3.0, 4.0, 10.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
@@ -186,7 +186,7 @@ how the stretched exponential entropy changes as function of the parameter `η` 
 of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
-```@example stretched_exponential_example
+```@example MAIN stretched_exponential_example
 using Entropies, SpecialFunctions, CairoMakie
 ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
@@ -215,7 +215,7 @@ Note: the results here are not exactly the same as in the original paper, becaus
 al. (2019) base their examples on randomly generated numbers and do not provide code that
 specify random number seeds.
 
-```@example
+```@example MAIN
 using Entropies, DynamicalSystemsBase, Random, CairoMakie, Distributions
 
 n = 1000
@@ -294,7 +294,7 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 
 ## Missing dispersion patterns
 
-```@example
+```@example MAIN
 using CairoMakie
 using DynamicalSystemsBase
 using Entropies
@@ -379,7 +379,7 @@ for different initial conditions, for multiple time series lengths.
 Finally, we summarize our results in box plots and compare the values to those
 obtained by Pincus (1991).
 
-```@example
+```@example MAIN
 using Entropies
 using DynamicalSystemsBase
 using DelayEmbeddings
@@ -454,7 +454,7 @@ fig
 Completely regular signals should have sample entropy approaching zero, while
 less regular signals should have higher sample entropy.
 
-```@example
+```@example MAIN
 using DynamicalSystemsBase
 using Entropies
 using CairoMakie
@@ -482,7 +482,7 @@ fig
 Next, we compare the sample entropy obtained for different values of the radius `r` for
 uniform noise, normally distributed noise, and a periodic signal.
 
-```@example
+```@example MAIN
 using Entropies, CairoMakie, Distributions
 N = 2000
 x_U = rand(N)
