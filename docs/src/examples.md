@@ -186,7 +186,7 @@ how the stretched exponential entropy changes as function of the parameter `η` 
 of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
-```@example MAIN stretched_exponential_example
+```@example MAIN
 using Entropies, SpecialFunctions, CairoMakie
 ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
