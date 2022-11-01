@@ -102,3 +102,10 @@ function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) w
 end
 
 total_outcomes(est::SymbolicWeightedPermutation)::Int = factorial(est.m)
+
+function probabilities_and_outcomes(x::AbstractVector{T}, est::SymbolicWeightedPermutation) where {T<:Real}
+    πs = outcomes(x, est)
+    wts = weights_from_variance.(emb.data, est.m)
+    p = symprobs(πs, wts, normalize = true)
+    Probabilities(p), sort(unique(πs))
+end

@@ -1,11 +1,6 @@
 export SymbolicPermutation
 
 """
-A probability estimator based on permutations.
-"""
-abstract type PermutationProbabilityEstimator <: ProbabilitiesEstimator end
-
-"""
     SymbolicPermutation(; m = 3, τ = 1, lt::Function = Entropies.isless_rand)
 
 A probabilities estimator based on ordinal permutation patterns, originally used by
@@ -67,7 +62,7 @@ information about within-state-vector amplitudes.
     Permutation entropy based time series analysis: Equalities in the input signal can
     lead to false conclusions. Physics Letters A, 381(22), 1883-1892.
 """
-struct SymbolicPermutation{F} <: PermutationProbabilityEstimator
+struct SymbolicPermutation{F} <: PermutationProbabilitiesEstimator
     τ::Int
     m::Int
     lt::F
@@ -138,3 +133,10 @@ function entropy!(e::Entropy,
 end
 
 total_outcomes(est::SymbolicPermutation)::Int = factorial(est.m)
+
+# TODO: use in-place machinery above. This is slower, but works.
+function probabilities_and_outcomes(x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
+    πs = outcomes(x, est)
+    p = probabilities(πs)
+    return p, sort(unique(πs))
+end

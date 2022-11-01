@@ -47,7 +47,7 @@ another estimator that incorporates amplitude information.
     Illustration in spike detection and signal segmentation. Computer methods and programs
     in biomedicine, 128, 40-51.
 """
-struct SymbolicAmplitudeAwarePermutation{F} <: ProbabilitiesEstimator
+struct SymbolicAmplitudeAwarePermutation{F} <: PermutationProbabilitiesEstimator
     τ::Int
     m::Int
     A::Float64
@@ -89,3 +89,10 @@ function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutat
 end
 
 total_outcomes(est::SymbolicAmplitudeAwarePermutation)::Int = factorial(est.m)
+
+function probabilities_and_outcomes(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutation) where T
+    πs = outcomes(x, est)
+    wts = AAPE.(emb.data, A = est.A, m = est.m)
+    p = symprobs(πs, wts, normalize = true)
+    return Probabilities(p), sort(unique(πs))
+end
