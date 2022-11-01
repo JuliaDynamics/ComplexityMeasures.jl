@@ -16,7 +16,7 @@ end
     τs = tuple([τ*i for i = 0:m-1]...)
     x = rand(250)
     D = genembed(x, τs)
-    est = KozachenkoLeonenko(k = 3, w = 1)
+    est = KozachenkoLeonenko(w = 1)
 
     @test entropy(est, D) isa Real
 end
