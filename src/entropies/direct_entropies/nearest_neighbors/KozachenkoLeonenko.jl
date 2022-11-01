@@ -29,7 +29,10 @@ function entropy(e::KozachenkoLeonenko, x::AbstractDataset{D, T}) where {D, T}
     (; w, base) = e
     N = length(x)
     ρs = maximum_neighbor_distances(x, w, 1)
-    h = D/N*sum(log.(base, ρs)) + log(base, ball_volume(D)) +
-        MathConstants.eulergamma + log(base, N - 1)
-    return h
+    # The estimated entropy has "unit" [nats]
+    h = D/N * sum(log.(MathConstants.e, ρs)) +
+        log(MathConstants.e, ball_volume(D)) +
+        MathConstants.eulergamma +
+        log(MathConstants.e, N - 1)
+    return h / log(base, MathConstants.e) # Convert to target unit
 end
