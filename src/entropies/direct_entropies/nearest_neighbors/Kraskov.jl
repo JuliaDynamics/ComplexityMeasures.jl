@@ -28,6 +28,9 @@ function entropy(e::Kraskov, x::AbstractDataset{D, T}) where {D, T}
     (; k, w, base) = e
     N = length(x)
     ρs = maximum_neighbor_distances(x, w, k)
-    h = -digamma(k) + digamma(N) + log(base, ball_volume(D)) + D/N*sum(log.(base, ρs))
-    return h
+    # The estimated entropy has "unit" [nats]
+    h = -digamma(k) + digamma(N) +
+        log(MathConstants.e, ball_volume(D)) +
+        D/N*sum(log.(MathConstants.e, ρs))
+    return h / log(base, MathConstants.e) # Convert to target unit
 end
