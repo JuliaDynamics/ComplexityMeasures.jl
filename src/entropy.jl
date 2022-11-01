@@ -100,10 +100,10 @@ Alternatively, compute the maximum entropy from the total outcomes `L` directly.
 """
 function entropy_maximum(e::Entropy, x, est::ProbabilitiesEstimator)
     L = total_outcomes(x, est)
-    return maximum(e, L)
+    return entropy_maximum(e, L)
 end
 function entropy_maximum(e::Entropy, ::Int)
-    error("Maximum not implemented for entropy type $(nameof(typeof(e))).")
+    error("not implemented for entropy type $(nameof(typeof(e))).")
 end
 
 """

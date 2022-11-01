@@ -103,7 +103,7 @@ This is mostly useful when `x` contains categorical or integer data.
 
 See also: [`Probabilities`](@ref), [`ProbabilitiesEstimator`](@ref).
 """
-function probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+function probabilities(x, est::ProbabilitiesEstimator)
     return probabilities_and_outcomes(x, est)[1]
 end
 
@@ -114,8 +114,8 @@ Return `probs, Ω`, where `probs = probabilities(x, est)` and
 `Ω[i]` is the outcome with probability `probs[i]`.
 The element type of `Ω` depends on the estimator.
 """
-function probabilities_and_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
-    error("not implemented for estimator of type $(typeof(est)).")
+function probabilities_and_outcomes(x, est::ProbabilitiesEstimator)
+    error("`probabilities_and_outcomes` not implemented for estimator $(typeof(est)).")
 end
 
 """
@@ -124,7 +124,7 @@ Return all (unique) outcomes contained in `x` according to the given estimator.
 Equivalent with `probabilities_and_outcomes(x, est)[2]`, but for some estimators
 it may be explicitly extended for better performance.
 """
-function outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+function outcomes(x, est::ProbabilitiesEstimator)
     return probabilities_and_outcomes(x, est)[2]
 end
 
