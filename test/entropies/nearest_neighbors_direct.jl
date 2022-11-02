@@ -83,8 +83,8 @@ end
     e_base_e = ZhuSingh(k = 3, base = MathConstants.e)
     e_base_2 = ZhuSingh(k = 3, base = 2)
 
-    @test round(entropy(e_base_e, DN), digits = 2) == round(hN_base_e, digits = 2)
-    @test round(entropy(e_base_2, DN), digits = 2) == round(hN_base_2, digits = 2)
+    @test round(entropy(e_base_e, DN), digits = 1) == round(hN_base_e, digits = 1)
+    @test round(entropy(e_base_2, DN), digits = 1) == round(hN_base_2, digits = 1)
 
     # Analytical test: 3D normal distribution
     σs = ones(3)
