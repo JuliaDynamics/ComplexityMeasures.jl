@@ -41,25 +41,6 @@ Base.@kwdef struct ZhuSingh{B} <: IndirectEntropy
 end
 
 """
-    maxdists(xᵢ, nns) → dists
-
-Compute the maximum distance from `xᵢ` to the points `xⱼ ∈ nns` along each dimension,
-i.e. `dists[k] = max{xᵢ[k], xⱼ[k]}` for `j = 1, 2, ..., length(x)`.
-"""
-function maxdists(xᵢ, nns)
-    mini, maxi = minmaxima(nns)
-    dists = max.(maxi .- xᵢ, xᵢ .- mini)
-end
-
-"""
-    volume_rect(dists) = prod(dists .* 2)
-
-Compute the volume of a (hyper)-rectangle where the distance from its centre along the
-`k`-th dimension is given by `dists[k]`, and `length(dists)` is the total dimension.
-"""
-volume_rect(dists) = prod(dists .* 2)
-
-"""
     n_borderpoints(xᵢ, nns, dists) → ξ
 
 Compute `ξ`, which is how many of `xᵢ`'s neighbor points `xⱼ ∈ nns` fall on the border of
@@ -79,7 +60,7 @@ function mean_logvolumes_and_digamma(x, nn_idxs, N::Int, k::Int)
         distsᵢ = maxdists(xᵢ, nnsᵢ)
         ξ = n_borderpoints(xᵢ, nnsᵢ, distsᵢ)
         digammaξ += digamma(k - ξ + 1)
-        logvol += log(MathConstants.e, volume_rect(distsᵢ))
+        logvol += log(MathConstants.e, volume_minimal_rect(distsᵢ))
     end
     logvol /= N
     digammaξ /= N

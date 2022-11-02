@@ -27,8 +27,8 @@ end
     # It's not feasible to construct an end-product test due to the neighbor searches.
     x = Dataset([[-1, -2], [0, -2], [3, 2]])
     y = Dataset([[3, 1], [-5, 1], [3, -2]])
-    @test Entropies.volume_minirect([0, 0], x) == 24
-    @test Entropies.volume_minirect([0, 0], y) == 40
+    @test Entropies.volume_minimal_rect([0, 0], x) == 24
+    @test Entropies.volume_minimal_rect([0, 0], y) == 40
 
     # Analytical tests for the estimated entropy
     DN = Dataset(randn(200000, 1))
@@ -53,7 +53,7 @@ end
     nns = Dataset([[-1, -1], [0, -2], [3, 2.0]])
     x = @SVector [0.0, 0.0]
     dists = Entropies.maxdists(x, nns)
-    vol = Entropies.volume_rect(dists)
+    vol = Entropies.volume_minimal_rect(dists)
     ξ = Entropies.n_borderpoints(x, nns, dists)
     @test vol == 24.0
     @test ξ == 2.0
@@ -61,7 +61,7 @@ end
     nns = Dataset([[3, 1], [3, -2], [-5, 1.0]])
     x = @SVector [0.0, 0.0]
     dists = Entropies.maxdists(x, nns)
-    vol = Entropies.volume_rect(dists)
+    vol = Entropies.volume_minimal_rect(dists)
     ξ = Entropies.n_borderpoints(x, nns, dists)
     @test vol == 40.0
     @test ξ == 2.0
@@ -69,7 +69,7 @@ end
     nns = Dataset([[-3, 1], [3, 1], [5, -2.0]])
     x = @SVector [0.0, 0.0]
     dists = Entropies.maxdists(x, nns)
-    vol = Entropies.volume_rect(dists)
+    vol = Entropies.volume_minimal_rect(dists)
     ξ = Entropies.n_borderpoints(x, nns, dists)
     @test vol == 40.0
     @test ξ == 1.0
