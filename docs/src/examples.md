@@ -45,9 +45,9 @@ lines!(ay, Ns, mean.(Ekr); color = Cycled(2))
 band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr);
 color = (Main.COLORS[2], 0.5))
 
-ay = Axis(fig[3,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Zhu")
-lines!(ay, Ns, mean.(Ez); color = Cycled(2))
-band!(ay, Ns, mean.(Ez) .+ std.(Ez), mean.(Ez) .- std.(Ez);
+az = Axis(fig[3,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Zhu")
+lines!(az, Ns, mean.(Ez); color = Cycled(2))
+band!(az, Ns, mean.(Ez) .+ std.(Ez), mean.(Ez) .- std.(Ez);
 color = (Main.COLORS[3], 0.5))
 
 fig
