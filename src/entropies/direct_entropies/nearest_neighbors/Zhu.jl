@@ -2,7 +2,7 @@ export Zhu
 
 """
     Zhu <: IndirectEntropy
-    Zhu(k = 1, w = 1, base = MathConstants.e)
+    Zhu(k = 1, w = 0, base = MathConstants.e)
 
 The `Zhu` indirect entropy estimator (Zhu et al., 2015)[^Zhu2015] estimates the Shannon
 entropy of `x` (a multi-dimensional `Dataset`) to the given `base`, by approximating
@@ -22,7 +22,7 @@ when searching for neighbours).
 """
 Base.@kwdef struct Zhu{B} <: IndirectEntropy
     k::Int = 1
-    w::Int = 1
+    w::Int = 0
     base::B = MathConstants.e
 end
 
