@@ -15,40 +15,49 @@ Ns = [100:100:500; 1000:1000:10000]
 Ekl = Vector{Vector{Float64}}(undef, 0)
 Ekr = Vector{Vector{Float64}}(undef, 0)
 Ez = Vector{Vector{Float64}}(undef, 0)
+Ezs = Vector{Vector{Float64}}(undef, 0)
 
 nreps = 50
 for N in Ns
     kl = Float64[]
     kr = Float64[]
     kz = Float64[]
+    kzs = Float64[]
     for i = 1:nreps
         pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
         push!(kl, entropy(KozachenkoLeonenko(w = 0, base = MathConstants.e), pts))
         # with k = 1, Kraskov is virtually identical to
         # Kozachenko-Leonenko, so pick a higher number of neighbors
         push!(kr, entropy(Kraskov(w = 0, k = 3, base = MathConstants.e), pts))
-        push!(kz, entropy(Zhu(w = 0, base = MathConstants.e), pts))
+        push!(kz, entropy(Zhu(k = 3, w = 0, base = MathConstants.e), pts))
+        push!(kzs, entropy(ZhuSingh(k = 3, w = 0, base = MathConstants.e), pts))
     end
     push!(Ekl, kl)
     push!(Ekr, kr)
     push!(Ez, kz)
+    push!(Ezs, kzs)
 end
 
-fig = Figure()
-ax = Axis(fig[1,1]; ylabel = "entropy (nats)", title = "Kozachenko-Leonenko")
+fig = Figure(resolution = (700, 1000))
+ax = Axis(fig[1,1]; ylabel = "h (nats)", title = "Kozachenko-Leonenko")
 lines!(ax, Ns, mean.(Ekl); color = Cycled(1))
 band!(ax, Ns, mean.(Ekl) .+ std.(Ekl), mean.(Ekl) .- std.(Ekl);
 color = (Main.COLORS[1], 0.5))
 
-ay = Axis(fig[2,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Kraskov")
+ay = Axis(fig[2,1]; xlabel = "time step", ylabel = "h (nats)", title = "Kraskov")
 lines!(ay, Ns, mean.(Ekr); color = Cycled(2))
 band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr);
 color = (Main.COLORS[2], 0.5))
 
-ay = Axis(fig[3,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Zhu")
-lines!(ay, Ns, mean.(Ez); color = Cycled(2))
-band!(ay, Ns, mean.(Ez) .+ std.(Ez), mean.(Ez) .- std.(Ez);
+az = Axis(fig[3,1]; xlabel = "time step", ylabel = "h (nats)", title = "Zhu")
+lines!(az, Ns, mean.(Ez); color = Cycled(3))
+band!(az, Ns, mean.(Ez) .+ std.(Ez), mean.(Ez) .- std.(Ez);
 color = (Main.COLORS[3], 0.5))
+
+aw = Axis(fig[4,1]; xlabel = "time step", ylabel = "h (nats)", title = "ZhuSingh")
+lines!(aw, Ns, mean.(Ezs); color = Cycled(4))
+band!(aw, Ns, mean.(Ezs) .+ std.(Ezs), mean.(Ezs) .- std.(Ezs);
+color = (Main.COLORS[4], 0.5))
 
 fig
 ```
