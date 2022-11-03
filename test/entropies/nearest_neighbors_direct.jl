@@ -53,8 +53,8 @@ end
     # It's not feasible to construct an end-product test due to the neighbor searches.
     x = Dataset([[-1, -2], [0, -2], [3, 2]])
     y = Dataset([[3, 1], [-5, 1], [3, -2]])
-    @test Entropies.volume_minirect([0, 0], x) == 24
-    @test Entropies.volume_minirect([0, 0], y) == 40
+    @test Entropies.volume_minimal_rect([0, 0], x) == 24
+    @test Entropies.volume_minimal_rect([0, 0], y) == 40
 
     # Analytical tests for the estimated entropy
     DN = Dataset(randn(200000, 1))
