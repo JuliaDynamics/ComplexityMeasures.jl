@@ -5,7 +5,7 @@ bs = [0.5, 1.0, 2.0, 5.0, 10.0]
 # -----------------------------------
 
 # Curado entropy is maximized for uniform distribution.
-max_hs = [maximum(Curado(b = b), N) for b in bs]
+max_hs = [entropy_maximum(Curado(b = b), N) for b in bs]
 pu = Probabilities(repeat([1/N], N))
 hs = [entropy(Curado(b = b), pu) for b in bs]
 @test all([h ≈ maxh for (h, maxh) in zip(hs, max_hs)])

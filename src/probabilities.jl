@@ -1,10 +1,12 @@
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
-export probabilities_and_outcomes
-export outcomes
+export probabilities_and_outcomes, outcomes
 export total_outcomes
 export missing_outcomes
 
+###########################################################################################
+# Types
+###########################################################################################
 """
     Probabilities <: AbstractVector
     Probabilities(x) → p
@@ -58,9 +60,9 @@ the outcome `ωᵢ`. Use [`probabilities_and_outcomes`](@ref) if you need
 both the probabilities and the outcomes.
 
 - [`CountOccurrences`](@ref).
-- [`Dispersion`](@ref).
 - [`ValueHistogram`](@ref).
 - [`TransferOperator`](@ref).
+- [`Dispersion`](@ref).
 - [`WaveletOverlap`](@ref).
 - [`PowerSpectrum`](@ref).
 - [`SymbolicPermutation`](@ref).
@@ -78,29 +80,53 @@ both the probabilities and the outcomes.
 """
 abstract type ProbabilitiesEstimator end
 
+###########################################################################################
+# probabilities and outcomes
+###########################################################################################
 """
     probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
 
 Compute a probability distribution over the set of possible outcomes defined by the
 probabilities estimator `est`, given input data `x`.
+To obtain the outcomes use [`outcomes`](@ref).
 
 The returned probabilities `p` may or may not be ordered, and may or may not
 contain 0s; see the documentation of the individual estimators for more.
 Configuration options are always given as arguments to the chosen estimator.
-`x` is typically an `Array` or a [`Dataset`](@ref); see [Input data for Entropies.jl](@ref).
+`x` is typically an `Array` or a `Dataset`; see [Input data for Entropies.jl](@ref).
 
     probabilities(x::Array_or_Dataset) → p::Probabilities
 
 Estimate probabilities by directly counting the elements of `x`, assuming that
-`Ω = sort(unique(x))`, i.e. that the outcome space is
-precisely equal to the elements of `x`. This is mostly useful when `x` contains
-categorical or integer data.
+`Ω = sort(unique(x))`, i.e. that the outcome space is the unique elements of `x`.
+This is mostly useful when `x` contains categorical or integer data.
 
 See also: [`Probabilities`](@ref), [`ProbabilitiesEstimator`](@ref).
 """
-function probabilities end
-# See visitation_frequency.jl and rectangular_binning.jl (all in histograms folder)
-# for the dispatches of `probabilities` for the convenience methods shown above.
+function probabilities(x, est::ProbabilitiesEstimator)
+    return probabilities_and_outcomes(x, est)[1]
+end
+
+"""
+    probabilities_and_outcomes(x, est) → (probs, Ω::Vector)
+
+Return `probs, Ω`, where `probs = probabilities(x, est)` and
+`Ω[i]` is the outcome with probability `probs[i]`.
+The element type of `Ω` depends on the estimator.
+"""
+function probabilities_and_outcomes(x, est::ProbabilitiesEstimator)
+    error("`probabilities_and_outcomes` not implemented for estimator $(typeof(est)).")
+end
+
+"""
+    outcomes(x, est::ProbabilitiesEstimator)
+Return all (unique) outcomes contained in `x` according to the given estimator.
+Equivalent with `probabilities_and_outcomes(x, est)[2]`, but for some estimators
+it may be explicitly extended for better performance.
+"""
+function outcomes(x, est::ProbabilitiesEstimator)
+    return probabilities_and_outcomes(x, est)[2]
+end
 
 """
     probabilities!(s, args...)
@@ -112,6 +138,9 @@ Only works for certain estimators. See for example [`SymbolicPermutation`](@ref)
 """
 function probabilities! end
 
+###########################################################################################
+# amount of outcomes
+###########################################################################################
 """
     total_outcomes([x::Array_or_Dataset,] est::ProbabilitiesEstimator) → Int
 
@@ -137,21 +166,6 @@ function total_outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
 end
 function total_outcomes(est::ProbabilitiesEstimator)
     error("`total_outcomes` not known/implemented for estimator of type $(typeof(est)).")
-end
-
-
-"""
-    probabilities_and_outcomes(x::Array_or_Dataset,
-        est::ProbabilitiesEstimator) → (probs::Probabilities, Ω::Vector)
-
-Like [`probabilities`](@ref), but also return the outcomes associated with the computed
-probabilities.
-
-`probs` is exactly [`probabilities`](@ref)`(x, est)`, and `Ω[i]` is the outcome with
-probability `probs[i]`. Naturally, the element type of `outcomes` depends on the estimator.
-"""
-function probabilities_and_outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
-    error("Outcomes not yet implemented for estimator $(nameof(typeof(est))).")
 end
 
 """
