@@ -12,7 +12,7 @@ using Entropies, Test
             c = 4
             m = 4
             τ = 1
-            s = GaussianMapping(c = c)
+            s = GaussianCDFEncoding(c = c)
 
             # Symbols should be in the set [1, 2, …, c].
             symbols = Entropies.outcomes(x, s)
@@ -29,7 +29,7 @@ using Entropies, Test
         # We here start from pre-computed symbols `s`.
         x = [0.82,0.75,0.21,0.94,0.52,0.05,0.241,0.75,0.35,0.43,0.11,0.87]
         m, n_classes = 2, 3
-        est = Dispersion(m = m, encoding =  GaussianMapping(c = n_classes))
+        est = Dispersion(m = m, encoding =  GaussianCDFEncoding(c = n_classes))
 
         # Take only the non-zero probabilities from the paper (in `dispersion_histogram`,
         # we don't count zero-probability bins, so eliminate zeros for comparison).

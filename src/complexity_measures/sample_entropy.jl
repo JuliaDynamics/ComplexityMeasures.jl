@@ -4,6 +4,7 @@ using Neighborhood.NearestNeighbors: Chebyshev
 using Neighborhood: inrangecount
 
 export SampleEntropy
+export sample_entropy
 
 """
     SampleEntropy([x]; r = 0.2std(x), kwargs...)

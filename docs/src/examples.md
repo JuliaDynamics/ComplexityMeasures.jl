@@ -1,45 +1,58 @@
 # Examples
 
-## Indirect entropy (Vasicek)
+## Direct entropy (nearest neighbors)
 
-Here, we show how the [`Vasicek`](@ref) direct [`Shannon`](@ref) entropy estimator
-approaches zero for a uniform distribution on `[0, 1]`, which is the true
-entropy value for this distribution.
+Here, we reproduce Figure 1 in Charzyńska & Gambin (2016)[^Charzyńska2016]. Their example
+demonstrates how the [`Kraskov`](@ref) and [`KozachenkoLeonenko`](@ref) nearest neighbor
+based estimators converge towards the true entropy value for increasing time series length.
+We extend their example with [`Zhu`](@ref) and [`ZhuSingh`](@ref) estimators, which are also
+based on nearest neighbor searches.
+
+Input data are from a uniform 1D distribution ``U(0, 1)``, for which the true entropy is
+`ln(1 - 0) = 0`).
 
 ```@example MAIN
 using Entropies
-using Statistics
-using CairoMakie
+using DynamicalSystemsBase, CairoMakie, Statistics
+using Distributions: Uniform, Normal
 
-Ns = [100:100:500; 1000:1000:10000; 50000; 100000]
-Hv = Vector{Vector{Float64}}(undef, 0)
-Hc = Vector{Vector{Float64}}(undef, 0)
+# Define estimators
+base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
+w = 0 # Theiler window of 0 (only exclude the point itself during neighbor searches)
+estimators = [
+    # with k = 1, Kraskov is virtually identical to
+    # Kozachenko-Leonenko, so pick a higher number of neighbors for Kraskov
+    Kraskov(; k = 3, w, base),
+    KozachenkoLeonenko(; w, base),
+    Zhu(; k = 3, w, base),
+    ZhuSingh(; k = 3, w, base),
+]
+labels = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh"]
 
-nreps = 30
-for N in Ns
-    kv = Float64[]
-    kc = Float64[]
-    for i = 1:nreps
-        x = rand(N)
-        # Scale `m` according to time series length
-        m = floor(Int, N / 100)
-        ev = Vasicek(; m, base = MathConstants.e)
-        ec = Correa(; m, base = MathConstants.e)
-        push!(kv, entropy(ev, x))
-        push!(kc, entropy(ec, x))
+# Test each estimator `nreps` times over time series of varying length.
+nreps = 50
+Ns = [100:100:500; 1000:1000:10000]
+
+Hs_uniform = [[zeros(nreps) for N in Ns] for e in estimators]
+for (i, e) in enumerate(estimators)
+    for j = 1:nreps
+        pts = rand(Uniform(0, 1), maximum(Ns)) |> Dataset
+        for (k, N) in enumerate(Ns)
+            Hs_uniform[i][k][j] = entropy(e, pts[1:N])
+        end
     end
-    push!(Hv, kv)
-    push!(Hc, kc)
 end
 
-fig = Figure()
-ax = Axis(fig[1,1]; 
-    ylabel = "Entropy (nats)", 
-    xlabel = "Time series length", 
-    title = "Vasicek estimator of Shannon entropy")
-lines!(ax, Ns, mean.(Hv); color = Cycled(1))
-band!(ax, Ns, mean.(Hv) .+ std.(Hv), mean.(Hv) .- std.(Hv);
-color = (Main.COLORS[1], 0.5))
+fig = Figure(resolution = (600, length(estimators) * 200))
+for (i, e) in enumerate(estimators)
+    Hs = Hs_uniform[i]
+    ax = Axis(fig[i,1]; ylabel = "h (nats)")
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
+    color = (Main.COLORS[i], 0.5))
+    ylims!(-0.25, 0.25)
+    axislegend()
+end
 
 ax = Axis(fig[2,1]; 
     ylabel = "Entropy (nats)", 
@@ -52,51 +65,60 @@ color = (Main.COLORS[2], 0.5))
 fig
 ```
 
-## Nearest neighbor direct entropy example
+## Direct entropy (order statistics)
 
-This example reproduces Figure in Charzyńska & Gambin (2016)[^Charzyńska2016]. Both
-estimators nicely converge to the "true" entropy with increasing time series length.
-For a uniform 1D distribution ``U(0, 1)``, the true entropy is `0`.
+Entropies.jl also provides entropy estimators based on
+[order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators
+are only defined for scalar-valued vectors, so we pass the data as `Vector{<:Real}`s instead
+of `Dataset`s, as we did for the nearest-neighbor estimators above.
+
+Here, we show how the [`Vasicek`](@ref) direct [`Shannon`](@ref) entropy estimator
+approaches zero for a uniform distribution on `[0, 1]`, which is the true
+entropy value for this distribution.
 
 ```@example MAIN
-using DynamicalSystemsBase, CairoMakie, Statistics
-using Distributions: Uniform, Normal
+using Entropies
+using Statistics
+using Distributions
+using CairoMakie
 
+# Define estimators
+base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
+estimators = [Vasicek] # just provide types here, they are instantiated inside the loop
+labels = ["Vasicek"]
+
+# Test each estimator `nreps` times over time series of varying length.
 Ns = [100:100:500; 1000:1000:10000]
-Ekl = Vector{Vector{Float64}}(undef, 0)
-Ekr = Vector{Vector{Float64}}(undef, 0)
+nreps = 30
 
-nreps = 50
-for N in Ns
-    kl = Float64[]
-    kr = Float64[]
-    kv = Float64[]
-    for i = 1:nreps
-        pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
-        push!(kl, entropy(KozachenkoLeonenko(w = 0, k = 1, base = MathConstants.e), pts))
-        # with k = 1, Kraskov is virtually identical to
-        # Kozachenko-Leonenko, so pick a higher number of neighbors
-        push!(kr, entropy(Kraskov(w = 0, k = 3, base = MathConstants.e), pts))
+Hs_uniform = [[zeros(nreps) for N in Ns] for e in estimators]
+for (i, e) in enumerate(estimators)
+    for j = 1:nreps
+        pts = rand(Uniform(0, 1), maximum(Ns)) # raw timeseries, not a `Dataset`
+        for (k, N) in enumerate(Ns)
+            m = floor(Int, N / 100) # Scale `m` to timeseries length
+            est = e(; m, base) # Instantiate estimator with current `m`
+            Hs_uniform[i][k][j] = entropy(est, pts[1:N])
+        end
     end
-    push!(Ekl, kl)
-    push!(Ekr, kr)
 end
 
-fig = Figure()
-ax = Axis(fig[1,1]; ylabel = "entropy (nats)", title = "Kozachenko-Leonenko")
-lines!(ax, Ns, mean.(Ekl); color = Cycled(1))
-band!(ax, Ns, mean.(Ekl) .+ std.(Ekl), mean.(Ekl) .- std.(Ekl);
-color = (Main.COLORS[1], 0.5))
-
-ay = Axis(fig[2,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Kraskov")
-lines!(ay, Ns, mean.(Ekr); color = Cycled(2))
-band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr);
-color = (Main.COLORS[2], 0.5))
+fig = Figure(resolution = (600, length(estimators) * 200))
+for (i, e) in enumerate(estimators)
+    Hs = Hs_uniform[i]
+    ax = Axis(fig[i,1]; ylabel = "h (nats)")
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
+    color = (Main.COLORS[i], 0.5))
+    ylims!(-0.25, 0.25)
+    axislegend()
+end
 
 fig
 ```
 
-[^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy estimator with applications in systems biology. Entropy, 18(1), 13.
+As for the nearest neighbor estimators, [`Vasicek`](@ref) also approaches the
+true entropy value for this example, but is negatively biased for small sample sizes.
 
 ## Permutation entropy example
 

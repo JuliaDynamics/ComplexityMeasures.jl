@@ -51,21 +51,16 @@ const VisitationFrequency = ValueHistogram
 
 # This method is only valid for rectangular binnings, as `fasthist`
 # is only valid for rectangular binnings. For more binnings, it needs to be extended.
-function probabilities(x::Array_or_Dataset, est::ValueHistogram{<:RectangularBinning})
+function probabilities(x::Array_or_Dataset,
+        est::ValueHistogram{T}) where T <: Floating_or_Fixed_RectBinning
     fasthist(x, est.binning)[1]
 end
 
-function probabilities_and_outcomes(x, est::ValueHistogram)
+function probabilities_and_outcomes(x::Array_or_Dataset,
+        est::ValueHistogram{T}) where T <: Floating_or_Fixed_RectBinning
     probs, bins, encoder = fasthist(x, est.binning)
     (; mini, edgelengths) = encoder
     unique!(bins) # `bins` is already sorted from `fasthist!`
     events = map(b -> b .* edgelengths .+ mini, bins)
     return probs, events
-end
-
-function outcomes(x, est::ValueHistogram)
-    probs, bins, encoder = fasthist(x, est.binning)
-    (; mini, edgelengths) = encoder
-    unique!(bins) # `bins` is already sorted from `fasthist!`
-    return map(b -> b .* edgelengths .+ mini, bins)
 end

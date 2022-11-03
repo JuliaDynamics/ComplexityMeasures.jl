@@ -2,7 +2,7 @@ using DelayEmbeddings
 export Dispersion
 
 """
-    Dispersion(; encoding =  GaussianMapping(c = 5), m = 2, τ = 1,
+    Dispersion(; encoding =  GaussianCDFEncoding(c = 5), m = 2, τ = 1,
         check_unique = true)
 
 A probability estimator based on dispersion patterns, originally used by
@@ -17,10 +17,10 @@ categories for the Gaussian symbol mapping.
 ## Description
 
 Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. First, this time series
-is discretized using `symbolization`, which default to [`GaussianMapping`](@ref),
+is discretized using `symbolization`, which default to [`GaussianCDFEncoding`](@ref),
 which uses the normal cumulative distribution function (CDF) for encoding.
 Other choices of CDFs are also possible, but Entropies.jl currently only implements
-[`GaussianMapping`](@ref), which was used in Rostaghi & Azami (2016). This step
+[`GaussianCDFEncoding`](@ref), which was used in Rostaghi & Azami (2016). This step
 results in an integer-valued symbol time series ``S = \\{ s_i \\}_{i=1}^N``, where
 ``s_i \\in [1, 2, \\ldots, c]``.
 
@@ -55,7 +55,7 @@ If `check_unique == true` (default), then it is checked that the input has
 more than one unique value. If `check_unique == false` and the input only has one
 unique element, then a `InexactError` is thrown when trying to compute probabilities.
 
-See also: [`entropy_dispersion`](@ref), [`GaussianMapping`](@ref).
+See also: [`entropy_dispersion`](@ref), [`GaussianCDFEncoding`](@ref).
 
 !!! note "Why 'dispersion patterns'?"
     Each embedding vector is called a "dispersion pattern". Why? Let's consider the case
@@ -74,7 +74,7 @@ See also: [`entropy_dispersion`](@ref), [`GaussianMapping`](@ref).
 [^Li2018]: Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale dispersion entropy and wavelet threshold denoising. Entropy, 21(1), 11.
 """
 Base.@kwdef struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
-    encoding::S = GaussianMapping(c = 5)
+    encoding::S = GaussianCDFEncoding(c = 5)
     m::Int = 2
     τ::Int = 1
     check_unique::Bool = false

@@ -10,18 +10,19 @@ estimate the Shannon entropy of the timeseries `x` to the given
 
 ## Description
 
-The Vasicek entropy estimator first computes the order statistics
+The Vasicek entropy estimator first computes the
+[order statistics](https://en.wikipedia.org/wiki/Order_statistic)
 ``X_{(1)} \\leq X_{(2)} \\leq \\cdots \\leq X_{(n)}`` for a random sample of length ``n``,
-i.e. the input timeseries. The entropy for the length-`n` sample is then estimated as
+i.e. the input timeseries. The [`Shannon`](@ref) entropy is then estimated as
 
 ```math
-H_V(m, n) =
+H_V(m) =
 \\dfrac{1}{n} \\sum_{i = 1}^n \\log \\left[ \\dfrac{n}{2m} (X_{(i+m)} - X_{(i-m)}) \\right]
 ```
 
 ## Usage
 
-In practice, choice of `m` influences how fast the entropy convergence to the true value.
+In practice, choice of `m` influences how fast the entropy converges to the true value.
 For small value of `m`, convergence is slow, so we recommend to scale `m` according to the
 time series length `n` and use `m >= n/100` (this is just a heuristic based on the tests
 written for this package).
@@ -41,7 +42,7 @@ function entropy(e::Vasicek, x::AbstractVector{T}) where T
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
 
     ex = sort(x)
-    HVₘₙ = 0.0
+    HVₘₙ = zero(T)
     f = n / (2m)
     for i = 1:n
         dnext = ith_order_statistic(ex, i + m, n)

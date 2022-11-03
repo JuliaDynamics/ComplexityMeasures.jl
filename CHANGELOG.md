@@ -13,6 +13,13 @@ The API for Entropies.jl has been completely overhauled. Major changes are:
 - Many new estimators, such as `SpatialPermutation` and `PowerSpectrum`.
 - Check the online documentation for a comprehensive overview of the changes.
 
+### Bug fixes
+
+- The `KozachenkoLeonenko` estimator now correctly fixes its neighbor search to the
+    *closest* neighbor only, and its constructor does no longer accept `k` as an input.
+- Using a logarithm `base` different from `MathConstants.e` now yields correct results
+    for `Kraskov` and `KozachenkoLeonenko`.
+
 ## main
 * New probability estimator `SpatialSymbolicPermutation` suitable for computing spatial permutation entropies
 * Introduce Tsallis entropy.
