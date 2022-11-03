@@ -50,18 +50,67 @@ for (i, e) in enumerate(estimators)
     lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
     band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
     color = (Main.COLORS[i], 0.5))
+    ylims!(-0.25, 0.25)
     axislegend()
 end
 
 fig
 ```
 
-As expected, all estimators nicely converge to the correct entropy with increasing
-time series length.
+## Direct entropy (order statistics)
 
-[^Charzyńska2016]:
-    Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy
-    estimator with applications in systems biology. Entropy, 18(1), 13.
+Entropies.jl also provides entropy estimators based on
+[order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators
+are only defined for scalar-valued vectors, so we pass the data as `Vector{<:Real}`s instead
+of `Dataset`s, as we did for the nearest-neighbor estimators above.
+
+Here, we show how the [`Vasicek`](@ref) direct [`Shannon`](@ref) entropy estimator
+approaches zero for a uniform distribution on `[0, 1]`, which is the true
+entropy value for this distribution.
+
+```@example MAIN
+using Entropies
+using Statistics
+using Distributions
+using CairoMakie
+
+# Define estimators
+base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
+estimators = [Vasicek] # just provide types here, they are instantiated inside the loop
+labels = ["Vasicek"]
+
+# Test each estimator `nreps` times over time series of varying length.
+Ns = [100:100:500; 1000:1000:10000]
+nreps = 30
+
+Hs_uniform = [[zeros(nreps) for N in Ns] for e in estimators]
+for (i, e) in enumerate(estimators)
+    for j = 1:nreps
+        pts = rand(Uniform(0, 1), maximum(Ns)) # raw timeseries, not a `Dataset`
+        for (k, N) in enumerate(Ns)
+            m = floor(Int, N / 100) # Scale `m` to timeseries length
+            est = e(; m, base) # Instantiate estimator with current `m`
+            Hs_uniform[i][k][j] = entropy(est, pts[1:N])
+        end
+    end
+end
+
+fig = Figure(resolution = (600, length(estimators) * 200))
+for (i, e) in enumerate(estimators)
+    Hs = Hs_uniform[i]
+    ax = Axis(fig[i,1]; ylabel = "h (nats)")
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
+    color = (Main.COLORS[i], 0.5))
+    ylims!(-0.25, 0.25)
+    axislegend()
+end
+
+fig
+```
+
+As for the nearest neighbor estimators, [`Vasicek`](@ref) also approaches the
+true entropy value for this example, but is negatively biased for small sample sizes.
 
 ## Permutation entropy example
 
@@ -71,10 +120,7 @@ logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example MAIN
-using Entropies
-using DynamicalSystemsBase
-using ChaosTools
-using CairoMakie
+using DynamicalSystemsBase, CairoMakie
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4
@@ -118,9 +164,6 @@ fig
 Here, we draw some random points from a 2D normal distribution. Then, we use kernel density estimation to associate a probability to each point `p`, measured by how many points are within radius `1.5` of `p`. Plotting the actual points, along with their associated probabilities estimated by the KDE procedure, we get the following surface plot.
 
 ```@example MAIN
-using Entropies
-using DelayEmbeddings
-using ChaosTools
 using DynamicalSystemsBase, CairoMakie, Distributions
 𝒩 = MvNormal([1, -4], 2)
 N = 500
@@ -143,7 +186,6 @@ energy is contained at one scale) and higher for very irregular signals (energy 
 more out across scales).
 
 ```@example MAIN
-using Entropies
 using DynamicalSystemsBase, CairoMakie
 N, a = 1000, 10
 t = LinRange(0, 2*a*π, N)
@@ -175,7 +217,7 @@ Here, we show the sensitivity of the various entropies to variations in their pa
 ### Curado entropy
 
 Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
-how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
+how the [Curado](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
 ```@example stretched_exponential_example
@@ -249,8 +291,8 @@ des = zeros(length(windows))
 pes = zeros(length(windows))
 
 m, c = 2, 6
-est_rd = ReverseDispersion(encoding = GaussianCDFEncoding(c), m = m, τ = 1)
-est_de = Dispersion(encoding = GaussianCDFEncoding(c), m = m, τ = 1)
+est_rd = ReverseDispersion(encoding = GaussianMapping(c), m = m, τ = 1)
+est_de = Dispersion(encoding = GaussianMapping(c), m = m, τ = 1)
 
 for (i, window) in enumerate(windows)
     rdes[i] = complexity_normalized(est_rd, y[window])
@@ -287,7 +329,6 @@ fig
 When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the [Wavelet entropy example](@ref) (where we use the spectral entropy instead of the wavelet entropy):
 
 ```@example MAIN
-using Entropies
 using DynamicalSystemsBase
 N1, N2, a = 101, 100001, 10
 
@@ -314,12 +355,11 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 ```@example
 using CairoMakie
 using DynamicalSystemsBase
-using ChaosTools
 using Entropies
 using TimeseriesSurrogates
 using Statistics
 
-d = Dispersion(m = 3, encoding = GaussianCDFEncoding(c = 7))
+d = Dispersion(m = 3, encoding = GaussianMapping(c = 7))
 est = MissingDispersionPatterns(d)
 sys = Systems.logistic(0.6; r = 4.0)
 normalize = true
@@ -398,10 +438,7 @@ Finally, we summarize our results in box plots and compare the values to those
 obtained by Pincus (1991).
 
 ```@example
-using Entropies
-using DynamicalSystemsBase
-using DelayEmbeddings
-using CairoMakie
+using Entropies, DynamicalSystemsBase, CairoMakie
 
 # Equation 13 in Pincus (1991)
 function eom_henon(u, p, n)
@@ -473,9 +510,7 @@ Completely regular signals should have sample entropy approaching zero, while
 less regular signals should have higher sample entropy.
 
 ```@example
-using DynamicalSystemsBase
-using Entropies
-using CairoMakie
+using DynamicalSystemsBase, CairoMakie
 N, a = 2000, 10
 t = LinRange(0, 2*a*π, N)
 
