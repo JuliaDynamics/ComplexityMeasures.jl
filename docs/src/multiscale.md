@@ -9,20 +9,20 @@ defined below, and the following functions.
 - [`multiscale_normalized`](@ref)
 - [`downsample`](@ref)
 
+## [Algorithms](@id multiscale_algorithms)
+
+```@docs
+MultiScaleAlgorithm
+Regular
+Composite
+```
+
 ## Multiscale entropy
 
 ```@docs
 multiscale
 multiscale_normalized
 downsample
-```
-
-### [Algorithms](@id multiscale_algorithms)
-
-```@docs
-MultiScaleAlgorithm
-Regular
-Composite
 ```
 
 ## Available literature methods
