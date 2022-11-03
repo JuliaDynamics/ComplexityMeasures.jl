@@ -36,7 +36,7 @@ function multiscale end
 function multiscale_normalized end
 
 """
-    multiscale(e::Entropy, alg, x, est; maxscale = length(x) ÷ 5)
+    multiscale(e::Entropy, alg, x, est; kwargs...)
 
 Compute the multi-scale entropy `e` with probabilities estimator `est` for timeseries `x`.
 
