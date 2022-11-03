@@ -39,7 +39,7 @@ end
 
 # This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
 function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
-    encoder = RectangularBinMapping(x, ϵ)
+    encoder = RectangularBinEncoding(x, ϵ)
     bins = outcomes(x, encoder)
     hist = fasthist!(bins)
     return Probabilities(hist), bins, encoder

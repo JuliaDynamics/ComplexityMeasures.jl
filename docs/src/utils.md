@@ -6,26 +6,29 @@
 Entropies.binhist
 ```
 
-## [Outcomes](@ref outcomes)
+## [Encoding data](@id encoding)
 
-### Encoding
+```@docs
+Encoding
+GaussianCDFEncoding
+OrdinalPatternEncoding
+RectangularBinEncoding
+```
+
+### Batch encoding
 
 ```@docs
 outcomes(x, ::Encoding)
-total_outcomes(::Encoding)
-GaussianMapping
-OrdinalMapping
-RectangularBinMapping
 ```
 
-### Missing outcomes
-
-```@docs
-missing_outcomes
-```
-
-### Encoding ordinal patterns
+### Single-element encoding
 
 ```@docs
 Entropies.encode_motif
+```
+
+## Missing outcomes
+
+```@docs
+missing_outcomes
 ```

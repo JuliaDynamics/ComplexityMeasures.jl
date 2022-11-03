@@ -4,7 +4,7 @@ export distance_to_whitenoise
 """
     ReverseDispersion <: ComplexityMeasure
     ReverseDispersion(; m = 2, τ = 1, check_unique = true,
-        encoding::Encoding = GaussianMapping(c = 5)
+        encoding::Encoding = GaussianCDFEncoding(c = 5)
     )
 
 Estimator for the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019].
@@ -20,7 +20,7 @@ H_{rde} = \\sum_{i = 1}^{c^m} \\left(p_i - \\dfrac{1}{{c^m}} \\right)^2 =
 where the probabilities ``p_i`` are obtained precisely as for the [`Dispersion`](@ref)
 probability estimator. Relative frequencies of dispersion patterns are computed using the
 given `encoding` scheme , which defaults to encoding using the normal cumulative
-distribution function (NCDF), as implemented by [`GaussianMapping`](@ref), using
+distribution function (NCDF), as implemented by [`GaussianCDFEncoding`](@ref), using
 embedding dimension `m` and embedding delay `τ`.
 Recommended parameter values[^Li2018] are `m ∈ [2, 3]`, `τ = 1` for the embedding, and
 `c ∈ [3, 4, …, 8]` categories for the Gaussian mapping.
@@ -46,7 +46,7 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
     complexity measure for sensor signal. Sensors, 19(23), 5203.
 """
 Base.@kwdef struct ReverseDispersion{S <: Encoding} <: ComplexityMeasure
-    encoding::S = GaussianMapping(c = 5)
+    encoding::S = GaussianCDFEncoding(c = 5)
     m::Int = 2
     τ::Int = 1
     check_unique::Bool = false

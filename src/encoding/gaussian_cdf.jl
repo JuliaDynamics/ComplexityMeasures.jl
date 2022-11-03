@@ -1,10 +1,10 @@
 using Statistics, QuadGK
 
-export GaussianMapping
+export GaussianCDFEncoding
 
 """
-    GaussianMapping <: Encoding
-    GaussianMapping(; c::Int = 3)
+    GaussianCDFEncoding <: Encoding
+    GaussianCDFEncoding(; c::Int = 3)
 
 A encoding scheme where the elements of `x` are discretized into `c` distinct integer
 categories using the normal cumulative distribution function (NCDF), used with
@@ -12,7 +12,7 @@ categories using the normal cumulative distribution function (NCDF), used with
 
 ## Algorithm
 
-Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. `GaussianMapping`
+Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. `GaussianCDFEncoding`
 first maps each ``x_i`` to a new real number ``y_i \\in [0, 1]`` by using the normal
 cumulative distribution function (CDF), ``x_i \\to y_i : y_i = \\dfrac{1}{ \\sigma
     \\sqrt{2 \\pi}} \\int_{-\\infty}^{x_i} e^{(-(x_i - \\mu)^2)/(2 \\sigma^2)} dx``,
@@ -28,7 +28,7 @@ series ``S = \\{ s_i \\}_{i=1}^N``, where ``s_i \\in [1, 2, \\ldots, c]``.
 
 # Usage
 
-    outcomes(x::AbstractVector, s::GaussianMapping)
+    outcomes(x::AbstractVector, s::GaussianCDFEncoding)
 
 Map the elements of `x` to a symbol time series according to the Gaussian encoding
 scheme `s`.
@@ -38,7 +38,7 @@ scheme `s`.
 ```jldoctest; setup = :(using Entropies)
 julia> x = [0.1, 0.4, 0.7, -2.1, 8.0, 0.9, -5.2];
 
-julia> Entropies.outcomes(x, GaussianMapping(c = 5))
+julia> Entropies.outcomes(x, GaussianCDFEncoding(c = 5))
 7-element Vector{Int64}:
  3
  3
@@ -51,11 +51,11 @@ julia> Entropies.outcomes(x, GaussianMapping(c = 5))
 
 See also: [`outcomes`](@ref).
 """
-Base.@kwdef struct GaussianMapping{I <: Integer} <: Encoding
+Base.@kwdef struct GaussianCDFEncoding{I <: Integer} <: Encoding
     c::I = 3
 end
 
-total_outcomes(encoding::GaussianMapping) = encoding.c
+total_outcomes(encoding::GaussianCDFEncoding) = encoding.c
 
 g(xᵢ, μ, σ) = exp((-(xᵢ - μ)^2)/(2σ^2))
 
@@ -69,7 +69,7 @@ function map_to_category(yⱼ, c)
     return zⱼ
 end
 
-function outcomes(x::AbstractVector, s::GaussianMapping)
+function outcomes(x::AbstractVector, s::GaussianCDFEncoding)
     σ = Statistics.std(x)
     μ = Statistics.mean(x)
 

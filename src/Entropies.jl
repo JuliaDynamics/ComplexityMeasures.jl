@@ -13,6 +13,7 @@ module Entropies
 using DelayEmbeddings
 using DelayEmbeddings: AbstractDataset, Dataset, dimension
 export AbstractDataset, Dataset
+export DelayEmbeddings
 const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
 const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
 
@@ -40,7 +41,7 @@ update_message = """
 - In summary, all entropies and normalized entropies are computing using the
   `entropy` and `entropy_normalized` functions, which dispatch on entropy types such
   as `Renyi()`, `Shannon()` or `Tsallis()`.
-- New constructors for discretizing: `OrdinalMapping, GaussianMapping`.
+- New constructors for discretizing: `OrdinalPatternEncoding, GaussianCDFEncoding`.
 """
 
 if display_update
