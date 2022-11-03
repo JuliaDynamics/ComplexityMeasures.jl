@@ -2,10 +2,6 @@ using DelayEmbeddings
 
 export Diversity
 
-function cosine_similarity(xᵢ, xⱼ)
-    return sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
-end
-
 """
     Diversity(; m::Int, τ::Int, nbins::Int)
 
@@ -45,6 +41,18 @@ Base.@kwdef struct Diversity <: ProbabilitiesEstimator
     nbins::Int = 5
 end
 
+function probabilities(x::AbstractVector{T}, est::Diversity) where T <: Real
+    ds, binning = similarities_and_binning(x, est)
+    return fasthist(ds, binning)[1]
+end
+
+function probabilities_and_outcomes(x::AbstractVector{T}, est::Diversity) where T <: Real
+    ds, binning = similarities_and_binning(x, est)
+    return probabilities_and_outcomes(ds, ValueHistogram(binning))
+end
+
+total_outcomes(est::Diversity) = est.nbins
+
 function similarities_and_binning(x::AbstractVector{T}, est::Diversity) where T <: Real
     τs = 0:est.τ:(est.m - 1)*est.τ
     Y = genembed(x, τs)
@@ -60,14 +68,4 @@ function similarities_and_binning(x::AbstractVector{T}, est::Diversity) where T 
     return ds, binning
 end
 
-function probabilities(x::AbstractVector{T}, est::Diversity) where T <: Real
-    ds, binning = similarities_and_binning(x, est)
-    return fasthist(ds, binning)[1]
-end
-
-function probabilities_and_outcomes(x::AbstractVector{T}, est::Diversity) where T <: Real
-    ds, binning = similarities_and_binning(x, est)
-    return probabilities_and_outcomes(ds, ValueHistogram(binning))
-end
-
-total_outcomes(est::Diversity) = est.nbins
+cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))

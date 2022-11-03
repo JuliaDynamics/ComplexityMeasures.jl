@@ -21,11 +21,11 @@ function probabilities(x::Array_or_Dataset)
     return Probabilities(fasthist!(copy(x)))
 end
 
+outcomes(x, ::CountOccurrences) = sort(unique(x))
+
 function probabilities_and_outcomes(x::Array_or_Dataset, ::CountOccurrences)
     z = copy(x)
     probs = Probabilities(fasthist!(z))
-    # notice that `z` is now sorted within `fasthist!`!
+    # notice that `z` is now sorted within `fasthist!` so we can skip sorting
     return probs, unique!(z)
 end
-
-outcomes(x, ::CountOccurrences) = sort(unique(x))

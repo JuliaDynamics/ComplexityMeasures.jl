@@ -1,6 +1,4 @@
 using Test
-# TODO: None of these packages should be used here. Instead, the files they are needed
-using Entropies
 
 defaultname(file) = uppercasefirst(replace(splitext(basename(file))[1], '_' => ' '))
 testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include(file); end

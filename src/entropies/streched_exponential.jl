@@ -1,5 +1,4 @@
 using SpecialFunctions
-import Base.maximum
 
 export StretchedExponential
 
@@ -51,7 +50,7 @@ function entropy(e::StretchedExponential, prob::Probabilities)
     return sum(stretched_exponential(pᵢ, e.η, e.base) for pᵢ in probs)
 end
 
-function maximum(e::StretchedExponential, L::Int)
+function entropy_maximum(e::StretchedExponential, L::Int)
     x = (e.η + 1)/e.η
     Γx = gamma(x)
     # We need the scaled  *upper* incomplete gamma function, which is the second
