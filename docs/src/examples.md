@@ -64,8 +64,8 @@ Entropies.jl also provides entropy estimators based on
 are only defined for scalar-valued vectors, so we pass the data as `Vector{<:Real}`s instead
 of `Dataset`s, as we did for the nearest-neighbor estimators above.
 
-Here, we show how the [`Vasicek`](@ref) direct [`Shannon`](@ref) entropy estimator
-approaches zero for a uniform distribution on `[0, 1]`, which is the true
+Here, we show how the [`Vasicek`](@ref) and [`Ebrahimi`](@ref) direct [`Shannon`](@ref)
+entropy estimators approach zero for a uniform distribution on `[0, 1]`, which is the true
 entropy value for this distribution.
 
 ```@example MAIN
@@ -76,8 +76,9 @@ using CairoMakie
 
 # Define estimators
 base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
-estimators = [Vasicek] # just provide types here, they are instantiated inside the loop
-labels = ["Vasicek"]
+ # just provide types here, they are instantiated inside the loop
+estimators = [Vasicek, Ebrahimi]
+labels = ["Vasicek", "Ebrahimi"]
 
 # Test each estimator `nreps` times over time series of varying length.
 Ns = [100:100:500; 1000:1000:10000]
