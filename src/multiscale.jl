@@ -1,10 +1,8 @@
-# This file contains an API for multiscale (coarse-grained/downsampled) computations of
-# entropy and various complexity measures on time series.
-# Can be used both to compute actual entropies (i.e. diversity entropy), or
-# complexity measures (sample entropy, approximate entropy).
+# This file contains an API for multiscale (coarse-grained/downsampled) computations.
 
 using Statistics
 export multiscale
+export multiscale_normalized
 export downsample
 export MultiScaleAlgorithm
 
@@ -33,12 +31,14 @@ downsample(method::MultiScaleAlgorithm, x, s::Int)
 downsample(alg::MultiScaleAlgorithm, x::AbstractDataset, args...; kwargs...) =
     Dataset(map(t -> downsample(alg, t, args...; kwargs...), columns(x))...)
 
+
+function multiscale end
+function multiscale_normalized end
+
 """
     multiscale(e::Entropy, alg, x, est; maxscale = 8, normalize = false)
-    multiscale(c::ComplexityMeasure, alg, x; maxscale = 8, normalize = false)
 
-Compute the multi-scale entropy `e` with probabilities estimator `est`, or the multi-scale
-complexity measure `c`, for timeseries `x`.
+Compute the multi-scale entropy `e` with probabilities estimator `est` for timeseries `x`.
 
 ## Description
 
@@ -47,7 +47,7 @@ downsampled versions of `x` for scale factors `1:maxscale`. If `N = length(x)`, 
 length of the most severely downsampled version of `x` is `N ÷ scalemax`, while for scale
 factor `1`, the original time series is considered.
 
-If relevant [`MultiscaleAlgorithm`](@ref)s and corresponding [`downsample`](@ref)
+If relevant [`MultiScaleAlgorithm`](@ref)s and corresponding [`downsample`](@ref)
 methods are defined,
 - the first method generalizes all multi-scale entropy estimators where actual entropies
     (i.e. functionals of explicitly estimated probability distributions) are computed, and
@@ -55,9 +55,7 @@ methods are defined,
 
 ## Arguments
 
-- `e::Entropy`. A valid [entropy type](@ref entropies_list), i.e. `Shannon()` or `Renyi()`.
-- `e::Complexity`. A valid [complexity measure](@ref complexity_measures), i.e.
-    `ReverseDispersion()`
+- `e::Entropy`. A valid [entropy type](@ref entropies), i.e. `Shannon()` or `Renyi()`.
 - `alg::MultiScaleAlgorithm`. A valid [multiscale algorithm](@ref multiscale_algorithms),
     i.e. `Regular()` or `Composite()`, which determines how down-sampling/coarse-graining
     is performed.
@@ -74,26 +72,22 @@ methods are defined,
 [^Costa2002]: Costa, M., Goldberger, A. L., & Peng, C. K. (2002). Multiscale entropy
     analysis of complex physiologic time series. Physical review letters, 89(6), 068102.
 """
-function multiscale end
-
-"""
-    multiscale(e::Entropy, alg, x, est; maxscale = 8)
-    multiscale(c::ComplexityMeasure, alg, x; maxscale = 8)
-
-The same as [`multiscale`](@ref), but normalizes the entropy or complexity measure.
-"""
-function multiscale_normalized end
-
-
-function multiscale(e::Entropy, x, est::ProbabilitiesEstimator)
+function multiscale(e::Entropy, alg::MultiScaleAlgorithm, x, est::ProbabilitiesEstimator)
     msg = "`multiscale` entropy not implemented for $e $est on data type $(typeof(x))"
     throw(ArgumentError(msg))
 end
 
-function multiscale(c::ComplexityMeasure, x)
-    msg = "`multiscale` complexity not implemented for $c and data type $(typeof(x))"
+"""
+    multiscale_normalized(e::Entropy, alg, x, est; maxscale = 8)
+
+The same as [`multiscale`](@ref), but normalizes the estimated quantity according
+"""
+function multiscale_normalized(e::Entropy, alg::MultiScaleAlgorithm, x,
+        est::ProbabilitiesEstimator)
+    msg = "`multiscale_normalized` not implemented for $e $est on data type $(typeof(x))"
     throw(ArgumentError(msg))
 end
+
 
 
 

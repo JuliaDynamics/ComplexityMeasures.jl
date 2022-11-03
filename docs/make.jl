@@ -37,6 +37,7 @@ ENTROPIES_PAGES = [
     "probabilities.md",
     "entropies.md",
     "complexity_measures.md",
+    "multiscale.md",
     "examples.md",
     "utils.md",
     "devdocs.md",

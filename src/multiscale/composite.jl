@@ -53,7 +53,7 @@ function downsample(method::Composite, x::AbstractVector{T}, s::Int, args...; kw
     ET = eltype(one(1.0)) # consistently return floats, even if input is e.g. integer-valued
 
     if s == 1
-        return ET.(x)
+        return [ET.(x)]
     else
         N = length(x)
         # note: there must be a typo or error in Wu et al. (2013), because if we use
@@ -74,36 +74,28 @@ function downsample(method::Composite, x::AbstractVector{T}, s::Int, args...; kw
 end
 
 # TODO: make a separate multiscale_normalized?
-function multiscale(e::Entropy, alg::Composite, x::AbstractVector, est::ProbabilitiesEstimator;
-    maxscale::Int = 10, normalize = false)
+function multiscale(e::Entropy, alg::Composite, x::AbstractVector,
+        est::ProbabilitiesEstimator;
+        maxscale::Int = 10)
 
     downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
     hs = zeros(Float64, maxscale)
     for s in 1:maxscale
-        if normalize
-            hs[s] = mean(entropy_normalized.(Ref(e), downscaled_timeseries[s], Ref(est)))
-        else
-            hs[s] = mean(entropy.(Ref(e), downscaled_timeseries[s], Ref(est)))
-        end
+        hs[s] = mean(entropy.(Ref(e), downscaled_timeseries[s], Ref(est)))
     end
 
     return hs
 end
 
-
-function multiscale(e::ComplexityMeasure, alg::Composite, x::AbstractVector;
-        maxscale::Int = 10, normalize = false)
+function multiscale_normalized(e::Entropy, alg::Composite, x::AbstractVector,
+    est::ProbabilitiesEstimator;
+    maxscale::Int = 10)
 
     downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
-    complexities = zeros(Float64, maxscale)
+    hs = zeros(Float64, maxscale)
     for s in 1:maxscale
-        if normalize
-            complexities[s] =
-                mean(complexity_normalized.(Ref(e), downscaled_timeseries[s]))
-        else
-            complexities[s] = mean(complexity.(Ref(e), downscaled_timeseries[s]))
-        end
+        #hs[s] = mean(entropy_normalized.(Ref(e), downscaled_timeseries[s], Ref(est)))
     end
 
-    return complexities
+    return hs
 end

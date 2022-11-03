@@ -59,38 +59,24 @@ function downsample(method::Regular, x::AbstractVector{T}, s::Int, args...; kwar
 
         for t = 1:L
             inds = ((t - 1)*s + 1):(t * s)
-            @show inds
             ys[t] = @views f(x[inds], args...; kwargs...)
         end
         return ys
     end
 end
 
-function multiscale(e::Entropy, alg::Regular, x::AbstractVector, est::ProbabilitiesEstimator;
-        maxscale::Int = 8, normalize = false)
+function multiscale(e::Entropy, alg::Regular, x::AbstractVector,
+        est::ProbabilitiesEstimator;
+        maxscale::Int = 8)
 
     downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
-    hs = zeros(Float64, maxscale)
-    if normalize
-        hs = entropy_normalized.(Ref(e), downscaled_timeseries, Ref(est))
-    else
-        hs .= entropy.(Ref(e), downscaled_timeseries, Ref(est))
-    end
-
-    return hs
+    return entropy.(Ref(e), downscaled_timeseries, Ref(est))
 end
-# TODO: make a separate multiscale_normalized?
 
-function multiscale(e::ComplexityMeasure, alg::Regular, x::AbstractVector;
-        maxscale::Int = 8, normalize = false)
+function multiscale_normalized(e::Entropy, alg::Regular, x::AbstractVector,
+        est::ProbabilitiesEstimator;
+        maxscale::Int = 8)
 
     downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
-    complexities = zeros(Float64, maxscale)
-    if normalize
-        complexities = complexity_normalized.(Ref(e), downscaled_timeseries)
-    else
-        complexities .= complexity.(Ref(e), downscaled_timeseries)
-    end
-
-    return complexities
+    return entropy_normalized.(Ref(e), downscaled_timeseries, Ref(est))
 end
