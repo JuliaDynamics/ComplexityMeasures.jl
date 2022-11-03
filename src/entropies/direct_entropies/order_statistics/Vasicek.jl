@@ -10,9 +10,10 @@ estimate the Shannon entropy of the timeseries `x` to the given
 
 ## Description
 
-The Vasicek entropy estimator first computes the order statistics
+The Vasicek entropy estimator first computes the
+[order statistics](https://en.wikipedia.org/wiki/Order_statistic)
 ``X_{(1)} \\leq X_{(2)} \\leq \\cdots \\leq X_{(n)}`` for a random sample of length ``n``,
-i.e. the input timeseries. The entropy for the length-`n` sample is then estimated as
+i.e. the input timeseries. The [`Shannon`](@ref) entropy is then estimated as
 
 ```math
 H_V(m, n) =
