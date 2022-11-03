@@ -42,9 +42,12 @@ Thus, any of the implemented [probabilities estimators](@ref probabilities_estim
 
     There are only a few exceptions to this rule, which are quantities that are able to compute Shannon entropies via alternate means, without explicitly computing some probability distributions. These are `IndirectEntropy` instances, such as [`Kraskov`](@ref).
 
-### Complexity measures
+### Other complexity measures
 
-Other complexity measures, which strictly speaking don't compute entropies, and may or may not explicitly compute probability distributions, appear in the [Complexity measures](@ref complexity_measures) section.
+Other complexity measures, which strictly speaking don't compute entropies, and may or may
+not explicitly compute probability distributions, are found in
+[Complexity.jl](https://github.com/JuliaDynamics/Complexity.jl) package. This includes
+measures like sample entropy and approximate entropy.
 
 ## [Input data for Entropies.jl](@id input_data)
 
