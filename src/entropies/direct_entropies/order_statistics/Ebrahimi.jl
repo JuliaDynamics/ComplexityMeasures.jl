@@ -12,10 +12,10 @@ estimate the Shannon entropy of the timeseries `x` to the given
 
 The Ebrahimi entropy estimator first computes the order statistics
 ``X_{(1)} \\leq X_{(2)} \\leq \\cdots \\leq X_{(n)}`` for a random sample of length ``n``,
-i.e. the input timeseries. The entropy for the length-`n` sample is then estimated as
+i.e. the input timeseries. The [`Shannon`](@ref) entropy is then estimated as
 
 ```math
-H_{E}(m, n) =
+H_{E}(m) =
 \\dfrac{1}{n} \\sum_{i = 1}^n \\log \\left[ \\dfrac{n}{c_i m} (X_{(i+m)} - X_{(i-m)}) \\right],
 ```
 
