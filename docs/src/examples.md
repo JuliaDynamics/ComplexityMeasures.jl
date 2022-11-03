@@ -23,6 +23,7 @@ for N in Ns
     kr = Float64[]
     kz = Float64[]
     kzs = Float64[]
+
     for i = 1:nreps
         pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
         push!(kl, entropy(KozachenkoLeonenko(w = 0, base = MathConstants.e), pts))
@@ -51,6 +52,11 @@ color = (Main.COLORS[2], 0.5))
 
 az = Axis(fig[3,1]; xlabel = "time step", ylabel = "h (nats)", title = "Zhu")
 lines!(az, Ns, mean.(Ez); color = Cycled(3))
+band!(az, Ns, mean.(Ez) .+ std.(Ez), mean.(Ez) .- std.(Ez);
+color = (Main.COLORS[3], 0.5))
+
+az = Axis(fig[3,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Zhu")
+lines!(az, Ns, mean.(Ez); color = Cycled(2))
 band!(az, Ns, mean.(Ez) .+ std.(Ez), mean.(Ez) .- std.(Ez);
 color = (Main.COLORS[3], 0.5))
 
