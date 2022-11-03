@@ -89,7 +89,7 @@ end
     # Analytical test: 3D normal distribution
     σs = ones(3)
     μs = zeros(3)
-    𝒩₂ = MvNormal(μs, σs)
+    𝒩₂ = MvNormal(μs, Diagonal(σs))
     Σ = diagm(σs)
     n = length(μs)
     h_𝒩₂_base_ℯ = 0.5n * log(ℯ, 2π) + 0.5*log(ℯ, det(Σ)) + 0.5n

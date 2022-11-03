@@ -40,16 +40,15 @@ Base.@kwdef struct ZhuSingh{B} <: IndirectEntropy
     end
 end
 
-"""
-    n_borderpoints(xᵢ, nns, dists) → ξ
-
-Compute `ξ`, which is how many of `xᵢ`'s neighbor points `xⱼ ∈ nns` fall on the border of
-the minimal-volume rectangle with `xᵢ` at its center.
-
-`dists[k]` should be the maximum distance from `xᵢ[k]` to any other point along the k-th
-dimension, and `length(dists)` is the total dimension.
-"""
-n_borderpoints(xᵢ, nns, dists) = count(any(abs.(xᵢ .- xⱼ) .== dists) for xⱼ in nns)
+function entropy(e::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
+    (; k, w, base) = e
+    N = length(x)
+    tree = KDTree(x, Euclidean())
+    nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
+    mean_logvol, mean_digammaξ = mean_logvolumes_and_digamma(x, nn_idxs, N, k)
+    h = digamma(N) + mean_logvol - mean_digammaξ
+    return h / log(base, MathConstants.e)
+end
 
 function mean_logvolumes_and_digamma(x, nn_idxs, N::Int, k::Int)
     T = eltype(0.0)
@@ -68,14 +67,21 @@ function mean_logvolumes_and_digamma(x, nn_idxs, N::Int, k::Int)
     return logvol, digammaξ
 end
 
-function entropy(e::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
-    (; k, w, base) = e
-    N = length(x)
-    tree = KDTree(x, Euclidean())
-    nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
+"""
+    volume_minimal_rect(dists) → vol
 
-    mean_logvol, mean_digammaξ = mean_logvolumes_and_digamma(x, nn_idxs, N, k)
-    h = digamma(N) + mean_logvol - mean_digammaξ
+Compute the volume of a (hyper)-rectangle where the distance from its centre along the
+`k`-th dimension is given by `dists[k]`, and `length(dists)` is the total dimension.
+"""
+volume_minimal_rect(dists) = prod(dists .* 2)
 
-    return h / log(base, MathConstants.e)
-end
+"""
+    n_borderpoints(xᵢ, nns, dists) → ξ
+
+Compute `ξ`, which is how many of `xᵢ`'s neighbor points `xⱼ ∈ nns` fall on the border of
+the minimal-volume rectangle with `xᵢ` at its center.
+
+`dists[k]` should be the maximum distance from `xᵢ[k]` to any other point along the k-th
+dimension, and `length(dists)` is the total dimension.
+"""
+n_borderpoints(xᵢ, nns, dists) = count(any(abs.(xᵢ .- xⱼ) .== dists) for xⱼ in nns)
