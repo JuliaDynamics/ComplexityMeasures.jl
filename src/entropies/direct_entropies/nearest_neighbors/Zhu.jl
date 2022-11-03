@@ -26,6 +26,24 @@ Base.@kwdef struct Zhu{B} <: IndirectEntropy
     base::B = MathConstants.e
 end
 
+function entropy(e::Zhu, x::AbstractDataset{D, T}) where {D, T}
+    (; k, w, base) = e
+    N = length(x)
+    tree = KDTree(x, Euclidean())
+    nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
+    h = digamma(N) + mean_logvolumes(x, nn_idxs, N) - digamma(k) + (D - 1) / k
+    return h / log(base, MathConstants.e)
+end
+
+function mean_logvolumes(x, nn_idxs, N::Int)
+    v = 0.0
+    for (i, (xᵢ, nn_idxsᵢ)) in enumerate(zip(x, nn_idxs))
+        nnsᵢ = @views x[nn_idxsᵢ] # the actual coordinates of the points
+        v += log(MathConstants.e, volume_minirect(xᵢ, nnsᵢ))
+    end
+    return v / N
+end
+
 """
     volume_minirect(xᵢ, nns)
 
@@ -42,22 +60,4 @@ function volume_minirect(xᵢ, nns::AbstractDataset)
     # We take twice those distances to ensure xᵢ is at the centre of the rectangle.
     dists = max.(maxi .- xᵢ, xᵢ .- mini)
     return prod(dists .* 2)
-end
-
-function mean_logvolumes(x, nn_idxs, N::Int)
-    v = 0.0
-    for (i, (xᵢ, nn_idxsᵢ)) in enumerate(zip(x, nn_idxs))
-        nnsᵢ = @views x[nn_idxsᵢ] # the actual coordinates of the points
-        v += log(MathConstants.e, volume_minirect(xᵢ, nnsᵢ))
-    end
-    return v / N
-end
-
-function entropy(e::Zhu, x::AbstractDataset{D, T}) where {D, T}
-    (; k, w, base) = e
-    N = length(x)
-    tree = KDTree(x, Euclidean())
-    nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
-    h = digamma(N) + mean_logvolumes(x, nn_idxs, N) - digamma(k) + (D - 1) / k
-    return h / log(base, MathConstants.e)
 end
