@@ -18,6 +18,7 @@ literature. Outline any implementation details we should be aware of.
 
 - [ ] The new estimator type has a docstring.
 - [ ] The docstring explains how probabilities are computed.
+- [ ] The docstring references original scientific literature, if relevant.
 - [ ] A level-two subheading, titled `MyNewEstimator` is included in
     `docs/src/probabilities.md`, and this section contains a `@docs` block
     referencing `MyNewEstimator`.

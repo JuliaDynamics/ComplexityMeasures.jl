@@ -22,7 +22,8 @@ literature. Outline any implementation details we should be aware of.
 ## Documentation
 
 - [ ] The new entropy type has a docstring.
-- [ ] The docstring shows, using LaTeX notation, what formula the entropy computes.
+- [ ] The docstring shows, using LaTeX notation, the entropy formula.
+- [ ] The docstring references original scientific literature, if relevant.
 - [ ] A level-two subheading, titled `MyNewEntropy` is included in
     `docs/src/entropies.md`, and this section contains a `@docs` block
     referencing `MyNewEntropy`.
