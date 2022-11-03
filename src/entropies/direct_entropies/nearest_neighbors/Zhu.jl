@@ -2,7 +2,7 @@ export Zhu
 
 """
     Zhu <: IndirectEntropy
-    Zhu(k = 1, w = 1, base = MathConstants.e)
+    Zhu(k = 1, w = 0, base = MathConstants.e)
 
 The `Zhu` indirect entropy estimator (Zhu et al., 2015)[^Zhu2015] estimates the Shannon
 entropy of `x` (a multi-dimensional `Dataset`) to the given `base`, by approximating
@@ -22,7 +22,7 @@ when searching for neighbours).
 """
 Base.@kwdef struct Zhu{B} <: IndirectEntropy
     k::Int = 1
-    w::Int = 1
+    w::Int = 0
     base::B = MathConstants.e
 end
 
@@ -39,13 +39,13 @@ function mean_logvolumes(x, nn_idxs, N::Int)
     v = 0.0
     for (i, (xᵢ, nn_idxsᵢ)) in enumerate(zip(x, nn_idxs))
         nnsᵢ = @views x[nn_idxsᵢ] # the actual coordinates of the points
-        v += log(MathConstants.e, volume_minirect(xᵢ, nnsᵢ))
+        v += log(MathConstants.e, volume_minimal_rect(xᵢ, nnsᵢ))
     end
     return v / N
 end
 
 """
-    volume_minirect(xᵢ, nns)
+    volume_minimal_rect(xᵢ, nns) → vol
 
 Compute the volume of the minimal enclosing rectangle with `xᵢ` at its center and
 containing all points `nᵢ ∈ nns` either within the rectangle or on one of its borders.
@@ -54,10 +54,15 @@ This function respects the coordinate system of the input data, i.e. it does not
 any rotation (which would be computationally more demanding because we'd need to find the
 convex hull of `nns`, but could potentially give more accurate results).
 """
-function volume_minirect(xᵢ, nns::AbstractDataset)
+volume_minimal_rect(xᵢ, nns::AbstractDataset) = prod(maxdists(xᵢ, nns) .* 2)
+
+"""
+    maxdists(xᵢ, nns) → dists
+
+Compute the maximum distance from `xᵢ` to the points `xⱼ ∈ nns` along each dimension,
+i.e. `dists[k] = max{xᵢ[k], xⱼ[k]}` for `j = 1, 2, ..., length(x)`.
+"""
+function maxdists(xᵢ, nns)
     mini, maxi = minmaxima(nns)
-    # dists[d] is the maximum distance from the point xᵢ to any neighbor in dimension d
-    # We take twice those distances to ensure xᵢ is at the centre of the rectangle.
     dists = max.(maxi .- xᵢ, xᵢ .- mini)
-    return prod(dists .* 2)
 end

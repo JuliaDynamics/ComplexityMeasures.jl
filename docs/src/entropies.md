@@ -53,6 +53,7 @@ Kraskov
 KozachenkoLeonenko
 Vasicek
 Zhu
+ZhuSingh
 ```
 
 ## Convenience functions
