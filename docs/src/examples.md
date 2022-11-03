@@ -54,14 +54,6 @@ for (i, e) in enumerate(estimators)
     axislegend()
 end
 
-ax = Axis(fig[2,1]; 
-    ylabel = "Entropy (nats)", 
-    xlabel = "Time series length", 
-    title = "Correa estimator of Shannon entropy")
-lines!(ax, Ns, mean.(Hc); color = Cycled(1))
-band!(ax, Ns, mean.(Hc) .+ std.(Hc), mean.(Hc) .- std.(Hc);
-color = (Main.COLORS[2], 0.5))
-
 fig
 ```
 
@@ -84,8 +76,9 @@ using CairoMakie
 
 # Define estimators
 base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
-estimators = [Vasicek] # just provide types here, they are instantiated inside the loop
-labels = ["Vasicek"]
+# just provide types here, they are instantiated inside the loop
+estimators = [Vasicek, Correa]
+labels = ["Vasicek", "Correa"]
 
 # Test each estimator `nreps` times over time series of varying length.
 Ns = [100:100:500; 1000:1000:10000]
@@ -117,7 +110,7 @@ end
 fig
 ```
 
-As for the nearest neighbor estimators, [`Vasicek`](@ref) also approaches the
+As for the nearest neighbor estimators, both estimator also approach the
 true entropy value for this example, but is negatively biased for small sample sizes.
 
 ## Permutation entropy example
