@@ -1,9 +1,12 @@
 export SpatialSymbolicPermutation
+###########################################################################################
+# type creation
+###########################################################################################
 
 """
     SpatialSymbolicPermutation(stencil, x, periodic = true)
 
-A symbolic, permutation-based probabilities/entropy estimator for spatiotemporal systems.
+A symbolic, permutation-based probabilities estimator for spatiotemporal systems.
 
 The input data `x` are high-dimensional arrays, for example 2D arrays [^Ribeiro2012] or 3D arrays
 [^Schlemmer2018]. This approach is also known as _spatiotemporal permutation entropy_.
@@ -129,6 +132,26 @@ function stencil_to_offsets(stencil::Array{Int, D}) where D
     return stencil, D
 end
 
+
+###########################################################################################
+# probabilities implementation
+###########################################################################################
+function probabilities(x::AbstractArray, est::SpatialSymbolicPermutation)
+    # TODO: This can be literally a call to `outcomes` and then
+    # calling probabilities on it. Should do once the `outcomes` refactoring is done.
+    s = zeros(Int, length(est.valid))
+    probabilities!(s, x, est)
+end
+
+function probabilities!(s, x, est::SpatialSymbolicPermutation)
+    m = length(est.stencil)
+    for (i, pixel) in enumerate(est.valid)
+        pixels = pixels_in_stencil(pixel, est)
+        s[i] = encode_motif(view(x, pixels), m)
+    end
+    return probabilities(s)
+end
+
 # This source code is a modification of the code of Agents.jl that finds neighbors
 # in grid-like spaces. It's the code of `nearby_positions` in `grid_general.jl`.
 function pixels_in_stencil(pixel, spatperm::SpatialSymbolicPermutation{D,false}) where {D}
@@ -147,22 +170,6 @@ function pixels_in_stencil(pixel, spatperm::SpatialSymbolicPermutation{D,true}) 
         )
     end
     return spatperm.viewer
-end
-
-function Entropies.probabilities(x, est::SpatialSymbolicPermutation)
-    # TODO: This can be literally a call to `outcomes` and then
-    # calling probabilities on it. Should do once the `outcomes` refactoring is done.
-    s = zeros(Int, length(est.valid))
-    probabilities!(s, x, est)
-end
-
-function Entropies.probabilities!(s, x, est::SpatialSymbolicPermutation)
-    m = length(est.stencil)
-    for (i, pixel) in enumerate(est.valid)
-        pixels = pixels_in_stencil(pixel, est)
-        s[i] = Entropies.encode_motif(view(x, pixels), m)
-    end
-    return probabilities(s)
 end
 
 # Pretty printing
