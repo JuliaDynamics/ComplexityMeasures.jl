@@ -48,6 +48,7 @@ end
 
 function downsample(method::Regular, x::AbstractVector{T}, s::Int, args...; kwargs...) where T
     f = method.f
+    verify_scale_level(method, x, s)
 
     ET = eltype(one(1.0)) # consistently return floats, even if input is e.g. integer-valued
     if s == 1

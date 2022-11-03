@@ -36,7 +36,7 @@ function multiscale end
 function multiscale_normalized end
 
 """
-    multiscale(e::Entropy, alg, x, est; maxscale = 8, normalize = false)
+    multiscale(e::Entropy, alg, x, est; maxscale = length(x) ÷ 5)
 
 Compute the multi-scale entropy `e` with probabilities estimator `est` for timeseries `x`.
 
@@ -65,7 +65,9 @@ methods are defined,
 
 ## Keyword Arguments
 
-- `scalemax::Int`. The maximum number of scales (i.e. levels of downsampling).
+- `scalemax::Int`. The maximum number of scales (i.e. levels of downsampling). The actual
+    maximum scale level is `length(x) ÷ 2`, but the default is `length(x) ÷ 5`, to avoid
+    computing the entropies for time series that are extremely short.
 - `normalize::Bool`. If `normalize == true`, then (if possible) compute normalized
     entropy/complexity. If `normalize == false`, then compute the non-normalized measure.
 
@@ -80,7 +82,8 @@ end
 """
     multiscale_normalized(e::Entropy, alg, x, est; maxscale = 8)
 
-The same as [`multiscale`](@ref), but normalizes the estimated quantity according
+The same as [`multiscale`](@ref), but normalizes the entropy if [`entropy_maximum`](@ref)
+is implemented for `e`.
 """
 function multiscale_normalized(e::Entropy, alg::MultiScaleAlgorithm, x,
         est::ProbabilitiesEstimator)
@@ -88,7 +91,14 @@ function multiscale_normalized(e::Entropy, alg::MultiScaleAlgorithm, x,
     throw(ArgumentError(msg))
 end
 
-
+max_scale_level(method::MultiScaleAlgorithm, x) = length(x) ÷ 2
+function verify_scale_level(method, x, s::Int)
+    err = DomainError(
+        "Maximum scale for length-$(length(x)) timeseries is "*
+        "`s = $(max_scale_level(method, x))`. Got s = $s"
+    )
+    length(x) ÷ s >= 2 || throw(err)
+end
 
 
 include("multiscale/regular.jl")

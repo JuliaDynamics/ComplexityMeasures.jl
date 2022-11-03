@@ -48,23 +48,41 @@ Base.@kwdef struct Composite <: MultiScaleAlgorithm
     f::Function = Statistics.mean
 end
 
-function downsample(method::Composite, x::AbstractVector{T}, s::Int, args...; kwargs...) where T
+function downsample(method::Composite, x::AbstractVector{T}, s::Int, args...;
+        kwargs...) where T
+    verify_scale_level(method, x, s)
+
     f = method.f
-    ET = eltype(one(1.0)) # consistently return floats, even if input is e.g. integer-valued
+    ET = eltype(one(1.0)) # always return floats, even if input is e.g. integer-valued
 
     if s == 1
         return [ET.(x)]
     else
         N = length(x)
-        # note: there must be a typo or error in Wu et al. (2013), because if we use
-        # floor(N / s), as indicated in their paper, we'll get out of bounds errors.
-        # The number of samples needs to take into consideratio how many unique ways
-        # there are of selecting non-overlapping windows of length `s`. Hence,
-        # we use floor((N - s + 1) / s) instead.
-        L = floor(Int, (N - s + 1) / s)
-        ys = [zeros(ET, L) for i = 1:s]
+        # Because input time series are finite, there is always a minimum number of windows
+        # that we can construct at a given scale. We restrict the number of windows
+        # considered at each scale to this minimum to ensure windows are well-defined,
+        # i.e. we're not trying to summarize data at indices outside the input data,
+        # which would give out-of-bounds errors.
+        #
+        # For example, if the input is [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], then we sample
+        # the following subvectors at different scales:
+        # Scale 3:
+        #    start index 1: [1, 2, 3], [4, 5, 6], [7, 8, 9]
+        #    start index 2: [2, 3, 4], [5, 6, 7], [8, 9, 10]
+        #    start index 3: [3, 4, 5], [6, 7, 8]
+        #    Only two windows are possible for start index 3, so `min_possible_windows = 2`
+        # Scale 4:
+        #    start index 1: [1, 2, 3, 4], [5, 6, 7, 8]
+        #    start index 2: [2, 3, 4, 5], [6, 7, 8, 9]
+        #    start index 3: [3, 4, 5, 6], [7, 8, 9, 10]
+        #    start index 4: [4, 5, 6, 7]
+        #    Only one window is possible for start index 4, so `min_possible_windows = 1`
+        min_possible_windows = floor(Int, (N - s + 1) / s)
+
+        ys = [zeros(ET, min_possible_windows) for i = 1:s]
         for k = 1:s
-            for t = 1:L
+            for t = 1:min_possible_windows
                 inds = ((t - 1)*s + k):(t * s + k - 1)
                 ys[k][t] = @views f(x[inds], args...; kwargs...)
             end
@@ -73,7 +91,6 @@ function downsample(method::Composite, x::AbstractVector{T}, s::Int, args...; kw
     end
 end
 
-# TODO: make a separate multiscale_normalized?
 function multiscale(e::Entropy, alg::Composite, x::AbstractVector,
         est::ProbabilitiesEstimator;
         maxscale::Int = 10)
