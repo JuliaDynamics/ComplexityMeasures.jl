@@ -16,7 +16,7 @@ The Vasicek entropy estimator first computes the
 i.e. the input timeseries. The [`Shannon`](@ref) entropy is then estimated as
 
 ```math
-H_V(m, n) =
+H_V(m) =
 \\dfrac{1}{n} \\sum_{i = 1}^n \\log \\left[ \\dfrac{n}{2m} (X_{(i+m)} - X_{(i-m)}) \\right]
 ```
 
