@@ -1,7 +1,7 @@
-# This is an internal function. It is not exported in the public API,
+# Fast histograms are internal functions, NOT exported in the public API,
 # because `probabilities_and_outcomes` is all the user would need.
-# The function _is_ part of the DEV API, and could be used downstream.
-# (It is documented and tested).
+# The functions _are_ part of the DEV API, and could be used downstream.
+# (documented and tested).
 """
     fasthist!(x) → c::Vector{Int}
 
@@ -38,6 +38,11 @@ function fasthist!(x)
 end
 
 # This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
+"""
+    fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+Create an encoder for binning, then map `x` to bins, then call `fasthist!` on the bins.
+Return the output probabilities, the bins, and the created encoder.
+"""
 function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
     encoder = RectangularBinEncoding(x, ϵ)
     bins = outcomes(x, encoder)

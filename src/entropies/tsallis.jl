@@ -1,8 +1,5 @@
 export Tsallis
 
-export entropy_tsallis
-export maxentropy_tsallis
-
 """
     Tsallis <: Entropy
     Tsallis(q; k = 1.0, base = 2)
@@ -49,7 +46,7 @@ function entropy(e::Tsallis, probs::Probabilities)
     end
 end
 
-function Base.maximum(e::Tsallis, L::Int)
+function entropy_maximum(e::Tsallis, L::Int)
     (; q, k, base) = e
     if q ≈ 1.0
         return log_with_base(base)(L)
