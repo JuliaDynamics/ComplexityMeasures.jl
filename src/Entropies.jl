@@ -13,12 +13,13 @@ module Entropies
 using DelayEmbeddings
 using DelayEmbeddings: AbstractDataset, Dataset, dimension
 export AbstractDataset, Dataset
+export DelayEmbeddings
 const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
 const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
 
 include("probabilities.jl")
 include("entropy.jl")
-include("symbolization/symbolize.jl")
+include("encoding/outcomes.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
 include("complexity.jl")
@@ -41,7 +42,7 @@ update_message = """
 - In summary, all entropies and normalized entropies are computing using the
   `entropy` and `entropy_normalized` functions, which dispatch on entropy types such
   as `Renyi()`, `Shannon()` or `Tsallis()`.
-- New constructors for symbolizing: `OrdinalPattern, GaussianSymbolization`.
+- New constructors for discretizing: `OrdinalPatternEncoding, GaussianCDFEncoding`.
 """
 
 if display_update

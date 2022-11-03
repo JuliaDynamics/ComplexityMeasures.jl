@@ -1,4 +1,4 @@
-## [Entropy API](@id entropies_list)
+# Entropies
 
 ```@docs
 entropy
@@ -38,7 +38,7 @@ StretchedExponential
 ## Normalized entropies
 
 ```@docs
-maximum(::Entropy, ::Any, ::ProbabilitiesEstimator)
+entropy_maximum
 entropy_normalized
 ```
 
@@ -51,6 +51,7 @@ Here we list functions which compute Shannon entropies via alternate means, with
 ```@docs
 Kraskov
 KozachenkoLeonenko
+Zhu
 ```
 
 ## Convenience functions

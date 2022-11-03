@@ -7,6 +7,8 @@ xp = Probabilities(x)
 @test entropy(Renyi(q = 2), xp) isa Real
 @test entropy(Renyi(q = 1), xp) isa Real
 
+@test entropy_maximum(Renyi(), 2) == 1
+
 # Analytical tests
 for q in (0, 0.5, 1, 2.0) # independent of q
     # Minimal and equal to zero when probability distribution has only one element...

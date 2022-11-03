@@ -1,7 +1,7 @@
-# This is an internal function. It is not exported in the public API,
-# because `probabilities_and_events` is all the user would need.
-# The function _is_ part of the DEV API, and could be used downstream.
-# (It is documented and tested).
+# Fast histograms are internal functions, NOT exported in the public API,
+# because `probabilities_and_outcomes` is all the user would need.
+# The functions _are_ part of the DEV API, and could be used downstream.
+# (documented and tested).
 """
     fasthist!(x) → c::Vector{Int}
 
@@ -17,7 +17,7 @@ This function works for any `x` for which `sort!(x)` works.
 function fasthist!(x)
     L = length(x)
     hist = Vector{Int}()
-    # Reserve enough space for histogram:
+    # Reserve enough space for histogram (Base suggests this improves performance):
     sizehint!(hist, L)
     # Fill the histogram by counting consecutive equal values:
     sort!(x; alg = QuickSort)
@@ -35,4 +35,17 @@ function fasthist!(x)
     # Shrink histogram capacity to fit its size:
     sizehint!(hist, length(hist))
     return hist
+end
+
+# This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
+"""
+    fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+Create an encoder for binning, then map `x` to bins, then call `fasthist!` on the bins.
+Return the output probabilities, the bins, and the created encoder.
+"""
+function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+    encoder = RectangularBinEncoding(x, ϵ)
+    bins = outcomes(x, encoder)
+    hist = fasthist!(bins)
+    return Probabilities(hist), bins, encoder
 end

@@ -1,10 +1,20 @@
 # [Probabilities](@id probabilities_estimators)
 
+## Probabilities API
+
+The probabilities API is defined by
+- [ProbabilitiesEstimator](@ref)
+- [probabilities](@ref)
+- [probabilities_and_outcomes](@ref)
+
 ```@docs
+ProbabilitiesEstimator
 probabilities
 probabilities!
 Probabilities
-ProbabilitiesEstimator
+probabilities_and_outcomes
+outcomes
+total_outcomes
 ```
 
 ## Count occurrences (counting)
@@ -18,8 +28,8 @@ CountOccurrences
 ```@docs
 ValueHistogram
 RectangularBinning
+FixedRectangularBinning
 ```
-
 
 ## Permutation (symbolic)
 
@@ -61,4 +71,10 @@ NaiveKernel
 ```@docs
 WaveletOverlap
 PowerSpectrum
+```
+
+## Diversity
+
+```@docs
+Diversity
 ```
