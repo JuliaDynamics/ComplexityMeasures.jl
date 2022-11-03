@@ -1,4 +1,4 @@
-# Examples
+# Entropies.jl Examples
 
 ## Nearest neighbor direct entropy example
 
@@ -14,21 +14,24 @@ using Distributions: Uniform, Normal
 Ns = [100:100:500; 1000:1000:10000]
 Ekl = Vector{Vector{Float64}}(undef, 0)
 Ekr = Vector{Vector{Float64}}(undef, 0)
+Ez = Vector{Vector{Float64}}(undef, 0)
 
 nreps = 50
 for N in Ns
     kl = Float64[]
     kr = Float64[]
+    kz = Float64[]
     for i = 1:nreps
         pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
-
-        push!(kl, entropy(KozachenkoLeonenko(w = 0, k = 1, base = MathConstants.e), pts))
+        push!(kl, entropy(KozachenkoLeonenko(w = 0, base = MathConstants.e), pts))
         # with k = 1, Kraskov is virtually identical to
         # Kozachenko-Leonenko, so pick a higher number of neighbors
         push!(kr, entropy(Kraskov(w = 0, k = 3, base = MathConstants.e), pts))
+        push!(kz, entropy(Zhu(w = 0, base = MathConstants.e), pts))
     end
     push!(Ekl, kl)
     push!(Ekr, kr)
+    push!(Ez, kz)
 end
 
 fig = Figure()
@@ -41,6 +44,11 @@ ay = Axis(fig[2,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Kr
 lines!(ay, Ns, mean.(Ekr); color = Cycled(2))
 band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr);
 color = (Main.COLORS[2], 0.5))
+
+az = Axis(fig[3,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Zhu")
+lines!(az, Ns, mean.(Ez); color = Cycled(2))
+band!(az, Ns, mean.(Ez) .+ std.(Ez), mean.(Ez) .- std.(Ez);
+color = (Main.COLORS[3], 0.5))
 
 fig
 ```
@@ -104,7 +112,6 @@ Here, we draw some random points from a 2D normal distribution. Then, we use ker
 ```@example MAIN
 using Entropies
 using DelayEmbeddings
-using ChaosTools
 using DynamicalSystemsBase, CairoMakie, Distributions
 𝒩 = MvNormal([1, -4], 2)
 N = 500
@@ -162,7 +169,7 @@ Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
 how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
-```@example stretched_exponential_example
+```@example MAIN
 using Entropies, CairoMakie
 bs = [1.0, 1.5, 2.0, 3.0, 4.0, 10.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
@@ -187,7 +194,7 @@ how the stretched exponential entropy changes as function of the parameter `η` 
 of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
-```@example stretched_exponential_example
+```@example MAIN
 using Entropies, SpecialFunctions, CairoMakie
 ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
@@ -216,7 +223,7 @@ Note: the results here are not exactly the same as in the original paper, becaus
 al. (2019) base their examples on randomly generated numbers and do not provide code that
 specify random number seeds.
 
-```@example
+```@example MAIN
 using Entropies, DynamicalSystemsBase, Random, CairoMakie, Distributions
 
 n = 1000
@@ -295,10 +302,9 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 
 ## Missing dispersion patterns
 
-```@example
+```@example MAIN
 using CairoMakie
 using DynamicalSystemsBase
-using ChaosTools
 using Entropies
 using TimeseriesSurrogates
 using Statistics
@@ -322,7 +328,7 @@ for (i, L) in enumerate(Ls)
     sx = surrogenerator(x, method)
     r_det[i] = complexity_normalized(est, x)
     r_det_surr[i][:] = [complexity_normalized(est, sx()) for j = 1:nreps]
-   
+
     # Random time series
     r_noise[i] = complexity_normalized(est, y[1:L])
     sy = surrogenerator(y[1:L], method)
@@ -330,8 +336,8 @@ for (i, L) in enumerate(Ls)
 end
 
 fig = Figure()
-ax = Axis(fig[1, 1], 
-    xlabel = "Time series length (L)", 
+ax = Axis(fig[1, 1],
+    xlabel = "Time series length (L)",
     ylabel = "# missing dispersion patterns (normalized)"
 )
 
@@ -339,9 +345,9 @@ lines!(ax, Ls, r_det, label = "logistic(x0 = 0.6; r = 4.0)", color = :black)
 lines!(ax, Ls, r_noise, label = "Uniform noise", color = :red)
 for i = 1:nL
     if i == 1
-        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black, 
+        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black,
             label = "WIAAFT surrogates (logistic)")
-         boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red, 
+         boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red,
             label = "WIAAFT surrogates (noise)")
     else
         boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black)
@@ -355,7 +361,7 @@ fig
 ```
 
 We don't need to actually to compute the quantiles here to see that for the logistic
-map, across all time series lengths, the ``N_{MDP}`` values are above the extremal values 
+map, across all time series lengths, the ``N_{MDP}`` values are above the extremal values
 of the ``N_{MDP}`` values for the surrogate ensembles. Thus, we
 conclude that the logistic map time series has nonlinearity (well, of course).
 
@@ -381,7 +387,7 @@ for different initial conditions, for multiple time series lengths.
 Finally, we summarize our results in box plots and compare the values to those
 obtained by Pincus (1991).
 
-```@example
+```@example MAIN
 using Entropies
 using DynamicalSystemsBase
 using DelayEmbeddings
@@ -435,8 +441,8 @@ lines!(a1, 1:length(x), x, label = "x")
 lines!(a1, 1:length(y), y, label = "y")
 
 # Approximate entropy values, compared to those of the original paper (black dots).
-a2 = Axis(fig[2, 1]; 
-    xlabel = "Time series length (L)", 
+a2 = Axis(fig[2, 1];
+    xlabel = "Time series length (L)",
     ylabel = "ApEn(m = 2, r = 0.05)")
 
 # hacky boxplot, but this seems to be how it's done in Makie at the moment
@@ -446,7 +452,7 @@ for i = 1:n
         width = 200)
 end
 
-scatter!(a2, ts_lengths, [0.337, 0.385, NaN, 0.394]; 
+scatter!(a2, ts_lengths, [0.337, 0.385, NaN, 0.394];
     label = "Pincus (1991)", color = :black)
 fig
 ```
@@ -456,7 +462,7 @@ fig
 Completely regular signals should have sample entropy approaching zero, while
 less regular signals should have higher sample entropy.
 
-```@example
+```@example MAIN
 using DynamicalSystemsBase
 using Entropies
 using CairoMakie
@@ -484,7 +490,7 @@ fig
 Next, we compare the sample entropy obtained for different values of the radius `r` for
 uniform noise, normally distributed noise, and a periodic signal.
 
-```@example
+```@example MAIN
 using Entropies, CairoMakie, Distributions
 N = 2000
 x_U = rand(N)

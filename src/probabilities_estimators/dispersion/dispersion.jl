@@ -1,4 +1,4 @@
-using DelayEmbeddings
+import DelayEmbeddings
 export Dispersion
 
 """
@@ -80,8 +80,6 @@ Base.@kwdef struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
     check_unique::Bool = false
 end
 
-export entropy_dispersion
-
 """
     embed_symbols(symbols::AbstractVector{T}, m, τ) {where T} → Dataset{m, T}
 
@@ -94,7 +92,7 @@ s_i^D = \\{s_i, s_{i+\\tau}, \\ldots, s_{i+(m-1)\\tau} \\}
 where ``i = 1, 2, \\ldots, N - (m - 1)\\tau`` and `N = length(s)`.
 """
 function embed_symbols(symbols::AbstractVector, m, τ)
-    return embed(symbols, m, τ)
+    return DelayEmbeddings.embed(symbols, m, τ)
 end
 
 function dispersion_histogram(x::AbstractDataset, N, m, τ)
@@ -127,7 +125,7 @@ function probabilities(x::AbstractVector, est::Dispersion)
     τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
     dispersion_patterns = genembed(symbols, τs, ones(m))
     hist = dispersion_histogram(dispersion_patterns, N, est.m, est.τ)
-    p = Probabilities(hist)
+    return Probabilities(hist)
 end
 
 total_outcomes(est::Dispersion)::Int = est.encoding.c ^ est.m
