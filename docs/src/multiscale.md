@@ -2,14 +2,13 @@
 
 ## Multiscale API
 
-The multiscale API is defined by the [multiscale algorithms](@ref multiscale_algorithms)
-defined below, and the following functions.
+The multiscale API is defined by the functions
 
 - [`multiscale`](@ref)
 - [`multiscale_normalized`](@ref)
 - [`downsample`](@ref)
 
-## [Algorithms](@id multiscale_algorithms)
+which dispatch any of the [`MultiScaleAlgorithm`](@ref)s listed below.
 
 ```@docs
 MultiScaleAlgorithm
