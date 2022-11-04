@@ -25,7 +25,6 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
 
     testfile("entropies/nearest_neighbors_direct.jl")
     # Various
-    testfile("complexity_measures/complexity_measures.jl")
     testfile("utils/utils.jl")
     testfile("entropies/convenience.jl")
 end
