@@ -16,4 +16,4 @@ end
 
 include("Vasicek.jl")
 include("Ebrahimi.jl")
-include("Alizadeh.jl")
+include("AlizadehArghami.jl")

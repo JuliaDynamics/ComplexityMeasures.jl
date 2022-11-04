@@ -77,8 +77,8 @@ using CairoMakie
 # Define estimators
 base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
 # just provide types here, they are instantiated inside the loop
-estimators = [Vasicek, Alizadeh]
-labels = ["Vasicek", "Alizadeh"]
+estimators = [Vasicek, AlizadehArghami]
+labels = ["Vasicek", "AlizadehArghami"]
 
 # Test each estimator `nreps` times over time series of varying length.
 Ns = [100:100:500; 1000:1000:10000]

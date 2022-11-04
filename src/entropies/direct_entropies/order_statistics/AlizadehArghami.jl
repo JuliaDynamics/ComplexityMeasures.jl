@@ -1,8 +1,8 @@
-export Alizadeh
+export AlizadehArghami
 
 """
-    Alizadeh <: IndirectEntropy
-    Alizadeh(; m::Int = 1, base = 2)
+AlizadehArghami <: IndirectEntropy
+    AlizadehArghami(; m::Int = 1, base = 2)
 
 An indirect entropy estimator used in [`entropy`](@ref)`(Alizadeh(), x)` to
 estimate the Shannon entropy of the timeseries `x` to the given
@@ -16,18 +16,19 @@ i.e. the input timeseries. The entropy for the length-`n` sample is then estimat
 the [`Vasicek`](@ref) entropy estimate, plus a correction factor
 
 ```math
-H_{A}(m, n) = H_{V}(m, n) + \\dfrac{2}{n}\\left(m \\log_{base}(2) \\right)
+H_{A}(m, n) = H_{V}(m, n) + \\dfrac{2}{n}\\left(m \\log_{base}(2) \\right).
 ```
+
 [^Alizadeh2010]:
     Alizadeh, N. H., & Arghami, N. R. (2010). A new estimator of entropy.
     Journal of the Iranian Statistical Society (JIRSS).
 """
-@Base.kwdef struct Alizadeh{I<:Integer, B} <: IndirectEntropy
+@Base.kwdef struct AlizadehArghami{I<:Integer, B} <: IndirectEntropy
     m::I = 1
     base::B = 2
 end
 
-function entropy(e::Alizadeh, x::AbstractVector{T}) where T
+function entropy(e::AlizadehArghami, x::AbstractVector{T}) where T
     (; m, base) = e
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
