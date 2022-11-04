@@ -1,59 +1,67 @@
 # Entropies.jl Examples
 
-## Nearest neighbor direct entropy example
+## Indirect entropy (nearest neighbors)
 
-This example reproduces Figure in Charzyńska & Gambin (2016)[^Charzyńska2016]. Both
-estimators nicely converge to the "true" entropy with increasing time series length.
-For a uniform 1D distribution ``U(0, 1)``, the true entropy is `0`.
+Here, we reproduce Figure 1 in Charzyńska & Gambin (2016)[^Charzyńska2016]. Their example
+demonstrates how the [`Kraskov`](@ref) and [`KozachenkoLeonenko`](@ref) nearest neighbor
+based estimators converge towards the true entropy value for increasing time series length.
+We extend their example with [`Zhu`](@ref) and [`ZhuSingh`](@ref) estimators, which are also
+based on nearest neighbor searches.
+
+Input data are from a uniform 1D distribution ``U(0, 1)``, for which the true entropy is
+`ln(1 - 0) = 0`).
 
 ```@example MAIN
 using Entropies
 using DynamicalSystemsBase, CairoMakie, Statistics
 using Distributions: Uniform, Normal
 
-Ns = [100:100:500; 1000:1000:10000]
-Ekl = Vector{Vector{Float64}}(undef, 0)
-Ekr = Vector{Vector{Float64}}(undef, 0)
-Ez = Vector{Vector{Float64}}(undef, 0)
+# Define estimators
+base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
+w = 0 # Theiler window of 0 (only exclude the point itself during neighbor searches)
+estimators = [
+    # with k = 1, Kraskov is virtually identical to
+    # Kozachenko-Leonenko, so pick a higher number of neighbors for Kraskov
+    Kraskov(; k = 3, w, base),
+    KozachenkoLeonenko(; w, base),
+    Zhu(; k = 3, w, base),
+    ZhuSingh(; k = 3, w, base),
+]
+labels = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh"]
 
+# Test each estimator `nreps` times over time series of varying length.
 nreps = 50
-for N in Ns
-    kl = Float64[]
-    kr = Float64[]
-    kz = Float64[]
-    for i = 1:nreps
-        pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
-        push!(kl, entropy(KozachenkoLeonenko(w = 0, base = MathConstants.e), pts))
-        # with k = 1, Kraskov is virtually identical to
-        # Kozachenko-Leonenko, so pick a higher number of neighbors
-        push!(kr, entropy(Kraskov(w = 0, k = 3, base = MathConstants.e), pts))
-        push!(kz, entropy(Zhu(w = 0, base = MathConstants.e), pts))
+Ns = [100:100:500; 1000:1000:10000]
+
+Hs_uniform = [[zeros(nreps) for N in Ns] for e in estimators]
+for (i, e) in enumerate(estimators)
+    for j = 1:nreps
+        pts = rand(Uniform(0, 1), maximum(Ns)) |> Dataset
+        for (k, N) in enumerate(Ns)
+            Hs_uniform[i][k][j] = entropy(e, pts[1:N])
+        end
     end
-    push!(Ekl, kl)
-    push!(Ekr, kr)
-    push!(Ez, kz)
 end
 
-fig = Figure()
-ax = Axis(fig[1,1]; ylabel = "entropy (nats)", title = "Kozachenko-Leonenko")
-lines!(ax, Ns, mean.(Ekl); color = Cycled(1))
-band!(ax, Ns, mean.(Ekl) .+ std.(Ekl), mean.(Ekl) .- std.(Ekl);
-color = (Main.COLORS[1], 0.5))
-
-ay = Axis(fig[2,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Kraskov")
-lines!(ay, Ns, mean.(Ekr); color = Cycled(2))
-band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr);
-color = (Main.COLORS[2], 0.5))
-
-az = Axis(fig[3,1]; xlabel = "time step", ylabel = "entropy (nats)", title = "Zhu")
-lines!(az, Ns, mean.(Ez); color = Cycled(2))
-band!(az, Ns, mean.(Ez) .+ std.(Ez), mean.(Ez) .- std.(Ez);
-color = (Main.COLORS[3], 0.5))
+fig = Figure(resolution = (600, length(estimators) * 200))
+for (i, e) in enumerate(estimators)
+    Hs = Hs_uniform[i]
+    ax = Axis(fig[i,1]; ylabel = "h (nats)")
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
+    color = (Main.COLORS[i], 0.5))
+    axislegend()
+end
 
 fig
 ```
 
-[^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy estimator with applications in systems biology. Entropy, 18(1), 13.
+As expected, all estimators nicely converge to the correct entropy with increasing
+time series length.
+
+[^Charzyńska2016]:
+    Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy
+    estimator with applications in systems biology. Entropy, 18(1), 13.
 
 ## Permutation entropy example
 
