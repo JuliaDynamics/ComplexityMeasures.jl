@@ -1,45 +1,27 @@
-## Contributor guidelines
+# New entropy: [entropy name here]
 
-- [ ] I verify that I have read the
-    [devdocs](https://juliadynamics.github.io/Entropies.jl/dev/devdocs/).
+## Briefly describe the entropy type
 
-## Description and references
+What type of method is this? Is it a direct entropy (computes entropy from probabilities 
+that are estimated first), or an indirect estimator (computes entropy without estimating probabilities explicitly)?
 
-What is this new entropy called? Please cite appropriate scientific
-literature. Outline any implementation details we should be aware of.
+## Checklist for development (optional)
 
-## What type of entropy (estimator) is this?
+Before finishing your PR, please have a look at the
+project[devdocs](https://juliadynamics.github.io/Entropies.jl/dev/devdocs/).
 
-- [ ] Computes entropy directly from probabilities that are explicitly estimated.
-- [ ] Computes entropy indirectly, in way that doesn't explicitly estimate probabilities.
+Ticking the boxes below will help us provide good feedback and speed up the review process.
+Partial PRs are welcome too, and we're happy to help if you're stuck on something.
 
-## Implementation
+- [ ] The new entropy subtypes of `Entropy` or `IndirectEntropy`.
+- [ ] The new entropy has an informative docstring, which is referenced in
+    `docs/src/entropies.md`.
+- [ ] Relevant sources are cited in the docstring.
+- [ ] Dispatch for `entropy`, and `entropy_maximum` (if relevant/possible), is implemented.
+- [ ] A runnable example is included in the `docs/src/example.md` file.
+- [ ] Tests are implemented.
 
-- [ ] The new entropy is a subtype of `Entropy` or `IndirectEntropy`.
-- [ ] Dispatch for `entropy` is implemented.
-- [ ] Dispatch for `entropy_maximum` is implemented. If not, why not?
+Before finalizing the PR, it is useful to check that
 
-## Documentation
-
-- [ ] The new entropy type has a docstring.
-- [ ] The docstring shows, using LaTeX notation, the entropy formula.
-- [ ] The docstring references original scientific literature, if relevant.
-- [ ] A level-two subheading, titled `MyNewEntropy` is included in
-    `docs/src/entropies.md`, and this section contains a `@docs` block
-    referencing `MyNewEntropy`.
-- [] A runnable example is included in the `docs/src/example.md` file.
-
-## Testing
-
-- [ ] Tests are implemented.
-- [ ] Test cases with known input/output values which can be tested exactly are included.
-    If not, why didn't you include such tests?
-
-## Checklist before requesting a review
-
-I confirmed that I have
-
-- [ ] Self-reviewed my code.
-- [ ] Locally ran the test suite with successful outcomes.
-- [ ] Generated the documentation locally, and verified that it looks good.
-- [ ] Cited all relevant method/code sources.
+- [ ] The tests run successfully locally.
+- [ ] The documentation build is successful locally, and looks good.

@@ -1,40 +1,27 @@
-## Contributor guidelines
 
-- [ ] I verify that I have read the
-    [devdocs](https://juliadynamics.github.io/Entropies.jl/dev/devdocs/).
+# New probabilities estimator: [estimator name here]
 
-## Description and references
+What type of estimator is this describe what type of estimator this is. How does it compute
+probabilities?
 
-Describe the method. How does it compute probabilities? Please cite appropriate scientific
-literature. Outline any implementation details we should be aware of.
+## Checklist for development (optional)
 
-## Implementation
+Before finishing your PR, please have a look at the
+project[devdocs](https://juliadynamics.github.io/Entropies.jl/dev/devdocs/).
 
-- [ ] The new estimator is a subtype of `ProbabilitiesEstimator`.
-- [ ] Dispatch for `probabilities_and_outcomes` is implemented.
-- [ ] Dispatch for `total_outcomes` is implemented (optional).
+Ticking the boxes below will help us provide good feedback and speed up the review process.
+Partial PRs are welcome too, and we're happy to help if you're stuck on something.
 
-## Documentation
+- [ ] The new estimator subtypes `ProbabilitiesEstimator`
+- [ ] The new estimator has an informative docstring, which is referenced in
+    `docs/src/probabilities.md`.
+- [ ] Relevant sources are cited in the docstring.
+- [ ] Dispatch for `probabilities_and_outcomes`, and `total_outcomes`
+    (if relevant/possible), is implemented.
+- [ ] A runnable example is included in the `docs/src/example.md` file.
+- [ ] Tests are implemented.
 
-- [ ] The new estimator type has a docstring.
-- [ ] The docstring explains how probabilities are computed.
-- [ ] The docstring references original scientific literature, if relevant.
-- [ ] A level-two subheading, titled `MyNewEstimator` is included in
-    `docs/src/probabilities.md`, and this section contains a `@docs` block
-    referencing `MyNewEstimator`.
-- [] A runnable example is included in the `docs/src/example.md` file.
+Before finalizing the PR, it is useful to check that
 
-## Testing
-
-- [ ] Tests are implemented.
-- [ ] Test cases with known input/output values which can be tested exactly are included.
-    If not, why didn't you include such tests?
-
-## Checklist before requesting a review
-
-I confirmed that I have
-
-- [ ] Self-reviewed my code.
-- [ ] Locally ran the test suite with successful outcomes.
-- [ ] Generated the documentation locally, and verified that it looks good.
-- [ ] Cited all relevant method/code sources.
+- [ ] The tests run successfully locally.
+- [ ] The documentation build is successful locally, and looks good.
