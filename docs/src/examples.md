@@ -1,6 +1,6 @@
 # Entropies.jl Examples
 
-## Direct entropy (nearest neighbors)
+## Indirect entropy (nearest neighbors)
 
 Here, we reproduce Figure 1 in Charzyńska & Gambin (2016)[^Charzyńska2016]. Their example
 demonstrates how the [`Kraskov`](@ref) and [`KozachenkoLeonenko`](@ref) nearest neighbor
