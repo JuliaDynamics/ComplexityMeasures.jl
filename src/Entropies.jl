@@ -1,8 +1,7 @@
 """
-A Julia package that provides estimators for probabilities, entropies,
-and complexity measures for nonlinear dynamics, nonlinear timeseries analysis,
-and complex systems. It can be used as a standalone package, or as part of several
-projects in the JuliaDynamics organization,
+A Julia package that provides estimators for probabilities and entropies for nonlinear
+dynamics, nonlinear timeseries analysis, and complex systems. It can be used as a
+standalone package, or as part of several projects in the JuliaDynamics organization,
 such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/)
 or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 
@@ -22,7 +21,6 @@ include("entropy.jl")
 include("encoding/outcomes.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
-include("complexity.jl")
 include("multiscale.jl")
 
 include("deprecations.jl")
