@@ -13,11 +13,11 @@ b = 2
 η = 2.0
 
 @test entropy(StretchedExponential(η = η, base = b), up) ≈
-    maximum(StretchedExponential(η = η, base = b), N)
+    entropy_maximum(StretchedExponential(η = η, base = b), N)
 
 # An experimental time series and probabilities estimator that gives a uniform
 # probability distribution.
 x = [repeat([0, 1], 5); 0]
 est = SymbolicPermutation(m = 2)
 @test entropy(StretchedExponential(η = η, base = b), x, est) ≈
-    maximum(StretchedExponential(η = η, base = b), alphabet_length(est))
+    entropy_maximum(StretchedExponential(η = η, base = b), total_outcomes(est))

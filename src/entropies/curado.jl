@@ -1,5 +1,5 @@
 export Curado
-import Base.maximum
+
 """
     Curado <: Entropy
     Curado(; b = 1.0)
@@ -30,7 +30,7 @@ function entropy(e::Curado, probs::Probabilities)
     return sum(1 - exp(-b*pᵢ)  for pᵢ in probs) + exp(-b) - 1
 end
 
-function maximum(e::Curado, L::Int)
+function entropy_maximum(e::Curado, L::Int)
     b = e.b
     # Maximized for the uniform distribution, which for distribution of length L is
     return L * (1 - exp(-b/L)) + exp(-b) - 1

@@ -1,8 +1,7 @@
 """
-A Julia package that provides estimators for probabilities, entropies,
-and complexity measures for nonlinear dynamics, nonlinear timeseries analysis,
-and complex systems. It can be used as a standalone package, or as part of several
-projects in the JuliaDynamics organization,
+A Julia package that provides estimators for probabilities and entropies for nonlinear
+dynamics, nonlinear timeseries analysis, and complex systems. It can be used as a
+standalone package, or as part of several projects in the JuliaDynamics organization,
 such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/)
 or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 
@@ -13,15 +12,15 @@ module Entropies
 using DelayEmbeddings
 using DelayEmbeddings: AbstractDataset, Dataset, dimension
 export AbstractDataset, Dataset
+export DelayEmbeddings
 const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
 const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
 
 include("probabilities.jl")
 include("entropy.jl")
-include("symbolization/symbolize.jl")
+include("encoding/outcomes.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
-include("complexity_measures/complexity_measures.jl")
 
 include("deprecations.jl")
 
@@ -40,7 +39,7 @@ update_message = """
 - In summary, all entropies and normalized entropies are computing using the
   `entropy` and `entropy_normalized` functions, which dispatch on entropy types such
   as `Renyi()`, `Shannon()` or `Tsallis()`.
-- New constructors for symbolizing: `OrdinalPattern, GaussianSymbolization`.
+- New constructors for discretizing: `OrdinalPatternEncoding, GaussianCDFEncoding`.
 """
 
 if display_update

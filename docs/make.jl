@@ -7,7 +7,6 @@ using Documenter
 using DocumenterTools: Themes
 using CairoMakie
 import Entropies.Wavelets
-using DynamicalSystems
 
 # %% JuliaDynamics theme
 # It includes themeing for the HTML build
@@ -33,7 +32,14 @@ Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__,
 # %% Build docs
 ENV["JULIA_DEBUG"] = "Documenter"
 
-PAGES = include("toc.jl")
+ENTROPIES_PAGES = [
+    "index.md",
+    "probabilities.md",
+    "entropies.md",
+    "examples.md",
+    "utils.md",
+    "devdocs.md",
+]
 include("style.jl")
 
 makedocs(
@@ -47,8 +53,8 @@ makedocs(
         ),
     sitename = "Entropies.jl",
     authors = "Kristian Agasøster Haaga, George Datseris",
-    pages = PAGES,
-    doctest = CI,
+    pages = ENTROPIES_PAGES,
+    doctest = false,
     draft = false,
 )
 

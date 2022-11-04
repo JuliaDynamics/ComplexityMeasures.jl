@@ -1,9 +1,12 @@
-export AbstractEntropy, Entropy, IndirectEntropy
-export entropy, entropy_normalized, entropy!
+export Entropy, IndirectEntropy
+export entropy, entropy_maximum, entropy_normalized, entropy!
 
-# TODO: Add docstrings here
 abstract type AbstractEntropy end
+
+"Supertype of direct entropies. See [`entropy`](@ref)."
 abstract type Entropy <: AbstractEntropy end
+
+"Supertype of inderect entropies. See [`entropy`](@ref)."
 abstract type IndirectEntropy <: AbstractEntropy end
 
 ###########################################################################################
@@ -16,7 +19,6 @@ abstract type IndirectEntropy <: AbstractEntropy end
 
 Compute a (generalized) entropy `h` from `x` according to the specified
 entropy type `e` and the given probability estimator `est`.
-
 Alternatively compute the entropy directly from the existing probabilities `probs`.
 In fact, the first method is a 2-lines-of-code wrapper that calls [`probabilities`](@ref)
 and gives the result to the second method.
@@ -37,7 +39,7 @@ entropies". Currently implemented types are:
 The entropy (first argument) is optional: if not given, `Shannon()` is used instead.
 
 These entropies also have a well defined maximum value for a given probability estimator.
-To obtain this value one only needs to call the [`maximum`](@ref) function with the
+To obtain this value one only needs to call the [`entropy_maximum`](@ref) function with the
 chosen entropy type and probability estimator. Or, one can use [`entropy_normalized`](@ref)
 to obtain the normalized form of the entropy (divided by the maximum).
 
@@ -84,24 +86,24 @@ entropy!(s::AbstractVector{Int}, x, est::ProbabilitiesEstimator) =
 # Normalize API
 ###########################################################################################
 """
-    maximum(e::Entropy, x, est::ProbabilitiesEstimator) → m::Real
+    entropy_maximum(e::Entropy, x, est::ProbabilitiesEstimator) → m::Real
 
 Return the maximum value `m` of the given entropy type based on the given estimator
 and the given input `x` (whose values are not important, but layout and type are).
 
-This function only works if the maximum value is dedicable, which is possible only
-when the estimator has a known [`alphabet_length`](@ref).
+This function only works if the maximum value is deducable, which is possible only
+when the estimator has a known [`total_outcomes`](@ref).
 
-    maximum(e::Entropy, L::Int) → m::Real
+    entropy_maximum(e::Entropy, L::Int) → m::Real
 
-Alternatively, compute the maximum entropy from the alphabet length `L` directly.
+Alternatively, compute the maximum entropy from the total outcomes `L` directly.
 """
-function Base.maximum(e::Entropy, x, est::ProbabilitiesEstimator)
-    L = alphabet_length(x, est)
-    return maximum(e, L)
+function entropy_maximum(e::Entropy, x, est::ProbabilitiesEstimator)
+    L = total_outcomes(x, est)
+    return entropy_maximum(e, L)
 end
-function Base.maximum(e::Entropy, ::Int)
-    error("Maximum not implemented for entropy type $(nameof(typeof(e))).")
+function entropy_maximum(e::Entropy, ::Int)
+    error("not implemented for entropy type $(nameof(typeof(e))).")
 end
 
 """
@@ -113,10 +115,10 @@ If `e` is not given, it defaults to `Shannon()`.
 
 Notice that unlike for [`entropy`](@ref), here there is no method
 `entropy_normalized(e::Entropy, probs::Probabilities)` because there is no way to know
-the amount of _possible_ events (i.e., the [`alphabet_length`](@ref)) from `probs`.
+the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs`.
 """
 function entropy_normalized(e::Entropy, x, est::ProbabilitiesEstimator)
-    return entropy(e, x, est)/maximum(e, x, est)
+    return entropy(e, x, est)/entropy_maximum(e, x, est)
 end
 function entropy_normalized(x::Array_or_Dataset, est::ProbabilitiesEstimator)
     return entropy_normalized(Shannon(), x, est)

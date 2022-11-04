@@ -43,9 +43,6 @@ using Entropies, Test
     est = SpatialSymbolicPermutation(stencil, x; periodic = false)
     @test entropy(Renyi(base = 2), x, est) == 1.5
 
-    # TODO: Symbolize tests once its part of the API.
-
-
     # Also test that it works for arbitrarily high-dimensional arrays
     stencil = CartesianIndex.([(0,0,0), (0,1,0), (0,0,1), (1,0,0)])
     z = reshape(1:125, (5,5,5))

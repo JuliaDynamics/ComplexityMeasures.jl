@@ -9,6 +9,14 @@ export SymbolicWeightedPermutation
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
 based on the weighted permutation entropy (Fadlallah et al., 2013).
 
+## Outcomes
+
+Like for [`SymbolicPermutation`](@ref), the outcomes `Ω` for `SymbolicWeightedPermutation`
+is the set `{1, 2, …, factorial(m)}`, where each integer correspond to a unique ordinal
+pattern, but [`probabilities_and_outcomes`](@ref) is not yet implemented for this estimator.
+
+## Description
+
 Probabilities are computed as
 
 ```math
@@ -36,6 +44,10 @@ The weighted permutation entropy is equivalent to regular permutation entropy wh
 are positive and identical (``w_j = \\beta \\,\\,\\, \\forall \\,\\,\\, j \\leq N`` and
 ``\\beta > 0)``.
 
+See [`SymbolicPermutation`](@ref) for an estimator that only incorporates ordinal/sorting
+information and disregards amplitudes, and [`SymbolicAmplitudeAwarePermutation`](@ref) for
+another estimator that incorporates amplitude information.
+
 !!! note "An implementation note"
     *Note: in equation 7, section III, of the original paper, the authors write*
 
@@ -51,9 +63,7 @@ are positive and identical (``w_j = \\beta \\,\\,\\, \\forall \\,\\,\\, j \\leq 
     hard to interpret whether the sign switch is a typo or intended. Here, we use the notation
     above, which actually computes the variance for ``\\mathbf{x}_i``*.
 
-See [`SymbolicPermutation`](@ref) for an estimator that only incorporates ordinal/sorting
-information and disregards amplitudes, and [`SymbolicAmplitudeAwarePermutation`](@ref) for
-another estimator that incorporates amplitude information.
+
 
 [^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity
     measure for time series incorporating amplitude information." Physical Review E 87.2
@@ -76,7 +86,7 @@ end
 
 function probabilities(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation) where {m, T}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-    πs = symbolize(x, OrdinalPattern(m = m, lt = est.lt))  # motif length controlled by dimension of input data
+    πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
 
     Probabilities(symprobs(πs, wts, normalize = true))
@@ -85,10 +95,10 @@ end
 function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) where {T<:Real}
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     emb = genembed(x, τs)
-    πs = symbolize(emb, OrdinalPattern(m = est.m, lt = est.lt)) # motif length controlled by estimator m
+    πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt)) # motif length controlled by estimator m
     wts = weights_from_variance.(emb.data, est.m)
 
     Probabilities(symprobs(πs, wts, normalize = true))
 end
 
-alphabet_length(est::SymbolicWeightedPermutation)::Int = factorial(est.m)
+total_outcomes(est::SymbolicWeightedPermutation)::Int = factorial(est.m)

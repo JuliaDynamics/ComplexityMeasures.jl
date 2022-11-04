@@ -26,7 +26,10 @@ when the dimensionality of the data is much smaller than the data length.
 The keyword `w` stands for the Theiler window, and excludes indices ``s``
 that are within ``|i - s| ≤ w`` from the given point ``X_i``.
 
-The events for [`probabilities_and_events`](@ref) are the input data themselves.
+## Outcomes
+
+The outcomes `Ω` for `NaiveKernel` are the input data themselves. Use
+[`probabilities_and_outcomes`](@ref) to obtain these together with the probabilities.
 
 [^PrichardTheiler1995]:
     Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis.
@@ -43,14 +46,10 @@ function NaiveKernel(ϵ::Real, method = KDTree; w = 0, metric = Euclidean())
     return NaiveKernel(ϵ, method, w, metric)
 end
 
-function probabilities(x::AbstractDataset, est::NaiveKernel)
+function probabilities_and_outcomes(x::AbstractDataset, est::NaiveKernel)
     theiler = Theiler(est.w)
     ss = searchstructure(est.method, x.data, est.metric)
     idxs = bulkisearch(ss, x.data, WithinRange(est.ϵ), theiler)
     p = Float64.(length.(idxs))
-    return Probabilities(p)
-end
-
-function probabilities_and_events(x::AbstractDataset, est::NaiveKernel)
-    return probabilities(x, est), x
+    return Probabilities(p), x
 end

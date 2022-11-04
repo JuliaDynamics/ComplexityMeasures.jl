@@ -3,6 +3,7 @@ xp = Probabilities(x)
 @test_throws MethodError entropy(Shannon(), x) isa Real
 @test entropy(Shannon(base = 10), xp) isa Real
 @test entropy(Shannon(base = 2), xp) isa Real
+@test entropy_maximum(Shannon(), 2) == 1
 
 # Analytical tests
 # -----------------------------------
