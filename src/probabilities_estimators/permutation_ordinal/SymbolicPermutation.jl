@@ -78,7 +78,7 @@ function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where
 end
 
 function probabilities!(πs::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
-    length(πs) == length(x) || throw(ArgumentError("Need length(s) == length(x), got `length(s)=$(length(s))` and `length(x)==$(length(x))`."))
+    length(πs) == length(x) || throw(ArgumentError("Need length(πs) == length(x), got `length(πs)=$(length(πs))` and `length(x)==$(length(x))`."))
     m >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series embed it using `genembed` first.")
 
     @inbounds for i in eachindex(x)
@@ -90,7 +90,7 @@ end
 function probabilities!(πs::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
     L = length(x)
     N = L - (est.m-1)*est.τ
-    length(πs) == N || error("Pre-allocated symbol vector `s`needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
+    length(πs) == N || error("Pre-allocated symbol vector `πs` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(πs)=$(length(πs)) and length(x)=$(L).")
 
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     x_emb = genembed(x, τs)
@@ -122,7 +122,7 @@ function entropy!(e::Entropy,
     est::SymbolicPermutation;
     ) where {m, T}
 
-    length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
+    length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(πs)=$(length(πs)) and length(x)=$(L).")
     ps = probabilities!(s, x, est)
 
     entropy(e, ps)
