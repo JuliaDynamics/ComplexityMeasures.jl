@@ -1,4 +1,4 @@
-# Entropies
+# [Entropies](@id entropies)
 
 ```@docs
 entropy
