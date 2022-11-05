@@ -52,6 +52,7 @@ Here we list functions which compute Shannon entropies via alternate means, with
 Kraskov
 KozachenkoLeonenko
 Zhu
+ZhuSingh
 ```
 
 ## Convenience functions
