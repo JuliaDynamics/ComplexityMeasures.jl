@@ -57,6 +57,13 @@ end
 fig
 ```
 
+As expected, all estimators nicely converge to the correct entropy with increasing
+time series length.
+
+[^Charzyńska2016]:
+    Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy
+    estimator with applications in systems biology. Entropy, 18(1), 13.
+
 ## Indirect entropy (order statistics)
 
 Entropies.jl also provides entropy estimators based on
