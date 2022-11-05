@@ -11,9 +11,9 @@ based on the weighted permutation entropy (Fadlallah et al., 2013).
 
 ## Outcomes
 
-Like for [`SymbolicPermutation`](@ref), the outcomes `Ω` for `SymbolicWeightedPermutation`
-is the set `{1, 2, …, factorial(m)}`, where each integer correspond to a unique ordinal
-pattern, but [`probabilities_and_outcomes`](@ref) is not yet implemented for this estimator.
+Like for [`SymbolicPermutation`](@ref), the outcome space `Ω` for
+`SymbolicWeightedPermutation` is the set `{1, 2, …, factorial(m)}`, where each integer
+correspond to a unique ordinal pattern.
 
 ## Description
 
@@ -84,28 +84,27 @@ function weights_from_variance(x, m::Int)
 end
 
 
-function probabilities(x::AbstractDataset{m, T}, est::SymbolicWeightedPermutation) where {m, T}
+function probabilities_and_outcomes(x::AbstractDataset{m, T},
+        est::SymbolicWeightedPermutation) where {m, T}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
+    probs = symprobs(πs, wts, normalize = true)
+    observed_outcomes = sort(unique(πs))
 
-    Probabilities(symprobs(πs, wts, normalize = true))
+   return Probabilities(probs), observed_outcomes
 end
 
-function probabilities(x::AbstractVector{T}, est::SymbolicWeightedPermutation) where {T<:Real}
+function probabilities_and_outcomes(x::AbstractVector{T},
+        est::SymbolicWeightedPermutation) where {T<:Real}
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     emb = genembed(x, τs)
     πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt)) # motif length controlled by estimator m
     wts = weights_from_variance.(emb.data, est.m)
+    probs = symprobs(πs, wts, normalize = true)
+    observed_outcomes = sort(unique(πs))
 
-    Probabilities(symprobs(πs, wts, normalize = true))
+    return Probabilities(probs), observed_outcomes
 end
 
 total_outcomes(est::SymbolicWeightedPermutation)::Int = factorial(est.m)
-
-function probabilities_and_outcomes(x::AbstractVector{T}, est::SymbolicWeightedPermutation) where {T<:Real}
-    πs = outcomes(x, est)
-    wts = weights_from_variance.(emb.data, est.m)
-    p = symprobs(πs, wts, normalize = true)
-    Probabilities(p), sort(unique(πs))
-end

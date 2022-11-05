@@ -37,7 +37,6 @@ e2 = entropy(Renyi(), x, est)
     @test probabilities(D, est_isless) isa Probabilities
 end
 
-
 # With m = 2, ordinal patterns and frequencies are:
 # [1, 2] => 3
 # [2, 1] => 2
