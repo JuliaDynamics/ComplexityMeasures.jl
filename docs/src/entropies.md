@@ -54,6 +54,11 @@ KozachenkoLeonenko
 Vasicek
 Zhu
 ZhuSingh
+```
+
+### Order statistics entropy
+
+```@docs
 Correa
 ```
 

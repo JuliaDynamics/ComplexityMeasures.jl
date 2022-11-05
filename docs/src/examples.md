@@ -110,7 +110,7 @@ end
 fig
 ```
 
-As for the nearest neighbor estimators, both estimator also approach the
+As for the nearest neighbor estimators, both estimators also approach the
 true entropy value for this example, but is negatively biased for small sample sizes.
 
 ## Permutation entropy example
