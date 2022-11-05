@@ -98,9 +98,13 @@ function probabilities!(πs::AbstractVector{Int}, x::AbstractVector{T}, est::Sym
     probabilities!(πs, x_emb, est)
 end
 
-function probabilities(x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
+function probabilities_and_outcomes(x::AbstractDataset{m, T},
+        est::SymbolicPermutation) where {m, T}
     πs = zeros(Int, length(x))
-    probabilities!(πs, x, est)
+    probs = probabilities!(πs, x, est)
+    observed_outcomes = sort(unique(πs))
+
+    probs, observed_outcomes
 end
 
 function probabilities_and_outcomes(x::AbstractVector{T},
