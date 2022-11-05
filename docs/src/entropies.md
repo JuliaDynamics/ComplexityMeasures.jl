@@ -51,7 +51,6 @@ Here we list functions which compute Shannon entropies via alternate means, with
 ```@docs
 Kraskov
 KozachenkoLeonenko
-Vasicek
 Zhu
 ZhuSingh
 ```
@@ -59,6 +58,7 @@ ZhuSingh
 ### Order statistics entropy
 
 ```@docs
+Vasicek
 Correa
 ```
 
