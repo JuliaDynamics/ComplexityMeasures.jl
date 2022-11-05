@@ -51,10 +51,15 @@ Here we list functions which compute Shannon entropies via alternate means, with
 ```@docs
 Kraskov
 KozachenkoLeonenko
-Vasicek
-AlizadehArghami
 Zhu
 ZhuSingh
+```
+
+### Order statistics entropy
+
+```@docs
+Vasicek
+AlizadehArghami
 ```
 
 ## Convenience functions
