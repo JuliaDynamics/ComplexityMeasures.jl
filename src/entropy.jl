@@ -139,6 +139,7 @@ computing probability distributions. The available indirect entropies are:
 
 - [`Kraskov`](@ref).
 - [`KozachenkoLeonenko`](@ref).
+- [`Vasicek`](@ref).
 """
 function entropy(::IndirectEntropy, ::Array_or_Dataset) end
 function entropy(e::IndirectEntropy, ::Array_or_Dataset, ::ProbabilitiesEstimator)
