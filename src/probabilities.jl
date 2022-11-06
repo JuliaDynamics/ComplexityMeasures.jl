@@ -188,7 +188,6 @@ function missing_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
     return L - O
 end
 
-
 """
     all_possible_outcomes([x,] est::ProbabilitiesEstimator) → o
 
@@ -196,6 +195,9 @@ Return a vector containing all possible outcomes of `est`.
 Only possible for estimators that implement [`total_outcomes`](@ref),
 and similarly, for some estimators `x` is not needed.
 """
+function all_possible_outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
+    all_possible_outcomes(est)
+end
 function all_possible_outcomes(est::ProbabilitiesEstimator)
     error("`all_possible_outcomes` not implemented for estimator $(typeof(est)).")
 end

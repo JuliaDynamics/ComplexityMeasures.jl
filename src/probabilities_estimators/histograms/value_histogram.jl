@@ -62,3 +62,8 @@ function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
     events = map(b -> b .* edgelengths .+ mini, bins)
     return probs, events
 end
+
+function all_possible_outcomes(x::Array_or_Dataset, est::ValueHistogram)
+    encoder = RectangularBinEncoding(x, est.binning)
+    return all_possible_outcomes(encoder)
+end

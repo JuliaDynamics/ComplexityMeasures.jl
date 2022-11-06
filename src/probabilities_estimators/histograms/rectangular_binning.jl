@@ -65,11 +65,13 @@ const Floating_or_Fixed_RectBinning = Union{RectangularBinning, FixedRectangular
     RectangularBinEncoding(x, binning::AbstractBinning)
     RectangularBinEncoding(binning::FixedRectangularBinning{<:NTuple{D}})
 
-Struct used in [`outcomes`](@ref) to map points into bins their respective bins.
+Struct used in [`outcomes`](@ref) to map points of `x` into their respective bins.
 It finds the minima along each dimension, and computes appropriate
 edge lengths for each dimension of `x` given a rectangular binning.
-The second signature does not need `x` as the dimensionality of the space is
-already encoded in `ϵ`, because it is an `NTuple{D}`.
+
+The second signature does not need `x` because (1) the binning is fixed, and the
+size of `x` doesn't matter, and (2) because the binning contains the dimensionality
+information as `ϵmin/max` is already an `NTuple`.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
@@ -218,11 +220,18 @@ total_outcomes(::AbstractDataset{D}, symbolization::RBE{RB{Vector{Int}}}) where 
 
 # When the grid is fixed by the user, we can always deduce the total number of bins,
 # even just from the binning itself - symbolization info not needed.
-const FRB = FixedRectangularBinning
-total_outcomes(x::Array_or_Dataset, b::FRB) = total_outcomes(b)
-function total_outcomes(e::RBE{<:FRB})
+function total_outcomes(x::Array_or_Dataset, b::FixedRectangularBinning)
+    return total_outcomes(RectangularBinEncoding(x, b))
+end
+# This function does not need `x`; all info about binning are in the encoding
+function total_outcomes(e::RectangularBinEncoding)
     D = length(e.mini)
     return e.binning.N^D
+end
+
+# This function does not need `x`; all info about binning are in the encoding
+function all_possible_outcomes(e::RectangularBinEncoding)
+
 end
 
 ##################################################################
@@ -231,7 +240,7 @@ end
 # This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
 """
     fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
-Create an encoder for binning, then map `x` to bins, then call `fasthist!` on the bins.
+Create an encoding for binning, then map `x` to bins, then call `fasthist!` on the bins.
 Return the output probabilities, the bins, and the created encoder.
 """
 function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
