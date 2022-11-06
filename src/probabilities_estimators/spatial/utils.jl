@@ -26,15 +26,15 @@ end
 
 """
     stencil_length(stencil::Vector{CartesianIndex{D}}) where D → length(stencil)
+    stencil_length(stencil::NTuple{2, NTuple{D, T}}) where {D, T} → prod(stencil[1])
     stencil_length(stencil::Array{Int, D}) where D → sum(stencil)
-    stencil_length(stencil::NTuple{2, NTuple{D, T}}) where {D, T} → prod(stencil[1])!
 
 Count the number of elements in the `stencil`.
 """
 function stencil_length end
-stencil_length(stencil::Vector{CartesianIndex{D}}) where D = length(stencil)
+stencil_length(stencil::Vector{CartesianIndex{D}}) where {D} = length(stencil)
+stencil_length(stencil::NTuple{2, NTuple{D, T}}) where {D, T} = prod(stencil[1])
 stencil_length(stencil::Array{Int, D}) where D = sum(stencil)
-stencil_length(stencil::NTuple{2, NTuple{D, T}}) where {D, T} = factorial(prod(stencil[1]))
 
 function preprocess_spatial(stencil, x::AbstractArray, periodic::Bool = true)
     arraysize = size(x)
