@@ -35,7 +35,29 @@ Estimating probabilities/entropies from higher-dimensional data is conceptually 
 5. Optionally, compute [`entropy`](@ref) or [`entropy_normalized`](@ref) from this
     probability distribution.
 
-## Application on time series
+## Usage
+
+Here's how to compute spatial dispersion entropy using the three different ways of
+specifying stencils.
+
+```julia
+x = rand(50, 50) # first "time slice" of a spatial system evolution
+
+# Cartesian stencil
+stencil_cartesian = CartesianIndex.([(0,0), (1,0), (1,1), (0,1)])
+est = SpatialDispersion(stencil_cartesian, x)
+entropy_normalized(x, est)
+
+# Extent/lag stencil
+extent = (2, 2); lag = (1, 1); stencil_ext_lag = (extent, lag)
+est = SpatialDispersion(stencil_ext_lag, x)
+entropy_normalized(x, est)
+
+# Matrix stencil
+stencil_matrix = [1 1; 1 1]
+est = SpatialDispersion(stencil_matrix, x)
+entropy_normalized(x, est)
+```
 
 To apply this to timeseries of spatial data, simply loop over the call (broadcast), e.g.:
 
@@ -70,11 +92,7 @@ function SpatialDispersion(stencil, x::AbstractArray{T, D};
         skip_encoding::Bool = false,
         L::Union{Nothing, Int} = nothing) where {S, T, D}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
-    if isnothing(L)
-        m = stencil_length(stencil)
-    else
-        m = L
-    end
+    m = stencil_length(stencil)
 
     SpatialDispersion{D, periodic, typeof(valid), S}(
         stencil, copy(stencil), arraysize, valid, encoding,
@@ -93,11 +111,11 @@ end
 
 function symbol_distribution(x::AbstractArray{T, N}, est::SpatialDispersion) where {T, N}
     if est.skip_encoding
-        symbolized_x = copy(x)
+        encoded_x = copy(x)
     else
         # Symbolize each pixel individually relative to the other pixels.
         # This will be an integer array with the same dimensions as `x`.
-        symbolized_x = outcomes(x, est.encoding)
+        encoded_x = outcomes(x, est.encoding)
     end
 
     # It is easiest just to store the symbols as strings, i.e. [1, 5, 4, 3] => "1543".
@@ -108,7 +126,7 @@ function symbol_distribution(x::AbstractArray{T, N}, est::SpatialDispersion) whe
     symbols = Vector{String}(undef, 0)
     for pixel in est.valid
         pixels_inds = pixels_in_stencil(pixel, est)
-        push!(symbols, join(view(symbolized_x, pixels_inds)))
+        push!(symbols, join(view(encoded_x, pixels_inds)))
     end
     return symbols
 end
@@ -128,20 +146,14 @@ function probabilities_and_outcomes(x::Array_or_Dataset, est::SpatialDispersion)
     return probs, outcomes
 end
 
-function alphabet_length(est::SpatialDispersion)
-    m = est.m
-    c = est.encoding.c
-    if est.skip_encoding
-        return m
-    else
-        return c^m
-    end
-end
-
 function total_outcomes(est::SpatialDispersion)::Int
     m = est.m
-    c = est.encoding.c
-    return c^m
+    if est.skip_encoding
+        return est.L^m
+    else
+        c = est.encoding.c
+        return c^m
+    end
 end
 
 # TODO: how to represent the outcomes? We have to think about this...

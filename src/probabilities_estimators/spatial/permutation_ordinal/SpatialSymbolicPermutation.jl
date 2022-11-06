@@ -57,22 +57,26 @@ _spatiotemporal permutation entropy_.
 
 ## Usage
 
+Here's how to compute spatial permutation entropy using the three different ways of
+specifying stencils.
+
 ```julia
-data = [rand(50, 50) for _ in 1:50]
-x = data[1] # first "time slice" of a spatial system evolution
+x = rand(50, 50) # first "time slice" of a spatial system evolution
 
 # Cartesian stencil
 stencil_cartesian = CartesianIndex.([(0,0), (1,0), (1,1), (0,1)])
 est = SpatialSymbolicPermutation(stencil_cartesian, x)
+entropy_normalized(x, est)
 
 # Extent/lag stencil
-extent = (2, 2); lag = (1, 1)
-stencil_ext_lag = (extent, lag)
+extent = (2, 2); lag = (1, 1); stencil_ext_lag = (extent, lag)
 est = SpatialSymbolicPermutation(stencil_ext_lag, x)
+entropy_normalized(x, est)
 
 # Matrix stencil
 stencil_matrix = [1 1; 1 1]
 est = SpatialSymbolicPermutation(stencil_matrix, x)
+entropy_normalized(x, est)
 ```
 
 To apply this to timeseries of spatial data, simply loop over the call (broadcast), e.g.:
@@ -80,10 +84,9 @@ To apply this to timeseries of spatial data, simply loop over the call (broadcas
 ```julia
 imgs = [rand(50, 50) for i = 1:100]; # one image per second over 100 seconds
 stencil = ((2, 2), (1, 1)) # a 2x2 stencil (i.e. dispersion patterns of length 4)
-est = SpatialDispersion(stencil_matrix, first(imgs))
+est = SpatialSymbolicPermutation(stencil, first(imgs))
 h_vs_t = entropy_normalized.(imgs, Ref(est))
 ```
-
 
 See also: [`SpatialDispersion`](@ref).
 
@@ -135,6 +138,6 @@ function Base.show(io::IO, est::SpatialSymbolicPermutation{D}) where {D}
     show(io, MIME"text/plain"(), est.stencil)
 end
 
-function alphabet_length(est::SpatialSymbolicPermutation)
+function total_outcomes(est::SpatialSymbolicPermutation)
     return factorial(est.m)
 end
