@@ -26,7 +26,7 @@ end
 const ValidFixedBinInputs = Union{Number, NTuple}
 
 """
-    FixedRectangularBinning <: Encoding
+    FixedRectangularBinning <: AbstractBinning
     FixedRectangularBinning(ϵmin::E, ϵmax::E, N::Int) where E
 
 Rectangular box partition of state space where the extent of the grid is explicitly
@@ -40,8 +40,8 @@ Binning instructions are deduced from the types of `ϵmin`/`emax` as follows:
     `[ϵmin[i], ϵmax[i]]` is the range along the `i`-th dimension.
 
 If the grid spans the range `[r1, r2]` along a particular dimension, then this range
-is subdivided into `N` subintervals of equal length `nextfloat((r2 - r1) / N)`.
-Thus, for `m`-dimensional data, there are `N^m` boxes.
+is subdivided into `N` subintervals of equal length `nextfloat((r2 - r1)/N)`.
+Thus, for `D`-dimensional data, there are `N^D` boxes.
 """
 struct FixedRectangularBinning{E} <: AbstractBinning
     ϵmin::E
