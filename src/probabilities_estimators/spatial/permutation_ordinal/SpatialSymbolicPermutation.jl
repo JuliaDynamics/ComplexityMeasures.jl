@@ -75,12 +75,15 @@ stencil_matrix = [1 1; 1 1]
 est = SpatialSymbolicPermutation(stencil_matrix, x)
 ```
 
-###
-To apply this to timeseries of spatial data, simply loop over the call, e.g.:
+To apply this to timeseries of spatial data, simply loop over the call (broadcast), e.g.:
+
 ```julia
-h = entropy(x, est)
-h_vs_t = [entropy(d, est) for d in data]
+imgs = [rand(50, 50) for i = 1:100]; # one image per second over 100 seconds
+stencil = ((2, 2), (1, 1)) # a 2x2 stencil (i.e. dispersion patterns of length 4)
+est = SpatialDispersion(stencil_matrix, first(imgs))
+h_vs_t = entropy_normalized.(imgs, Ref(est))
 ```
+
 
 See also: [`SpatialDispersion`](@ref).
 
