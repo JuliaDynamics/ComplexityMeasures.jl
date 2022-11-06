@@ -59,6 +59,7 @@ ZhuSingh
 
 ```@docs
 Vasicek
+Ebrahimi
 ```
 
 ## Convenience functions
