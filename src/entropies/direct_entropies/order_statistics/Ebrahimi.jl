@@ -6,7 +6,7 @@ export Ebrahimi
 
 An indirect entropy estimator used in [`entropy`](@ref)`(Ebrahimi(), x)` to
 estimate the Shannon entropy of the timeseries `x` to the given
-`base` using the method from Ebrahimi (1976)[^Ebrahimi1976].
+`base` using the method from Ebrahimi (1994)[^Ebrahimi1994].
 
 ## Description
 
