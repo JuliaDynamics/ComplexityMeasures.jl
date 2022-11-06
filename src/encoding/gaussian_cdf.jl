@@ -1,4 +1,5 @@
-using Statistics, QuadGK
+using Statistics: mean, std
+using QuadGK
 
 export GaussianCDFEncoding
 
@@ -69,14 +70,27 @@ function map_to_category(yⱼ, c)
     return zⱼ
 end
 
-function outcomes(x::AbstractVector, s::GaussianCDFEncoding)
-    σ = Statistics.std(x)
-    μ = Statistics.mean(x)
+function outcomes(x::AbstractArray, symbolization::GaussianCDFEncoding)
+    s = similar(x, Int)
+    outcomes!(s, x, symbolization)
+end
+
+function outcomes!(s::AbstractArray{Int, N}, x::AbstractArray{T, N},
+        encoding::GaussianCDFEncoding) where {T, N}
+
+    σ = std(x)
+    μ = mean(x)
+    c = encoding.c
 
     # We only need the value of the integral (not the error), so
     # index first element returned from quadgk
     k = 1/(σ*sqrt(2π))
-    yⱼs = [k * first(quadgk(x -> g(x, μ, σ), -Inf, xᵢ)) for xᵢ in x]
 
-    return map_to_category.(yⱼs, s.c)
+    for (i, xᵢ) in pairs(IndexStyle(x), x)
+        # We only need the value of the integral (not the error), so
+        # index first element returned from quadgk
+        yᵢ = k * first(quadgk(x -> g(x, μ, σ), -Inf, xᵢ))
+        s[i] = map_to_category(yᵢ, c)
+    end
+    return s
 end
