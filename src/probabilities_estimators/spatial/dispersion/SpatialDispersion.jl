@@ -61,6 +61,7 @@ struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialProbEst{D, P}
     encoding::S
     skip_encoding::Bool
     L::Union{Nothing, Int}
+    m::Int
 end
 
 function SpatialDispersion(stencil, x::AbstractArray{T, D};
@@ -69,10 +70,15 @@ function SpatialDispersion(stencil, x::AbstractArray{T, D};
         skip_encoding::Bool = false,
         L::Union{Nothing, Int} = nothing) where {S, T, D}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
+    if isnothing(L)
+        m = stencil_length(stencil)
+    else
+        m = L
+    end
 
     SpatialDispersion{D, periodic, typeof(valid), S}(
         stencil, copy(stencil), arraysize, valid, encoding,
-        skip_encoding, L,
+        skip_encoding, L, m,
     )
 end
 
@@ -123,10 +129,22 @@ function probabilities_and_outcomes(x::Array_or_Dataset, est::SpatialDispersion)
 end
 
 function alphabet_length(est::SpatialDispersion)
-    m = stencil_length(est.stencil)
+    m = est.m
+    c = est.encoding.c
     if est.skip_encoding
-        return est.L^m
+        return m
     else
-        return est.encoding.c^m
+        return c^m
     end
+end
+
+function total_outcomes(est::SpatialDispersion)::Int
+    m = est.m
+    c = est.encoding.c
+    return c^m
+end
+
+# TODO: how to represent the outcomes? We have to think about this...
+function outcome_space(est::SpatialDispersion)
+
 end
