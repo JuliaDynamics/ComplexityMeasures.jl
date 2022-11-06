@@ -70,6 +70,7 @@ struct SpatialSymbolicPermutation{D,P,V} <: SpatialProbEst{D, P}
     arraysize::Dims{D}
     valid::V
 end
+
 function SpatialSymbolicPermutation(stencil, x::AbstractArray{T, D};
         periodic::Bool = true) where {T, D}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
@@ -79,18 +80,18 @@ function SpatialSymbolicPermutation(stencil, x::AbstractArray{T, D};
     )
 end
 
-function Entropies.probabilities(x, est::SpatialSymbolicPermutation)
+function probabilities(x, est::SpatialSymbolicPermutation)
     # TODO: This can be literally a call to `symbolize` and then
     # calling probabilities on it. Should do once the `symbolize` refactoring is done.
     s = zeros(Int, length(est.valid))
     probabilities!(s, x, est)
 end
 
-function Entropies.probabilities!(s, x, est::SpatialSymbolicPermutation)
+function probabilities!(s, x, est::SpatialSymbolicPermutation)
     m = length(est.stencil)
     for (i, pixel) in enumerate(est.valid)
         pixels = pixels_in_stencil(pixel, est)
-        s[i] = Entropies.encode_motif(view(x, pixels), m)
+        s[i] = encode_motif(view(x, pixels), m)
     end
     return probabilities(s)
 end

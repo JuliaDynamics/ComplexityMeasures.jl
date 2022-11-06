@@ -1,7 +1,5 @@
 # This file contains functions that are common to all spatial symbolic estimators.
 # --------------------------------------------------------------------------------
-# A convenience abstract type that makes common dispatch for pixel retrieval easier.
-abstract type SpatialProbEst{D, P} <: ProbabilitiesEstimator end
 
 # get stencil in the form of vectors of cartesian indices from either input type
 stencil_to_offsets(stencil::Vector{CartesianIndex{D}}) where D = stencil, D

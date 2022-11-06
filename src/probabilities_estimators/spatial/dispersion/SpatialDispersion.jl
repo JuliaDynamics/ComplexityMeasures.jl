@@ -91,7 +91,7 @@ function symbol_distribution(x::AbstractArray{T, N}, est::SpatialDispersion) whe
     else
         # Symbolize each pixel individually relative to the other pixels.
         # This will be an integer array with the same dimensions as `x`.
-        symbolized_x = symbolize(x, est.encoding)
+        symbolized_x = outcomes(x, est.encoding)
     end
 
     # It is easiest just to store the symbols as strings, i.e. [1, 5, 4, 3] => "1543".

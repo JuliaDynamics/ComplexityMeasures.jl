@@ -11,11 +11,12 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("estimators/permutation.jl")
     testfile("estimators/permutation_weighted.jl")
     testfile("estimators/permutation_amplitude_aware.jl")
-    testfile("estimators/permutation_spatial.jl")
     testfile("estimators/timescales.jl")
     testfile("estimators/dispersion.jl")
     testfile("estimators/diversity.jl")
-    testfile("estimators/dispersion_spatial.jl")
+
+    testfile("estimators/spatial/permutation_spatial.jl")
+    testfile("estimators/spatial/dispersion_spatial.jl")
 
     # Different entropies
     testfile("entropies/renyi.jl")

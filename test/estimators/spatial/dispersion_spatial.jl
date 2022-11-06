@@ -15,7 +15,7 @@ est = SpatialDispersion(stencil, x, encoding =  GaussianCDFEncoding(c = 3),
 # "121" [2]
 # "232" [2],
 # so we should get a uniform two-element probabilitity distribution.
-@test probabilities_and_events(x, est) == ([0.5, 0.5], ["121", "232"])
+@test probabilities_and_outcomes(x, est) == ([0.5, 0.5], ["121", "232"])
 
 # With periodic boundary conditions, we expect a different dispersion pattern distribution.
 # `probabilities` sorts the dispersion patterns, so we must also consider frequencies of
@@ -28,7 +28,7 @@ est = SpatialDispersion(stencil, x, encoding =  GaussianCDFEncoding(c = 3),
 # "232" [2]
 # "311" [1]
 # "313" [1]
-@test probabilities_and_events(x, est) == (
+@test probabilities_and_outcomes(x, est) == (
     [1/9, 3/9, 1/9, 2/9, 1/9, 1/9],
     ["113", "121", "212", "232", "311", "313"]
     )
