@@ -59,6 +59,7 @@ ZhuSingh
 
 ```@docs
 Vasicek
+AlizadehArghami
 Ebrahimi
 Correa
 ```
