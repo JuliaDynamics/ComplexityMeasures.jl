@@ -73,4 +73,15 @@ using Entropies, Test
     stencil = [1; 1;; 1; 1;;; 1; 1;; 1; 1]
     est3 = SpatialSymbolicPermutation(stencil, w; periodic = false)
     @test entropy(Renyi(), w, est1) == entropy(Renyi(), w, est3)
+
+    ####################
+    # "Analytical" tests
+    ####################
+    # We know that the normalized permutation entropy should → 1 for uniformly distributed
+    # noise. Test this assumption up to some tolerance.
+    x = rand(100, 100)
+    stencil = [1 1; 1 1]
+    est = SpatialSymbolicPermutation(stencil, x)
+    hsp = entropy_normalized(Renyi(), x, est)
+    @test round(hsp, digits = 2) == 1.00
 end

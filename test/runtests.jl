@@ -15,8 +15,8 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("estimators/dispersion.jl")
     testfile("estimators/diversity.jl")
 
-    testfile("estimators/spatial/permutation_spatial.jl")
-    testfile("estimators/spatial/dispersion_spatial.jl")
+    testfile("estimators/spatial/spatial_permutation.jl")
+    testfile("estimators/spatial/spatial_dispersion.jl")
 
     # Different entropies
     testfile("entropies/renyi.jl")

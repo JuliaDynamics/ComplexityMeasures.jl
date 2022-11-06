@@ -6,10 +6,15 @@ x = [
 ]
 stencil = [1 1; 1 0]
 
+# Verify that constructor works as expected for different combinations of keyword arguments
+@test SpatialDispersion(stencil, x) isa SpatialDispersion
+@test SpatialDispersion(stencil, x, skip_encoding = false) isa SpatialDispersion
+@test SpatialDispersion(stencil, x, skip_encoding = false, L = 2) isa SpatialDispersion
+@test SpatialDispersion(stencil, x, skip_encoding = true, L = 2) isa SpatialDispersion
+@test_throws ArgumentError SpatialDispersion(stencil, x, skip_encoding = true, L = nothing)
 
 est = SpatialDispersion(stencil, x, encoding =  GaussianCDFEncoding(c = 3),
     periodic = false)
-
 # With n = 3 categories, a GaussianCDFEncoding should not alter this particular `x`.
 # we thus expect the following "dispersion patterns" [frequencies]:
 # "121" [2]
