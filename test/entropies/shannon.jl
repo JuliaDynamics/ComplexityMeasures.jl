@@ -26,12 +26,18 @@ U = 0.00
 # Entropy with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
 N = round(0.5*log(2π) + 0.5, digits = 2)
 
+
 ev = Vasicek(m = 100, base = 2)
 ee = Ebrahimi(m = 100, base = 2)
+ec = Correa(m = 100, base = 2)
 ev_n = Vasicek(m = 100, base = MathConstants.e)
 ee_n = Ebrahimi(m = 100, base = MathConstants.e)
+ec_n = Correa(m = 100, base = MathConstants.e)
 
-@test round(entropy(ev, rand(rng, 1000000)), digits = 2) == U
-@test round(entropy(ev_n, randn(rng, 1000000)), digits = 2) == N
-@test round(entropy(ee, rand(rng, 1000000)), digits = 2) == U
-@test round(entropy(ee_n, randn(rng, 1000000)), digits = 2) == N
+n = 1000000
+@test round(entropy(ev, rand(rng, n)), digits = 2) == U
+@test round(entropy(ee, rand(rng, n)), digits = 2) == U
+@test round(entropy(ec, rand(rng, n)), digits = 2) == U
+@test round(entropy(ee_n, randn(rng, n)), digits = 2) == N
+@test round(entropy(ev_n, randn(rng, n)), digits = 2) == N
+@test round(entropy(ec_n, randn(rng, n)), digits = 2) == N

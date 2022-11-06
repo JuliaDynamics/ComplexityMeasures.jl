@@ -16,3 +16,4 @@ end
 
 include("Vasicek.jl")
 include("Ebrahimi.jl")
+include("Correa.jl")

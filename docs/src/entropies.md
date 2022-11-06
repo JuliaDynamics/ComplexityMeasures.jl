@@ -60,6 +60,7 @@ ZhuSingh
 ```@docs
 Vasicek
 Ebrahimi
+Correa
 ```
 
 ## Convenience functions
