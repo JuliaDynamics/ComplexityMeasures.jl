@@ -98,6 +98,17 @@ end
         @test total_outcomes(symb_same) == N^2
         @test total_outcomes(D, symb_diff) == N^2
         @test total_outcomes(D, symb_same) == N^2
+
+        # all possible outcomes
+        o = all_possible_outcomes(symb_diff)
+        @test length(o) == N^2
+        @test eltype(o) == SVector{2, Int}
+        for i in 1:N
+            for j in 1:N
+                @test SVector(i, j) ∈ o
+            end
+        end
+
         # For univariate timeseries
         # --------------------------------
         # bins are indexed from 0, so should get [0, 4, 9] with N = 10

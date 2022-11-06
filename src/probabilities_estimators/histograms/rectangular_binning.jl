@@ -240,7 +240,7 @@ function all_possible_outcomes(e::RectangularBinEncoding)
     return outcomes
 end
 
-function _matrix_dims_from_fixed_binning(e)
+function _array_dims_from_fixed_binning(e)
     if e.binning isa RectangularBinning
         error("Not possible to implement for `RectangularBinning`.")
     end
