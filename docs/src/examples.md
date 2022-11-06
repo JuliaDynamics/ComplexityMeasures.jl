@@ -301,7 +301,7 @@ des = zeros(length(windows))
 pes = zeros(length(windows))
 
 m, c = 2, 6
-est_de = Dispersion(encoding = GaussianMapping(c), m = m, τ = 1)
+est_de = Dispersion(encoding = GaussianCDFEncoding(c), m = m, τ = 1)
 for (i, window) in enumerate(windows)
     des[i] = entropy_normalized(Renyi(), y[window], est_de)
 end
