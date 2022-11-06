@@ -354,7 +354,7 @@ end
 You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.
 
-## 2D permutation/dispersion entropy
+## Spatial (2D permutation/dispersion)
 
 Let's see how the normalized permutation and dispersion entropies increase for an image
 that gets progressively more noise added to it.
@@ -406,7 +406,7 @@ While the [`SpatialSymbolicPermutation`](@ref) entropy quickly approaches its
 maximum value, the [`SpatialDispersion`](@ref) entropy much better
 resolves the increase in entropy as the image gets noiser. This can probably be explained
 by the fact that for the chosen parameters, for any given `stencil`, the number of possible
-states (or [`alphabet_length`](@ref)) is larger for [`SpatialDispersion`](@ref) than for
+states (or [`total_outcomes`](@ref)) is larger for [`SpatialDispersion`](@ref) than for
 [`SpatialSymbolicPermutation`](@ref), so the dispersion approach is much less sensitive
 to noise addition (i.e. noise saturation over the possible states is slower
 for [`SpatialDispersion`](@ref)).
