@@ -13,7 +13,7 @@ project [devdocs](https://juliadynamics.github.io/Entropies.jl/dev/devdocs/).
 Ticking the boxes below will help us provide good feedback and speed up the review process.
 Partial PRs are welcome too, and we're happy to help if you're stuck on something.
 
-- [ ] The new entropy subtypes of `Entropy` or `IndirectEntropy`.
+- [ ] The new entropy subtypes `Entropy` or `IndirectEntropy`.
 - [ ] The new entropy has an informative docstring, which is referenced in
     `docs/src/entropies.md`.
 - [ ] Relevant sources are cited in the docstring.
