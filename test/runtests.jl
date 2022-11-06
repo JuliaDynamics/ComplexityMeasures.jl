@@ -5,7 +5,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
 @testset "Entropies.jl" begin
     # Probability estimators
     testfile("estimators/count_occurrences.jl")
-    testfile("estimators/visitation_frequency.jl")
+    testfile("estimators/histograms.jl")
     testfile("estimators/transfer_operator.jl")
     testfile("estimators/naive_kernel.jl")
     testfile("estimators/permutation.jl")
