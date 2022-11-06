@@ -3,7 +3,7 @@ export probabilities, probabilities!
 export probabilities_and_outcomes, outcomes
 export total_outcomes
 export missing_outcomes
-export all_possible_outcomes
+export outcome_space
 
 ###########################################################################################
 # Types
@@ -58,7 +58,7 @@ In practice, probability estimation is done by calling [`probabilities`](@ref) w
 input data and one of the following probabilities estimators. The result is a
 [`Probabilities`](@ref) `p` (`Vector`-like), where each element `pᵢ` is the probability of
 the outcome `ωᵢ`. Use [`probabilities_and_outcomes`](@ref) if you need
-both the probabilities and the outcomes.
+both the probabilities and the outcomes and [`outcome_space`](@ref) to obtain ``\\Omega``.
 
 - [`CountOccurrences`](@ref).
 - [`ValueHistogram`](@ref).
@@ -115,7 +115,7 @@ Return `probs, Ω`, where `probs = probabilities(x, est)` and
 `Ω[i]` is the outcome with probability `probs[i]`.
 The element type of `Ω` depends on the estimator.
 
-See also [`outcomes`](@ref), [`total_outcomes`](@ref), and [`all_possible_outcomes`](@ref).
+See also [`outcomes`](@ref), [`total_outcomes`](@ref), and [`outcome_space`](@ref).
 """
 function probabilities_and_outcomes(x, est::ProbabilitiesEstimator)
     error("`probabilities_and_outcomes` not implemented for estimator $(typeof(est)).")
@@ -189,15 +189,16 @@ function missing_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
 end
 
 """
-    all_possible_outcomes([x,] est::ProbabilitiesEstimator) → o
+    outcome_space([x,] est::ProbabilitiesEstimator) → Ω
 
-Return a vector containing all possible outcomes of `est`.
+Return a container (typically `Vector`) containing all possible outcomes of `est`,
+i.e., the outcome space `Ω`.
 Only possible for estimators that implement [`total_outcomes`](@ref),
 and similarly, for some estimators `x` is not needed.
 """
-function all_possible_outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
-    all_possible_outcomes(est)
+function outcome_space(::Array_or_Dataset, est::ProbabilitiesEstimator)
+    outcome_space(est)
 end
-function all_possible_outcomes(est::ProbabilitiesEstimator)
-    error("`all_possible_outcomes` not implemented for estimator $(typeof(est)).")
+function outcome_space(est::ProbabilitiesEstimator)
+    error("`outcome_space` not implemented for estimator $(typeof(est)).")
 end

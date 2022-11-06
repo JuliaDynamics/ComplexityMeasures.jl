@@ -230,13 +230,16 @@ function total_outcomes(e::RectangularBinEncoding)
 end
 
 # This function does not need `x`; all info about binning are in the encoding
-function all_possible_outcomes(e::RectangularBinEncoding)
+function outcome_space(e::RectangularBinEncoding)
     # We can be smart here. All possible bins are exactly the same thing
     # as the Cartesian Indices of a NxD matrix!
     dims = _array_dims_from_fixed_binning(e)
     ci = CartesianIndices(dims)
     D = length(dims)
     outcomes = map(x -> SVector{D, Int}(Tuple(x)), vec(ci))
+    # TODO: Still haven't decided this yet.
+    # outcomes = (SVector{D, Int}(Tuple(x)) for x in vec(ci))
+    # outcomes = Base.Generator(x -> SVector{D, Int}(Tuple(x)), ci)
     return outcomes
 end
 

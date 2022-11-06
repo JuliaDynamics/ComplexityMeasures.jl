@@ -100,7 +100,7 @@ end
         @test total_outcomes(D, symb_same) == N^2
 
         # all possible outcomes
-        o = all_possible_outcomes(symb_diff)
+        o = outcome_space(symb_diff)
         @test length(o) == N^2
         @test eltype(o) == SVector{2, Int}
         for i in 1:N

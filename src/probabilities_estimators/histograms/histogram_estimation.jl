@@ -1,6 +1,4 @@
-# Fast histograms are internal functions, NOT exported in the public API,
-# because `probabilities_and_outcomes` is all the user would need.
-# The functions _are_ part of the DEV API, and could be used downstream.
+# This function is part of the DEV API and could be used downstream.
 # (documented and tested).
 """
     fasthist!(x) → c::Vector{Int}

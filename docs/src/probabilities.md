@@ -14,8 +14,8 @@ probabilities!
 Probabilities
 probabilities_and_outcomes
 outcomes
+outcome_space
 total_outcomes
-all_possible_outcomes
 missing_outcomes
 ```
 
