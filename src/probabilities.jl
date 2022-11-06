@@ -3,6 +3,7 @@ export probabilities, probabilities!
 export probabilities_and_outcomes, outcomes
 export total_outcomes
 export missing_outcomes
+export all_possible_outcomes
 
 ###########################################################################################
 # Types
@@ -113,6 +114,8 @@ end
 Return `probs, Ω`, where `probs = probabilities(x, est)` and
 `Ω[i]` is the outcome with probability `probs[i]`.
 The element type of `Ω` depends on the estimator.
+
+See also [`outcomes`](@ref), [`total_outcomes`](@ref), and [`all_possible_outcomes`](@ref).
 """
 function probabilities_and_outcomes(x, est::ProbabilitiesEstimator)
     error("`probabilities_and_outcomes` not implemented for estimator $(typeof(est)).")
@@ -178,11 +181,21 @@ Works for estimators that implement [`total_outcomes`](@ref).
 
 See also: [`MissingDispersionPatterns`](@ref).
 """
-function missing_outcomes end
-
 function missing_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
     probs = probabilities(x, est)
     L = total_outcomes(x, est)
     O = count(!iszero, probs)
     return L - O
+end
+
+
+"""
+    all_possible_outcomes([x,] est::ProbabilitiesEstimator) → o
+
+Return a vector containing all possible outcomes of `est`.
+Only possible for estimators that implement [`total_outcomes`](@ref),
+and similarly, for some estimators `x` is not needed.
+"""
+function all_possible_outcomes(est::ProbabilitiesEstimator)
+    error("`all_possible_outcomes` not implemented for estimator $(typeof(est)).")
 end

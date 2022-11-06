@@ -15,6 +15,8 @@ Probabilities
 probabilities_and_outcomes
 outcomes
 total_outcomes
+all_possible_outcomes
+missing_outcomes
 ```
 
 ## Count occurrences (counting)
