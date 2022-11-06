@@ -115,7 +115,7 @@ If `e` is not given, it defaults to `Shannon()`.
 
 Notice that unlike for [`entropy`](@ref), here there is no method
 `entropy_normalized(e::Entropy, probs::Probabilities)` because there is no way to know
-the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs`.
+the amount of _possible_ outcomes (i.e., the [`total_outcomes`](@ref)) from `probs`.
 """
 function entropy_normalized(e::Entropy, x, est::ProbabilitiesEstimator)
     return entropy(e, x, est)/entropy_maximum(e, x, est)
@@ -139,6 +139,7 @@ computing probability distributions. The available indirect entropies are:
 
 - [`Kraskov`](@ref).
 - [`KozachenkoLeonenko`](@ref).
+- [`Vasicek`](@ref).
 """
 function entropy(::IndirectEntropy, ::Array_or_Dataset) end
 function entropy(e::IndirectEntropy, ::Array_or_Dataset, ::ProbabilitiesEstimator)

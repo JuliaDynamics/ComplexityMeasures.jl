@@ -59,6 +59,6 @@ function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
     probs, bins, encoder = fasthist(x, est.binning)
     (; mini, edgelengths) = encoder
     unique!(bins) # `bins` is already sorted from `fasthist!`
-    events = map(b -> b .* edgelengths .+ mini, bins)
-    return probs, events
+    outcomes = map(b -> b .* edgelengths .+ mini, bins)
+    return probs, outcomes
 end

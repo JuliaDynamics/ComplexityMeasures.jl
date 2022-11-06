@@ -1,4 +1,4 @@
-# Entropies
+# [Entropies](@id entropies)
 
 ```@docs
 entropy
@@ -53,6 +53,15 @@ Kraskov
 KozachenkoLeonenko
 Zhu
 ZhuSingh
+```
+
+### Order statistics entropy
+
+```@docs
+Vasicek
+AlizadehArghami
+Ebrahimi
+Correa
 ```
 
 ## Convenience functions

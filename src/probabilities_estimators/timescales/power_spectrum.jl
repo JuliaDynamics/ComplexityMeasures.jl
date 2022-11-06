@@ -40,8 +40,8 @@ end
 
 function probabilities_and_outcomes(x::Array_or_Dataset, est::PowerSpectrum)
     probs = probabilities(x, est)
-    events = FFTW.rfftfreq(length(x))
-    return probs, events
+    outcomes = FFTW.rfftfreq(length(x))
+    return probs, outcomes
 end
 
 function total_outcomes(x::Array_or_Dataset, ::PowerSpectrum)

@@ -6,8 +6,8 @@ import Base.maximum
     SpatialDispersion <: ProbabilitiesEstimator
     SpatialDispersion(stencil, x::AbstractArray;
         periodic::Bool = true,
-        symbolization::S = GaussianSymbolization(c = 5),
-        skip_symbolization::Bool = false,
+        encoding::S = GaussianCDFEncoding(c = 5),
+        skip_encoding::Bool = false,
         L = nothing,
     )
 
@@ -23,7 +23,7 @@ array. If `periodic = false`, pixels whose stencil exceeds the array bounds are 
 Estimating probabilities/entropies from higher-dimensional data is conceptually simple.
 
 1. Discretize each value (hypervoxel) in `x` relative to all other values `xᵢ ∈ x` using the
-    provided `symbolization` scheme. If `skip_symbolization == true`, `symbolization` is
+    provided `encoding` scheme. If `skip_encoding == true`, `encoding` is
     ignored, and dispersion patterns are computed directly from `x`, under the assumption
     that `L` is the alphabet length for `x` (useful for categorical or integer data).
 2. Use `stencil` to extract relevant discretized points around each hypervoxel. The
@@ -46,33 +46,33 @@ est = SpatialDispersion(stencil, first(imgs))
 h_vs_t = entropy_normalized.(imgs, Ref(est))
 ```
 
-See also: [`SpatialSymbolicPermutation`](@ref), [`GaussianSymbolization`](@ref),
+See also: [`SpatialSymbolicPermutation`](@ref), [`GaussianCDFEncoding`](@ref),
 [`symbolize`](@ref).
 
 [^Azami2019]: Azami, H., da Silva, L. E. V., Omoto, A. C. M., & Humeau-Heurtier, A. (2019).
     Two-dimensional dispersion entropy: An information-theoretic method for irregularity
     analysis of images. Signal Processing: Image Communication, 75, 178-187.
 """
-struct SpatialDispersion{D,P,V,S<:SymbolizationScheme} <: SpatialProbEst{D, P}
+struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
     valid::V
-    symbolization::S
-    skip_symbolization::Bool
+    encoding::S
+    skip_encoding::Bool
     L::Union{Nothing, Int}
 end
 
 function SpatialDispersion(stencil, x::AbstractArray{T, D};
         periodic::Bool = true,
-        symbolization::S = GaussianSymbolization(c = 5),
-        skip_symbolization::Bool = false,
+        encoding::S = GaussianCDFEncoding(c = 5),
+        skip_encoding::Bool = false,
         L::Union{Nothing, Int} = nothing) where {S, T, D}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
 
     SpatialDispersion{D, periodic, typeof(valid), S}(
-        stencil, copy(stencil), arraysize, valid, symbolization,
-        skip_symbolization, L,
+        stencil, copy(stencil), arraysize, valid, encoding,
+        skip_encoding, L,
     )
 end
 
@@ -81,17 +81,17 @@ function Base.show(io::IO, est::SpatialDispersion{D,P,V,S}) where {D,P,V,S}
     println(io, "Spatial dispersion estimator for $D-dimensional data.")
     print(io, "Stencil: ")
     show(io, MIME"text/plain"(), est.stencil)
-    print(io, "\nSymbolization: $(est.symbolization)")
+    print(io, "\nEncoding: $(est.encoding)")
     print(io, """\nBoundaries: $(P ? "Periodic" : "Non-periodic")""")
 end
 
 function symbol_distribution(x::AbstractArray{T, N}, est::SpatialDispersion) where {T, N}
-    if est.skip_symbolization
+    if est.skip_encoding
         symbolized_x = copy(x)
     else
         # Symbolize each pixel individually relative to the other pixels.
         # This will be an integer array with the same dimensions as `x`.
-        symbolized_x = symbolize(x, est.symbolization)
+        symbolized_x = symbolize(x, est.encoding)
     end
 
     # It is easiest just to store the symbols as strings, i.e. [1, 5, 4, 3] => "1543".
@@ -112,21 +112,21 @@ function probabilities(x::AbstractArray{T, N}, est::SpatialDispersion) where {T,
     return Probabilities(fasthist!(symbols))
 end
 
-function probabilities_and_events(x::Array_or_Dataset, est::SpatialDispersion)
+function probabilities_and_outcomes(x::Array_or_Dataset, est::SpatialDispersion)
     symbols = symbol_distribution(x, est)
 
     # We don't care about the fact that `fasthist!` sorts in-place here, because we
-    # only need the unique values of `symbols` for the events.
+    # only need the unique values of `symbols` for the outcomes.
     probs = Probabilities(fasthist!(symbols))
-    events = unique!(symbols)
-    return probs, events
+    outcomes = unique!(symbols)
+    return probs, outcomes
 end
 
 function alphabet_length(est::SpatialDispersion)
     m = stencil_length(est.stencil)
-    if est.skip_symbolization
+    if est.skip_encoding
         return est.L^m
     else
-        return est.symbolization.c^m
+        return est.encoding.c^m
     end
 end

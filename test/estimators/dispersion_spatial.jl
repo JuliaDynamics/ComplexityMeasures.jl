@@ -7,10 +7,10 @@ x = [
 stencil = [1 1; 1 0]
 
 
-est = SpatialDispersion(stencil, x, symbolization = GaussianSymbolization(c = 3),
+est = SpatialDispersion(stencil, x, encoding =  GaussianCDFEncoding(c = 3),
     periodic = false)
 
-# With n = 3 categories, a GaussianSymbolization should not alter this particular `x`.
+# With n = 3 categories, a GaussianCDFEncoding should not alter this particular `x`.
 # we thus expect the following "dispersion patterns" [frequencies]:
 # "121" [2]
 # "232" [2],
@@ -20,7 +20,7 @@ est = SpatialDispersion(stencil, x, symbolization = GaussianSymbolization(c = 3)
 # With periodic boundary conditions, we expect a different dispersion pattern distribution.
 # `probabilities` sorts the dispersion patterns, so we must also consider frequencies of
 # patterns sorted lexicographically.
-est = SpatialDispersion(stencil, x, symbolization = GaussianSymbolization(c = 3),
+est = SpatialDispersion(stencil, x, encoding =  GaussianCDFEncoding(c = 3),
     periodic = true)
 # "113" [1]
 # "121" [3]
@@ -40,8 +40,8 @@ est = SpatialDispersion(stencil, x, symbolization = GaussianSymbolization(c = 3)
 # symbolization. We can also skip symbolization all together, but then we must specify
 # `L` as the total possible number of symbols the input data can take.
 y = rand(0:1, 100, 100);
-est_y = SpatialDispersion(stencil, y, symbolization = GaussianSymbolization(c = 2))
-est_y_presymb = SpatialDispersion(stencil, y; skip_symbolization = true, L = 2)
+est_y = SpatialDispersion(stencil, y, encoding =  GaussianCDFEncoding(c = 2))
+est_y_presymb = SpatialDispersion(stencil, y; skip_encoding =  true, L = 2)
 
 @test 0.99 <= round(entropy_normalized(y, est_y), digits = 2) <= 1.0
 @test 0.99 <= round(entropy_normalized(y, est_y_presymb), digits = 2) <= 1.0

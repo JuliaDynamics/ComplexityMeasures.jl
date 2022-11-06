@@ -50,18 +50,69 @@ for (i, e) in enumerate(estimators)
     lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
     band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
     color = (Main.COLORS[i], 0.5))
+    ylims!(-0.25, 0.25)
     axislegend()
 end
 
 fig
 ```
 
-As expected, all estimators nicely converge to the correct entropy with increasing
-time series length.
+## Indirect entropy (order statistics)
 
-[^Charzyńska2016]:
-    Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy
-    estimator with applications in systems biology. Entropy, 18(1), 13.
+Entropies.jl also provides entropy estimators based on
+[order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators
+are only defined for scalar-valued vectors, so we pass the data as `Vector{<:Real}`s instead
+of `Dataset`s, as we did for the nearest-neighbor estimators above.
+
+Here, we show how the [`Vasicek`](@ref), [`Ebrahimi`](@ref), [`AlizadehArghami`](@ref) 
+and [`Correa`](@ref) direct [`Shannon`](@ref) entropy estimators, with increasing sample size,
+approach zero for samples from a uniform distribution on  `[0, 1]`. The true entropy value in
+nats for this distribution is `ln(1 - 0) = 0`.
+
+```@example MAIN
+using Entropies
+using Statistics
+using Distributions
+using CairoMakie
+
+# Define estimators
+base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
+# just provide types here, they are instantiated inside the loop
+estimators = [Vasicek, Ebrahimi, AlizadehArghami, Correa]
+labels = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
+
+# Test each estimator `nreps` times over time series of varying length.
+Ns = [100:100:500; 1000:1000:10000]
+nreps = 30
+
+Hs_uniform = [[zeros(nreps) for N in Ns] for e in estimators]
+for (i, e) in enumerate(estimators)
+    for j = 1:nreps
+        pts = rand(Uniform(0, 1), maximum(Ns)) # raw timeseries, not a `Dataset`
+        for (k, N) in enumerate(Ns)
+            m = floor(Int, N / 100) # Scale `m` to timeseries length
+            est = e(; m, base) # Instantiate estimator with current `m`
+            Hs_uniform[i][k][j] = entropy(est, pts[1:N])
+        end
+    end
+end
+
+fig = Figure(resolution = (600, length(estimators) * 200))
+for (i, e) in enumerate(estimators)
+    Hs = Hs_uniform[i]
+    ax = Axis(fig[i,1]; ylabel = "h (nats)")
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
+    color = (Main.COLORS[i], 0.5))
+    ylims!(-0.25, 0.25)
+    axislegend()
+end
+
+fig
+```
+
+As for the nearest neighbor estimators, both estimators also approach the
+true entropy value for this example, but is negatively biased for small sample sizes.
 
 ## Permutation entropy example
 
@@ -71,10 +122,7 @@ logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example MAIN
-using Entropies
-using DynamicalSystemsBase
-using ChaosTools
-using CairoMakie
+using DynamicalSystemsBase, CairoMakie, ChaosTools
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4
@@ -142,7 +190,6 @@ energy is contained at one scale) and higher for very irregular signals (energy 
 more out across scales).
 
 ```@example MAIN
-using Entropies
 using DynamicalSystemsBase, CairoMakie
 N, a = 1000, 10
 t = LinRange(0, 2*a*π, N)
@@ -174,7 +221,7 @@ Here, we show the sensitivity of the various entropies to variations in their pa
 ### Curado entropy
 
 Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
-how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
+how the [Curado](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
 ```@example MAIN
@@ -248,8 +295,8 @@ des = zeros(length(windows))
 pes = zeros(length(windows))
 
 m, c = 2, 6
-est_rd = ReverseDispersion(encoding = GaussianCDFEncoding(c), m = m, τ = 1)
-est_de = Dispersion(encoding = GaussianCDFEncoding(c), m = m, τ = 1)
+est_rd = ReverseDispersion(encoding = GaussianMapping(c), m = m, τ = 1)
+est_de = Dispersion(encoding = GaussianMapping(c), m = m, τ = 1)
 
 for (i, window) in enumerate(windows)
     rdes[i] = complexity_normalized(est_rd, y[window])
@@ -286,7 +333,6 @@ fig
 When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the [Wavelet entropy example](@ref) (where we use the spectral entropy instead of the wavelet entropy):
 
 ```@example MAIN
-using Entropies
 using DynamicalSystemsBase
 N1, N2, a = 101, 100001, 10
 
@@ -310,7 +356,7 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 
 ## 2D permutation/dispersion entropy
 
-Let's see how the normalized permutation and dispersion entropies increase for an image 
+Let's see how the normalized permutation and dispersion entropies increase for an image
 that gets progressively more noise added to it.
 
 ```@example
@@ -330,7 +376,7 @@ noisy_imgs = [i == 1 ? original : original .+ rand(Uniform(0, nL), size(original
 # a 2x2 stencil (i.e. dispersion/permutation patterns of length 4)
 stencil = ((2, 2), (1, 1)) 
 est_disp = SpatialDispersion(stencil, original; 
-    symbolization = GaussianSymbolization(c = 5), 
+    encoding =  GaussianCDFEncoding(c = 5), 
     periodic = false)
 est_perm = SpatialSymbolicPermutation(stencil, original;
     periodic = false)
@@ -356,230 +402,11 @@ end
 fig
 ```
 
-While the [`SpatialSymbolicPermutation`](@ref) entropy quickly approaches its 
+While the [`SpatialSymbolicPermutation`](@ref) entropy quickly approaches its
 maximum value, the [`SpatialDispersion`](@ref) entropy much better
 resolves the increase in entropy as the image gets noiser. This can probably be explained
 by the fact that for the chosen parameters, for any given `stencil`, the number of possible
-states (or [`alphabet_length`](@ref)) is larger for [`SpatialDispersion`](@ref) than for 
+states (or [`alphabet_length`](@ref)) is larger for [`SpatialDispersion`](@ref) than for
 [`SpatialSymbolicPermutation`](@ref), so the dispersion approach is much less sensitive
-to noise addition (i.e. noise saturation over the possible states is slower 
+to noise addition (i.e. noise saturation over the possible states is slower
 for [`SpatialDispersion`](@ref)).
-
-
-## Missing dispersion patterns
-
-```@example MAIN
-using CairoMakie
-using DynamicalSystemsBase
-using Entropies
-using TimeseriesSurrogates
-using Statistics
-
-d = Dispersion(m = 3, encoding = GaussianCDFEncoding(c = 7))
-est = MissingDispersionPatterns(d)
-sys = Systems.logistic(0.6; r = 4.0)
-normalize = true
-Ls = collect(100:100:1000)
-nL = length(Ls)
-nreps = 50
-method = WLS(IAAFT(), rescale = true)
-
-r_det, r_noise = zeros(length(Ls)), zeros(length(Ls))
-r_det_surr, r_noise_surr = [zeros(nreps) for L in Ls], [zeros(nreps) for L in Ls]
-y = rand(maximum(Ls))
-
-for (i, L) in enumerate(Ls)
-    # Deterministic time series
-    x = trajectory(sys, L - 1, Ttr = 5000)
-    sx = surrogenerator(x, method)
-    r_det[i] = complexity_normalized(est, x)
-    r_det_surr[i][:] = [complexity_normalized(est, sx()) for j = 1:nreps]
-
-    # Random time series
-    r_noise[i] = complexity_normalized(est, y[1:L])
-    sy = surrogenerator(y[1:L], method)
-    r_noise_surr[i][:] = [complexity_normalized(est, sy()) for j = 1:nreps]
-end
-
-fig = Figure()
-ax = Axis(fig[1, 1],
-    xlabel = "Time series length (L)",
-    ylabel = "# missing dispersion patterns (normalized)"
-)
-
-lines!(ax, Ls, r_det, label = "logistic(x0 = 0.6; r = 4.0)", color = :black)
-lines!(ax, Ls, r_noise, label = "Uniform noise", color = :red)
-for i = 1:nL
-    if i == 1
-        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black,
-            label = "WIAAFT surrogates (logistic)")
-         boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red,
-            label = "WIAAFT surrogates (noise)")
-    else
-        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black)
-        boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red)
-    end
-end
-axislegend(position = :rc)
-ylims!(0, 1.1)
-
-fig
-```
-
-We don't need to actually to compute the quantiles here to see that for the logistic
-map, across all time series lengths, the ``N_{MDP}`` values are above the extremal values
-of the ``N_{MDP}`` values for the surrogate ensembles. Thus, we
-conclude that the logistic map time series has nonlinearity (well, of course).
-
-For the univariate noise time series, there is considerable overlap between ``N_{MDP}``
-for the surrogate distributions and the original signal, so we can't claim nonlinearity
-for this signal.
-
-Of course, to robustly reject the null hypothesis, we'd need to generate a sufficient number
-of surrogate realizations, and actually compute quantiles to compare with.
-
-[^Zhou2022]: Zhou, Q., Shang, P., & Zhang, B. (2022). Using missing dispersion patterns
-    to detect determinism and nonlinearity in time series data. Nonlinear Dynamics, 1-20.
-
-## Approximate entropy
-
-Here, we reproduce the Henon map example with ``R=0.8`` from Pincus (1991),
-comparing our values with relevant values from table 1 in Pincus (1991).
-
-We use `DiscreteDynamicalSystem` from `DynamicalSystemsBase` to represent the map,
-and use the `trajectory` function from the same package to iterate the map
-for different initial conditions, for multiple time series lengths.
-
-Finally, we summarize our results in box plots and compare the values to those
-obtained by Pincus (1991).
-
-```@example MAIN
-using Entropies
-using DynamicalSystemsBase
-using DelayEmbeddings
-using CairoMakie
-
-# Equation 13 in Pincus (1991)
-function eom_henon(u, p, n)
-    R = p[1]
-    x, y = u
-    dx = R*y + 1 - 1.4*x^2
-    dy = 0.3*R*x
-
-    return SVector{2}(dx, dy)
-end
-
-function henon(; u₀ = rand(2), R = 0.8)
-    DiscreteDynamicalSystem(eom_henon, u₀, [R])
-end
-
-ts_lengths = [300, 1000, 2000, 3000]
-nreps = 100
-apens_08 = [zeros(nreps) for i = 1:length(ts_lengths)]
-
-# For some initial conditions, the Henon map as specified here blows up,
-# so we need to check for infinite values.
-containsinf(x) = any(isinf.(x))
-
-c = ApproximateEntropy(r = 0.05, m = 2)
-
-for (i, L) in enumerate(ts_lengths)
-    k = 1
-    while k <= nreps
-        sys = henon(u₀ = rand(2), R = 0.8)
-        t = trajectory(sys, L, Ttr = 5000)
-
-        if !any([containsinf(tᵢ) for tᵢ in t])
-            x, y = columns(t)
-            apens_08[i][k] = complexity(c, x)
-            k += 1
-        end
-    end
-end
-
-fig = Figure()
-
-# Example time series
-a1 = Axis(fig[1,1]; xlabel = "Time (t)", ylabel = "Value")
-sys = henon(u₀ = [0.5, 0.1], R = 0.8)
-x, y = columns(trajectory(sys, 100, Ttr = 500))
-lines!(a1, 1:length(x), x, label = "x")
-lines!(a1, 1:length(y), y, label = "y")
-
-# Approximate entropy values, compared to those of the original paper (black dots).
-a2 = Axis(fig[2, 1];
-    xlabel = "Time series length (L)",
-    ylabel = "ApEn(m = 2, r = 0.05)")
-
-# hacky boxplot, but this seems to be how it's done in Makie at the moment
-n = length(ts_lengths)
-for i = 1:n
-    boxplot!(a2, fill(ts_lengths[i], n), apens_08[i];
-        width = 200)
-end
-
-scatter!(a2, ts_lengths, [0.337, 0.385, NaN, 0.394];
-    label = "Pincus (1991)", color = :black)
-fig
-```
-
-## Sample entropy
-
-Completely regular signals should have sample entropy approaching zero, while
-less regular signals should have higher sample entropy.
-
-```@example MAIN
-using DynamicalSystemsBase
-using Entropies
-using CairoMakie
-N, a = 2000, 10
-t = LinRange(0, 2*a*π, N)
-
-x = repeat([-5:5 |> collect; 4:-1:-4 |> collect], N ÷ 20);
-y = sin.(t .+ cos.(t/0.5));
-z = rand(N)
-
-h_x, h_y, h_z = map(t -> complexity(SampleEntropy(t), t), (x, y, z))
-
-fig = Figure()
-ax = Axis(fig[1,1]; ylabel = "x")
-lines!(ax, t, x; color = Cycled(1), label = "h=$(h=round(h_x, sigdigits = 5))");
-ay = Axis(fig[2,1]; ylabel = "y")
-lines!(ay, t, y; color = Cycled(2), label = "h=$(h=round(h_y, sigdigits = 5))");
-az = Axis(fig[3,1]; ylabel = "z", xlabel = "time")
-lines!(az, t, z; color = Cycled(3), label = "h=$(h=round(h_z, sigdigits = 5))");
-for a in (ax, ay, az); axislegend(a); end
-for a in (ax, ay); hidexdecorations!(a; grid=false); end
-fig
-```
-
-Next, we compare the sample entropy obtained for different values of the radius `r` for
-uniform noise, normally distributed noise, and a periodic signal.
-
-```@example MAIN
-using Entropies, CairoMakie, Distributions
-N = 2000
-x_U = rand(N)
-x_N = rand(Normal(0, 3), N)
-x_periodic = repeat(rand(20), N ÷ 20)
-
-x_U .= (x_U .- mean(x_U)) ./ std(x_U)
-x_N .= (x_N .- mean(x_N)) ./ std(x_N)
-x_periodic .= (x_periodic .- mean(x_periodic)) ./ std(x_periodic)
-
-rs = 10 .^ range(-1, 0, length = 30)
-base = 2
-m = 2
-hs_U = [complexity_normalized(SampleEntropy(m = m, r = r), x_U) for r in rs]
-hs_N = [complexity_normalized(SampleEntropy(m = m, r = r), x_N) for r in rs]
-hs_periodic = [complexity_normalized(SampleEntropy(m = m, r = r), x_periodic) for r in rs]
-
-fig = Figure()
-# Time series
-a1 = Axis(fig[1,1]; xlabel = "r", ylabel = "Sample entropy")
-lines!(a1, rs, hs_U, label = "Uniform noise, U(0, 1)")
-lines!(a1, rs, hs_N, label = "Gaussian noise, N(0, 1)")
-lines!(a1, rs, hs_periodic, label = "Periodic signal")
-axislegend()
-fig
-```
