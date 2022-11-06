@@ -2,6 +2,8 @@
 @test SymbolicPermutation(lt = Base.isless) isa SymbolicPermutation
 @test SymbolicPermutation(lt = Entropies.isless_rand) isa SymbolicPermutation
 
+@test total_outcomes(SymbolicPermutation(m = 3)) == factorial(3)
+
 @testset "Pre-allocated" begin
     @testset "Probabilities" begin
         est = SymbolicPermutation(m = 5, τ = 1)
@@ -71,3 +73,13 @@ end
     @test probabilities(D, est_isless) isa Probabilities
     @test probabilities(D, est_isless_rand) isa Probabilities
 end
+
+# With m = 2, ordinal patterns and frequencies are:
+# [1, 2] => 3
+# [2, 1] => 2
+x = [1, 2, 1, 2, 1, 2]
+# don't randomize in the case of equal values, so use Base.isless
+est = SymbolicPermutation(m = 2, lt = Base.isless)
+probs, πs = probabilities_and_outcomes(x, est)
+@test πs == [0, 1]
+@test probs == [3/5, 2/5]

@@ -37,16 +37,16 @@ est = SymbolicPermutation(; m, τ)
 
 # For a time series
 x_ts = rand(N)
-s_ts = zeros(Int, N - (m - 1)*τ)
-p = probabilities!(s_ts, x_ts, est)
-h = entropy!(s_ts, Renyi(),  x_ts, est)
+πs_ts = zeros(Int, N - (m - 1)*τ)
+p = probabilities!(πs_ts, x_ts, est)
+h = entropy!(πs_ts, Renyi(),  x_ts, est)
 
 # For a pre-discretized `Dataset`
 x_symb = outcomes(x_ts, OrdinalPatternEncoding(m = 2, τ = 1))
 x_d = genembed(x_symb, (0, -1, -2))
-s_d = zeros(Int, length(x_d))
-p = probabilities!(s_d, x_d, est)
-h = entropy!(s_d, Renyi(), x_d, est)
+πs_d = zeros(Int, length(x_d))
+p = probabilities!(πs_d, x_d, est)
+h = entropy!(πs_d, Renyi(), x_d, est)
 ```
 
 See [`SymbolicWeightedPermutation`](@ref) and [`SymbolicAmplitudeAwarePermutation`](@ref)
@@ -77,38 +77,47 @@ function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where
     SymbolicPermutation{F}(τ, m, lt)
 end
 
-function probabilities!(s::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
-    length(s) == length(x) || throw(ArgumentError("Need length(s) == length(x), got `length(s)=$(length(s))` and `length(x)==$(length(x))`."))
+function probabilities!(πs::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
+    length(πs) == length(x) || throw(ArgumentError("Need length(πs) == length(x), got `length(πs)=$(length(πs))` and `length(x)==$(length(x))`."))
     m >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series embed it using `genembed` first.")
 
     @inbounds for i in eachindex(x)
-        s[i] = encode_motif(x[i], m)
+        πs[i] = encode_motif(x[i], m)
     end
-    probabilities(s)
+    probabilities(πs)
 end
 
-function probabilities!(s::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
+function probabilities!(πs::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
     L = length(x)
     N = L - (est.m-1)*est.τ
-    length(s) == N || error("Pre-allocated symbol vector `s`needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
+    length(πs) == N || error("Pre-allocated symbol vector `πs` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(πs)=$(length(πs)) and length(x)=$(L).")
 
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     x_emb = genembed(x, τs)
 
-    probabilities!(s, x_emb, est)
+    probabilities!(πs, x_emb, est)
 end
 
-function probabilities(x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
-    s = zeros(Int, length(x))
-    probabilities!(s, x, est)
+function probabilities_and_outcomes(x::AbstractDataset{m, T},
+        est::SymbolicPermutation) where {m, T}
+    πs = zeros(Int, length(x))
+    probs = probabilities!(πs, x, est)
+    observed_outcomes = sort(unique(πs))
+
+    probs, observed_outcomes
 end
 
-function probabilities(x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
+function probabilities_and_outcomes(x::AbstractVector{T},
+        est::SymbolicPermutation) where {T<:Real}
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     x_emb = genembed(x, τs)
 
-    s = zeros(Int, length(x_emb))
-    probabilities!(s, x_emb, est)
+    # Create symbol vector and fill it.
+    πs = zeros(Int, length(x_emb))
+    probs = probabilities!(πs, x_emb, est)
+    observed_outcomes = sort(unique(πs))
+
+    return probs, observed_outcomes
 end
 
 function entropy!(e::Entropy,
@@ -117,7 +126,7 @@ function entropy!(e::Entropy,
     est::SymbolicPermutation;
     ) where {m, T}
 
-    length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(s)=$(length(s)) and length(x)=$(L).")
+    length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(πs)=$(length(πs)) and length(x)=$(L).")
     ps = probabilities!(s, x, est)
 
     entropy(e, ps)
