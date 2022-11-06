@@ -43,5 +43,4 @@ n = 1000000
 @test round(entropy(ee_n, randn(rng, n)), digits = 2) == N
 @test round(entropy(ev_n, randn(rng, n)), digits = 2) == N
 @test round(entropy(ec_n, randn(rng, n)), digits = 2) == N
-@test round(entropy(ec_a, randn(rng, n)), digits = 2) == N
-
+@test round(entropy(ea_n, randn(rng, n)), digits = 2) == N
