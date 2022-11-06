@@ -25,10 +25,6 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
 
     testfile("entropies/nearest_neighbors_direct.jl")
 
-    # Multiscale analysis
-    testfile("multiscale/downsampling.jl")
-    testfile("multiscale/multiscale.jl")
-
     # Various
     testfile("utils/utils.jl")
     testfile("entropies/convenience.jl")
