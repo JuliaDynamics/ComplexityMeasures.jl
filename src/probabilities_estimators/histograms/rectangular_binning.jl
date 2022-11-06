@@ -1,3 +1,6 @@
+# The binnings here are pretty much an intermediate interface to create a
+# `RectangularBinEncoding`. Every actual source code extension is done on having
+# an encoding...
 export RectangularBinEncoding
 export RectangularBinning
 export FixedRectangularBinning
@@ -95,8 +98,10 @@ function encode_as_bin(point, b::RectangularBinEncoding)
     return floor.(Int, (point .- mini) ./ edgelengths)
 end
 
-function outcomes(x::Vector_or_Dataset, b::RectangularBinEncoding)
-    return map(point -> encode_as_bin(point, b), x)
+function decode_from_bin(bin, b::RectangularBinEncoding)
+    (; mini, edgelengths) = b
+    # Remove one because we want lowest value corner, and we get indices starting from 1
+    return (bin .- 1) .* edgelengths .+ mini
 end
 
 ##################################################################
@@ -145,7 +150,7 @@ end
 # Encoding bins using a fixed (user-specified) grid
 ##################################################################
 function RectangularBinEncoding(::AbstractVector{<:Real},
-        b::FixedRectangularBinning{E}; n_eps = 1) where E
+        b::FixedRectangularBinning{E}; n_eps = 2) where E
 
     # This function always returns numbers and is type stable
     ϵmin, ϵmax = b.ϵmin, b.ϵmax
@@ -181,7 +186,7 @@ function RectangularBinEncoding(::AbstractDataset{D, T},
 end
 # This version exists if the given `ϵ`s are already tuples.
 # Then, the dataset doesn't need to be provided.
-function RectangularBinEncoding(b::FixedRectangularBinning{<:NTuple}, n_eps = 1)
+function RectangularBinEncoding(b::FixedRectangularBinning{<:NTuple}, n_eps = 2)
     ϵmin, ϵmax = b.ϵmin, b.ϵmax
     D = length(ϵmin)
     mini = SVector{D, Float64}(ϵmin)
@@ -192,66 +197,36 @@ function RectangularBinEncoding(b::FixedRectangularBinning{<:NTuple}, n_eps = 1)
 end
 
 ##################################################################
-# Outcomes / total outcomes
+# Outcomes / total outcomes / extension of functions
 ##################################################################
-const RBE = RectangularBinEncoding
-const RB = RectangularBinning
-const NONDEDUCIBLE{T} = Union{
-    RB{T},
-    RBE{RB{T}}
-    } where T <: Union{Q, Vector{Q}} where Q <: AbstractFloat
-
-function total_outcomes(x, symbolization::NONDEDUCIBLE)
-    msg = "total_outcomes can't be deduced from $NONDEDUCIBLE"
-    throw(ArgumentError(msg))
-end
-
-# multiple-axis bins don't make sense for univariate input.
-function total_outcomes(::AbstractVector,symbolization::RBE{RB{Vector{Int}}})
-    msg = "total_outcomes is ambiguous for Vectors with RectangularBinning{Vector{Int}}"
-    throw(ArgumentError(msg))
-end
-total_outcomes(::AbstractVector,symbolization::RBE{RB{Int}}) =
-    symbolization.binning.ϵ
-total_outcomes(::AbstractDataset{D}, symbolization::RBE{RB{Int}}) where {D} =
-    symbolization.binning.ϵ^D
-total_outcomes(::AbstractDataset{D}, symbolization::RBE{RB{Vector{Int}}}) where {D} =
-    prod(symbolization.binning.ϵ)
-
 # When the grid is fixed by the user, we can always deduce the total number of bins,
 # even just from the binning itself - symbolization info not needed.
-function total_outcomes(x::Array_or_Dataset, b::FixedRectangularBinning)
-    return total_outcomes(RectangularBinEncoding(x, b))
-end
-# This function does not need `x`; all info about binning are in the encoding
 function total_outcomes(e::RectangularBinEncoding)
+    if e.binning isa RectangularBinning
+        error("Not possible to implement for `RectangularBinning`.")
+    end
     D = length(e.mini)
     return e.binning.N^D
 end
 
 # This function does not need `x`; all info about binning are in the encoding
 function outcome_space(e::RectangularBinEncoding)
+    if e.binning isa RectangularBinning
+        error("Not possible to implement for `RectangularBinning`.")
+    end
     # We can be smart here. All possible bins are exactly the same thing
-    # as the Cartesian Indices of a NxD matrix!
+    # as the Cartesian Indices of an array, mapped into "data" units
     dims = _array_dims_from_fixed_binning(e)
-    ci = CartesianIndices(dims)
-    D = length(dims)
-    outcomes = map(x -> SVector{D, Int}(Tuple(x)), vec(ci))
-    # TODO: Still haven't decided this yet.
-    # outcomes = (SVector{D, Int}(Tuple(x)) for x in vec(ci))
-    # outcomes = Base.Generator(x -> SVector{D, Int}(Tuple(x)), ci)
+    bins = CartesianIndices(dims)
+    outcomes = map(b -> decode_from_bin(b, e), bins)
     return outcomes
 end
 
 function _array_dims_from_fixed_binning(e)
-    if e.binning isa RectangularBinning
-        error("Not possible to implement for `RectangularBinning`.")
-    end
     N = e.binning.N
     D = length(e.mini)
     return ntuple(i -> N, D)
 end
-
 
 ##################################################################
 # low level histogram call

@@ -28,7 +28,7 @@ The `ValueHistogram` estimator has a linearithmic time complexity
 This allows computation of probabilities (histograms) of high-dimensional
 datasets and with small box sizes `ε` without memory overflow and with maximum performance.
 
-# Outcomes
+## Outcomes
 
 The outcomes `Ω` for `ValueHistogram` is the set of unique bins constructed
 from `b`. Each bin is identified by its left (lowest-value) corner.
@@ -49,21 +49,30 @@ An alias for [`ValueHistogram`](@ref).
 """
 const VisitationFrequency = ValueHistogram
 
+# For organizational outcomes we extend methods here. However, their
+# source code in truth is in the binnings file using the encoding
+
 # This method is only valid for rectangular binnings, as `fasthist`
 # is only valid for rectangular binnings. For more binnings, it needs to be extended.
 function probabilities(x::Array_or_Dataset, est::ValueHistogram)
+    # and the `fasthist` actually just makes an encoding,
+    # this function is in `rectangular_binning.jl`
     fasthist(x, est.binning)[1]
 end
 
 function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
     probs, bins, encoder = fasthist(x, est.binning)
-    (; mini, edgelengths) = encoder
     unique!(bins) # `bins` is already sorted from `fasthist!`
-    events = map(b -> b .* edgelengths .+ mini, bins)
-    return probs, events
+    outcomes = map(b -> decode_from_bin(b, encoder), bins)
+    return probs, outcomes
 end
 
-function outcome_space(x::Array_or_Dataset, est::ValueHistogram)
+function outcome_space(x, est::ValueHistogram)
     encoder = RectangularBinEncoding(x, est.binning)
     return outcome_space(encoder)
+end
+
+function total_outcomes(x, est::ValueHistogram)
+    encoder = RectangularBinEncoding(x, est.binning)
+    return total_outcomes(encoder)
 end
