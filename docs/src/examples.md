@@ -64,9 +64,9 @@ Entropies.jl also provides entropy estimators based on
 are only defined for scalar-valued vectors, so we pass the data as `Vector{<:Real}`s instead
 of `Dataset`s, as we did for the nearest-neighbor estimators above.
 
-Here, we show how the [`Vasicek`](@ref) direct [`Shannon`](@ref) entropy estimator
-approaches zero for a uniform distribution on `[0, 1]`, which is the true
-entropy value for this distribution.
+Here, we show how the [`Vasicek`](@ref), [`Ebrahimi`](@ref), and [`Correa`](@ref) direct 
+[`Shannon`](@ref) entropy estimators approach zero for a uniform distribution on 
+`[0, 1]`, which is the true entropy value for this distribution.
 
 ```@example MAIN
 using Entropies
@@ -77,8 +77,8 @@ using CairoMakie
 # Define estimators
 base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
 # just provide types here, they are instantiated inside the loop
-estimators = [Vasicek, Correa]
-labels = ["Vasicek", "Correa"]
+estimators = [Vasicek, Ebrahimi, Correa]
+labels = ["Vasicek", "Ebrahimi", "Correa"]
 
 # Test each estimator `nreps` times over time series of varying length.
 Ns = [100:100:500; 1000:1000:10000]
@@ -113,6 +113,62 @@ fig
 As for the nearest neighbor estimators, both estimators also approach the
 true entropy value for this example, but is negatively biased for small sample sizes.
 
+## Indirect entropy (order statistics)
+
+Entropies.jl also provides entropy estimators based on
+[order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators
+are only defined for scalar-valued vectors, so we pass the data as `Vector{<:Real}`s instead
+of `Dataset`s, as we did for the nearest-neighbor estimators above.
+
+Here, we show how the [`Vasicek`](@ref) and [`Ebrahimi`](@ref) direct [`Shannon`](@ref)
+entropy estimators approach zero for a uniform distribution on `[0, 1]`, which is the true
+entropy value for this distribution.
+
+```@example MAIN
+using Entropies
+using Statistics
+using Distributions
+using CairoMakie
+
+# Define estimators
+base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
+ # just provide types here, they are instantiated inside the loop
+estimators = [Vasicek, Ebrahimi]
+labels = ["Vasicek", "Ebrahimi"]
+
+# Test each estimator `nreps` times over time series of varying length.
+Ns = [100:100:500; 1000:1000:10000]
+nreps = 30
+
+Hs_uniform = [[zeros(nreps) for N in Ns] for e in estimators]
+for (i, e) in enumerate(estimators)
+    for j = 1:nreps
+        pts = rand(Uniform(0, 1), maximum(Ns)) # raw timeseries, not a `Dataset`
+        for (k, N) in enumerate(Ns)
+            m = floor(Int, N / 100) # Scale `m` to timeseries length
+            est = e(; m, base) # Instantiate estimator with current `m`
+            Hs_uniform[i][k][j] = entropy(est, pts[1:N])
+        end
+    end
+end
+
+fig = Figure(resolution = (600, length(estimators) * 200))
+for (i, e) in enumerate(estimators)
+    Hs = Hs_uniform[i]
+    ax = Axis(fig[i,1]; ylabel = "h (nats)")
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
+    color = (Main.COLORS[i], 0.5))
+    ylims!(-0.25, 0.25)
+    axislegend()
+end
+
+fig
+```
+
+As for the nearest neighbor estimators, [`Vasicek`](@ref) also approaches the
+true entropy value for this example, but is negatively biased for small sample sizes.
+
 ## Permutation entropy example
 
 This example reproduces an example from Bandt and Pompe (2002), where the permutation
@@ -121,7 +177,7 @@ logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example MAIN
-using DynamicalSystemsBase, CairoMakie
+using DynamicalSystemsBase, CairoMakie, ChaosTools
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4

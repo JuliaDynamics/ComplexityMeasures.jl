@@ -3,9 +3,10 @@
 ## Probabilities API
 
 The probabilities API is defined by
-- [ProbabilitiesEstimator](@ref)
-- [probabilities](@ref)
-- [probabilities_and_outcomes](@ref)
+
+- [`ProbabilitiesEstimator`](@ref)
+- [`probabilities`](@ref)
+- [`probabilities_and_outcomes`](@ref)
 
 ```@docs
 ProbabilitiesEstimator

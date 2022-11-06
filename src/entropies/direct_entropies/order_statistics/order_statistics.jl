@@ -15,4 +15,5 @@ function ith_order_statistic(ex, i::Int, n::Int = length(x))
 end
 
 include("Vasicek.jl")
+include("Ebrahimi.jl")
 include("Correa.jl")

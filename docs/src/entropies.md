@@ -1,4 +1,4 @@
-# Entropies
+# [Entropies](@id entropies)
 
 ```@docs
 entropy
@@ -59,6 +59,7 @@ ZhuSingh
 
 ```@docs
 Vasicek
+Ebrahimi
 Correa
 ```
 
