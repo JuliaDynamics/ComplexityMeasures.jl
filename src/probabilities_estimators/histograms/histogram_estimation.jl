@@ -36,16 +36,3 @@ function fasthist!(x)
     sizehint!(hist, length(hist))
     return hist
 end
-
-# This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
-"""
-    fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
-Create an encoder for binning, then map `x` to bins, then call `fasthist!` on the bins.
-Return the output probabilities, the bins, and the created encoder.
-"""
-function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
-    encoder = RectangularBinEncoding(x, ϵ)
-    bins = outcomes(x, encoder)
-    hist = fasthist!(bins)
-    return Probabilities(hist), bins, encoder
-end
