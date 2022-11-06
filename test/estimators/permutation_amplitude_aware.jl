@@ -2,6 +2,8 @@
 @test SymbolicAmplitudeAwarePermutation(lt = Base.isless) isa SymbolicAmplitudeAwarePermutation
 @test SymbolicAmplitudeAwarePermutation(lt = Entropies.isless_rand) isa SymbolicAmplitudeAwarePermutation
 
+@test total_outcomes(SymbolicAmplitudeAwarePermutation(m = 3)) == factorial(3)
+
 m = 4
 τ = 1
 τs = tuple([τ*i for i = 0:m-1]...)
@@ -34,3 +36,13 @@ e2 = entropy(Renyi(), x, est)
     @test probabilities(ts, est_isless) isa Probabilities
     @test probabilities(D, est_isless) isa Probabilities
 end
+
+# With m = 2, ordinal patterns and frequencies are:
+# [1, 2] => 3
+# [2, 1] => 2
+x = [1, 2, 1, 2, 1, 2]
+# don't randomize in the case of equal values, so use Base.isless
+est = SymbolicWeightedPermutation(m = 2, lt = Base.isless)
+probs, πs = probabilities_and_outcomes(x, est)
+@test πs == [0, 1]
+# TODO: probabilities should be explicitly tested too.

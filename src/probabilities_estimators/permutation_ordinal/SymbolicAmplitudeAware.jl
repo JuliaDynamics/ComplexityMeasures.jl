@@ -8,10 +8,9 @@ based on the amplitude-aware permutation entropy (Azami & Escudero, 2016).
 
 ## Outcomes
 
-Like for [`SymbolicPermutation`](@ref), the outcomes `Ω` for
-`SymbolicAmplitudeAwarePermutation` is the set `{1, 2, …, factorial(m)}`, where each
-integer correspond to a unique ordinal pattern, but [`probabilities_and_outcomes`](@ref) is
-not yet implemented for this estimator.
+Like for [`SymbolicPermutation`](@ref), the outcome space `Ω` for
+`SymbolicAmplitudeAwarePermutation` is the set `{1, 2, …, factorial(m)}`, where each integer
+correspond to a unique ordinal pattern.
 
 ## Description
 
@@ -72,20 +71,26 @@ function AAPE(x; A::Real = 0.5, m::Int = length(x))
     (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
 end
 
-function probabilities(x::AbstractDataset{m, T}, est::SymbolicAmplitudeAwarePermutation) where {m, T}
+function probabilities_and_outcomes(x::AbstractDataset{m, T},
+        est::SymbolicAmplitudeAwarePermutation) where {m, T}
     πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt)) # motif length controlled by dimension of input data
     wts = AAPE.(x.data, A = est.A, m = est.m)
+    probs = symprobs(πs, wts, normalize = true)
+    observed_outcomes = sort(unique(πs))
 
-    Probabilities(symprobs(πs, wts, normalize = true))
+    return Probabilities(probs), observed_outcomes
 end
 
-function probabilities(x::AbstractVector{T}, est::SymbolicAmplitudeAwarePermutation) where {T<:Real}
+function probabilities_and_outcomes(x::AbstractVector{T},
+        est::SymbolicAmplitudeAwarePermutation) where {T<:Real}
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     emb = genembed(x, τs)
     πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt))  # motif length controlled by estimator m
     wts = AAPE.(emb.data, A = est.A, m = est.m)
-    p = symprobs(πs, wts, normalize = true)
-    Probabilities(p)
+    probs = symprobs(πs, wts, normalize = true)
+    observed_outcomes = sort(unique(πs))
+
+    return Probabilities(probs), observed_outcomes
 end
 
 total_outcomes(est::SymbolicAmplitudeAwarePermutation)::Int = factorial(est.m)
