@@ -21,6 +21,7 @@ include("entropy.jl")
 include("encoding/outcomes.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
+include("multiscale.jl")
 
 include("deprecations.jl")
 

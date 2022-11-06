@@ -1,4 +1,4 @@
-# Entropies
+# [Entropies](@id entropies)
 
 ```@docs
 entropy
@@ -60,6 +60,8 @@ ZhuSingh
 ```@docs
 Vasicek
 AlizadehArghami
+Ebrahimi
+Correa
 ```
 
 ## Convenience functions

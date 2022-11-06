@@ -57,13 +57,6 @@ end
 fig
 ```
 
-As expected, all estimators nicely converge to the correct entropy with increasing
-time series length.
-
-[^Charzyńska2016]:
-    Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy
-    estimator with applications in systems biology. Entropy, 18(1), 13.
-
 ## Indirect entropy (order statistics)
 
 Entropies.jl also provides entropy estimators based on
@@ -71,9 +64,10 @@ Entropies.jl also provides entropy estimators based on
 are only defined for scalar-valued vectors, so we pass the data as `Vector{<:Real}`s instead
 of `Dataset`s, as we did for the nearest-neighbor estimators above.
 
-Here, we show how the [`Vasicek`](@ref) direct [`Shannon`](@ref) entropy estimator
-approaches zero for a uniform distribution on `[0, 1]`, which is the true
-entropy value for this distribution.
+Here, we show how the [`Vasicek`](@ref), [`Ebrahimi`](@ref), [`AlizadehArghami`](@ref) 
+and [`Correa`](@ref) direct [`Shannon`](@ref) entropy estimators, with increasing sample size,
+approach zero for samples from a uniform distribution on  `[0, 1]`. The true entropy value in
+nats for this distribution is `ln(1 - 0) = 0`.
 
 ```@example MAIN
 using Entropies
@@ -84,8 +78,8 @@ using CairoMakie
 # Define estimators
 base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
 # just provide types here, they are instantiated inside the loop
-estimators = [Vasicek, AlizadehArghami]
-labels = ["Vasicek", "AlizadehArghami"]
+estimators = [Vasicek, Ebrahimi, AlizadehArghamiCorrea]
+labels = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
 
 # Test each estimator `nreps` times over time series of varying length.
 Ns = [100:100:500; 1000:1000:10000]
@@ -117,7 +111,7 @@ end
 fig
 ```
 
-As for the nearest neighbor estimators, [`Vasicek`](@ref) also approaches the
+As for the nearest neighbor estimators, both estimators also approach the
 true entropy value for this example, but is negatively biased for small sample sizes.
 
 ## Permutation entropy example
@@ -128,7 +122,7 @@ logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example MAIN
-using DynamicalSystemsBase, CairoMakie
+using DynamicalSystemsBase, CairoMakie, ChaosTools
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4
