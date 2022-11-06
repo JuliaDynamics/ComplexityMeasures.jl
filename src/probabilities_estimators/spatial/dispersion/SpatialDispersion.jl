@@ -5,9 +5,9 @@ import Base.maximum
 """
     SpatialDispersion <: ProbabilitiesEstimator
     SpatialDispersion(stencil, x::AbstractArray;
-        periodic::Bool = true,
-        encoding::S = GaussianCDFEncoding(c = 5),
-        skip_encoding::Bool = false,
+        periodic = true,
+        encoding = GaussianCDFEncoding(c = 5),
+        skip_encoding = false,
         L = nothing,
     )
 
@@ -15,21 +15,38 @@ A dispersion-based probabilities/entropy estimator for `N`-dimensional spatiotem
 systems, based on Azami et al. (2019)'s 2D square dispersion entropy estimator,
 but here generalized for `N`-dimensional input data `x`.
 
-The argument `periodic` decides whether the stencil should wrap around at the end of the
-array. If `periodic = false`, pixels whose stencil exceeds the array bounds are skipped.
+## Arguments
+
+- `stencil`. Defines what local area (hyperrectangle), or which points within this area,
+    to include around each hypervoxel (i.e. pixel in 2D). The examples below demonstrate
+    different ways of specifying stencils. For details, see
+    [`SpatialSymbolicPermutation`](@ref).
+-  `x::AbstractArray`. The input data. Must be provided because we need to know its size
+    for optimization and bound checking.
+
+## Keyword arguments
+
+- `periodic::Bool`. If `periodic == true`, then the stencil should wrap around at the
+    end of the array. If `periodic = false`, then pixels whose stencil exceeds the array
+    bounds are skipped.
+- `encoding::Encoding`. Determines how input data is mapped to discrete categories. Must be
+    a valid [`Encoding`](@ref).
+- `skip_encoding`. If `skip_encoding == true`, `encoding` is ignored, and dispersion
+    patterns are computed directly from `x`, under the assumption that `L` is the alphabet
+    length for `x` (useful for categorical or integer data). Thus, if
+    `skip_encoding == true`, then `L` must also be specified. This is useful for
+    categorical or integer-valued data.
+- `L`. If `L == nothing` (default), then the number of total outcomes is inferred from
+    `stencil` and `encoding`. If `L` is set to an integer, then the data is considered
+    pre-encoded and the number of total outcomes is set to `L`.
 
 ## Description
 
 Estimating probabilities/entropies from higher-dimensional data is conceptually simple.
 
 1. Discretize each value (hypervoxel) in `x` relative to all other values `xᵢ ∈ x` using the
-    provided `encoding` scheme. If `skip_encoding == true`, `encoding` is
-    ignored, and dispersion patterns are computed directly from `x`, under the assumption
-    that `L` is the alphabet length for `x` (useful for categorical or integer data).
-2. Use `stencil` to extract relevant discretized points around each hypervoxel. The
-    `stencil` defines what local area (hyperrectangle), or which points within this area,
-    to include around each hypervoxel (i.e. pixel in 2D) (see
-    [`SpatioTemporalPermutation`](@ref) for details).
+    provided `encoding` scheme.
+2. Use `stencil` to extract relevant (discretized) points around each hypervoxel.
 3. Construct a symbol string from these points.
 4. Take the sum-normalized histogram of the symbol strings as a probability distribution.
 5. Optionally, compute [`entropy`](@ref) or [`entropy_normalized`](@ref) from this
@@ -92,6 +109,11 @@ function SpatialDispersion(stencil, x::AbstractArray{T, D};
         skip_encoding::Bool = false,
         L::Union{Nothing, Int} = nothing) where {S, T, D}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
+    if skip_encoding
+        !isnothing(L) || throw(
+            ArgumentError("When `skip_encoding == true`, `L` must be an integer.")
+        )
+    end
     m = stencil_length(stencil)
 
     SpatialDispersion{D, periodic, typeof(valid), S}(
