@@ -325,16 +325,22 @@ fig
     stretched exponential probability distributions. Journal of Physics A: Mathematical
     and General, 32(7), 1089.
 
-## [Dispersion and reverse dispersion entropy](@id dispersion_examples)
+## [Dispersion entropy](@id dispersion_example)
 
-Here we reproduce parts of figure 3 in Li et al. (2019), computing reverse and regular dispersion entropy for a time series consisting of normally distributed noise with a single spike in the middle of the signal. We compute the entropies over a range subsets of the data, using a sliding window consisting of 70 data points, stepping the window 10 time steps at a time.
-
-Note: the results here are not exactly the same as in the original paper, because Li et
-al. (2019) base their examples on randomly generated numbers and do not provide code that
-specify random number seeds.
+Here we compute dispersion entropy (Rostaghi et al. 2016)[^Rostaghi2016],
+using the use the [`Dispersion`](@ref) probabilities estimator, for a time
+series consisting of normally distributed noise with a single spike in the middle of the
+signal.
+We compute the entropies over a range subsets of the data, using a sliding window
+consisting of 70 data points, stepping the window 10 time steps at a time.
+This example is adapted from Li et al. (2021)[^Li2019].
 
 ```@example MAIN
-using Entropies, DynamicalSystemsBase, Random, CairoMakie, Distributions
+using Entropies
+using DynamicalSystemsBase
+using Random
+using CairoMakie
+using Distributions
 
 n = 1000
 ts = 1:n
@@ -350,37 +356,31 @@ des = zeros(length(windows))
 pes = zeros(length(windows))
 
 m, c = 2, 6
-est_rd = ReverseDispersion(encoding = GaussianMapping(c), m = m, τ = 1)
 est_de = Dispersion(encoding = GaussianMapping(c), m = m, τ = 1)
-
 for (i, window) in enumerate(windows)
-    rdes[i] = complexity_normalized(est_rd, y[window])
     des[i] = entropy_normalized(Renyi(), y[window], est_de)
 end
 
 fig = Figure()
-
 a1 = Axis(fig[1,1]; xlabel = "Time step", ylabel = "Value")
 lines!(a1, ts, y)
 display(fig)
-
 a2 = Axis(fig[2, 1]; xlabel = "Time step", ylabel = "Value")
-p_rde = scatterlines!([first(w) for w in windows], rdes,
-    label = "Reverse dispersion entropy",
-    color = :black,
-    markercolor = :black, marker = '●')
 p_de = scatterlines!([first(w) for w in windows], des,
     label = "Dispersion entropy",
     color = :red,
-    markercolor = :red, marker = 'x', markersize = 20)
+    markercolor = :red, marker = '●', markersize = 20)
 
 axislegend(position = :rc)
 ylims!(0, max(maximum(pes), 1))
 fig
 ```
 
-[^Rostaghi2016]: Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.
-[^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
+[^Rostaghi2016]:
+    Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series
+    analysis. IEEE Signal Processing Letters, 23(5), 610-614.
+[^Li2019]:
+    Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
 
 ## Normalized entropy for comparing different signals
