@@ -24,7 +24,7 @@ struct RectangularBinning{E} <: AbstractBinning
 end
 
 const ValidFixedBinInputs = Union{Number, NTuple}
-
+const ValidFixedIntervalCount = Union{Integer, NTuple}
 """
     FixedRectangularBinning <: Encoding
     FixedRectangularBinning(ϵmin::E, ϵmax::E, N::Int) where E
@@ -43,15 +43,17 @@ If the grid spans the range `[r1, r2]` along a particular dimension, then this r
 is subdivided into `N` subintervals of equal length `nextfloat((r2 - r1) / N)`.
 Thus, for `m`-dimensional data, there are `N^m` boxes.
 """
-struct FixedRectangularBinning{E} <: AbstractBinning
+struct FixedRectangularBinning{E, B} <: AbstractBinning
     ϵmin::E
     ϵmax::E
-    N::Int
+    N::B
 
-    function FixedRectangularBinning(ϵmin::E1, ϵmax::E2, N::Int) where {E1 <: ValidFixedBinInputs, E2 <: ValidFixedBinInputs}
+    function FixedRectangularBinning(ϵmin::E1, ϵmax::E2, N::E3) where {E1 <: ValidFixedBinInputs, E2 <: ValidFixedBinInputs, E3<: ValidFixedIntervalCount}
         f_ϵmin = float.(ϵmin)
         f_ϵmax = float.(ϵmax)
-        return new{typeof(f_ϵmin)}(f_ϵmin, f_ϵmax, N::Int)
+        length(f_ϵmin) == length(f_ϵmax) || ErrorException("f_ϵmin and f_ϵmax have different lengths!")
+        (length(N) == length(f_ϵmin) || length(N) == 1) || ErrorException("Bounds and subinterval counts are inconsistent!")
+        return new{typeof(f_ϵmin)}(f_ϵmin, f_ϵmax, N)
     end
 end
 
