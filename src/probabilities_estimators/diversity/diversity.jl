@@ -5,7 +5,8 @@ export Diversity
 """
     Diversity(; m::Int, τ::Int, nbins::Int)
 
-A [`ProbabilitiesEstimator`](@ref) based on the cosine similarity. It can be used with [`entropy`](@ref) to
+A [`ProbabilitiesEstimator`](@ref) based on the cosine similarity.
+It can be used with [`entropy`](@ref) to
 compute diversity entropy (Wang et al., 2020)[^Wang2020].
 
 The implementation here allows for `τ != 1`, which was not considered in the original paper.
@@ -24,7 +25,9 @@ Diversity probabilities are computed as follows.
 4. Construct a histogram of cosine similarities ``d \\in D`` over those subintervals.
 5. Sum-normalize the histogram to obtain probabilities.
 
-## Implements
+## Outcome space
+The outcome space for `Diversity` is the bins of the `[-1, 1]` interval.
+The left side of each bin is returned in [`outcome_space`](@ref).
 
 - [`probabilities_and_outcomes`](@ref). Events are the corners of the cosine similarity bins.
     Each bin has width `nextfloat(2 / nbins)`.
@@ -53,19 +56,21 @@ end
 
 total_outcomes(est::Diversity) = est.nbins
 
+outcome_space(est::Diversity) = outcome_space(binning_for_diversity(est))
+
 function similarities_and_binning(x::AbstractVector{T}, est::Diversity) where T <: Real
+    # embed and then calculate cosine similary for each consecutive pair of delay vectors
     τs = 0:est.τ:(est.m - 1)*est.τ
     Y = genembed(x, τs)
-
     ds = zeros(Float64, length(Y) - 1)
-    for (i, (yᵢ, yᵢ₊₁)) in enumerate(zip(Y.data[1:end-1], Y.data[2:end]))
-        ds[i] = cosine_similarity(yᵢ, yᵢ₊₁)
+    @inbounds for i in 1:(length(Y)-1)
+        ds[i] = cosine_similarity(Y[i], Y[i+1])
     end
-
-    # Cosine similarities are all on [-1.0, 1.0], so discretize this interval.
-    binning = FixedRectangularBinning(-1.0, 1.0, est.nbins)
-
+    # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval.
+    binning = binning_for_diversity(est)
     return ds, binning
 end
 
 cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
+
+binning_for_diversity(est::Diversity) = FixedRectangularBinning(-1.0, 1.0, est.nbins)

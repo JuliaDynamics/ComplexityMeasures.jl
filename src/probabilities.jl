@@ -137,10 +137,11 @@ function probabilities! end
 """
     outcome_space([x,] est::ProbabilitiesEstimator) → Ω
 
-Return a container (typically `Vector`) containing all possible outcomes of `est`,
+Return a container (typically `Vector`) containing all _possible_ outcomes of `est`,
 i.e., the outcome space `Ω`.
 Only possible for estimators that implement [`total_outcomes`](@ref),
-and similarly, for some estimators `x` is not needed.
+and similarly, for some estimators `x` is not needed. The _values_ of `x` are never needed;
+but some times the type and dimensional layout of `x` is.
 """
 function outcome_space(::Array_or_Dataset, est::ProbabilitiesEstimator)
     outcome_space(est)
