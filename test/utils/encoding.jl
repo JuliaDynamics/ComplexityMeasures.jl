@@ -171,7 +171,7 @@ end
             [0, 4, 9]
     end
 
-    @testset "Alphabet length" begin
+    @testset "outcome length" begin
         X = Dataset(rand(10, 3))
         x = rand(10)
         rbN = RectangularBinning(5)
