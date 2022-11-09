@@ -9,7 +9,7 @@ abstract type AbstractBinning end
 
 # We need binning to be defined first to add it as a field to a struct
 include("rectangular_binning.jl")
-include("histogram_estimation.jl")
+include("fasthist.jl")
 
 """
     ValueHistogram(b::AbstractBinning) <: ProbabilitiesEstimator
