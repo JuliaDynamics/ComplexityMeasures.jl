@@ -1,12 +1,14 @@
-# The binnings here are pretty much an intermediate interface to create a
-# `RectangularBinEncoding`. Every actual source code extension is done on having
-# an encoding...
 export RectangularBinning, FixedRectangularBinning
 export RectangularBinEncoding
 
 ##################################################################
 # Structs and docstrings
 ##################################################################
+# Notice that the binning types are intermediate structs that are NOT retained
+# in the source code. Their only purpose is instructions of how to create a
+# `RectangularBinEncoder`. All actual source code functionality of `ValueHistogram`
+# is implemented based on `RectangularBinEncoder` and
+
 """
     RectangularBinning(ϵ) <: AbstractBinning
 
@@ -77,10 +79,10 @@ information as `ϵmin/max` is already an `NTuple`.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinEncoding{B, M, E} <: Encoding
+struct RectangularBinEncoding{B, V} <: Encoding
     binning::B # either RectangularBinning or FixedRectangularBinning
-    mini::M # fields are either static vectors or numbers
-    edgelengths::E
+    mini::V # fields are either static vectors or numbers
+    edgelengths::V
 end
 
 function Base.show(io::IO, x::RectangularBinEncoding)
@@ -97,10 +99,14 @@ function encode_as_bin(point, b::RectangularBinEncoding)
     return floor.(Int, (point .- mini) ./ edgelengths)
 end
 
-function decode_from_bin(bin, b::RectangularBinEncoding)
+function decode_from_bin(bin, b::RectangularBinEncoding{B, V}) where {B, V}
     (; mini, edgelengths) = b
     # Remove one because we want lowest value corner, and we get indices starting from 1
-    return (bin .- 1) .* edgelengths .+ mini
+    return (V(Tuple(bin)) .- 1) .* edgelengths .+ mini
+end
+function decode_from_bin(bin, b::RectangularBinEncoding{B, T}) where {B, T<:Real}
+    (; mini, edgelengths) = b
+    return (T(Tuple(bin)[1]) .- 1) .* edgelengths .+ mini
 end
 
 ##################################################################
@@ -154,7 +160,7 @@ function RectangularBinEncoding(::AbstractVector{<:Real},
     # This function always returns numbers and is type stable
     ϵmin, ϵmax = b.ϵmin, b.ϵmax
     mini = ϵmin
-    if ϵmin isa Float64 && ϵmax isa Float64
+    if ϵmin isa AbstractFloat && ϵmax isa AbstractFloat
         edgelength_nonadjusted = (ϵmax - ϵmin) / b.N
         edgelength = nextfloat(edgelength_nonadjusted, n_eps)
     else
@@ -200,6 +206,7 @@ end
 ##################################################################
 # When the grid is fixed by the user, we can always deduce the total number of bins,
 # even just from the binning itself - symbolization info not needed.
+total_outcomes(x, bin::AbstractBinning) = total_outcomes(RectangularBinEncoding(x, bin))
 function total_outcomes(e::RectangularBinEncoding)
     if e.binning isa RectangularBinning
         error("Not possible to _uniquely_ define for `RectangularBinning`.")
@@ -209,6 +216,7 @@ function total_outcomes(e::RectangularBinEncoding)
 end
 
 # This function does not need `x`; all info about binning are in the encoding
+outcome_space(x, bin::AbstractBinning) = outcome_space(RectangularBinEncoding(x, bin))
 function outcome_space(e::RectangularBinEncoding)
     if e.binning isa RectangularBinning
         error("Not possible to _uniquely_ define for `RectangularBinning`.")

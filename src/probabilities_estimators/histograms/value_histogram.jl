@@ -73,12 +73,5 @@ function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
     return probs, outcomes
 end
 
-function outcome_space(x, est::ValueHistogram)
-    encoder = RectangularBinEncoding(x, est.binning)
-    return outcome_space(encoder)
-end
-
-function total_outcomes(x, est::ValueHistogram)
-    encoder = RectangularBinEncoding(x, est.binning)
-    return total_outcomes(encoder)
-end
+outcome_space(x, est::ValueHistogram) = outcome_space(x, est.binning)
+total_outcomes(x, est::ValueHistogram) = total_outcomes(x, est.binning)

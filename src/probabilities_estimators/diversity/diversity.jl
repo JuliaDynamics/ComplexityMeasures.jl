@@ -56,7 +56,7 @@ end
 
 total_outcomes(est::Diversity) = est.nbins
 
-outcome_space(est::Diversity) = outcome_space(binning_for_diversity(est))
+outcome_space(x, est::Diversity) = outcome_space(x, binning_for_diversity(est))
 
 function similarities_and_binning(x::AbstractVector{T}, est::Diversity) where T <: Real
     # embed and then calculate cosine similary for each consecutive pair of delay vectors
