@@ -143,7 +143,7 @@ Only possible for estimators that implement [`total_outcomes`](@ref),
 and similarly, for some estimators `x` is not needed. The _values_ of `x` are never needed;
 but some times the type and dimensional layout of `x` is.
 """
-function outcome_space(::Array_or_Dataset, est::ProbabilitiesEstimator)
+function outcome_space(x, est::ProbabilitiesEstimator)
     outcome_space(est)
 end
 function outcome_space(est::ProbabilitiesEstimator)

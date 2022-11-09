@@ -7,11 +7,17 @@ x = [rand(rng, Bool) for _ in 1:10000]
 
 probs1 = probabilities(x)
 probs2 = probabilities(x, CountOccurrences())
-for ps in (probs1, probs2)
+probs3, outs = probabilities_and_outcomes(x, CountOccurrences())
+
+for ps in (probs1, probs2, probs3)
     for p in ps; @test 0.49 < p < 0.51; end
 end
 
-# Same for 2D sets
+@test outs == [false, true]
+@test outcome_space(x, CountOccurrences()) == [false, true]
+@test total_outcomes(x, CountOccurrences()) == 2
+
+# Same for 2D sets (outcomes not tested here)
 y = [rand(rng, Bool) for _ in 1:10000]
 D = Dataset(x, y)
 
