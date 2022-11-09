@@ -3,10 +3,18 @@
 Good practices in developing a code base apply in every Pull Request. The [Good Scientific Code Workshop](https://github.com/JuliaDynamics/GoodScientificCodeWorkshop) is worth checking out for this.
 
 ## Adding a new `ProbabilitiesEstimator`
-1. Define your type and make it subtype `ProbabilitiesEstimator`.
-2. Add a docstring to your type following the style of the docstrings of other estimators.
-3. Implement dispatch for [`probabilities_and_outcomes`](@ref).
-4. Notice that [`probabilities`](@ref) by default calls `probabilities_and_outcomes` and returns the first value, so it needs no implementation. Only in cases where there are performance gains, because e.g. additional costly operations are necessary to compute the outcomes, should a dedicated version for `probabilities` be implemented. This is e.g. what we do for `ValueHistogram`.
-5. Similarly, [`outcomes`](@ref) by default calls `probabilities_and_outcomes` and returns the second value. In exceptionally rare cases of needing to squeeze all possible performance out of calculating outcomes, the `outcomes` function may be explicitly extended.
-6. Implement [`total_outcomes`](@ref) if possible. This also gives [`missing_outcomes`](@ref) for free. If the estimator can provide `total_outcomes` without knowledge of input data, the implement `total_outcomes(est)` directly instead of `total_outcomes(x, est)`.
-7. Add your type to the list in the docstring of [`ProbabilitiyEstimator`](@ref).
+
+### Mandatory steps
+1. Decide on the outcome space and how the estimator will map probabilities to outcomes.
+2. Define your type and make it subtype `ProbabilitiesEstimator`.
+3. Add a docstring to your type following the style of the docstrings of other estimators.
+4. Implement dispatch for [`probabilities_and_outcomes`](@ref).
+7. Implement dispatch for [`outcome_space`](@ref).
+5.  Add your type to the list in the docstring of [`ProbabilitiyEstimator`](@ref).
+
+### Optional steps
+You may extend any of the following functions if there are potential performance benefits in doing so:
+
+1. [`probabilities`](@ref). By default it calls `probabilities_and_outcomes` and returns the first value.
+2. [`outcomes`](@ref). By default calls `probabilities_and_outcomes` and returns the second value.
+3.  [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref). This is the function that most typically has performance benefits if implemented explicitly, so most existing estimators extend it by default.
