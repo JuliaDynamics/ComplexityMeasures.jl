@@ -1,8 +1,7 @@
-using Entropies.DelayEmbeddings.Neighborhood: KDTree, BruteForce
+using Entropies.DelayEmbeddings.Neighborhood: KDTree
 
 @test NaiveKernel(0.1) isa NaiveKernel
 @test NaiveKernel(0.1, KDTree) isa NaiveKernel
-@test NaiveKernel(0.1, BruteForce) isa NaiveKernel
 
 N = 1000
 pts = Dataset([rand(2) for i = 1:N]);
@@ -20,4 +19,5 @@ p_direct = probabilities(pts, est_direct)
 @test entropy(Renyi(), pts, est_tree) isa Real
 
 probs, z = probabilities_and_outcomes(pts, est_tree)
-@test z == pts
+@test z == 1:length(pts)
+@test outcome_space(pts, est_tree) == 1:length(pts)
