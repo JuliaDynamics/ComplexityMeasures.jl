@@ -1,4 +1,4 @@
-using Test, StaticArrays, LinearAlgebra, Distributions
+using Test, StaticArrays, LinearAlgebra
 
 @testset "NN - Kraskov" begin
     m = 4
@@ -91,12 +91,11 @@ end
 
 
 @testset "NN - ZhuSingh" begin
+    using Distributions: MvNormal
 
-    using Test, Distributions, LinearAlgebra
     # Test internals in addition to end-product, because designing an exact end-product
     # test is  a mess due to the neighbor searches. If these top-level tests fail, then
     # the issue is probability related to these functions.
-    using Test
     nns = Dataset([[-1, -1], [0, -2], [3, 2.0]])
     x = @SVector [0.0, 0.0]
     dists = Entropies.maxdists(x, nns)

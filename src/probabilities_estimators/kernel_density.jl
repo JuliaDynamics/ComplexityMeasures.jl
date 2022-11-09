@@ -26,10 +26,10 @@ when the dimensionality of the data is much smaller than the data length.
 The keyword `w` stands for the Theiler window, and excludes indices ``s``
 that are within ``|i - s| ≤ w`` from the given point ``X_i``.
 
-## Outcomes
-
-The outcomes `Ω` for `NaiveKernel` are the input data themselves. Use
-[`probabilities_and_outcomes`](@ref) to obtain these together with the probabilities.
+## Outcome space
+The outcome space `Ω` for `NaiveKernel` are the indices of the input data, `1:length(x)`.
+The reason to not return the data points themselves is because duplicate data points may
+not have same probabilities (due to having different neighbors).
 
 [^PrichardTheiler1995]:
     Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis.
@@ -51,5 +51,7 @@ function probabilities_and_outcomes(x::AbstractDataset, est::NaiveKernel)
     ss = searchstructure(est.method, x.data, est.metric)
     idxs = bulkisearch(ss, x.data, WithinRange(est.ϵ), theiler)
     p = Float64.(length.(idxs))
-    return Probabilities(p), x
+    return Probabilities(p), 1:length(x)
 end
+
+outcome_space(x::AbstractDataset, ::NaiveKernel) = 1:length(x)
