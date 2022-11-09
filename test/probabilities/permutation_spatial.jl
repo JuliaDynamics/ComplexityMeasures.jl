@@ -14,14 +14,14 @@ using Entropies, Test
     @test length(ps) == 3
     @test sort(ps) == [0.25, 0.25, 0.5]
 
-    h = entropy(Renyi(base = 2), x, est)
+    h = entropy(Renyi(base = 2), est, x)
     @test h == 1.5
 
     # In fact, doesn't matter how we order the stencil,
     # the symbols will always be equal in top-left and bottom-right
     stencil = CartesianIndex.([(0,0), (1,0), (1,1), (0,1)])
     est = SpatialSymbolicPermutation(stencil, x, false)
-    @test entropy(Renyi(base = 2), x, est) == 1.5
+    @test entropy(Renyi(base = 2), est, x) == 1.5
 
     # But for sanity, let's ensure we get a different number
     # for a different stencil
@@ -36,12 +36,12 @@ using Entropies, Test
     extent = (2, 2)
     lag = (1, 1)
     est = SpatialSymbolicPermutation((extent, lag), x, false)
-    @test entropy(Renyi(base = 2), x, est) == 1.5
+    @test entropy(Renyi(base = 2), est, x) == 1.5
 
     # and let's also test the matrix-way of specifying the stencil
     stencil = [1 1; 1 1]
     est = SpatialSymbolicPermutation(stencil, x, false)
-    @test entropy(Renyi(base = 2), x, est) == 1.5
+    @test entropy(Renyi(base = 2), est, x) == 1.5
 
     # Also test that it works for arbitrarily high-dimensional arrays
     stencil = CartesianIndex.([(0,0,0), (0,1,0), (0,0,1), (1,0,0)])
@@ -67,10 +67,10 @@ using Entropies, Test
     extent = (2, 2, 2)
     lag = (1, 1, 1)
     est2 = SpatialSymbolicPermutation((extent, lag), w, false)
-    @test entropy(Renyi(), w, est1) == entropy(Renyi(), w, est2)
+    @test entropy(Renyi(), est1, w) == entropy(Renyi(), est2, w)
 
     # and to this stencil written as a matrix
     stencil = [1; 1;; 1; 1;;; 1; 1;; 1; 1]
     est3 = SpatialSymbolicPermutation(stencil, w, false)
-    @test entropy(Renyi(), w, est1) == entropy(Renyi(), w, est3)
+    @test entropy(Renyi(), est1, w) == entropy(Renyi(), est3, w)
 end

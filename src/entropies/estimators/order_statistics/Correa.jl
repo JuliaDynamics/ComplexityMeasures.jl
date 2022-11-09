@@ -1,12 +1,12 @@
 export Correa
 
 """
-    Correa <: IndirectEntropy
+    Correa <: EntropyEstimator
     Correa(; m::Int = 1, base = 2)
 
-An indirect entropy estimator used in [`entropy`](@ref)`(Correa(), x)` to
-estimate the Shannon entropy of the timeseries `x` to the given
-`base` using the method from Correa (1995)[^Correa1995].
+The `Correa` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
+(a multi-dimensional `Dataset`) to the given `base` using the method from
+Correa (1995)[^Correa1995].
 
 ## Description
 
@@ -29,7 +29,7 @@ where
     Correa, J. C. (1995). A new estimator of entropy. Communications in Statistics-Theory
     and Methods, 24(10), 2439-2449.
 """
-@Base.kwdef struct Correa{I<:Integer, B} <: IndirectEntropy
+@Base.kwdef struct Correa{I<:Integer, B} <: EntropyEstimator
     m::I = 1
     base::B = 2
 end

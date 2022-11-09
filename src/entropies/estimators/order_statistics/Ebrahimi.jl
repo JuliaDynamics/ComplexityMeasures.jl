@@ -1,12 +1,13 @@
 export Ebrahimi
 
 """
-    Ebrahimi <: IndirectEntropy
+    Ebrahimi <: EntropyEstimator
     Ebrahimi(; m::Int = 1, base = 2)
 
-An indirect entropy estimator used in [`entropy`](@ref)`(Ebrahimi(), x)` to
-estimate the Shannon entropy of the timeseries `x` to the given
-`base` using the method from Ebrahimi (1994)[^Ebrahimi1994].
+The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
+(a multi-dimensional `Dataset`) to the given `base` using the method from
+Ebrahimi (1994)[^Ebrahimi1994].
+
 
 ## Description
 
@@ -34,7 +35,7 @@ c_i =
     Ebrahimi, N., Pflughoeft, K., & Soofi, E. S. (1994). Two measures of sample entropy.
     Statistics & Probability Letters, 20(3), 225-234.
 """
-@Base.kwdef struct Ebrahimi{I<:Integer, B} <: IndirectEntropy
+@Base.kwdef struct Ebrahimi{I<:Integer, B} <: EntropyEstimator
     m::I = 1
     base::B = 2
 end

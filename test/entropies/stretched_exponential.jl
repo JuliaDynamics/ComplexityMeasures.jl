@@ -19,5 +19,5 @@ b = 2
 # probability distribution.
 x = [repeat([0, 1], 5); 0]
 est = SymbolicPermutation(m = 2)
-@test entropy(StretchedExponential(η = η, base = b), x, est) ≈
+@test entropy(StretchedExponential(η = η, base = b), est, x) ≈
     entropy_maximum(StretchedExponential(η = η, base = b), total_outcomes(est))

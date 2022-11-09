@@ -16,8 +16,8 @@ p_tree = probabilities(pts, est_tree)
 p_direct = probabilities(pts, est_direct)
 @test all(p_tree .== p_direct) == true
 
-@test entropy(Renyi(), pts, est_direct) isa Real
-@test entropy(Renyi(), pts, est_tree) isa Real
+@test entropy(Renyi(), est_direct, pts) isa Real
+@test entropy(Renyi(), est_tree, pts) isa Real
 
 probs, z = probabilities_and_outcomes(pts, est_tree)
 @test z == pts

@@ -1,16 +1,16 @@
 using DelayEmbeddings: minmaxima
 using SpecialFunctions: digamma
-using Entropies: Entropy, IndirectEntropy
+using Entropies: Entropy, EntropyEstimator
 using Neighborhood: KDTree, Chebyshev, bulkisearch, Theiler, NeighborNumber
 
 export ZhuSingh
 
 """
-    ZhuSingh <: IndirectEntropy
+    ZhuSingh <: EntropyEstimator
     ZhuSingh(k = 1, w = 0, base = MathConstants.e)
 
-The `ZhuSingh` indirect entropy estimator (Zhu et al., 2015)[^Zhu2015] estimates the Shannon
-entropy of `x` (a multi-dimensional `Dataset`) to the given `base`.
+The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
+[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) to the given `base`.
 
 Like [`Zhu`](@ref), this estimator approximates probabilities within hyperrectangles
 surrounding each point `xᵢ ∈ x` using using `k` nearest neighbor searches. However,
@@ -21,6 +21,8 @@ This estimator is an extension to the entropy estimator in Singh et al. (2003).
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
 when searching for neighbours).
 
+See also: [`entropy`](@ref).
+
 [^Zhu2015]:
     Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to
     transfer entropy estimation via the k-nearest-neighbors approach. Entropy, 17(6),
@@ -30,7 +32,7 @@ when searching for neighbours).
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct ZhuSingh{B} <: IndirectEntropy
+Base.@kwdef struct ZhuSingh{B} <: EntropyEstimator
     k::Int = 1
     w::Int = 0
     base::B = MathConstants.e

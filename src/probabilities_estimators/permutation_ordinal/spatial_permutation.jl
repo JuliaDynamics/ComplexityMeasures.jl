@@ -124,7 +124,7 @@ function stencil_to_offsets(stencil::NTuple{2, NTuple{D, T}}) where {D, T}
     return stencil, D
 end
 
-function stencil_to_offsets(stencil::Array{Int, D}) where D
+function stencil_to_offsets(stencil::AbstractArray{Int, D}) where D
     # translate D-dim array into stencil of cartesian indices (of dimension D)
     stencil = [idx - CartesianIndex(Tuple(ones(Int, D))) for idx in findall(Bool.(stencil))]
     # subtract first coordinate from everything to get a stencil that contains (0,0)

@@ -1,26 +1,28 @@
 export Zhu
 
 """
-    Zhu <: IndirectEntropy
+    Zhu <: EntropyEstimator
     Zhu(k = 1, w = 0, base = MathConstants.e)
 
-The `Zhu` indirect entropy estimator (Zhu et al., 2015)[^Zhu2015] estimates the Shannon
-entropy of `x` (a multi-dimensional `Dataset`) to the given `base`, by approximating
-probabilities within hyperrectangles surrounding each point `xᵢ ∈ x` using
+The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
+[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) to the given `base`, by
+approximating probabilities within hyperrectangles surrounding each point `xᵢ ∈ x` using
 using `k` nearest neighbor searches.
-
-This estimator is an extension to [`KozachenkoLeonenko`](@ref).
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
 when searching for neighbours).
+
+This estimator is an extension to [`KozachenkoLeonenko`](@ref).
+
+See also: [`entropy`](@ref).
 
 [^Zhu2015]:
     Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to
     transfer entropy estimation via the k-nearest-neighbors approach. Entropy, 17(6),
     4173-4201.
 """
-Base.@kwdef struct Zhu{B} <: IndirectEntropy
+Base.@kwdef struct Zhu{B} <: EntropyEstimator
     k::Int = 1
     w::Int = 0
     base::B = MathConstants.e

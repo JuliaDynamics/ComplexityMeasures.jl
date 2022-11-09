@@ -5,7 +5,7 @@ m = 3
 τ = 1
 est = Diversity(; nbins, m, τ)
 @test probabilities(x, est) == [0.5, 0.5]
-@test round(entropy_normalized(x, est), digits = 4) == 0.3010
+@test round(entropy_normalized(est, x), digits = 4) == 0.3010
 
 @test total_outcomes(est) == 10
 

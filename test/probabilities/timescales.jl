@@ -12,7 +12,7 @@ using Entropies, Test
         ps = probabilities(x, est)
         @test length(ps) == 8
         @test ps isa Probabilities
-        @test entropy(Renyi( q = 1, base = 2), x, WaveletOverlap()) isa Real
+        @test entropy(Renyi( q = 1, base = 2), WaveletOverlap(), x) isa Real
     end
 
     @testset "Fourier Spectrum" begin
@@ -22,7 +22,7 @@ using Entropies, Test
         y = @. sin(t) + sin(sqrt(3)*t)
         z = randn(N)
         est = PowerSpectrum()
-        ents = [entropy(Renyi(), w, est) for w in (x,y,z)]
+        ents = [entropy(Renyi(), est, w) for w in (x,y,z)]
         @test ents[1] < ents[2] < ents[3]
         # Test event stuff (analytically, using sine wave)
         probs, events = probabilities_and_outcomes(x, est)

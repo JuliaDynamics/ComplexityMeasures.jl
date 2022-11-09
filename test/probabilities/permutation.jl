@@ -35,12 +35,12 @@
         s_timeseries = zeros(Int, length(x_timeseries) - (m - 1)*τ)
         s_dataset = zeros(Int, length(x_dataset))
 
-        @test entropy!(s_timeseries, Shannon(base = 2), x_timeseries, est) ≈ 1.0
-        @test entropy!(s_dataset, Shannon(base = 2), x_dataset, est) ≈ 1.0
+        @test entropy!(s_timeseries, Shannon(base = 2), est, x_timeseries) ≈ 1.0
+        @test entropy!(s_dataset, Shannon(base = 2), est, x_dataset) ≈ 1.0
 
         # Should default to Shannon base 2
-        @test entropy!(s_timeseries, x_timeseries, est) ≈ 1.0
-        @test entropy!(s_dataset, x_dataset, est) ≈ 1.0
+        @test entropy!(s_timeseries, est, x_timeseries) ≈ 1.0
+        @test entropy!(s_dataset, est, x_dataset) ≈ 1.0
     end
 end
 
@@ -57,8 +57,8 @@ end
     @test sum(p2) ≈ 1.0
 
     # Entropy
-    @test entropy(Renyi(q = 1), x, est) ≈ 0  # Regular order-1 entropy
-    @test entropy(Renyi(q = 2), y, est) >= 0 # Higher-order entropy
+    @test entropy(Renyi(q = 1), est, x) ≈ 0  # Regular order-1 entropy
+    @test entropy(Renyi(q = 2), est, y) >= 0 # Higher-order entropy
 end
 
 @testset "Custom sorting" begin

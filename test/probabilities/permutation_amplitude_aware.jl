@@ -19,8 +19,8 @@ p2 = probabilities(D, est)
 @test all(p1.p .≈ p2.p)
 
 # Entropy
-e1 = entropy(Renyi(), D, est)
-e2 = entropy(Renyi(), x, est)
+e1 = entropy(Renyi(), est, D)
+e2 = entropy(Renyi(), est, x)
 @test e1 ≈ e2
 
 

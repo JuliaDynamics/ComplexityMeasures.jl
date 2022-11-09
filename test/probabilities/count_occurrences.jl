@@ -24,8 +24,8 @@ end
 # Renyi of coin toss is 1 bit, and for two coin tosses is two bits
 # Result doesn't depend on `q` due to uniformity of the PDF.
 for q in (0.5, 1.0, 2.0)
-    h = entropy(Renyi(q), x, CountOccurrences())
+    h = entropy(Renyi(q), CountOccurrences(), x)
     @test 0.99 < h < 1.01
-    h = entropy(Renyi(q), D, CountOccurrences())
+    h = entropy(Renyi(q), CountOccurrences(), D)
     @test 1.99 < h < 2.01
 end

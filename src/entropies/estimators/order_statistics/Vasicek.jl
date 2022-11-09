@@ -1,12 +1,12 @@
 export Vasicek
 
 """
-    Vasicek <: IndirectEntropy
+    Vasicek <: EntropyEstimator
     Vasicek(; m::Int = 1, base = 2)
 
-An indirect entropy estimator used in [`entropy`](@ref)`(Vasicek(), x)` to
-estimate the Shannon entropy of the timeseries `x` to the given
-`base` using the method from Vasicek (1976)[^Vasicek1976].
+The `Vasicek` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
+(a multi-dimensional `Dataset`) to the given `base` using the method from
+Vasicek (1976)[^Vasicek1976].
 
 ## Description
 
@@ -31,7 +31,7 @@ written for this package).
     Vasicek, O. (1976). A test for normality based on sample entropy. Journal of the Royal
     Statistical Society: Series B (Methodological), 38(1), 54-59.
 """
-@Base.kwdef struct Vasicek{I<:Integer, B} <: IndirectEntropy
+@Base.kwdef struct Vasicek{I<:Integer, B} <: EntropyEstimator
     m::I = 1
     base::B = 2
 end
