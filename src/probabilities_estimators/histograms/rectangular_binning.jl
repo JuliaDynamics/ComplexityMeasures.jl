@@ -1,9 +1,8 @@
 # The binnings here are pretty much an intermediate interface to create a
 # `RectangularBinEncoding`. Every actual source code extension is done on having
 # an encoding...
+export RectangularBinning, FixedRectangularBinning
 export RectangularBinEncoding
-export RectangularBinning
-export FixedRectangularBinning
 
 ##################################################################
 # Structs and docstrings
@@ -203,7 +202,7 @@ end
 # even just from the binning itself - symbolization info not needed.
 function total_outcomes(e::RectangularBinEncoding)
     if e.binning isa RectangularBinning
-        error("Not possible to implement for `RectangularBinning`.")
+        error("Not possible to _uniquely_ define for `RectangularBinning`.")
     end
     D = length(e.mini)
     return e.binning.N^D
@@ -212,7 +211,7 @@ end
 # This function does not need `x`; all info about binning are in the encoding
 function outcome_space(e::RectangularBinEncoding)
     if e.binning isa RectangularBinning
-        error("Not possible to implement for `RectangularBinning`.")
+        error("Not possible to _uniquely_ define for `RectangularBinning`.")
     end
     # We can be smart here. All possible bins are exactly the same thing
     # as the Cartesian Indices of an array, mapped into "data" units
