@@ -13,12 +13,10 @@ The closer the spectrum is to flat, i.e., white noise, the higher the entropy. H
 you can't compare entropies of timeseries with different length, because the binning
 in spectral space depends on the length of the input.
 
-# Outcomes
+## Outcome space
 
-The outcomes `Ω` for `PowerSpectrum` is the set of frequencies in Fourier space. They
+The outcome space `Ω` for `PowerSpectrum` is the set of frequencies in Fourier space. They
 should be multiplied with the sampling rate of the signal, which is assumed to be `1`.
-Use [`probabilities_and_outcomes`](@ref) to obtain the frequencies together with the
-probabilities.
 
 [^Llanos2016]:
     Llanos et al., _Power spectral entropy as an information-theoretic correlate of manner
@@ -32,19 +30,21 @@ probabilities.
 """
 struct PowerSpectrum <: ProbabilitiesEstimator end
 
-function probabilities(x::Array_or_Dataset, ::PowerSpectrum)
-    @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
-    f = FFTW.rfft(x)
-    Probabilities(abs2.(f))
-end
-
-function probabilities_and_outcomes(x::Array_or_Dataset, est::PowerSpectrum)
+function probabilities_and_outcomes(x, est::PowerSpectrum)
     probs = probabilities(x, est)
     events = FFTW.rfftfreq(length(x))
     return probs, events
 end
 
-function total_outcomes(x::Array_or_Dataset, ::PowerSpectrum)
+outcome_space(x, ::PowerSpectrum) = FFTW.rfftfreq(length(x))
+
+function probabilities(x, ::PowerSpectrum)
+    @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
+    f = FFTW.rfft(x)
+    Probabilities(abs2.(f))
+end
+
+function total_outcomes(x, ::PowerSpectrum)
     n = length(x)
     # From the docstring of `AbstractFFTs.rfftfreq`:
     iseven(n) ? length(0:(n÷2)) : length(0:((n-1)÷2))
