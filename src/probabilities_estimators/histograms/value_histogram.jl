@@ -68,6 +68,7 @@ end
 function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
     probs, bins, encoder = fasthist(x, est.binning)
     unique!(bins) # `bins` is already sorted from `fasthist!`
+    # Here we transfor the cartesian coordinate based bins into data unit bins:
     outcomes = map(b -> decode_from_bin(b, encoder), bins)
     return probs, outcomes
 end

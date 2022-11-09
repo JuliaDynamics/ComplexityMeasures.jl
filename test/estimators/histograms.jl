@@ -3,6 +3,7 @@ using Entropies.DelayEmbeddings, Test
 using Random
 
 @testset "Rectangular binning" begin
+
     x = Dataset(rand(Random.MersenneTwister(1234), 100_000, 2))
     push!(x, SVector(0, 0)) # ensure both 0 and 1 have values in, exactly.
     push!(x, SVector(1, 1))
@@ -77,10 +78,4 @@ using Random
         @test Entropies.encode_as_bin(maximum(x2), rb2) == 9
     end
 
-    @testset "interface" begin
-        x = ones(3)
-        p = probabilities(x, ValueHistogram(0.1))
-        @test p isa Probabilities
-        @test_throws MethodError entropy(x, 0.1)
-    end
 end
