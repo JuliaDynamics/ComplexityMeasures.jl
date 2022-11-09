@@ -79,10 +79,10 @@ information as `ϵmin/max` is already an `NTuple`.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinEncoding{B, V} <: Encoding
+struct RectangularBinEncoding{B, V, E} <: Encoding
     binning::B # either RectangularBinning or FixedRectangularBinning
     mini::V # fields are either static vectors or numbers
-    edgelengths::V
+    edgelengths::E
 end
 
 function Base.show(io::IO, x::RectangularBinEncoding)
@@ -106,7 +106,7 @@ function decode_from_bin(bin, b::RectangularBinEncoding{B, V}) where {B, V}
 end
 function decode_from_bin(bin, b::RectangularBinEncoding{B, T}) where {B, T<:Real}
     (; mini, edgelengths) = b
-    return (T(Tuple(bin)[1]) .- 1) .* edgelengths .+ mini
+    return (T(Tuple(bin)[1]) - 1)*edgelengths + mini
 end
 
 ##################################################################
@@ -119,13 +119,13 @@ function RectangularBinEncoding(x::AbstractDataset{D,T}, b::RectangularBinning;
     mini, maxi = minmaxima(x)
     v = ones(SVector{D,T})
     if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
-        edgelengths = ϵ .* v
+        edgelengths = SVector{D,T}(ϵ .* v)
     elseif ϵ isa Int || ϵ isa Vector{Int}
         edgeslengths_nonadjusted = @. (maxi - mini)/ϵ
         # Just taking nextfloat once here isn't enough for bins to cover data when using
         # `encode_as_bin` later, because subtraction and division leads to loss
         # of precision. We need a slightly bigger number, so apply nextfloat twice.
-        edgelengths = nextfloat.(edgeslengths_nonadjusted, n_eps)
+        edgelengths = SVector{D,T}(nextfloat.(edgeslengths_nonadjusted, n_eps))
     else
         error("Invalid ϵ for binning of a dataset")
     end
