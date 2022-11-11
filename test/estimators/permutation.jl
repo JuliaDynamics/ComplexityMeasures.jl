@@ -83,3 +83,14 @@ est = SymbolicPermutation(m = 2, lt = Base.isless)
 probs, πs = probabilities_and_outcomes(x, est)
 @test πs == [0, 1]
 @test probs == [3/5, 2/5]
+
+est3 = SymbolicPermutation(m = 3)
+@test outcome_space(est3) == [
+    [1, 2, 3],
+    [1, 3, 2],
+    [2, 1, 3],
+    [2, 3, 1],
+    [3, 1, 2],
+    [3, 2, 1],
+]
+@test total_outcomes(est3) == factorial(est3.m)

@@ -42,7 +42,18 @@ end
 # [2, 1] => 2
 x = [1, 2, 1, 2, 1, 2]
 # don't randomize in the case of equal values, so use Base.isless
-est = SymbolicWeightedPermutation(m = 2, lt = Base.isless)
+est = SymbolicAmplitudeAwarePermutation(m = 2, lt = Base.isless)
 probs, πs = probabilities_and_outcomes(x, est)
 @test πs == [0, 1]
+
 # TODO: probabilities should be explicitly tested too.
+est3 = SymbolicAmplitudeAwarePermutation(m = 3)
+@test outcome_space(est3) == [
+    [1, 2, 3],
+    [1, 3, 2],
+    [2, 1, 3],
+    [2, 3, 1],
+    [3, 1, 2],
+    [3, 2, 1],
+]
+@test total_outcomes(est3) == factorial(est3.m)
