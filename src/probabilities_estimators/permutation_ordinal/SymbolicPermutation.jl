@@ -104,7 +104,7 @@ function probabilities_and_outcomes(x::AbstractDataset{m, T},
         est::SymbolicPermutation) where {m, T}
     πs = zeros(Int, length(x))
     probs = probabilities!(πs, x, est)
-    observed_outcomes = outcome_space(est)[sort(unique(πs))]
+    observed_outcomes = outcome_space(est)[sort(unique(πs)) .+ 1] # +1 for 0 indexed πs
     probs, observed_outcomes
 end
 
@@ -116,7 +116,7 @@ function probabilities_and_outcomes(x::AbstractVector{T},
     # Create symbol vector and fill it.
     πs = zeros(Int, length(x_emb))
     probs = probabilities!(πs, x_emb, est)
-    observed_outcomes = outcome_space(est)[sort(unique(πs))]
+    observed_outcomes = outcome_space(est)[sort(unique(πs)) .+ 1] # +1 for 0 indexed πs
 
     return probs, observed_outcomes
 end

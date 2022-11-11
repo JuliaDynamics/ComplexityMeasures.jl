@@ -91,7 +91,7 @@ function probabilities_and_outcomes(x::AbstractDataset{m, T},
     πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
     probs = symprobs(πs, wts, normalize = true)
-    observed_outcomes = outcome_space(est)[sort(unique(πs))]
+    observed_outcomes = outcome_space(est)[sort(unique(πs)) .+ 1] # +1 for 0 indexed πs
 
    return Probabilities(probs), observed_outcomes
 end
@@ -103,7 +103,7 @@ function probabilities_and_outcomes(x::AbstractVector{T},
     πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt)) # motif length controlled by estimator m
     wts = weights_from_variance.(emb.data, est.m)
     probs = symprobs(πs, wts, normalize = true)
-    observed_outcomes = outcome_space(est)[sort(unique(πs))]
+    observed_outcomes = outcome_space(est)[sort(unique(πs)) .+ 1] # +1 for 0 indexed πs
 
     return Probabilities(probs), observed_outcomes
 end
