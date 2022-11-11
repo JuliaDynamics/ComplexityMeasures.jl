@@ -41,9 +41,9 @@ function isless_rand(a, b)
     end
 end
 
-# This is slow. I couldn't find any efficient algorithm in the literature for converting
+# I couldn't find any efficient algorithm in the literature for converting
 # between factorial number system representations and Lehmer codes, so we'll just have to
-# use this naive approach for now.
+# use this naive approach for now. It is probably possible to do this in a faster way.
 """
     decode_motif(s::Int, m::Int) → SVector{m, Int}
 
