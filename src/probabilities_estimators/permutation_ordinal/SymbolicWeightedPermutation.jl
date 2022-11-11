@@ -9,11 +9,12 @@ export SymbolicWeightedPermutation
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
 based on the weighted permutation entropy (Fadlallah et al., 2013).
 
-## Outcomes
+## Outcome space
 
 Like for [`SymbolicPermutation`](@ref), the outcome space `Ω` for
-`SymbolicWeightedPermutation` is the set `{1, 2, …, factorial(m)}`, where each integer
-correspond to a unique ordinal pattern.
+`SymbolicWeightedPermutation` is the lexiographically ordered set of
+length-`m` ordinal patterns (i.e. permutations) that can be formed by the integers
+`1, 2, …, m`. There are `factorial(m)` such patterns.
 
 ## Description
 
@@ -90,7 +91,7 @@ function probabilities_and_outcomes(x::AbstractDataset{m, T},
     πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
     probs = symprobs(πs, wts, normalize = true)
-    observed_outcomes = sort(unique(πs))
+    observed_outcomes = outcome_space(est)[sort(unique(πs))]
 
    return Probabilities(probs), observed_outcomes
 end
@@ -102,9 +103,10 @@ function probabilities_and_outcomes(x::AbstractVector{T},
     πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt)) # motif length controlled by estimator m
     wts = weights_from_variance.(emb.data, est.m)
     probs = symprobs(πs, wts, normalize = true)
-    observed_outcomes = sort(unique(πs))
+    observed_outcomes = outcome_space(est)[sort(unique(πs))]
 
     return Probabilities(probs), observed_outcomes
 end
 
 total_outcomes(est::SymbolicWeightedPermutation)::Int = factorial(est.m)
+outcome_space(est::SymbolicWeightedPermutation) = permutations(1:est.m) |> collect

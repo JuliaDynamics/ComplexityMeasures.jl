@@ -1,3 +1,5 @@
+using Combinatorics: permutations
+
 export SymbolicPermutation
 
 """
@@ -17,11 +19,11 @@ embedding delay `τ` and dimension `m`, and then converted to a symbol time seri
 estimated. If applied to a `Dataset`, then `τ` and `m` are ignored, and probabilities are
 computed directly from the state vectors.
 
-## Outcomes
+## Outcome space
 
-The outcomes `Ω` for `SymbolicPermutation` is the set `{1, 2, …, factorial(m)}`,
-where each integer correspond to a unique ordinal pattern, but
-[`probabilities_and_outcomes`](@ref) is not yet implemented for this estimator.
+The outcome space `Ω` for `SymbolicPermutation` is the set of length-`m` ordinal
+patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`,
+ordered lexicographically. There are `factorial(m)` such patterns.
 
 ## In-place symbolization
 
@@ -102,8 +104,7 @@ function probabilities_and_outcomes(x::AbstractDataset{m, T},
         est::SymbolicPermutation) where {m, T}
     πs = zeros(Int, length(x))
     probs = probabilities!(πs, x, est)
-    observed_outcomes = sort(unique(πs))
-
+    observed_outcomes = outcome_space(est)[sort(unique(πs))]
     probs, observed_outcomes
 end
 
@@ -115,7 +116,7 @@ function probabilities_and_outcomes(x::AbstractVector{T},
     # Create symbol vector and fill it.
     πs = zeros(Int, length(x_emb))
     probs = probabilities!(πs, x_emb, est)
-    observed_outcomes = sort(unique(πs))
+    observed_outcomes = outcome_space(est)[sort(unique(πs))]
 
     return probs, observed_outcomes
 end
@@ -147,3 +148,4 @@ function entropy!(e::Entropy,
 end
 
 total_outcomes(est::SymbolicPermutation)::Int = factorial(est.m)
+outcome_space(est::SymbolicPermutation) = permutations(1:est.m) |> collect
