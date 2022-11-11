@@ -45,6 +45,12 @@ the distribution of dispersion patterns among the embedding vectors.
 Note that dispersion patterns that are not present are not counted. Therefore, you'll
 always get non-zero probabilities using the `Dispersion` probability estimator.
 
+## Outcome space
+The outcome space for `Dispersion` is the unique delay vectos with elements the
+the symbols (integers) encoded by the Gaussian PDF.
+Hence, the outcome space is all `m`-dimensional delay vectors whose elements
+are all possible values in `1:c`.
+
 ## Data requirements and parameters
 
 The input must have more than one unique element for the Gaussian mapping to be
@@ -78,7 +84,7 @@ struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
 end
 
 function Dispersion(; c = 5, m = 2, τ = 1, check_unique = false)
-    return Dispersion(GaussianCDFEncoding(c), m, τ, check_unique)
+    return Dispersion(GaussianCDFEncoding(c = c), m, τ, check_unique)
 end
 
 function dispersion_histogram(x::AbstractDataset, N, m, τ)
@@ -101,17 +107,21 @@ function symbolize_for_dispersion(x, est::Dispersion)
     return symbols::Vector{Int}
 end
 
-function probabilities(x::AbstractVector, est::Dispersion)
-    symbols = symbolize_for_dispersion(x, est)
-
+function probabilities_and_outcomes(x::AbstractVector{<:Real}, est::Dispersion)
     N = length(x)
-
+    symbols = symbolize_for_dispersion(x, est)
     # We must use genembed, not embed, to make sure the zero lag is included
     m, τ = est.m, est.τ
     τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
     dispersion_patterns = genembed(symbols, τs, ones(m))
     hist = dispersion_histogram(dispersion_patterns, N, est.m, est.τ)
-    return Probabilities(hist)
+    return Probabilities(hist), dispersion_patterns
 end
 
 total_outcomes(est::Dispersion)::Int = est.encoding.c ^ est.m
+
+function outcome_space(est::Dispersion)
+    combs = Combinatorics.with_replacement_combinations(1:est.c, est.m)
+    Ω = map(v -> SVector{est.m, Int}(v), combs)
+    return Ω
+end
