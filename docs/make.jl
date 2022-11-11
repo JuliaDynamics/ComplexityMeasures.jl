@@ -37,7 +37,6 @@ ENTROPIES_PAGES = [
     "probabilities.md",
     "entropies.md",
     "examples.md",
-    "utils.md",
     "devdocs.md",
 ]
 include("style.jl")
