@@ -1,6 +1,5 @@
 using Entropies, Test
 
-
 @testset "Dispersion" begin
 
     @testset "Internals" begin
@@ -10,7 +9,7 @@ using Entropies, Test
         c = 4
         m = 4
         τ = 1
-        s = GaussianCDFEncoding(c = c)
+        s = GaussianCDFEncoding(c)
 
         # Symbols should be in the set [1, 2, …, c].
         symbols = Entropies.outcomes(x, s)
@@ -49,4 +48,13 @@ using Entropies, Test
     # their previous step.
     res_norm = entropy_normalized(Renyi(base = MathConstants.e, q = 1), x, est)
     @test round(res_norm, digits = 2) == 0.84
+
+    @testset "outcomes" begin
+        est = Dispersion(m = 3, c = 4)
+        Ω = outcome_space(est)
+        @test length(Ω) == total_outcomes(est) == 4^3
+
+        probs, out = probabilities_and_outcomes(rand(1000), est)
+        @test all(x -> x ∈ Ω, out)
+    end
 end

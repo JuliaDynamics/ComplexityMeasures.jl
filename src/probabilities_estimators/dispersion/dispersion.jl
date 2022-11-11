@@ -84,7 +84,7 @@ struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
 end
 
 function Dispersion(; c = 5, m = 2, τ = 1, check_unique = false)
-    return Dispersion(GaussianCDFEncoding(c = c), m, τ, check_unique)
+    return Dispersion(GaussianCDFEncoding(c), m, τ, check_unique)
 end
 
 function dispersion_histogram(x::AbstractDataset, N, m, τ)
@@ -121,7 +121,8 @@ end
 total_outcomes(est::Dispersion)::Int = est.encoding.c ^ est.m
 
 function outcome_space(est::Dispersion)
-    combs = Combinatorics.with_replacement_combinations(1:est.c, est.m)
-    Ω = map(v -> SVector{est.m, Int}(v), combs)
-    return Ω
+    c, m = 1:est.encoding.c, est.m
+    cart = CartesianIndices(ntuple(i -> c, m))
+    V = SVector{m, Int}
+    return map(i -> V(Tuple(i)), vec(cart))
 end
