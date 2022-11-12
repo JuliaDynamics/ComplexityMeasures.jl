@@ -80,43 +80,45 @@ function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where
 end
 
 function probabilities!(πs::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
-    length(πs) == length(x) || throw(ArgumentError("Need length(πs) == length(x), got `length(πs)=$(length(πs))` and `length(x)==$(length(x))`."))
+    length(πs) == length(x) || throw(ArgumentError("Need length(πs) == length(x), got `length(πs)=$(length(πs))` and `length(x)==$(length(x))`."))
     m >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series embed it using `genembed` first.")
-
-    @inbounds for i in eachindex(x)
-        πs[i] = encode_motif(x[i], m)
-    end
-    probabilities(πs)
+    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
+    probabilities(outcomes!(πs, x, encoding))
 end
 
 function probabilities!(πs::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
-    L = length(x)
-    N = L - (est.m-1)*est.τ
+    N = length(x) - (est.m - 1)*est.τ
     length(πs) == N || error("Pre-allocated symbol vector `πs` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(πs)=$(length(πs)) and length(x)=$(L).")
-
-    τs = tuple([est.τ*i for i = 0:est.m-1]...)
-    x_emb = genembed(x, τs)
-
-    probabilities!(πs, x_emb, est)
+    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
+    probabilities(outcomes!(πs, x, encoding))
 end
 
 function probabilities_and_outcomes(x::AbstractDataset{m, T},
         est::SymbolicPermutation) where {m, T}
-    πs = zeros(Int, length(x))
-    probs = probabilities!(πs, x, est)
-    observed_outcomes = outcome_space(est)[sort(unique(πs)) .+ 1] # +1 for 0 indexed πs
-    probs, observed_outcomes
+    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
+    πs = outcomes(x, encoding)
+    probs = probabilities(πs)
+
+    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
+    # integer corresponds to a unique permutation. Decoding an integer gives the original
+    # permutation as a `SVector{m, Int}`.
+    observed_encodings = sort(unique(πs))
+    observed_outcomes = decode_motif.(observed_encodings, est.m)
+
+    return probs, observed_outcomes
 end
 
 function probabilities_and_outcomes(x::AbstractVector{T},
         est::SymbolicPermutation) where {T<:Real}
-    τs = tuple([est.τ*i for i = 0:est.m-1]...)
-    x_emb = genembed(x, τs)
+    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
+    πs = outcomes(x, encoding)
+    probs = probabilities(πs, CountOccurrences())
 
-    # Create symbol vector and fill it.
-    πs = zeros(Int, length(x_emb))
-    probs = probabilities!(πs, x_emb, est)
-    observed_outcomes = outcome_space(est)[sort(unique(πs)) .+ 1] # +1 for 0 indexed πs
+    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
+    # integer corresponds to a unique permutation. Decoding an integer gives the original
+    # permutation as a `SVector{m, Int}`.
+    observed_encodings = sort(unique(πs))
+    observed_outcomes = decode_motif.(observed_encodings, est.m)
 
     return probs, observed_outcomes
 end

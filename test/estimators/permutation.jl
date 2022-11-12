@@ -81,7 +81,7 @@ x = [1, 2, 1, 2, 1, 2]
 # don't randomize in the case of equal values, so use Base.isless
 est = SymbolicPermutation(m = 2, lt = Base.isless)
 probs, πs = probabilities_and_outcomes(x, est)
-@test πs == [0, 1]
+@test πs == SVector{2, Int}.([[1, 2], [2, 1]])
 @test probs == [3/5, 2/5]
 
 est3 = SymbolicPermutation(m = 3)

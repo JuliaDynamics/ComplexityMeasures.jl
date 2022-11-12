@@ -44,7 +44,7 @@ x = [1, 2, 1, 2, 1, 2]
 # don't randomize in the case of equal values, so use Base.isless
 est = SymbolicAmplitudeAwarePermutation(m = 2, lt = Base.isless)
 probs, πs = probabilities_and_outcomes(x, est)
-@test πs == [0, 1]
+@test πs == SVector{2, Int}.([[1, 2], [2, 1]])
 
 # TODO: probabilities should be explicitly tested too.
 est3 = SymbolicAmplitudeAwarePermutation(m = 3)

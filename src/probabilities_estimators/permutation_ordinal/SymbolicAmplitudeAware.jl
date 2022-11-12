@@ -74,22 +74,34 @@ end
 
 function probabilities_and_outcomes(x::AbstractDataset{m, T},
         est::SymbolicAmplitudeAwarePermutation) where {m, T}
-    πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt)) # motif length controlled by dimension of input data
+    πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))
     wts = AAPE.(x.data, A = est.A, m = est.m)
     probs = symprobs(πs, wts, normalize = true)
-    observed_outcomes = outcome_space(est)[sort(unique(πs)) .+ 1] # +1 for 0 indexed πs
+
+    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
+    # integer corresponds to a unique permutation. Decoding an integer gives the original
+    # permutation as a `SVector{m, Int}`.
+    observed_encodings = sort(unique(πs))
+    observed_outcomes = decode_motif.(observed_encodings, est.m)
 
     return Probabilities(probs), observed_outcomes
 end
 
 function probabilities_and_outcomes(x::AbstractVector{T},
         est::SymbolicAmplitudeAwarePermutation) where {T<:Real}
+    # We need to manually embed here instead of just calling the method above,
+    # because the embedding vectors are needed to compute weights.
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     emb = genembed(x, τs)
-    πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt))  # motif length controlled by estimator m
+    πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt))
     wts = AAPE.(emb.data, A = est.A, m = est.m)
     probs = symprobs(πs, wts, normalize = true)
-    observed_outcomes = outcome_space(est)[sort(unique(πs)) .+ 1] # +1 for 0 indexed πs
+
+    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
+    # integer corresponds to a unique permutation. Decoding an integer gives the original
+    # permutation as a `SVector{m, Int}`.
+    observed_encodings = sort(unique(πs))
+    observed_outcomes = decode_motif.(observed_encodings, est.m)
 
     return Probabilities(probs), observed_outcomes
 end
