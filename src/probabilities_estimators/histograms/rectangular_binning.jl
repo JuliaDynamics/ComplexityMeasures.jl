@@ -226,7 +226,7 @@ function outcome_space(e::RectangularBinEncoding)
     dims = _array_dims_from_fixed_binning(e)
     bins = CartesianIndices(dims)
     outcomes = map(b -> decode_from_bin(b, e), bins)
-    return outcomes
+    return vec(outcomes)
 end
 
 function _array_dims_from_fixed_binning(e)
