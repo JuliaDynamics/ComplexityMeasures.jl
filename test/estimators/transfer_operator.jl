@@ -6,7 +6,8 @@ binnings = [
     RectangularBinning(3),
     RectangularBinning(0.2),
     RectangularBinning([2, 2, 3]),
-    RectangularBinning([0.2, 0.3, 0.3])
+    RectangularBinning([0.2, 0.3, 0.3]),
+    FixedRectangularBinning(0.1, 0.5, 10),
 ]
 
 @testset "Binning test $i" for i in eachindex(binnings)
