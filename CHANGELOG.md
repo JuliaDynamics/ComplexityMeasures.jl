@@ -16,7 +16,7 @@ The API for Entropies.jl has been completely overhauled. Major changes are:
 ### Bug fixes
 
 - The `KozachenkoLeonenko` estimator now correctly fixes its neighbor search to the
-    *closest* neighbor only, and its constructor does no longer accept `k` as an input, and uses correct scaling factor.
+    *closest* neighbor only, and its constructor does no longer accept `k` as an input. It also uses correct scaling factor and adapts to dimension.
 - Using a logarithm `base` different from `MathConstants.e` now yields correct results
     for `Kraskov` and `KozachenkoLeonenko`.
 
