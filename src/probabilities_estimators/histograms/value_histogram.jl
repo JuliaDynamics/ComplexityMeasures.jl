@@ -35,7 +35,7 @@ and initializes this binning directly.
 
 ## Outcomes
 
-The outcome space for `ValueHistogram` is the set of unique bins constructed
+The outcome space for `ValueHistogram` is the unique bins constructed
 from `b`. Each bin is identified by its left (lowest-value) corner.
 The bins are in data units, not integer (cartesian indices units), and
 are returned as `SVector`s.
@@ -70,7 +70,7 @@ function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
     unique!(bins) # `bins` is already sorted from `fasthist!`
     # Here we transfor the cartesian coordinate based bins into data unit bins:
     outcomes = map(b -> decode_from_bin(b, encoder), bins)
-    return Probabilities(probs), outcomes
+    return Probabilities(probs), vec(outcomes)
 end
 
 outcome_space(x, est::ValueHistogram) = outcome_space(x, est.binning)

@@ -242,11 +242,15 @@ end
 """
     fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
 Create an encoding for binning, then map `x` to bins, then call `fasthist!` on the bins.
-Return the output probabilities, the bins, and the created encoder.
+Return the output counts, the bins, and the created encoder.
 """
-function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+function fasthist(x, ϵ::AbstractBinning)
     encoder = RectangularBinEncoding(x, ϵ)
+    hist, bins = fasthist(x, encoder)
+    return hist, bins, encoder
+end
+function fasthist(x, encoder::RectangularBinEncoding)
     bins = map(y -> encode_as_bin(y, encoder), x)
     hist = fasthist!(bins)
-    return hist, bins, encoder
+    return hist, bins
 end
