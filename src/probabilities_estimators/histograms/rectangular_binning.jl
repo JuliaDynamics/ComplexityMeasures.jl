@@ -126,7 +126,7 @@ function RectangularBinEncoding(x, b::RectangularBinning; n_eps = 2)
     v = ones(SVector{D,T})
     if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
         edgelengths = SVector{D,T}(ϵ .* v)
-        histsize = round.(Int, (maxi .- mini) ./ edgelengths)
+        histsize = ceil.(Int, nextfloat.((maxi .- mini), n_eps) ./ edgelengths)
     elseif ϵ isa Int || ϵ isa Vector{Int}
         edgeslengths_nonadjusted = @. (maxi - mini)/ϵ
         # Just taking nextfloat once here isn't enough for bins to cover data when using
