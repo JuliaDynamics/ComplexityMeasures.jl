@@ -70,5 +70,5 @@ function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
     return Probabilities(probs), vec(outcomes)
 end
 
-outcome_space(x, est::ValueHistogram) = outcome_space(x, est.encoding)
-total_outcomes(x, est::ValueHistogram) = total_outcomes(x, est.encoding)
+outcome_space(x, est::ValueHistogram) = outcome_space(est.encoding)
+total_outcomes(x, est::ValueHistogram) = total_outcomes(est.encoding)

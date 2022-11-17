@@ -173,43 +173,18 @@ end
 
 # This version exists if the given `ϵ`s are already tuples.
 # Then, the dataset doesn't need to be provided.
-function RectangularBinEncoding(b::FixedRectangularBinning{<:NTuple}; n_eps = 2)
-    D = length(E)
-    return RectangularBinEncoding(Dataset{D,Float64}(), b; n_eps)
+function RectangularBinEncoding(b::FixedRectangularBinning{<:NTuple{D,T}}; n_eps = 2) where {D,T}
+    return RectangularBinEncoding(Dataset{D,T}(), b; n_eps)
 end
 
 ##################################################################
-# Outcomes / total outcomes / extension of functions
+# Outcomes / total outcomes
 ##################################################################
-# When the grid is fixed by the user, we can always deduce the total number of bins,
-# even just from the binning itself - symbolization info not needed.
-total_outcomes(x, bin::AbstractBinning) = total_outcomes(RectangularBinEncoding(x, bin))
-function total_outcomes(e::RectangularBinEncoding)
-    if e.binning isa RectangularBinning
-        error("Not possible to _uniquely_ define for `RectangularBinning`.")
-    end
-    D = length(e.mini)
-    return e.binning.N^D
-end
+total_outcomes(e::RectangularBinEncoding) = prod(e.histsize)
 
-# This function does not need `x`; all info about binning are in the encoding
-outcome_space(x, bin::AbstractBinning) = outcome_space(RectangularBinEncoding(x, bin))
 function outcome_space(e::RectangularBinEncoding)
-    if e.binning isa RectangularBinning
-        error("Not possible to _uniquely_ define for `RectangularBinning`.")
-    end
-    # We can be smart here. All possible bins are exactly the same thing
-    # as the Cartesian Indices of an array, mapped into "data" units
-    dims = _array_dims_from_fixed_binning(e)
-    bins = CartesianIndices(dims)
-    outcomes = map(b -> decode_from_bin(b, e), bins)
-    return outcomes
-end
-
-function _array_dims_from_fixed_binning(e)
-    N = e.binning.N
-    D = length(e.mini)
-    return ntuple(i -> N, D)
+    # this is super simple :P could be optimized but its not a frequent operation
+    return [decode(i, e) for i in 1:total_outcomes(e)]
 end
 
 ##################################################################
@@ -217,17 +192,12 @@ end
 ##################################################################
 # This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
 """
-    fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
-Create an encoding for binning, then map `x` to bins, then call `fasthist!` on the bins.
-Return the output counts, the bins, and the created encoder.
+    fasthist(x::Vector_or_Dataset, ϵ::RectangularBinEncoding)
+Intermediate method that runs `fasthist!` in the encoded space
+and returns the encoded space histogram (counts) and corresponding bins.
 """
-function fasthist(x, ϵ::AbstractBinning)
-    encoder = RectangularBinEncoding(x, ϵ)
-    hist, bins = fasthist(x, encoder)
-    return hist, bins, encoder
-end
 function fasthist(x, encoder::RectangularBinEncoding)
-    bins = map(y -> encode_as_bin(y, encoder), x)
+    bins = map(y -> encode(y, encoder), x)
     hist = fasthist!(bins)
     return hist, bins
 end
