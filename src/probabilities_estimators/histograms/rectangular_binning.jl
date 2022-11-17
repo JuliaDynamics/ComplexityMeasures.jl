@@ -112,17 +112,14 @@ function decode(bin::Int, e::RectangularBinEncoding{B, V}) where {B, V}
     return (V(Tuple(cartesian)) .- 1) .* edgelengths .+ mini
 end
 
-function decode_from_bin(bin, b::RectangularBinEncoding{B, T}) where {B, T<:Real}
-    (; mini, edgelengths) = b
-    return (T(Tuple(bin)[1]) - 1)*edgelengths + mini
-end
-
 ##################################################################
-# Encoding bins using a *floating* (i.e. controlled by data) grid
+# Initialization of encodings
 ##################################################################
-function RectangularBinEncoding(x::AbstractDataset{D,T}, b::RectangularBinning;
-        n_eps = 2) where {D, T}
+# Data-controlled grid
+function RectangularBinEncoding(x, b::RectangularBinning; n_eps = 2)
     # This function always returns static vectors and is type stable
+    D = dimension(x)
+    T = eltype(x)
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
     v = ones(SVector{D,T})
@@ -144,72 +141,32 @@ function RectangularBinEncoding(x::AbstractDataset{D,T}, b::RectangularBinning;
     RectangularBinEncoding(b, mini, edgelengths, ci, li)
 end
 
-function RectangularBinEncoding(x::AbstractVector{<:Real}, b::RectangularBinning; n_eps = 2)
-    # This function always returns numbers and is type stable
-    ϵ = b.ϵ
-    mini, maxi = extrema(x)
-    if ϵ isa AbstractFloat
-        edgelength = ϵ
-    elseif ϵ isa Int
-        edgeslength_nonadjusted = (maxi - mini)/ϵ
-        # Round-off occurs when encoding bins. Applying `nextfloat` twice seems to still
-        # ensure that bins cover data. See comment above.
-        edgelength = nextfloat(edgeslength_nonadjusted, n_eps)
-    else
-        error("Invalid ϵ for binning of a vector")
-    end
-
-    RectangularBinEncoding(b, mini, edgelength)
-end
-
-##################################################################
-# Encoding bins using a fixed (user-specified) grid
-##################################################################
-function RectangularBinEncoding(::AbstractVector{<:Real},
-        b::FixedRectangularBinning{E}; n_eps = 2) where E
-
-    # This function always returns numbers and is type stable
-    ϵmin, ϵmax = b.ϵmin, b.ϵmax
-    mini = ϵmin
-    if ϵmin isa AbstractFloat && ϵmax isa AbstractFloat
-        edgelength_nonadjusted = (ϵmax - ϵmin) / b.N
-        edgelength = nextfloat(edgelength_nonadjusted, n_eps)
-    else
-        error("Invalid ϵmin or ϵmax for binning of a vector")
-    end
-
-    RectangularBinEncoding(b, mini, edgelength)
-end
-
-function RectangularBinEncoding(::AbstractDataset{D, T},
-        b::FixedRectangularBinning{E}, n_eps = 2) where {D, T, E}
+# fixed grid
+function RectangularBinEncoding(x, b::FixedRectangularBinning{E}; n_eps = 2) where {E}
+    D = dimension(x)
+    T = eltype(x)
+    D ≠ length(E) && error("Dimension of data and fixed rectangular binning don't match!")
     # This function always returns static vectors and is type stable
     ϵmin, ϵmax = b.ϵmin, b.ϵmax
-    if E <: Float64
-        mini = SVector{D, Float64}(repeat([ϵmin], D))
-        maxi = SVector{D, Float64}(repeat([ϵmax], D))
+    if E <: Real
+        mini = SVector{D, T}(repeat([ϵmin], D))
+        maxi = SVector{D, T}(repeat([ϵmax], D))
     elseif E <: NTuple{D}
-        mini = SVector{D, Float64}(ϵmin)
-        maxi = SVector{D, Float64}(ϵmax)
+        mini = SVector{D, T}(ϵmin)
+        maxi = SVector{D, T}(ϵmax)
     else
         error("Invalid ϵmin or ϵmax for binning of a dataset")
     end
-
     edgelengths_nonadjusted = @. (maxi .- mini) / b.N
     edgelengths = nextfloat.(edgelengths_nonadjusted, n_eps)
-
     RectangularBinEncoding(b, mini, edgelengths)
 end
+
 # This version exists if the given `ϵ`s are already tuples.
 # Then, the dataset doesn't need to be provided.
-function RectangularBinEncoding(b::FixedRectangularBinning{<:NTuple}, n_eps = 2)
-    ϵmin, ϵmax = b.ϵmin, b.ϵmax
-    D = length(ϵmin)
-    mini = SVector{D, Float64}(ϵmin)
-    maxi = SVector{D, Float64}(ϵmax)
-    edgelengths_nonadjusted = @. (maxi .- mini) / b.N
-    edgelengths = nextfloat.(edgelengths_nonadjusted, n_eps)
-    RectangularBinEncoding(b, mini, edgelengths)
+function RectangularBinEncoding(b::FixedRectangularBinning{<:NTuple}; n_eps = 2)
+    D = length(E)
+    return RectangularBinEncoding(Dataset{D,Float64}(), b; n_eps)
 end
 
 ##################################################################
