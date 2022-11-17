@@ -17,6 +17,8 @@ abstract type HistogramEncoding <: Encoding end
 
 Rectangular box partition of state space using the scheme `ϵ`,
 deducing the coordinates of the grid axis minima from the input data.
+Generally it is preferred to use [`FixedRectangularBinning`](@ref) instead,
+as it has a well defined outcome space without knowledge of input data.
 
 Binning instructions are deduced from the type of `ϵ` as follows:
 
@@ -41,17 +43,20 @@ const ValidFixedBinInputs = Union{Number, NTuple}
 
 Rectangular box partition of state space where the extent of the grid is explicitly
 specified by `ϵmin` and `emax`, and along each dimension, the grid is subdivided into `N`
-subintervals.
+subintervals. Points falling outside the partition do not attribute to probabilities.
 
 Binning instructions are deduced from the types of `ϵmin`/`emax` as follows:
 
-1. `E<:Float64` sets the grid range along all dimensions to to `[ϵmin, ϵmax]`.
-2. `E::NTuple{D, Float64}` sets ranges along each dimension individually, i.e.
+1. `E<:Real` sets the grid range along all dimensions to to `[ϵmin, ϵmax]`.
+2. `E::NTuple{D, <:Real}` sets ranges along each dimension individually, i.e.
     `[ϵmin[i], ϵmax[i]]` is the range along the `i`-th dimension.
 
 If the grid spans the range `[r1, r2]` along a particular dimension, then this range
 is subdivided into `N` subintervals of equal length `nextfloat((r2 - r1)/N)`.
 Thus, for `D`-dimensional data, there are `N^D` boxes.
+
+Generally it is preferred to use the second method (`E::NTuple{D, <:Real}`) which
+has a well defined outcome space irrespectively of input data.
 """
 struct FixedRectangularBinning{E} <: AbstractBinning
     ϵmin::E
@@ -61,7 +66,7 @@ struct FixedRectangularBinning{E} <: AbstractBinning
     function FixedRectangularBinning(ϵmin::E1, ϵmax::E2, N::Int) where {E1 <: ValidFixedBinInputs, E2 <: ValidFixedBinInputs}
         f_ϵmin = float.(ϵmin)
         f_ϵmax = float.(ϵmax)
-        return new{typeof(f_ϵmin)}(f_ϵmin, f_ϵmax, N::Int)
+        return new{typeof(f_ϵmin)}(f_ϵmin, f_ϵmax, N)
     end
 end
 
@@ -93,9 +98,9 @@ end
 
 function Base.show(io::IO, x::RectangularBinEncoding)
     return print(io, "RectangularBinEncoding\n" *
-        "  binning: $(x.binning) \n" *
         "  box corners: $(x.mini)\n" *
-        "  edgelengths: $(x.edgelengths)"
+        "  edgelengths: $(x.edgelengths)\n" *
+        "  histogram size: $(x.histsize)"
     )
 end
 
@@ -103,11 +108,24 @@ function encode(point, e::RectangularBinEncoding)
     (; mini, edgelengths) = e
     # Map a data point to its bin edge (plus one because indexing starts from 1)
     bin = floor.(Int, (point .- mini) ./ edgelengths) .+ 1
-    return e.li[CartesianIndex(Tuple(bin))]
+    cartidx = CartesianIndex(Tuple(bin))
+    # We have decided on the arbitrary convention that out of bound points
+    # will get the special symbol `-1`. Erroring doesn't make sense as it is expected
+    # that for fixed histograms there may be points outside of them.
+    if checkbounds(Bool, e.li, cartidx)
+        return @inbounds e.li[cartidx]
+    else
+        return -1
+    end
 end
 
-function decode(bin::Int, e::RectangularBinEncoding{B, V}) where {B, V}
-    cartesian = e.ci[bin]
+function decode(bin::Int, e::RectangularBinEncoding{B, D, T}) where {B, D, T}
+    V = SVector{D,T}
+    if checkbounds(Bool, e.ci, bin)
+        @inbounds cartesian = e.ci[bin]
+    else
+        error("Cannot decode integer $(bin): out of bounds of underlying histogram.")
+    end
     (; mini, edgelengths) = e
     # Remove one because we want lowest value corner, and we get indices starting from 1
     return (V(Tuple(cartesian)) .- 1) .* edgelengths .+ mini
@@ -198,6 +216,16 @@ and returns the encoded space histogram (counts) and corresponding bins.
 """
 function fasthist(x, encoder::RectangularBinEncoding)
     bins = map(y -> encode(y, encoder), x)
+    # We discard `-1`, as it encodes points outside the histogram limit
+    # (which should only happen for `Fixed` binnings)
+    discard_minus_ones!(bins)
     hist = fasthist!(bins)
     return hist, bins
+end
+
+function discard_minus_ones!(bins)
+    # It's (probably) faster to first check if elements are there...?
+    any(isequal(-1), bins) && return bins
+    idxs = findall(isequal(-1), bins)
+    deleteat!(bins, idxs)
 end
