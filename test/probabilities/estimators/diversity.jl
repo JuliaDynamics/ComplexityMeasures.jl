@@ -14,7 +14,7 @@ binsize = (1-(-1))/10
 probs, events = probabilities_and_outcomes(x, est)
 
 ds = [0.605, 0.698, 0.924, 0.930] # value from Wang et al. (2020)
-# These distances should be in the following distance bins: [8, 8, 9, 9],
+# These distances should be in the following distance bins: [8, 8, 9, 9].
 # Which means that the probability distribution should be [0.5, 0.5]
 bins = floor.(Int, (ds .- (-1.0)) / binsize)
 @test sort(bins) == [8, 8, 9, 9]
@@ -22,5 +22,5 @@ bins = floor.(Int, (ds .- (-1.0)) / binsize)
 
 # The coordinates corresponding to the left corners of these bins are as
 # follows, and should correspond with the events.
-coords = -1.0 .+ (bins .* 0.2)
+coords = ((bins .- 1) .* binsize) .+ (-1.0)
 @test all(round.(events, digits = 13) == round.(unique(coords), digits = 13))
