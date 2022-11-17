@@ -1,6 +1,9 @@
 export RectangularBinning, FixedRectangularBinning
 export RectangularBinEncoding
 
+abstract type AbstractBinning end
+abstract type HistogramEncoding <: Encoding end
+
 ##################################################################
 # Structs and docstrings
 ##################################################################
@@ -79,7 +82,7 @@ information as `ϵmin/max` is already an `NTuple`.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinEncoding{B, V, E, C, L} <: Encoding
+struct RectangularBinEncoding{B, V, E, C, L} <: HistogramEncoding
     binning::B # either RectangularBinning or FixedRectangularBinning
     mini::V # fields are either static vectors or numbers
     edgelengths::E

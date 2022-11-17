@@ -1,12 +1,4 @@
-export ValueHistogram, VisitationFrequency, AbstractBinning
-
-"""
-    AbstractBinning
-
-The supertype of all binning schemes.
-"""
-abstract type AbstractBinning end
-
+export ValueHistogram, VisitationFrequency
 # We need binning to be defined first to add it as a field to a struct
 include("rectangular_binning.jl")
 include("fasthist.jl")
@@ -42,10 +34,19 @@ are returned as `SVector`s.
 
 See also: [`RectangularBinning`](@ref).
 """
-struct ValueHistogram{B<:AbstractBinning} <: ProbabilitiesEstimator
-    binning::B
+struct ValueHistogram{H<:HistogramEncoding} <: ProbabilitiesEstimator
+    encoding::H
 end
 ValueHistogram(ϵ::Union{Real,Vector}) = ValueHistogram(RectangularBinning(ϵ))
+function ValueHistogram(x, b::AbstractBinning)
+    encoding = RectangularBinEncoding(x, b)
+    return ValueHistogram(encoding)
+end
+function ValueHistogram(b::FixedRectangularBinning)
+    encoding = RectangularBinEncoding(b)
+    return ValueHistogram(encoding)
+end
+
 
 """
     VisitationFrequency
@@ -54,24 +55,20 @@ An alias for [`ValueHistogram`](@ref).
 """
 const VisitationFrequency = ValueHistogram
 
-# For organizational outcomes we extend methods here. However, their
-# source code in truth is in the binnings file using the bin encoding
-
-# This method is only valid for rectangular binnings, as `fasthist`
-# is only valid for rectangular binnings. For more binnings, it needs to be extended.
+# The source code of `ValueHistogram` operates as rather simple calls to
+# the underlying encoding and the `fasthist` function and extensions.
+# See the `rectangular_binning.jl` file for more.
 function probabilities(x::Array_or_Dataset, est::ValueHistogram)
-    # and the `fasthist` actually just makes an encoding,
-    # this function is in `rectangular_binning.jl`
-    Probabilities(fasthist(x, est.binning)[1])
+    Probabilities(fasthist(x, est.encoding)[1])
 end
 
 function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
-    probs, bins, encoder = fasthist(x, est.binning)
+    probs, bins = fasthist(x, est.encoding) # bins are integers here
     unique!(bins) # `bins` is already sorted from `fasthist!`
     # Here we transfor the cartesian coordinate based bins into data unit bins:
-    outcomes = map(b -> decode_from_bin(b, encoder), bins)
+    outcomes = map(b -> decode(b, encoder), bins)
     return Probabilities(probs), vec(outcomes)
 end
 
-outcome_space(x, est::ValueHistogram) = outcome_space(x, est.binning)
-total_outcomes(x, est::ValueHistogram) = total_outcomes(x, est.binning)
+outcome_space(x, est::ValueHistogram) = outcome_space(x, est.encoding)
+total_outcomes(x, est::ValueHistogram) = total_outcomes(x, est.encoding)
