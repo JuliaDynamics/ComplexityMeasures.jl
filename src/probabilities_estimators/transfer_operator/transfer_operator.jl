@@ -214,6 +214,7 @@ function transferoperator(pts::AbstractDataset{D, T},
     sort_idxs = sortperm(visited_bins)
 
     # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
+    # For now, bins are sorted after order of first appearance according to the input `pts`.
     #sort!(visited_bins)
 
     # There are N=length(unique(visited_bins)) unique bins.
@@ -483,9 +484,10 @@ function probabilities_and_outcomes(x::Array_or_Dataset, est::TransferOperator)
     encoder = RectangularBinEncoding(x, est.binning)
 
     # Note: bins are *not* sorted. They occur in the order of first appearance, according
-    # to the input time series.
+    # to the input time series. Taking the unique bins preserves the order of first
+    # appearance
     bins = to.bins
-    unique!(bins) # still not sorted after taking the unique values.
+    unique!(bins)
     # From bins represented by cartesian coordinates to bins represented by data units.
     outcomes = map(b -> decode_from_bin(b, encoder), bins)
     return probs, outcomes
