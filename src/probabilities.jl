@@ -147,7 +147,12 @@ function outcome_space(x, est::ProbabilitiesEstimator)
     outcome_space(est)
 end
 function outcome_space(est::ProbabilitiesEstimator)
-    error("`outcome_space` not known/implemented for estimator $(typeof(est)).")
+    error(
+        "`outcome_space(est)` not known/implemented for estimator $(typeof(est))."*
+        "Try providing some input data, e.g. `outcomes_space(x, est)`."*
+        "In some cases, this gives the dimensional layout/type information needed "*
+        "to define the outcome space."
+        )
 end
 
 """
