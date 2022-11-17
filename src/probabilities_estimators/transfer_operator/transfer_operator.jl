@@ -20,12 +20,26 @@ as the bin probabilities. Assumes that the input data are sequential (time-order
 
 This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
 
-## Outcomes
+## Outcome space
 
 The outcome space for `TransferOperator` is the set of unique bins constructed
-from `b`. Each bin is identified by its left (lowest-value) corner.
-The bins are in data units, not integer (cartesian indices units), and
-are returned as `SVector`s.
+from `b`. Bins are identified by their left (lowest-value) corners, are given in
+data units, and are returned as `SVector`s.
+
+## Bin ordering
+
+Bins returned by [`probabilities_and_outcomes`](@ref) are ordered according to first
+appearance (i.e. the first time the input (multivariate) timeseries visits the bin).
+Thus, if
+
+```julia
+b = RectangularBinning(4)
+est = TransferOperator(b)
+probs, outcomes = probabilities_and_outcomes(x, est) # x is some timeseries
+```
+
+then `probs[i]` is the invariant measure (probability) of the bin `outcomes[i]`, which is
+the `i`-th bin visited by the timeseries with nonzero measure.
 
 ## Description
 
