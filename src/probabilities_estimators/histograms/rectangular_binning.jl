@@ -7,7 +7,7 @@ export RectangularBinEncoding
 # Notice that the binning types are intermediate structs that are NOT retained
 # in the source code. Their only purpose is instructions of how to create a
 # `RectangularBinEncoder`. All actual source code functionality of `ValueHistogram`
-# is implemented based on `RectangularBinEncoder` and
+# is implemented based on `RectangularBinEncoder`.
 
 """
     RectangularBinning(ϵ) <: AbstractBinning
@@ -79,10 +79,12 @@ information as `ϵmin/max` is already an `NTuple`.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinEncoding{B, V, E} <: Encoding
+struct RectangularBinEncoding{B, V, E, C, L} <: Encoding
     binning::B # either RectangularBinning or FixedRectangularBinning
     mini::V # fields are either static vectors or numbers
     edgelengths::E
+    ci::C # cartesian indices
+    li::L # linear indices
 end
 
 function Base.show(io::IO, x::RectangularBinEncoding)
@@ -93,17 +95,20 @@ function Base.show(io::IO, x::RectangularBinEncoding)
     )
 end
 
-function encode_as_bin(point, b::RectangularBinEncoding)
-    (; mini, edgelengths) = b
-    # Map a data point to its bin edge
-    return floor.(Int, (point .- mini) ./ edgelengths)
+function encode(point, e::RectangularBinEncoding)
+    (; mini, edgelengths) = e
+    # Map a data point to its bin edge (plus one because indexing starts from 1)
+    bin = floor.(Int, (point .- mini) ./ edgelengths) .+ 1
+    return e.li[CartesianIndex(Tuple(bin))]
 end
 
-function decode_from_bin(bin, b::RectangularBinEncoding{B, V}) where {B, V}
-    (; mini, edgelengths) = b
+function decode(bin::Int, e::RectangularBinEncoding{B, V}) where {B, V}
+    cartesian = e.ci[bin]
+    (; mini, edgelengths) = e
     # Remove one because we want lowest value corner, and we get indices starting from 1
-    return (V(Tuple(bin)) .- 1) .* edgelengths .+ mini
+    return (V(Tuple(cartesian)) .- 1) .* edgelengths .+ mini
 end
+
 function decode_from_bin(bin, b::RectangularBinEncoding{B, T}) where {B, T<:Real}
     (; mini, edgelengths) = b
     return (T(Tuple(bin)[1]) - 1)*edgelengths + mini
@@ -130,7 +135,10 @@ function RectangularBinEncoding(x::AbstractDataset{D,T}, b::RectangularBinning;
         error("Invalid ϵ for binning of a dataset")
     end
 
-    RectangularBinEncoding(b, mini, edgelengths)
+    # Cartesian indices of the underlying histogram
+    ci = CartesianIndices(ntuple(i -> length(x), D))
+    li = LinearIndices(ci)
+    RectangularBinEncoding(b, mini, edgelengths, ci, li)
 end
 
 function RectangularBinEncoding(x::AbstractVector{<:Real}, b::RectangularBinning; n_eps = 2)
