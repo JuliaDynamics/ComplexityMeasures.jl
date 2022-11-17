@@ -213,6 +213,7 @@ end
     fasthist(x::Vector_or_Dataset, ϵ::RectangularBinEncoding)
 Intermediate method that runs `fasthist!` in the encoded space
 and returns the encoded space histogram (counts) and corresponding bins.
+Also skips any instances of out-of-bound points for the histogram.
 """
 function fasthist(x, encoder::RectangularBinEncoding)
     bins = map(y -> encode(y, encoder), x)
@@ -224,8 +225,6 @@ function fasthist(x, encoder::RectangularBinEncoding)
 end
 
 function discard_minus_ones!(bins)
-    # It's (probably) faster to first check if elements are there...?
-    any(isequal(-1), bins) && return bins
     idxs = findall(isequal(-1), bins)
     deleteat!(bins, idxs)
 end

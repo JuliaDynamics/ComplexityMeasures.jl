@@ -16,12 +16,14 @@ using DelayEmbeddings: embed, genembed
 const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
 const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
 
+# Core API types and functions
 include("probabilities.jl")
 include("entropy.jl")
-include("encoding/outcomes.jl")
+include("encodings.jl")
+# Library implementations (files include other files)
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
-
+include("encoding/all_encodings.jl")
 include("deprecations.jl")
 
 

@@ -57,8 +57,8 @@ using Random
         b = RectangularBinning(N)
         rb1 = RectangularBinEncoding(x1, b, n_eps = 1)
         rb2 = RectangularBinEncoding(x1, b, n_eps = 2)
-        @test Entropies.encode(maximum(x1), rb1) == 10 # shouldn't occur, but does when tolerance is too low
-        @test Entropies.encode(maximum(x1), rb2) == 9
+        @test encode(maximum(x1), rb1) == -1 # shouldn't occur, but does when tolerance is too low
+        @test encode(maximum(x1), rb2) == 9
 
         rb1 = RectangularBinEncoding(x2, b, n_eps = 1)
         rb2 = RectangularBinEncoding(x2, b, n_eps = 2)
