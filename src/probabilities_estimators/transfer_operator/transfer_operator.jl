@@ -10,10 +10,11 @@ export
     transfermatrix
 
 """
-    TransferOperator(b::RectangularBinning) <: ProbabilitiesEstimator
+    TransferOperator <: <ProbabilitiesEstimator
+    TransferOperator(b::RectangularBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by
-the given binning scheme `b`, then approxmating the transfer (Perron-Frobenius) operator
+the given binning scheme `b`, then approximating the transfer (Perron-Frobenius) operator
 over the bins, then taking the invariant measure associated with that transfer operator
 as the bin probabilities. Assumes that the input data are sequential (time-ordered).
 
@@ -186,7 +187,8 @@ transferoperator(orbit, RectangularBinning(10))
 
 See also: [`RectangularBinning`](@ref).
 """
-function transferoperator(pts::AbstractDataset{D, T}, binning::RectangularBinning;
+function transferoperator(pts::AbstractDataset{D, T},
+        binning::Union{FixedRectangularBinning, RectangularBinning};
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
@@ -440,8 +442,9 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     return InvariantMeasure(to, Probabilities(distribution))
 end
 
-function invariantmeasure(x::AbstractDataset, ϵ::RectangularBinning)
-    to = transferoperator(x, ϵ)
+function invariantmeasure(x::AbstractDataset,
+        binning::Union{FixedRectangularBinning, RectangularBinning})
+    to = transferoperator(x, binning)
     invariantmeasure(to)
 end
 
@@ -462,7 +465,6 @@ end
 function probabilities_and_outcomes(x::Array_or_Dataset, est::TransferOperator)
     to = transferoperator(x, est.binning)
     probs = invariantmeasure(to).ρ
-    probs = iv.ρ
 
     encoder = RectangularBinEncoding(x, est.binning)
 
