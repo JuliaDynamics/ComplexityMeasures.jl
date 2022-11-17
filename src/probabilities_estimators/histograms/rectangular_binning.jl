@@ -82,10 +82,11 @@ information as `ϵmin/max` is already an `NTuple`.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinEncoding{B, V, E, C, L} <: HistogramEncoding
+struct RectangularBinEncoding{B, D, T, C, L} <: HistogramEncoding
     binning::B # either RectangularBinning or FixedRectangularBinning
-    mini::V # fields are either static vectors or numbers
-    edgelengths::E
+    mini::SVector{D,T} # fields are either static vectors or numbers
+    edgelengths::SVector{D,T}
+    histsize::SVector{D,Int}
     ci::C # cartesian indices
     li::L # linear indices
 end
@@ -125,20 +126,25 @@ function RectangularBinEncoding(x, b::RectangularBinning; n_eps = 2)
     v = ones(SVector{D,T})
     if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
         edgelengths = SVector{D,T}(ϵ .* v)
+        histsize = round.(Int, (mini .- maxi) ./ edgelengths)
     elseif ϵ isa Int || ϵ isa Vector{Int}
         edgeslengths_nonadjusted = @. (maxi - mini)/ϵ
         # Just taking nextfloat once here isn't enough for bins to cover data when using
         # `encode_as_bin` later, because subtraction and division leads to loss
         # of precision. We need a slightly bigger number, so apply nextfloat twice.
         edgelengths = SVector{D,T}(nextfloat.(edgeslengths_nonadjusted, n_eps))
+        if ϵ isa Vector{Int}
+            histsize = SVector{D, Int}(ϵ)
+        else
+            histsize = SVector{D, Int}(fill(ϵ, D))
+        end
     else
         error("Invalid ϵ for binning of a dataset")
     end
-
     # Cartesian indices of the underlying histogram
-    ci = CartesianIndices(ntuple(i -> length(x), D))
+    ci = CartesianIndices(Tuple(histsize))
     li = LinearIndices(ci)
-    RectangularBinEncoding(b, mini, edgelengths, ci, li)
+    RectangularBinEncoding(b, mini, edgelengths, histsize, ci, li)
 end
 
 # fixed grid
@@ -159,7 +165,10 @@ function RectangularBinEncoding(x, b::FixedRectangularBinning{E}; n_eps = 2) whe
     end
     edgelengths_nonadjusted = @. (maxi .- mini) / b.N
     edgelengths = nextfloat.(edgelengths_nonadjusted, n_eps)
-    RectangularBinEncoding(b, mini, edgelengths)
+    histsize = SVector{D,Int}(fill(b.N, D))
+    ci = CartesianIndices(Tuple(histsize))
+    li = LinearIndices(ci)
+    RectangularBinEncoding(b, mini, edgelengths, histsize, ci, li)
 end
 
 # This version exists if the given `ϵ`s are already tuples.
