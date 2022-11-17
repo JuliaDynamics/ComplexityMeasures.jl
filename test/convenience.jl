@@ -28,5 +28,5 @@ end
 
 @testset "`probabilities` defaults to `CountOccurrences`" begin
     x = [1, 1, 2, 2, 3, 3]
-    @test probabilities(x) == probabilities(x, CountOccurrences()) == [1/3, 1/3, 1/3]
+    @test probabilities(x) == probabilities(CountOccurrences(), x) == [1/3, 1/3, 1/3]
 end

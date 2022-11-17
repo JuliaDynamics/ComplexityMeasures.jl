@@ -39,6 +39,6 @@ end
     @test bins isa Vector{<:SVector}
 
     est = TransferOperator(binnings[i])
-    @test probabilities(D, est) isa Probabilities
-    @test probabilities_and_outcomes(D, est) isa Tuple{Probabilities, Vector{SVector{2, Float64}}}
+    @test probabilities(est, D) isa Probabilities
+    @test probabilities_and_outcomes(est, D) isa Tuple{Probabilities, Vector{SVector{2, Float64}}}
 end

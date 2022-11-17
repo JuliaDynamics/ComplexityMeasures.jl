@@ -173,7 +173,7 @@ using DynamicalSystemsBase, CairoMakie, Distributions
 N = 500
 D = Dataset(sort([rand(𝒩) for i = 1:N]))
 x, y = columns(D)
-p = probabilities(D, NaiveKernel(1.5))
+p = probabilities(NaiveKernel(1.5), D)
 fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
     markersize=8, axis=(type = Axis3,)
 )

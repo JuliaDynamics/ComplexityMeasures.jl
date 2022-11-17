@@ -1,3 +1,3 @@
 x = ones(3)
-p = probabilities(x, ValueHistogram(0.1))
+p = probabilities(ValueHistogram(0.1), x)
 @test p isa Probabilities

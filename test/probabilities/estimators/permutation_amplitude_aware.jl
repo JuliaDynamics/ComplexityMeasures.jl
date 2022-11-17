@@ -12,8 +12,8 @@ D = genembed(x, τs)
 
 est = SymbolicAmplitudeAwarePermutation(m = m, τ = τ)
 # Probability distributions
-p1 = probabilities(x, est)
-p2 = probabilities(D, est)
+p1 = probabilities(est, x)
+p2 = probabilities(est, D)
 @test sum(p1) ≈ 1.0
 @test sum(p2) ≈ 1.0
 @test all(p1.p .≈ p2.p)
@@ -33,8 +33,8 @@ e2 = entropy(Renyi(), est, x)
 
     est_isless = SymbolicAmplitudeAwarePermutation(m = 5, τ = 1, lt = Base.isless)
     est_isless_rand = SymbolicAmplitudeAwarePermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
-    @test probabilities(ts, est_isless) isa Probabilities
-    @test probabilities(D, est_isless) isa Probabilities
+    @test probabilities(est_isless, ts) isa Probabilities
+    @test probabilities(est_isless, D) isa Probabilities
 end
 
 # With m = 2, ordinal patterns and frequencies are:
@@ -43,7 +43,7 @@ end
 x = [1, 2, 1, 2, 1, 2]
 # don't randomize in the case of equal values, so use Base.isless
 est = SymbolicAmplitudeAwarePermutation(m = 2, lt = Base.isless)
-probs, πs = probabilities_and_outcomes(x, est)
+probs, πs = probabilities_and_outcomes(est, x)
 @test πs == SVector{2, Int}.([[1, 2], [2, 1]])
 
 # TODO: probabilities should be explicitly tested too.

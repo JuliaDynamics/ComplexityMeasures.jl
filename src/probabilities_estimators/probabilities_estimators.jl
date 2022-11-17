@@ -1,5 +1,5 @@
 include("counting/count_occurences.jl")
-include("histograms/visitation_frequency.jl")
+include("histograms/value_histogram.jl")
 include("permutation_ordinal/symbolic.jl")
 include("kernel/kernel_density.jl")
 include("timescales/timescales.jl")

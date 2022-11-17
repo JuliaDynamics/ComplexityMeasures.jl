@@ -59,13 +59,13 @@ const VisitationFrequency = ValueHistogram
 
 # This method is only valid for rectangular binnings, as `fasthist`
 # is only valid for rectangular binnings. For more binnings, it needs to be extended.
-function probabilities(x::Array_or_Dataset, est::ValueHistogram)
+function probabilities(est::ValueHistogram, x::Array_or_Dataset)
     # and the `fasthist` actually just makes an encoding,
     # this function is in `rectangular_binning.jl`
     fasthist(x, est.binning)[1]
 end
 
-function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
+function probabilities_and_outcomes(est::ValueHistogram, x::Array_or_Dataset)
     probs, bins, encoder = fasthist(x, est.binning)
     unique!(bins) # `bins` is already sorted from `fasthist!`
     # Here we transfor the cartesian coordinate based bins into data unit bins:

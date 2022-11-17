@@ -136,14 +136,14 @@ end
 ###########################################################################################
 # probabilities implementation
 ###########################################################################################
-function probabilities(x::AbstractArray, est::SpatialSymbolicPermutation)
+function probabilities(est::SpatialSymbolicPermutation, x::AbstractArray)
     # TODO: This can be literally a call to `outcomes` and then
     # calling probabilities on it. Should do once the `outcomes` refactoring is done.
     s = zeros(Int, length(est.valid))
-    probabilities!(s, x, est)
+    probabilities!(s, est, x)
 end
 
-function probabilities!(s, x, est::SpatialSymbolicPermutation)
+function probabilities!(s, est::SpatialSymbolicPermutation, x)
     m = length(est.stencil)
     for (i, pixel) in enumerate(est.valid)
         pixels = pixels_in_stencil(pixel, est)

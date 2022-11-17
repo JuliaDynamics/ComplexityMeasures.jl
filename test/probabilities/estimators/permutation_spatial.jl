@@ -9,7 +9,7 @@ using Entropies, Test
     est = SpatialSymbolicPermutation(stencil, x, false)
 
     # Generic tests
-    ps = probabilities(x, est)
+    ps = probabilities(est, x)
     @test ps isa Probabilities
     @test length(ps) == 3
     @test sort(ps) == [0.25, 0.25, 0.5]
@@ -27,7 +27,7 @@ using Entropies, Test
     # for a different stencil
     stencil = CartesianIndex.([(0,0), (1,0), (2,0)])
     est = SpatialSymbolicPermutation(stencil, x, false)
-    ps = sort(probabilities(x, est))
+    ps = sort(probabilities(est, x))
     @test ps[1] == 1/3
     @test ps[2] == 2/3
 
@@ -49,12 +49,12 @@ using Entropies, Test
     est = SpatialSymbolicPermutation(stencil, z, false)
     # Analytically the total stencils are of length 4*4*4 = 64
     # but all of them given the same probabilities because of the layout
-    ps = probabilities(z, est)
+    ps = probabilities(est, z)
     @test ps == [1]
     # if we shuffle, we get random stuff
     using Random
     w = shuffle!(Random.MersenneTwister(42), collect(z))
-    ps = probabilities(w, est)
+    ps = probabilities(est, w)
     @test length(ps) > 1
 
     # check that the 3d-hyperrectangle version also works as expected

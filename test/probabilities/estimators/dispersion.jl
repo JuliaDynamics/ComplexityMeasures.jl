@@ -33,7 +33,7 @@ using Entropies, Test
     ps_paper = [1/11, 0/11, 3/11, 2/11, 1/11, 0/11, 1/11, 2/11, 1/11] |> sort
     ps_paper = ps_paper[findall(ps_paper .> 0)]
 
-    ps = probabilities(x, est)
+    ps = probabilities(est, x)
     @test ps |> sort == ps_paper
 
     # There is probably a typo in Rostaghi & Azami (2016). They state that the
@@ -54,7 +54,7 @@ using Entropies, Test
         Ω = outcome_space(est)
         @test length(Ω) == total_outcomes(est) == 4^3
 
-        probs, out = probabilities_and_outcomes(rand(1000), est)
+        probs, out = probabilities_and_outcomes(est, rand(1000))
         @test all(x -> x ∈ Ω, out)
     end
 end

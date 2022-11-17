@@ -100,7 +100,7 @@ h = entropy(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin to
 ```
 """
 function entropy(e::Entropy, est::ProbabilitiesEstimator, x)
-    ps = probabilities(x, est)
+    ps = probabilities(est, x)
     return entropy(e, ps)
 end
 
@@ -119,7 +119,7 @@ The entropy (second argument) is optional: if not given, `Shannon()` is used ins
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
 function entropy!(s::AbstractVector{Int}, e::Entropy, est::ProbabilitiesEstimator, x)
-    probs = probabilities!(s, x, est)
+    probs = probabilities!(s, est, x)
     entropy(e, probs)
 end
 

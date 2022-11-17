@@ -14,8 +14,8 @@
         z = rand(N)
 
         # Probability distributions
-        p1 = probabilities!(s, x, est)
-        p2 = probabilities!(s, y, est)
+        p1 = probabilities!(s, est, x)
+        p2 = probabilities!(s, est, y)
         @test sum(p1) ≈ 1.0
         @test sum(p2) ≈ 1.0
     end
@@ -51,8 +51,8 @@ end
     y = Dataset(rand(N, 5))
 
     # Probability distributions
-    p1 = probabilities(x, est)
-    p2 = probabilities(y, est)
+    p1 = probabilities(est, x)
+    p2 = probabilities(est, y)
     @test sum(p1) ≈ 1.0
     @test sum(p2) ≈ 1.0
 
@@ -70,8 +70,8 @@ end
 
     est_isless = SymbolicPermutation(m = 5, τ = 1, lt = Base.isless)
     est_isless_rand = SymbolicPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
-    @test probabilities(D, est_isless) isa Probabilities
-    @test probabilities(D, est_isless_rand) isa Probabilities
+    @test probabilities(est_isless, D) isa Probabilities
+    @test probabilities(est_isless_rand, D) isa Probabilities
 end
 
 # With m = 2, ordinal patterns and frequencies are:
@@ -80,7 +80,7 @@ end
 x = [1, 2, 1, 2, 1, 2]
 # don't randomize in the case of equal values, so use Base.isless
 est = SymbolicPermutation(m = 2, lt = Base.isless)
-probs, πs = probabilities_and_outcomes(x, est)
+probs, πs = probabilities_and_outcomes(est, x)
 @test πs == SVector{2, Int}.([[1, 2], [2, 1]])
 @test probs == [3/5, 2/5]
 

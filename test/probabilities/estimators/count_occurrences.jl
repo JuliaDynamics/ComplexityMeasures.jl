@@ -6,8 +6,8 @@ rng = Random.MersenneTwister(1234)
 x = [rand(rng, Bool) for _ in 1:10000]
 
 probs1 = probabilities(x)
-probs2 = probabilities(x, CountOccurrences())
-probs3, outs = probabilities_and_outcomes(x, CountOccurrences())
+probs2 = probabilities(CountOccurrences(), x)
+probs3, outs = probabilities_and_outcomes(CountOccurrences(), x)
 
 for ps in (probs1, probs2, probs3)
     for p in ps; @test 0.49 < p < 0.51; end
@@ -22,7 +22,7 @@ y = [rand(rng, Bool) for _ in 1:10000]
 D = Dataset(x, y)
 
 probs1 = probabilities(D)
-probs2 = probabilities(D, CountOccurrences())
+probs2 = probabilities(CountOccurrences(), D)
 for ps in (probs1, probs2)
     for p in ps; @test 0.24 < p < 0.26; end
 end

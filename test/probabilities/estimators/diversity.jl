@@ -4,14 +4,14 @@ nbins = 10
 m = 3
 τ = 1
 est = Diversity(; nbins, m, τ)
-@test probabilities(x, est) == [0.5, 0.5]
+@test probabilities(est, x) == [0.5, 0.5]
 @test round(entropy_normalized(est, x), digits = 4) == 0.3010
 
 @test total_outcomes(est) == 10
 
 # Diversity divides the interval [-1, 1] into nbins subintervals.
 binsize = (1-(-1))/10
-probs, events = probabilities_and_outcomes(x, est)
+probs, events = probabilities_and_outcomes(est, x)
 
 ds = [0.605, 0.698, 0.924, 0.930] # value from Wang et al. (2020)
 # These distances should be in the following distance bins: [8, 8, 9, 9].

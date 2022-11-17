@@ -21,7 +21,7 @@ using Random
     for bin in binnings
         @testset "ϵ = $(bin.ϵ)" begin
             est = ValueHistogram(bin)
-            p = probabilities(x, est)
+            p = probabilities(est, x)
             @test length(p) == 100
             @test all(e -> 0.009 ≤ e ≤ 0.011, p)
         end
@@ -29,7 +29,7 @@ using Random
 
     @testset "Check rogue 1s" begin
         b = RectangularBinning(0.1) # no `nextfloat` here, so the rogue (1, 1) is in extra bin!
-        p = probabilities(x, ValueHistogram(b))
+        p = probabilities(ValueHistogram(b), x)
         @test length(p) == 100 + 1
         @test p[end] ≈ 1/100_000 atol = 1e-5
     end
@@ -41,7 +41,7 @@ using Random
         ε = nextfloat(0.1) # this guarantees that we get the same as the `n` above!
         binnings = RectangularBinning.((n, ε))
         for bin in binnings
-            p = probabilities(x, ValueHistogram(bin))
+            p = probabilities(ValueHistogram(bin), x)
             @test length(p) == 10
             @test all(e -> 0.09 ≤ e ≤ 0.11, p)
         end
@@ -55,8 +55,8 @@ using Random
         xs1D = [rand(rng, 20) for i = 1:10000];
         xs2D = [rand(rng, 1000, 2) |> Dataset for i = 1:10000] # more points to fill all bins
         est = ValueHistogram(RectangularBinning(10))
-        ps1D = [probabilities(x, est) for x in xs1D];
-        ps2D = [probabilities(x, est) for x in xs2D];
+        ps1D = [probabilities(est, x) for x in xs1D];
+        ps2D = [probabilities(est, x) for x in xs2D];
         n_rogue_extrabin_1D = count(length.(ps1D) .> est.binning.ϵ)
         n_rogue_extrabin_2D = count(length.(ps2D) .> est.binning.ϵ^2)
         @test n_rogue_extrabin_1D == 0
