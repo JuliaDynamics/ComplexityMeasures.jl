@@ -1,5 +1,5 @@
 using Entropies
-using Entropies.DelayEmbeddings, Test
+using Test
 using Random
 
 @testset "Rectangular binning" begin
@@ -9,7 +9,7 @@ using Random
     push!(x, SVector(1, 1))
     # All these binnings should give approximately same probabilities
     n = 10 # boxes cover 0 - 1 in steps of slightly more than 0.1
-    ε = nextfloat(0.1) # this guarantees that we get the same as the `n` above!
+    ε = nextfloat(0.1, 2) # this guarantees that we get the same as the `n` above!
 
     binnings = [
         RectangularBinning(n),
@@ -19,8 +19,8 @@ using Random
     ]
 
     for bin in binnings
-        @testset "ϵ = $(bin.ϵ)" begin
-            est = ValueHistogram(bin)
+        @testset "ϵ isa $(typeof(bin.ϵ))" begin
+            est = ValueHistogram(x, bin)
             p = probabilities(x, est)
             @test length(p) == 100
             @test all(e -> 0.009 ≤ e ≤ 0.011, p)
@@ -29,7 +29,7 @@ using Random
 
     @testset "Check rogue 1s" begin
         b = RectangularBinning(0.1) # no `nextfloat` here, so the rogue (1, 1) is in extra bin!
-        p = probabilities(x, ValueHistogram(b))
+        p = probabilities(x, ValueHistogram(x, b))
         @test length(p) == 100 + 1
         @test p[end] ≈ 1/100_000 atol = 1e-5
     end
@@ -39,9 +39,8 @@ using Random
         push!(x, 0, 1)
         n = 10 # boxes cover 0 - 1 in steps of slightly more than 0.1
         ε = nextfloat(0.1) # this guarantees that we get the same as the `n` above!
-        binnings = RectangularBinning.((n, ε))
-        for bin in binnings
-            p = probabilities(x, ValueHistogram(bin))
+        for bin in (RectangularBinning(n), RectangularBinning(ε))
+            p = probabilities(x, ValueHistogram(x, bin))
             @test length(p) == 10
             @test all(e -> 0.09 ≤ e ≤ 0.11, p)
         end

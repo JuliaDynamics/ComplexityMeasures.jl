@@ -9,10 +9,10 @@ To install it, run `import Pkg; Pkg.add("Entropies")`.
 """
 module Entropies
 
-using DelayEmbeddings
-using DelayEmbeddings: AbstractDataset, Dataset, dimension
-export AbstractDataset, Dataset
-export DelayEmbeddings
+using StateSpaceSets
+export Dataset, SVector
+using DelayEmbeddings: embed, genembed
+
 const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
 const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
 
