@@ -10,14 +10,36 @@ export
     transfermatrix
 
 """
-    TransferOperator(ϵ::RectangularBinning) <: ProbabilitiesEstimator
+    TransferOperator <: <ProbabilitiesEstimator
+    TransferOperator(b::RectangularBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by
-the binning scheme `ϵ`, then approxmating the transfer (Perron-Frobenius) operator
+the given binning scheme `b`, then approximating the transfer (Perron-Frobenius) operator
 over the bins, then taking the invariant measure associated with that transfer operator
 as the bin probabilities. Assumes that the input data are sequential (time-ordered).
 
 This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
+
+## Outcome space
+
+The outcome space for `TransferOperator` is the set of unique bins constructed
+from `b`. Bins are identified by their left (lowest-value) corners, are given in
+data units, and are returned as `SVector`s.
+
+## Bin ordering
+
+Bins returned by [`probabilities_and_outcomes`](@ref) are ordered according to first
+appearance (i.e. the first time the input (multivariate) timeseries visits the bin).
+Thus, if
+
+```julia
+b = RectangularBinning(4)
+est = TransferOperator(b)
+probs, outcomes = probabilities_and_outcomes(x, est) # x is some timeseries
+```
+
+then `probs[i]` is the invariant measure (probability) of the bin `outcomes[i]`, which is
+the `i`-th bin visited by the timeseries with nonzero measure.
 
 ## Description
 
@@ -32,7 +54,7 @@ partition elements (as dictated by `ϵ`) that gets visited by the points, and
 
 ```math
 P_{ij} = \\dfrac
-{\\#\\{ x_n | \\phi(x_n) \\in C_j \\cap x_n \\in C_i \\}}
+{\\#\\{ x_n | \\phi(x_n) \\in C_j \\cap x_n \\in C_i \\}}
 {\\#\\{ x_m | x_m \\in C_i \\}},
 ```
 
@@ -49,31 +71,28 @@ stochastic matrix.
 The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where
 ``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row
 eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The distribution
-``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to the
-partition `ϵ`, and can be taken as a probability distribution over the partition elements.
+``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to
+`binning`, and can be taken as a probability distribution over the partition elements.
 
 In practice, the invariant measure ``\\mathbf{\\rho}^N`` is computed using
-[`invariantmeasure`](@ref), which also approximates the transfer matrix. The invariant distribution
-is initialized as a length-`N` random distribution which is then applied to ``P^{N}``.
+[`invariantmeasure`](@ref), which also approximates the transfer matrix. The invariant
+distribution is initialized as a length-`N` random distribution which is then applied to
+``P^{N}``.
 The resulting length-`N` distribution is then applied to ``P^{N}`` again. This process
 repeats until the difference between the distributions over consecutive iterations is
 below some threshold.
 
-## Probability and entropy estimation
-
-- `probabilities(x::AbstractDataset, est::TransferOperator{RectangularBinning})` estimates
-    probabilities for the bins defined by the provided binning (`est.ϵ`)
-- `entropy_renyi(x::AbstractDataset, est::TransferOperator{RectangularBinning})` does the same,
-    but computes generalized entropy using the probabilities.
-
-
 See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
 
-[^Diego2019]: Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
+[^Diego2019]:
+    Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation
+    using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
 """
-struct TransferOperator{R} <: ProbabilitiesEstimator
-    ϵ::R
+struct TransferOperator{R<:AbstractBinning} <: ProbabilitiesEstimator
+    binning::R
 end
+TransferOperator(ϵ::Union{Real,Vector}) = TransferOperator(RectangularBinning(ϵ))
+
 
 # If x is not sorted, we need to look at all pairwise comparisons
 function inds_in_terms_of_unique(x)
@@ -130,11 +149,11 @@ inds_in_terms_of_unique(x::AbstractDataset) = inds_in_terms_of_unique(x.data)
 
 
 """
-    TransferOperatorApproximationRectangular(to, ϵ::RectangularBinning, mini, edgelengths,
-        bins, sort_idxs)
+    TransferOperatorApproximationRectangular(to, binning::RectangularBinning, mini,
+        edgelengths, bins, sort_idxs)
 
 The `N`-by-`N` matrix `to` is an approximation to the transfer operator, subject to the
-partition `ϵ`, computed over some set of sequentially ordered points.
+given `binning`, computed over some set of sequentially ordered points.
 
 For convenience, `mini` and `edgelengths` provide the minima and box edge lengths along
 each coordinate axis, as determined by applying `ϵ` to the points. The coordinates of
@@ -147,13 +166,13 @@ corresponds to the `i`-th column/row of the transfer operator `to`.
 `sort_idxs` contains the indices that would sort the input points. `visitors` is a
 vector of vectors, where `visitors[i]` contains the indices of the (sorted)
 points that visits `bins[i]`.
+
 See also: [`RectangularBinning`](@ref).
 """
-struct TransferOperatorApproximationRectangular{T<:Real}
+struct TransferOperatorApproximationRectangular{T<:Real, E}
     transfermatrix::AbstractArray{T, 2}
-    ϵ::RectangularBinning
-    mini
-    edgelengths
+    binning::RectangularBinning
+    encoder::E
     bins
     sort_idxs::Vector{Int}
     visitors::Vector{Vector{Int}}
@@ -161,10 +180,11 @@ end
 # TODO: The above is type unstable!
 
 """
-    transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning) → TransferOperatorApproximationRectangular
+    transferoperator(pts::AbstractDataset,
+        binning::RectangularBinning) → TransferOperatorApproximationRectangular
 
 Estimate the transfer operator given a set of sequentially ordered points subject to a
-rectangular partition given by `ϵ`.
+rectangular partition given by the `binning`.
 
 ## Example
 
@@ -181,17 +201,20 @@ transferoperator(orbit, RectangularBinning(10))
 
 See also: [`RectangularBinning`](@ref).
 """
-function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
+function transferoperator(pts::AbstractDataset{D, T},
+        binning::Union{FixedRectangularBinning, RectangularBinning};
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
-    encoder = RectangularBinEncoding(pts, ϵ)
+    encoder = RectangularBinEncoding(pts, binning)
 
-    # The L points visits a total of L bins, which are the following bins:
-    visited_bins = outcomes(pts, encoder)
+    # The L points visits a total of L bins, which are the following bins (referenced
+    # here as cartesian coordinates, not absolute bins):
+    visited_bins = map(pᵢ -> encode_as_bin(pᵢ, encoder), pts)
     sort_idxs = sortperm(visited_bins)
 
     # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
+    # For now, bins are sorted after order of first appearance according to the input `pts`.
     #sort!(visited_bins)
 
     # There are N=length(unique(visited_bins)) unique bins.
@@ -291,10 +314,10 @@ function transferoperator(pts::AbstractDataset{D, T}, ϵ::RectangularBinning;
     # Compute the coordinates of the visited bins. bins[i] corresponds to the i-th
     # row/column of the transfer operator
     unique!(visited_bins)
-    bins = [β .* encoder.edgelengths .+ encoder.mini for β in visited_bins]
+    bins = map(bᵢ -> decode_from_bin(bᵢ, encoder), visited_bins)
 
-    TransferOperatorApproximationRectangular(TO, ϵ, encoder.mini, encoder.edgelengths, bins,
-        sort_idxs, visitors)
+    TransferOperatorApproximationRectangular(
+        TO, binning, encoder, bins, sort_idxs, visitors)
 end
 
 """
@@ -318,10 +341,10 @@ end
 
 import LinearAlgebra: norm
 """
-    invariantmeasure(x::AbstractDataset, ϵ::RectangularBinning) → iv::InvariantMeasure
+    invariantmeasure(x::AbstractDataset, binning::RectangularBinning) → iv::InvariantMeasure
 
 Estimate an invariant measure over the points in `x` based on binning the data into
-rectangular boxes dictated by the binning scheme `ϵ`, then approximate the transfer
+rectangular boxes dictated by the `binning`, then approximate the transfer
 (Perron-Frobenius) operator over the bins. From the approximation to the transfer operator,
 compute an invariant distribution over the bins. Assumes that the input data are sequential.
 
@@ -434,15 +457,10 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     return InvariantMeasure(to, Probabilities(distribution))
 end
 
-function invariantmeasure(x::AbstractDataset, ϵ::RectangularBinning)
-    to = transferoperator(x, ϵ)
+function invariantmeasure(x::AbstractDataset,
+        binning::Union{FixedRectangularBinning, RectangularBinning})
+    to = transferoperator(x, binning)
     invariantmeasure(to)
-end
-
-function probabilities(x::AbstractDataset, est::TransferOperator)
-    to = transferoperator(x, est.ϵ)
-    iv = invariantmeasure(to)
-    return iv.ρ
 end
 
 """
@@ -459,20 +477,21 @@ function transfermatrix(iv::InvariantMeasure)
     return iv.to.transfermatrix, iv.to.bins
 end
 
-"""
-    entropy_transferoperator(x, binning::RectangularBinning; base = MathConstants.e)
+function probabilities_and_outcomes(x::Array_or_Dataset, est::TransferOperator)
+    to = transferoperator(x, est.binning)
+    probs = invariantmeasure(to).ρ
 
-Compute the (Shannon) entropy of `x` using an approximation to the transfer operator over
-the state-space coarse graining produced by the provided `binning` scheme.
+    encoder = RectangularBinEncoding(x, est.binning)
 
-Short-hand for `renyi_entropy(x, TransferOperator(binning); base = base, q = 1)`.
-
-See also: [`TransferOperator`](@ref).
-
-[^Diego2019]: Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation
-    using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
-"""
-function entropy_transferoperator(x, b::RectangularBinning)
-    est = TransferOperator(binning)
-    renyi_entropy(x, est; base = base, q = 1)
+    # Note: bins are *not* sorted. They occur in the order of first appearance, according
+    # to the input time series. Taking the unique bins preserves the order of first
+    # appearance
+    bins = to.bins
+    unique!(bins)
+    # From bins represented by cartesian coordinates to bins represented by data units.
+    outcomes = map(b -> decode_from_bin(b, encoder), bins)
+    return probs, outcomes
 end
+
+outcome_space(x, est::TransferOperator) = outcome_space(x, est.binning)
+total_outcomes(x, est::TransferOperator) = total_outcomes(x, est.binning)

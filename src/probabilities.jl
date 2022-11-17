@@ -3,6 +3,7 @@ export probabilities, probabilities!
 export probabilities_and_outcomes, outcomes
 export total_outcomes
 export missing_outcomes
+export outcome_space
 
 ###########################################################################################
 # Types
@@ -48,16 +49,23 @@ possible outcomes ``\\Omega = \\{\\omega_1, \\omega_2, \\ldots, \\omega_L \\}``,
 assigning to each outcome ``\\omega_i`` a probability ``p(\\omega_i)``, such that
 ``\\sum_{i=1}^N p(\\omega_i) = 1``. It is the role a [`ProbabilitiesEstimator`](@ref) to
 
-1. Define ``\\Omega``, an "outcome space", which is the set of possible outcomes over
+1. Define ``\\Omega``, the "outcome space", which is the set of all possible outcomes over
     which probabilities are estimated. The cardinality of this set can be obtained using
     [`total_outcomes`](@ref).
-2. Define how probabilities `p(ωᵢ)` are assigned to outcomes `ωᵢ`.
+2. Define how probabilities ``p_i = p(\\omega_i)` are assigned to outcomes ``\\omega_i``.
 
 In practice, probability estimation is done by calling [`probabilities`](@ref) with some
 input data and one of the following probabilities estimators. The result is a
-[`Probabilities`](@ref) `p` (`Vector`-like), where each element `pᵢ` is the probability of
-the outcome `ωᵢ`. Use [`probabilities_and_outcomes`](@ref) if you need
-both the probabilities and the outcomes.
+[`Probabilities`](@ref) `p` (`Vector`-like), where each element `p[i]` is the probability of
+the outcome `ω[i]`. Use [`probabilities_and_outcomes`](@ref) if you need
+both the probabilities and the outcomes and [`outcome_space`](@ref) to obtain ``\\Omega``.
+The element type of ``\\Omega`` varies between estimators, but it is guranteed to be
+_hashable_. This allows for conveniently tracking the probability of a specific event
+across experimental realizations, by using the outcome as a dictionary key and the
+probability as the value for that key (or, alternatively, the key remains the outcome
+and one has a vector of probabilities, one for each experimental realization).
+
+All currently implemented probability estimators are:
 
 - [`CountOccurrences`](@ref).
 - [`ValueHistogram`](@ref).
@@ -70,18 +78,11 @@ both the probabilities and the outcomes.
 - [`SymbolicAmplitudeAwarePermutation`](@ref).
 - [`SpatialSymbolicPermutation`](@ref).
 - [`NaiveKernel`](@ref).
-
-!!! note "A slight abuse of terminology"
-    Formally, the outcome space is a *set*, but for consistency of the interface, we
-    actually allow repeated elements among the outcomes for some estimators. This is
-    the case for [`NaiveKernel`](@ref), for which probabilities are
-    estimated for every input data point (even though some data points may be identical,
-    they may be assigned different probabilities depending on their local neighborhood).
 """
 abstract type ProbabilitiesEstimator end
 
 ###########################################################################################
-# probabilities and outcomes
+# probabilities and combo function
 ###########################################################################################
 """
     probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
@@ -113,19 +114,11 @@ end
 Return `probs, Ω`, where `probs = probabilities(x, est)` and
 `Ω[i]` is the outcome with probability `probs[i]`.
 The element type of `Ω` depends on the estimator.
+
+See also [`outcomes`](@ref), [`total_outcomes`](@ref), and [`outcome_space`](@ref).
 """
 function probabilities_and_outcomes(x, est::ProbabilitiesEstimator)
     error("`probabilities_and_outcomes` not implemented for estimator $(typeof(est)).")
-end
-
-"""
-    outcomes(x, est::ProbabilitiesEstimator)
-Return all (unique) outcomes contained in `x` according to the given estimator.
-Equivalent with `probabilities_and_outcomes(x, est)[2]`, but for some estimators
-it may be explicitly extended for better performance.
-"""
-function outcomes(x, est::ProbabilitiesEstimator)
-    return probabilities_and_outcomes(x, est)[2]
 end
 
 """
@@ -139,8 +132,29 @@ Only works for certain estimators. See for example [`SymbolicPermutation`](@ref)
 function probabilities! end
 
 ###########################################################################################
-# amount of outcomes
+# Outcome space
 ###########################################################################################
+"""
+    outcome_space([x,] est::ProbabilitiesEstimator) → Ω
+
+Return a container (typically `Vector`) containing all _possible_ outcomes of `est`,
+i.e., the outcome space `Ω`.
+Only possible for estimators that implement [`total_outcomes`](@ref),
+and similarly, for some estimators `x` is not needed. The _values_ of `x` are never needed;
+but some times the type and dimensional layout of `x` is.
+"""
+function outcome_space(x, est::ProbabilitiesEstimator)
+    outcome_space(est)
+end
+function outcome_space(est::ProbabilitiesEstimator)
+    error(
+        "`outcome_space(est)` not known/implemented for estimator $(typeof(est))."*
+        "Try providing some input data, e.g. `outcomes_space(x, est)`."*
+        "In some cases, this gives the dimensional layout/type information needed "*
+        "to define the outcome space."
+        )
+end
+
 """
     total_outcomes([x::Array_or_Dataset,] est::ProbabilitiesEstimator) → Int
 
@@ -161,11 +175,8 @@ julia> total_outcomes(rand(42), est) # same as `factorial(m)` for any `x`
 24
 ```
 """
-function total_outcomes(::Array_or_Dataset, est::ProbabilitiesEstimator)
-    return total_outcomes(est)
-end
-function total_outcomes(est::ProbabilitiesEstimator)
-    error("`total_outcomes` not known/implemented for estimator of type $(typeof(est)).")
+function total_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+    return length(outcome_space(x, est))
 end
 
 """
@@ -178,11 +189,19 @@ Works for estimators that implement [`total_outcomes`](@ref).
 
 See also: [`MissingDispersionPatterns`](@ref).
 """
-function missing_outcomes end
-
 function missing_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
     probs = probabilities(x, est)
     L = total_outcomes(x, est)
     O = count(!iszero, probs)
     return L - O
+end
+
+"""
+    outcomes(x, est::ProbabilitiesEstimator)
+Return all (unique) outcomes contained in `x` according to the given estimator.
+Equivalent with `probabilities_and_outcomes(x, est)[2]`, but for some estimators
+it may be explicitly extended for better performance.
+"""
+function outcomes(x, est::ProbabilitiesEstimator)
+    return probabilities_and_outcomes(x, est)[2]
 end

@@ -1,6 +1,13 @@
+export RectangularBinning, FixedRectangularBinning
 export RectangularBinEncoding
-export RectangularBinning
-export FixedRectangularBinning
+
+##################################################################
+# Structs and docstrings
+##################################################################
+# Notice that the binning types are intermediate structs that are NOT retained
+# in the source code. Their only purpose is instructions of how to create a
+# `RectangularBinEncoder`. All actual source code functionality of `ValueHistogram`
+# is implemented based on `RectangularBinEncoder` and
 
 """
     RectangularBinning(ϵ) <: AbstractBinning
@@ -26,7 +33,7 @@ end
 const ValidFixedBinInputs = Union{Number, NTuple}
 
 """
-    FixedRectangularBinning <: Encoding
+    FixedRectangularBinning <: AbstractBinning
     FixedRectangularBinning(ϵmin::E, ϵmax::E, N::Int) where E
 
 Rectangular box partition of state space where the extent of the grid is explicitly
@@ -40,8 +47,8 @@ Binning instructions are deduced from the types of `ϵmin`/`emax` as follows:
     `[ϵmin[i], ϵmax[i]]` is the range along the `i`-th dimension.
 
 If the grid spans the range `[r1, r2]` along a particular dimension, then this range
-is subdivided into `N` subintervals of equal length `nextfloat((r2 - r1) / N)`.
-Thus, for `m`-dimensional data, there are `N^m` boxes.
+is subdivided into `N` subintervals of equal length `nextfloat((r2 - r1)/N)`.
+Thus, for `D`-dimensional data, there are `N^D` boxes.
 """
 struct FixedRectangularBinning{E} <: AbstractBinning
     ϵmin::E
@@ -57,29 +64,24 @@ end
 
 const Floating_or_Fixed_RectBinning = Union{RectangularBinning, FixedRectangularBinning}
 
-# Internal function method extension for `probabilities`
-function fasthist!(x::Vector_or_Dataset, ϵ::AbstractBinning)
-    encoder = RectangularBinEncoding(x, ϵ)
-    bins = outcomes(x, encoder)
-    hist = fasthist!(bins)
-    return Probabilities(hist), bins, encoder
-end
-
 """
     RectangularBinEncoding <: Encoding
-    RectangularBinEncoding(x, binning::RectangularBinning)
-    RectangularBinEncoding(x, binning::FixedRectangularBinning)
+    RectangularBinEncoding(x, binning::AbstractBinning)
+    RectangularBinEncoding(binning::FixedRectangularBinning{<:NTuple{D}})
 
-Find the minima along each dimension, and compute appropriate
+Struct used in [`outcomes`](@ref) to map points of `x` into their respective bins.
+It finds the minima along each dimension, and computes appropriate
 edge lengths for each dimension of `x` given a rectangular binning.
-Put them in an `RectangularBinEncoding` that can be then used to map points into bins
-via [`outcomes`](@ref).
+
+The second signature does not need `x` because (1) the binning is fixed, and the
+size of `x` doesn't matter, and (2) because the binning contains the dimensionality
+information as `ϵmin/max` is already an `NTuple`.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
-struct RectangularBinEncoding{B, M, E} <: Encoding
+struct RectangularBinEncoding{B, V, E} <: Encoding
     binning::B # either RectangularBinning or FixedRectangularBinning
-    mini::M # fields are either static vectors or numbers
+    mini::V # fields are either static vectors or numbers
     edgelengths::E
 end
 
@@ -97,8 +99,14 @@ function encode_as_bin(point, b::RectangularBinEncoding)
     return floor.(Int, (point .- mini) ./ edgelengths)
 end
 
-function outcomes(x::Vector_or_Dataset, b::RectangularBinEncoding)
-    return map(point -> encode_as_bin(point, b), x)
+function decode_from_bin(bin, b::RectangularBinEncoding{B, V}) where {B, V}
+    (; mini, edgelengths) = b
+    # Remove one because we want lowest value corner, and we get indices starting from 1
+    return (V(Tuple(bin)) .- 1) .* edgelengths .+ mini
+end
+function decode_from_bin(bin, b::RectangularBinEncoding{B, T}) where {B, T<:Real}
+    (; mini, edgelengths) = b
+    return (T(Tuple(bin)[1]) - 1)*edgelengths + mini
 end
 
 ##################################################################
@@ -111,13 +119,13 @@ function RectangularBinEncoding(x::AbstractDataset{D,T}, b::RectangularBinning;
     mini, maxi = minmaxima(x)
     v = ones(SVector{D,T})
     if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
-        edgelengths = ϵ .* v
+        edgelengths = SVector{D,T}(ϵ .* v)
     elseif ϵ isa Int || ϵ isa Vector{Int}
         edgeslengths_nonadjusted = @. (maxi - mini)/ϵ
         # Just taking nextfloat once here isn't enough for bins to cover data when using
         # `encode_as_bin` later, because subtraction and division leads to loss
         # of precision. We need a slightly bigger number, so apply nextfloat twice.
-        edgelengths = nextfloat.(edgeslengths_nonadjusted, n_eps)
+        edgelengths = SVector{D,T}(nextfloat.(edgeslengths_nonadjusted, n_eps))
     else
         error("Invalid ϵ for binning of a dataset")
     end
@@ -143,31 +151,6 @@ function RectangularBinEncoding(x::AbstractVector{<:Real}, b::RectangularBinning
     RectangularBinEncoding(b, mini, edgelength)
 end
 
-
-const RBE = RectangularBinEncoding
-const RB = RectangularBinning
-const NONDEDUCIBLE{T} = Union{
-    RB{T},
-    RBE{RB{T}}
-    } where T <: Union{Q, Vector{Q}} where Q <: AbstractFloat
-
-function total_outcomes(x, symbolization::NONDEDUCIBLE)
-    msg = "total_outcomes can't be deduced from $NONDEDUCIBLE"
-    throw(ArgumentError(msg))
-end
-
-# multiple-axis bins don't make sense for univariate input.
-function total_outcomes(::AbstractVector,symbolization::RBE{RB{Vector{Int}}})
-    msg = "total_outcomes is ambiguous for Vectors with RectangularBinning{Vector{Int}}"
-    throw(ArgumentError(msg))
-end
-total_outcomes(::AbstractVector,symbolization::RBE{RB{Int}}) =
-    symbolization.binning.ϵ
-total_outcomes(::AbstractDataset{D}, symbolization::RBE{RB{Int}}) where {D} =
-    symbolization.binning.ϵ^D
-total_outcomes(::AbstractDataset{D}, symbolization::RBE{RB{Vector{Int}}}) where {D} =
-    prod(symbolization.binning.ϵ)
-
 ##################################################################
 # Encoding bins using a fixed (user-specified) grid
 ##################################################################
@@ -177,7 +160,7 @@ function RectangularBinEncoding(::AbstractVector{<:Real},
     # This function always returns numbers and is type stable
     ϵmin, ϵmax = b.ϵmin, b.ϵmax
     mini = ϵmin
-    if ϵmin isa Float64 && ϵmax isa Float64
+    if ϵmin isa AbstractFloat && ϵmax isa AbstractFloat
         edgelength_nonadjusted = (ϵmax - ϵmin) / b.N
         edgelength = nextfloat(edgelength_nonadjusted, n_eps)
     else
@@ -206,19 +189,64 @@ function RectangularBinEncoding(::AbstractDataset{D, T},
 
     RectangularBinEncoding(b, mini, edgelengths)
 end
+# This version exists if the given `ϵ`s are already tuples.
+# Then, the dataset doesn't need to be provided.
+function RectangularBinEncoding(b::FixedRectangularBinning{<:NTuple}, n_eps = 2)
+    ϵmin, ϵmax = b.ϵmin, b.ϵmax
+    D = length(ϵmin)
+    mini = SVector{D, Float64}(ϵmin)
+    maxi = SVector{D, Float64}(ϵmax)
+    edgelengths_nonadjusted = @. (maxi .- mini) / b.N
+    edgelengths = nextfloat.(edgelengths_nonadjusted, n_eps)
+    RectangularBinEncoding(b, mini, edgelengths)
+end
 
-
+##################################################################
+# Outcomes / total outcomes / extension of functions
+##################################################################
 # When the grid is fixed by the user, we can always deduce the total number of bins,
 # even just from the binning itself - symbolization info not needed.
-const FRB = FixedRectangularBinning
-total_outcomes(b::FRB) = b.N
-total_outcomes(::AbstractVector, b::FRB) = b.N
-total_outcomes(::AbstractDataset{D, T}, b::FRB) where {D, T} = b.N^D
-total_outcomes(symbolization::RBE{B, T}) where {B <: FRB, T <: Number} =
-    symbolization.binning.N
-total_outcomes(symbolization::RBE{B, T}) where {B <: FRB, T <: SVector{D}} where D =
-    symbolization.binning.N^D
-total_outcomes(x::AbstractVector, symbolization::RBE{B, T}) where {B <: FRB, T <: Number} =
-    symbolization.binning.N
-total_outcomes(x::AbstractDataset{D}, symbolization::RBE{B, T}) where {B <: FRB, T <: SVector{D}} where D =
-    symbolization.binning.N^D
+total_outcomes(x, bin::AbstractBinning) = total_outcomes(RectangularBinEncoding(x, bin))
+function total_outcomes(e::RectangularBinEncoding)
+    if e.binning isa RectangularBinning
+        error("Not possible to _uniquely_ define for `RectangularBinning`.")
+    end
+    D = length(e.mini)
+    return e.binning.N^D
+end
+
+# This function does not need `x`; all info about binning are in the encoding
+outcome_space(x, bin::AbstractBinning) = outcome_space(RectangularBinEncoding(x, bin))
+function outcome_space(e::RectangularBinEncoding)
+    if e.binning isa RectangularBinning
+        error("Not possible to _uniquely_ define for `RectangularBinning`.")
+    end
+    # We can be smart here. All possible bins are exactly the same thing
+    # as the Cartesian Indices of an array, mapped into "data" units
+    dims = _array_dims_from_fixed_binning(e)
+    bins = CartesianIndices(dims)
+    outcomes = map(b -> decode_from_bin(b, e), bins)
+    return vec(outcomes)
+end
+
+function _array_dims_from_fixed_binning(e)
+    N = e.binning.N
+    D = length(e.mini)
+    return ntuple(i -> N, D)
+end
+
+##################################################################
+# low level histogram call
+##################################################################
+# This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
+"""
+    fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+Create an encoding for binning, then map `x` to bins, then call `fasthist!` on the bins.
+Return the output probabilities, the bins, and the created encoder.
+"""
+function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
+    encoder = RectangularBinEncoding(x, ϵ)
+    bins = map(y -> encode_as_bin(y, encoder), x)
+    hist = fasthist!(bins)
+    return Probabilities(hist), bins, encoder
+end

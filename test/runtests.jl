@@ -27,6 +27,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("entropies/estimators/estimators.jl")
 
     # Various
-    testfile("utils/utils.jl")
+    testfile("utils/fasthist.jl")
+    # testfile("utils/encoding.jl")
     testfile("entropies/convenience.jl")
 end

@@ -1,4 +1,4 @@
-export discretize, Encoding
+export Encoding
 
 """
     Encoding
@@ -15,6 +15,11 @@ outcome spaces, over which probabilities are computed.
 """
 abstract type Encoding end
 
+# TODO: Outcome interface for encodings is not yet defined.
+# When we actually define the encodings API, ALL encodings will return
+# integers.
+
+#=
 """
     outcomes(x, scheme::Encoding) → Vector{Int}
     outcomes!(s, x, scheme::Encoding) → Vector{Int}
@@ -30,13 +35,7 @@ See also: [`RectangularBinEncoding`](@ref), [`GaussianCDFEncoding`](@ref),
 function outcomes(x::X, ::Encoding) where X
     throw(ArgumentError("`outcomes` not defined for input data of type $(X)."))
 end
-
-# The internal structure of different encoding schemes may be different, so use
-# `total_outcomes` to have a consistent way of getting the total number of possible states.
-# Thus, the default behaviour is to throw an ArgumentError when computing some normalized
-# quantity depending on `total_outcomes` of the encoding scheme.
-total_outcomes(s::S) where S <: Encoding =
-    throw(ArgumentError("`total_outcomes` not defined for $S."))
+=#
 
 include("utils.jl")
 include("gaussian_cdf.jl")

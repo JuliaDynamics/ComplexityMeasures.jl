@@ -4,7 +4,7 @@ export GaussianCDFEncoding
 
 """
     GaussianCDFEncoding <: Encoding
-    GaussianCDFEncoding(; c::Int = 3)
+    GaussianCDFEncoding(c::Int = 3)
 
 A encoding scheme where the elements of `x` are discretized into `c` distinct integer
 categories using the normal cumulative distribution function (NCDF), used with
@@ -38,7 +38,7 @@ scheme `s`.
 ```jldoctest; setup = :(using Entropies)
 julia> x = [0.1, 0.4, 0.7, -2.1, 8.0, 0.9, -5.2];
 
-julia> Entropies.outcomes(x, GaussianCDFEncoding(c = 5))
+julia> Entropies.outcomes(x, GaussianCDFEncoding(5))
 7-element Vector{Int64}:
  3
  3
@@ -51,8 +51,8 @@ julia> Entropies.outcomes(x, GaussianCDFEncoding(c = 5))
 
 See also: [`outcomes`](@ref).
 """
-Base.@kwdef struct GaussianCDFEncoding{I <: Integer} <: Encoding
-    c::I = 3
+Base.@kwdef struct GaussianCDFEncoding <: Encoding
+    c::Int = 3
 end
 
 total_outcomes(encoding::GaussianCDFEncoding) = encoding.c
