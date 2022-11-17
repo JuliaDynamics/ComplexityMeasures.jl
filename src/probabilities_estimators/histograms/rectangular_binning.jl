@@ -248,5 +248,5 @@ function fasthist(x::Vector_or_Dataset, ϵ::AbstractBinning)
     encoder = RectangularBinEncoding(x, ϵ)
     bins = map(y -> encode_as_bin(y, encoder), x)
     hist = fasthist!(bins)
-    return Probabilities(hist), bins, encoder
+    return hist, bins, encoder
 end

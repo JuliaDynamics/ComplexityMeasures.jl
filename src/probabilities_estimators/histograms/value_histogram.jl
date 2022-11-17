@@ -62,7 +62,7 @@ const VisitationFrequency = ValueHistogram
 function probabilities(x::Array_or_Dataset, est::ValueHistogram)
     # and the `fasthist` actually just makes an encoding,
     # this function is in `rectangular_binning.jl`
-    fasthist(x, est.binning)[1]
+    Probabilities(fasthist(x, est.binning)[1])
 end
 
 function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
@@ -70,7 +70,7 @@ function probabilities_and_outcomes(x::Array_or_Dataset, est::ValueHistogram)
     unique!(bins) # `bins` is already sorted from `fasthist!`
     # Here we transfor the cartesian coordinate based bins into data unit bins:
     outcomes = map(b -> decode_from_bin(b, encoder), bins)
-    return probs, outcomes
+    return Probabilities(probs), outcomes
 end
 
 outcome_space(x, est::ValueHistogram) = outcome_space(x, est.binning)
