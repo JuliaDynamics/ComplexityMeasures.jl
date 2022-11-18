@@ -26,7 +26,7 @@ end
 
 function entropy(e::Renyi, est::Kraskov, x::AbstractDataset{D, T}) where {D, T}
     e.q == 1 || throw(ArgumentError(
-        "Renyi entropy with q = $(e.q) not implemented for $typeof(est) estimators"
+        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
     ))
     (; k, w, base) = est
     N = length(x)
@@ -37,5 +37,3 @@ function entropy(e::Renyi, est::Kraskov, x::AbstractDataset{D, T}) where {D, T}
         D/N*sum(log.(MathConstants.e, ρs))
     return h / log(base, MathConstants.e) # Convert to target unit
 end
-
-entropy(est::Kraskov, x) = entropy(Shannon(), est, x)

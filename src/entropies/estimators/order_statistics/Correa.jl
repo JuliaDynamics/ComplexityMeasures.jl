@@ -43,8 +43,11 @@ function local_scaled_mean(ex, i::Int, m::Int, n::Int = length(x))
     return x̄ / (2m + 1)
 end
 
-function entropy(e::Correa, x::AbstractVector{T}) where T
-    (; m, base) = e
+function entropy(e::Renyi, est::Correa, x::AbstractVector{T}) where T
+    e.q == 1 || throw(ArgumentError(
+        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
+    ))
+    (; m, base) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
 

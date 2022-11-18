@@ -131,15 +131,20 @@ entropy!(s::AbstractVector{Int}, est::ProbabilitiesEstimator, x) =
 ###########################################################################################
 # Dispatch for these functions is implemented in individual estimator files in
 # `entropies/estimators/`.
-function entropy(e::Entropy, est::EntropyEstimator, x) end
+function entropy(e::Entropy, est::EntropyEstimator, x)
+    t = string(typeof(e).name.name)
+    throw(ArgumentError("$t entropy not implemented for $(typeof(est)) estimator"))
+end
+
 entropy(est::EntropyEstimator, ::Probabilities) =
     error("Entropy estimators like $(nameof(typeof(est))) are not called with probabilities.")
 entropy(e::Entropy, est::EntropyEstimator, ::Probabilities) =
     error("Entropy estimators like $(nameof(typeof(est))) are not called with probabilities.")
-
-#
-entropy(e::Entropy, est::EntropyEstimator, x::AbstractVector{<:Real}) =
+entropy(e::Entropy, est::EntropyEstimator, x::AbstractVector) =
     entropy(e, est, Dataset(x))
+# Always default to Shannon with base-2 logs. Individual estimators may override this.
+entropy(est::EntropyEstimator, x; base = 2) = entropy(Shannon(; base), est, x)
+
 
 ###########################################################################################
 # Normalize API

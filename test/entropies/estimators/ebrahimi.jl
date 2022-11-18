@@ -13,3 +13,7 @@ ee_n = Ebrahimi(m = 100, base = MathConstants.e)
 n = 1000000
 @test round(entropy(ee, rand(rng, n)), digits = 2) == U
 @test round(entropy(ee_n, randn(rng, n)), digits = 2) == N
+
+
+x = rand(1000)
+@test_throws ArgumentError entropy(Renyi(q = 2), Ebrahimi(), x)

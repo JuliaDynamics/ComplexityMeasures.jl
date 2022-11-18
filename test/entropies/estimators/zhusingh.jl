@@ -60,3 +60,5 @@ tol_ℯ  = hZS_𝒩₂_base_ℯ * 0.01
 tol_2  = hZS_𝒩₂_base_2 * 0.01
 @test h_𝒩₂_base_ℯ - tol_ℯ ≤ hZS_𝒩₂_base_ℯ ≤ h_𝒩₂_base_ℯ + tol_ℯ
 @test h_𝒩₂_base_2 - tol_2 ≤ hZS_𝒩₂_base_2 ≤ h_𝒩₂_base_2 + tol_2
+
+@test_throws ArgumentError entropy(Renyi(q = 2), ZhuSingh(), rand(100))

@@ -27,8 +27,12 @@ See also: [`entropy`](@ref).
     base::B = 2
 end
 
-function entropy(e::KozachenkoLeonenko, x::AbstractDataset{D, T}) where {D, T}
-    (; w, base) = e
+function entropy(e::Renyi, est::KozachenkoLeonenko, x::AbstractDataset{D, T}) where {D, T}
+    e.q == 1 || throw(ArgumentError(
+        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
+    ))
+    (; w, base) = est
+
     N = length(x)
     ρs = maximum_neighbor_distances(x, w, 1)
     # The estimated entropy has "unit" [nats]

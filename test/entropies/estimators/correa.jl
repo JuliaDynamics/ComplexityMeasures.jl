@@ -13,3 +13,6 @@ ec_n = Correa(m = 100, base = MathConstants.e)
 n = 1000000
 @test round(entropy(ec, rand(rng, n)), digits = 2) == U
 @test round(entropy(ec_n, randn(rng, n)), digits = 2) == N
+
+x = rand(1000)
+@test_throws ArgumentError entropy(Renyi(q = 2), Correa(), x)

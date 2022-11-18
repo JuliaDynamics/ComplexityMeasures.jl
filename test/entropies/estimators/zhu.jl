@@ -17,3 +17,5 @@ e_base_2 = Zhu(k = 3, base = 2)
 
 @test round(entropy(e_base_e, DN), digits = 1) == round(hN_base_e, digits = 1)
 @test round(entropy(e_base_2, DN), digits = 1) == round(hN_base_2, digits = 1)
+
+@test_throws ArgumentError entropy(Renyi(q = 2), Zhu(), DN)

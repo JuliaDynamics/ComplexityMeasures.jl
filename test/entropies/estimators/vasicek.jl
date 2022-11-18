@@ -14,3 +14,6 @@ ev_n = Vasicek(m = 100, base = MathConstants.e)
 n = 1000000
 @test round(entropy(ev, rand(rng, n)), digits = 2) == U
 @test round(entropy(ev_n, randn(rng, n)), digits = 2) == N
+
+x = rand(1000)
+@test_throws ArgumentError entropy(Renyi(q = 2), Vasicek(), x)

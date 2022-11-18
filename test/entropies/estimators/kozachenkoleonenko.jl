@@ -24,3 +24,5 @@ tol_e = h_XN_base_e * 0.03
 tol_2 = h_XN_base_2 * 0.03
 @test h_XN_base_e - tol_e ≤ h_XN_kr_base_e ≤ h_XN_base_e + tol_e
 @test h_XN_base_2 - tol_2 ≤ h_XN_kr_base_2 ≤ h_XN_base_2 + tol_2
+
+@test_throws ArgumentError entropy(Renyi(q = 2), KozachenkoLeonenko(), XN)

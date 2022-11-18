@@ -42,8 +42,11 @@ Base.@kwdef struct ZhuSingh{B} <: EntropyEstimator
     end
 end
 
-function entropy(e::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
-    (; k, w, base) = e
+function entropy(e::Renyi, est::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
+    e.q == 1 || throw(ArgumentError(
+        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
+    ))
+    (; k, w, base) = est
     N = length(x)
     tree = KDTree(x, Euclidean())
     nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))

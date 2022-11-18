@@ -25,3 +25,5 @@ h_XN_kr_base_e = entropy(Kraskov(k = 3, base = MathConstants.e), XN)
 h_XN_kr_base_2 = entropy(Kraskov(k = 3, base = 2), XN)
 @test round(h_XN_base_e, digits = 1) == round(h_XN_kr_base_e, digits = 1)
 @test round(h_XN_base_2, digits = 1) == round(h_XN_kr_base_2, digits = 1)
+
+@test_throws ArgumentError entropy(Renyi(q = 2), Kraskov(), XN)
