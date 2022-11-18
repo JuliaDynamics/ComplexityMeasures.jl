@@ -175,7 +175,7 @@ julia> total_outcomes(rand(42), est) # same as `factorial(m)` for any `x`
 24
 ```
 """
-function total_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+function total_outcomes(x, est::ProbabilitiesEstimator)
     return length(outcome_space(x, est))
 end
 
