@@ -31,7 +31,7 @@ function entropy(e::Renyi, est::Zhu, x::AbstractDataset{D, T}) where {D, T}
     e.q == 1 || throw(ArgumentError(
         "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
     ))
-    (; k, w, base) = est
+    (; k, w) = est
 
     N = length(x)
     tree = KDTree(x, Euclidean())

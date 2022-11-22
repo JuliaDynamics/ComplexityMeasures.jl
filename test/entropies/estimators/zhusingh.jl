@@ -35,11 +35,10 @@ DN = Dataset(randn(100000, 1))
 hN_base_e = 0.5 * log(MathConstants.e, 2π * σ^2) + 0.5
 hN_base_2 = hN_base_e / log(2, MathConstants.e)
 
-e_base_e = ZhuSingh(k = 3, base = MathConstants.e)
-e_base_2 = ZhuSingh(k = 3, base = 2)
+est = ZhuSingh(k = 3)
 
-@test round(entropy(e_base_e, DN), digits = 1) == round(hN_base_e, digits = 1)
-@test round(entropy(e_base_2, DN), digits = 1) == round(hN_base_2, digits = 1)
+@test round(entropy(est, DN, base = ℯ), digits = 1) == round(hN_base_e, digits = 1)
+@test round(entropy(est, DN, base = 2), digits = 1) == round(hN_base_2, digits = 1)
 
 # Analytical test: 3D normal distribution
 σs = ones(3)
@@ -51,8 +50,8 @@ h_𝒩₂_base_ℯ = 0.5n * log(ℯ, 2π) + 0.5*log(ℯ, det(Σ)) + 0.5n
 h_𝒩₂_base_2 = h_𝒩₂_base_ℯ  / log(2, ℯ)
 
 sample = Dataset(transpose(rand(𝒩₂, 50000)))
-hZS_𝒩₂_base_ℯ = entropy(e_base_e, sample)
-hZS_𝒩₂_base_2 = entropy(e_base_2, sample)
+hZS_𝒩₂_base_ℯ = entropy(Shannon(; base = ℯ), est, sample)
+hZS_𝒩₂_base_2 = entropy(Shannon(; base = 2), est, sample)
 
 # Estimation accuracy decreases for fixed N with increasing edimension, so exact comparison
 # isn't useful. Just check that values are within 1% of the target.
@@ -62,3 +61,7 @@ tol_2  = hZS_𝒩₂_base_2 * 0.01
 @test h_𝒩₂_base_2 - tol_2 ≤ hZS_𝒩₂_base_2 ≤ h_𝒩₂_base_2 + tol_2
 
 @test_throws ArgumentError entropy(Renyi(q = 2), ZhuSingh(), rand(100))
+
+# Shannon entropy is default.
+@test entropy(Shannon(; base = 2), est, sample) ==  entropy(est, sample, base = 2)
+@test entropy(Shannon(; base = ℯ), est, sample) ==  entropy(est, sample, base = ℯ)
