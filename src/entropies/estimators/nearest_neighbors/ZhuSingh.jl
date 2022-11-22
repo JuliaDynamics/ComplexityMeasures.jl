@@ -32,7 +32,7 @@ See also: [`entropy`](@ref).
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct ZhuSingh{B} <: EntropyEstimator
+Base.@kwdef struct ZhuSingh <: EntropyEstimator
     k::Int = 1
     w::Int = 0
 end
