@@ -35,10 +35,6 @@ See also: [`entropy`](@ref).
 Base.@kwdef struct ZhuSingh{B} <: EntropyEstimator
     k::Int = 1
     w::Int = 0
-
-    function ZhuSingh(k::Int, w::Int)
-        new{B}(k, w)
-    end
 end
 
 function entropy(e::Renyi, est::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
