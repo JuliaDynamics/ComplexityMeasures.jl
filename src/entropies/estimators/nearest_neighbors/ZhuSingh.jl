@@ -7,10 +7,10 @@ export ZhuSingh
 
 """
     ZhuSingh <: EntropyEstimator
-    ZhuSingh(k = 1, w = 0, base = MathConstants.e)
+    ZhuSingh(k = 1, w = 0)
 
 The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
-[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) to the given `base`.
+[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`).
 
 Like [`Zhu`](@ref), this estimator approximates probabilities within hyperrectangles
 surrounding each point `xᵢ ∈ x` using using `k` nearest neighbor searches. However,
@@ -35,10 +35,9 @@ See also: [`entropy`](@ref).
 Base.@kwdef struct ZhuSingh{B} <: EntropyEstimator
     k::Int = 1
     w::Int = 0
-    base::B = MathConstants.e
 
-    function ZhuSingh(k::Int, w::Int, base::B) where B
-        new{B}(k, w, base)
+    function ZhuSingh(k::Int, w::Int)
+        new{B}(k, w)
     end
 end
 
@@ -46,13 +45,13 @@ function entropy(e::Renyi, est::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
     e.q == 1 || throw(ArgumentError(
         "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
     ))
-    (; k, w, base) = est
+    (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())
     nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
     mean_logvol, mean_digammaξ = mean_logvolumes_and_digamma(x, nn_idxs, N, k)
     h = digamma(N) + mean_logvol - mean_digammaξ
-    return h / log(base, MathConstants.e)
+    return h / log(e.base, MathConstants.e)
 end
 
 function mean_logvolumes_and_digamma(x, nn_idxs, N::Int, k::Int)

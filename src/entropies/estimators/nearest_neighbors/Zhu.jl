@@ -2,10 +2,10 @@ export Zhu
 
 """
     Zhu <: EntropyEstimator
-    Zhu(k = 1, w = 0, base = MathConstants.e)
+    Zhu(k = 1, w = 0)
 
 The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
-[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) to the given `base`, by
+[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`), by
 approximating probabilities within hyperrectangles surrounding each point `xᵢ ∈ x` using
 using `k` nearest neighbor searches.
 
@@ -22,10 +22,9 @@ See also: [`entropy`](@ref).
     transfer entropy estimation via the k-nearest-neighbors approach. Entropy, 17(6),
     4173-4201.
 """
-Base.@kwdef struct Zhu{B} <: EntropyEstimator
+Base.@kwdef struct Zhu <: EntropyEstimator
     k::Int = 1
     w::Int = 0
-    base::B = MathConstants.e
 end
 
 function entropy(e::Renyi, est::Zhu, x::AbstractDataset{D, T}) where {D, T}
@@ -38,7 +37,7 @@ function entropy(e::Renyi, est::Zhu, x::AbstractDataset{D, T}) where {D, T}
     tree = KDTree(x, Euclidean())
     nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
     h = digamma(N) + mean_logvolumes(x, nn_idxs, N) - digamma(k) + (D - 1) / k
-    return h / log(base, MathConstants.e)
+    return h / log(e.base, MathConstants.e)
 end
 
 function mean_logvolumes(x, nn_idxs, N::Int)
