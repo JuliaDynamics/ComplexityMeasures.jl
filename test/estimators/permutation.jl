@@ -1,3 +1,7 @@
+using StateSpaceSets: Dataset
+using DelayEmbeddings: genembed
+using StaticArrays: SVector
+
 @test SymbolicPermutation() isa SymbolicPermutation
 @test SymbolicPermutation(lt = Base.isless) isa SymbolicPermutation
 @test SymbolicPermutation(lt = Entropies.isless_rand) isa SymbolicPermutation

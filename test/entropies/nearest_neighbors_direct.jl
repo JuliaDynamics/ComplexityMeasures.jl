@@ -1,4 +1,6 @@
 using Test, StaticArrays, LinearAlgebra
+using DelayEmbeddings: genembed
+using StateSpaceSets: Dataset
 
 @testset "NN - Kraskov" begin
     m = 4

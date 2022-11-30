@@ -1,4 +1,5 @@
-using DelayEmbeddings: genembed, Dataset
+using StateSpaceSets: Dataset
+using DelayEmbeddings: genembed
 using StaticArrays: SVector
 using Entropies: encode_motif, decode_motif
 
