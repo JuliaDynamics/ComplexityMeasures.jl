@@ -44,21 +44,21 @@ Base.@kwdef struct Diversity <: ProbabilitiesEstimator
     nbins::Int = 5
 end
 
-function probabilities(x::AbstractVector{T}, est::Diversity) where T <: Real
-    ds, binning = similarities_and_binning(x, est)
+function probabilities(est::Diversity, x::AbstractVector{T}) where T <: Real
+    ds, binning = similarities_and_binning(est, x)
     return fasthist(ds, binning)[1]
 end
 
-function probabilities_and_outcomes(x::AbstractVector{T}, est::Diversity) where T <: Real
-    ds, binning = similarities_and_binning(x, est)
-    return probabilities_and_outcomes(ds, ValueHistogram(binning))
+function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
+    ds, binning = similarities_and_binning(est, x)
+    return probabilities_and_outcomes(ValueHistogram(binning), ds)
 end
 
 total_outcomes(est::Diversity) = est.nbins
 
 outcome_space(x, est::Diversity) = outcome_space(x, binning_for_diversity(est))
 
-function similarities_and_binning(x::AbstractVector{T}, est::Diversity) where T <: Real
+function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T <: Real
     # embed and then calculate cosine similary for each consecutive pair of delay vectors
     τs = 0:est.τ:(est.m - 1)*est.τ
     Y = genembed(x, τs)

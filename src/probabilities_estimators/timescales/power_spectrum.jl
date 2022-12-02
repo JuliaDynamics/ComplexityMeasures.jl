@@ -30,15 +30,15 @@ should be multiplied with the sampling rate of the signal, which is assumed to b
 """
 struct PowerSpectrum <: ProbabilitiesEstimator end
 
-function probabilities_and_outcomes(x, est::PowerSpectrum)
-    probs = probabilities(x, est)
+function probabilities_and_outcomes(est::PowerSpectrum, x)
+    probs = probabilities(est, x)
     events = FFTW.rfftfreq(length(x))
     return probs, events
 end
 
 outcome_space(x, ::PowerSpectrum) = FFTW.rfftfreq(length(x))
 
-function probabilities(x, ::PowerSpectrum)
+function probabilities(::PowerSpectrum, x)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
     f = FFTW.rfft(x)
     Probabilities(abs2.(f))

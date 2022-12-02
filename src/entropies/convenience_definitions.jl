@@ -23,11 +23,11 @@ for the weighted/amplitude-aware versions.
 """
 function entropy_permutation(x; base = 2, kwargs...)
     est = SymbolicPermutation(; kwargs...)
-    entropy(Shannon(; base), x, est)
+    entropy(Shannon(; base), est, x)
 end
 
 """
-    entropy_spatial_permutation(x, stencil, periodic = true; kwargs...)
+    entropy_spatial_permutation(x, stencil; periodic = true; kwargs...)
 
 Compute the spatial permutation entropy of `x` given the `stencil`.
 Here `x` must be a matrix or higher dimensional `Array` containing spatial data.
@@ -35,14 +35,14 @@ This function is just a convenience call to:
 
 ```julia
 est = SpatialSymbolicPermutation(stencil, x, periodic)
-entropy(Renyi(;kwargs...), x, est)
+entropy(Renyi(;kwargs...), est, x)
 ```
 
 See [`SpatialSymbolicPermutation`](@ref) for more info, or how to encode stencils.
 """
-function entropy_spatial_permutation(x, stencil, periodic = true; kwargs...)
+function entropy_spatial_permutation(x, stencil; periodic = true, kwargs...)
     est = SpatialSymbolicPermutation(stencil, x, periodic)
-    entropy(Renyi(;kwargs...), x, est)
+    entropy(Renyi(;kwargs...), est, x)
 end
 
 """
@@ -52,14 +52,14 @@ Compute the wavelet entropy. This function is just a convenience call to:
 
 ```julia
 est = WaveletOverlap(wavelet)
-entropy(Shannon(base), x, est)
+entropy(Shannon(base), est, x)
 ```
 
 See [`WaveletOverlap`](@ref) for more info.
 """
 function entropy_wavelet(x; wavelet = Wavelets.WT.Daubechies{12}(), base = 2)
     est = WaveletOverlap(wavelet)
-    entropy(Shannon(; base), x, est)
+    entropy(Shannon(; base), est, x)
 end
 
 """
@@ -69,12 +69,12 @@ Compute the dispersion entropy. This function is just a convenience call to:
 
 ```julia
 est = Dispersion(kwargs...)
-entropy(Shannon(base), x, est)
+entropy(Shannon(base), est, x)
 ```
 
 See [`Dispersion`](@ref) for more info.
 """
 function entropy_dispersion(x; base = 2, kwargs...)
     est = Dispersion(kwargs...)
-    entropy(Shannon(; base), x, est)
+    entropy(Shannon(; base), est, x)
 end

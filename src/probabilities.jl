@@ -85,7 +85,7 @@ abstract type ProbabilitiesEstimator end
 # probabilities and combo function
 ###########################################################################################
 """
-    probabilities(x::Array_or_Dataset, est::ProbabilitiesEstimator) → p::Probabilities
+    probabilities(est::ProbabilitiesEstimator, x::Array_or_Dataset) → p::Probabilities
 
 Compute a probability distribution over the set of possible outcomes defined by the
 probabilities estimator `est`, given input data `x`.
@@ -104,8 +104,8 @@ This is mostly useful when `x` contains categorical or integer data.
 
 See also: [`Probabilities`](@ref), [`ProbabilitiesEstimator`](@ref).
 """
-function probabilities(x, est::ProbabilitiesEstimator)
-    return probabilities_and_outcomes(x, est)[1]
+function probabilities(est::ProbabilitiesEstimator, x)
+    return probabilities_and_outcomes(est, x)[1]
 end
 
 """
@@ -117,7 +117,7 @@ The element type of `Ω` depends on the estimator.
 
 See also [`outcomes`](@ref), [`total_outcomes`](@ref), and [`outcome_space`](@ref).
 """
-function probabilities_and_outcomes(x, est::ProbabilitiesEstimator)
+function probabilities_and_outcomes(est::ProbabilitiesEstimator, x)
     error("`probabilities_and_outcomes` not implemented for estimator $(typeof(est)).")
 end
 
@@ -175,7 +175,7 @@ julia> total_outcomes(rand(42), est) # same as `factorial(m)` for any `x`
 24
 ```
 """
-function total_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+function total_outcomes(x, est::ProbabilitiesEstimator)
     return length(outcome_space(x, est))
 end
 

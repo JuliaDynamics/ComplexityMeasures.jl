@@ -72,8 +72,8 @@ function AAPE(x; A::Real = 0.5, m::Int = length(x))
     (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
 end
 
-function probabilities_and_outcomes(x::AbstractDataset{m, T},
-        est::SymbolicAmplitudeAwarePermutation) where {m, T}
+function probabilities_and_outcomes(est::SymbolicAmplitudeAwarePermutation,
+        x::AbstractDataset{m, T}) where {m, T}
     πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))
     wts = AAPE.(x.data, A = est.A, m = est.m)
     probs = symprobs(πs, wts, normalize = true)
@@ -87,8 +87,9 @@ function probabilities_and_outcomes(x::AbstractDataset{m, T},
     return Probabilities(probs), observed_outcomes
 end
 
-function probabilities_and_outcomes(x::AbstractVector{T},
-        est::SymbolicAmplitudeAwarePermutation) where {T<:Real}
+function probabilities_and_outcomes(
+        est::SymbolicAmplitudeAwarePermutation,
+        x::AbstractVector{T}) where {T<:Real}
     # We need to manually embed here instead of just calling the method above,
     # because the embedding vectors are needed to compute weights.
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
