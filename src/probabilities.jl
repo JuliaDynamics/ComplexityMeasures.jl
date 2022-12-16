@@ -33,11 +33,12 @@ function Probabilities(x::AbstractVector{<:Integer})
 end
 
 # extend base Vector interface:
-for f in (:length, :size, :eachindex, :eltype,
+for f in (:length, :size, :eachindex, :eltype, :parent,
     :lastindex, :firstindex, :vec, :getindex, :iterate)
     @eval Base.$(f)(d::Probabilities, args...) = $(f)(d.p, args...)
 end
 Base.IteratorSize(::Probabilities) = Base.HasLength()
+# Special extension due to the rules of the API
 @inline Base.sum(::Probabilities{T}) where T = one(T)
 
 """
@@ -139,11 +140,7 @@ function probabilities! end
 """
     outcome_space(est::ProbabilitiesEstimator) → Ω
 
-Return a container (typically `Vector`) containing all _possible_ outcomes of `est`,
-i.e., the outcome space `Ω`.
-Only possible for estimators that implement [`total_outcomes`](@ref),
-and similarly, for some estimators `x` is not needed. The _values_ of `x` are never needed;
-but some times the type and dimensional layout of `x` is.
+Return a container containing all _possible_ outcomes of `est`.
 """
 function outcome_space(est::ProbabilitiesEstimator)
     error("`outcome_space` not implemented for estimator $(typeof(est)).")
@@ -161,8 +158,6 @@ total_outcomes(est::ProbabilitiesEstimator) = length(outcome_space(est))
 
 Estimate a probability distribution for `x` using the given estimator, then count the number
 of missing (i.e. zero-probability) outcomes.
-
-Works for estimators that implement [`total_outcomes`](@ref).
 
 See also: [`MissingDispersionPatterns`](@ref).
 """
