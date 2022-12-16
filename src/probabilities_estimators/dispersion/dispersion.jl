@@ -107,7 +107,7 @@ function symbolize_for_dispersion(x, est::Dispersion)
     return symbols::Vector{Int}
 end
 
-function probabilities_and_outcomes(x::AbstractVector{<:Real}, est::Dispersion)
+function probabilities_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
     N = length(x)
     symbols = symbolize_for_dispersion(x, est)
     # We must use genembed, not embed, to make sure the zero lag is included

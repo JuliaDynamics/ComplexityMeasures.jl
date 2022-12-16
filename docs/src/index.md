@@ -40,7 +40,11 @@ Thus, any of the implemented [probabilities estimators](@ref probabilities_estim
 
     These names are common place, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
 
-    There are only a few exceptions to this rule, which are quantities that are able to compute Shannon entropies via alternate means, without explicitly computing some probability distributions. These are `IndirectEntropy` instances, such as [`Kraskov`](@ref).
+    In addition to `ProbabilitiesEstimators`, we also provide [`EntropyEstimator`](@ref)s, 
+    which compute entropies via alternate means, without explicitly computing some 
+    probability distribution. For example, [`Kraskov`](@ref) estimator computes Shannon 
+    entropy via a nearest neighbor algorithm, while the [`Zhu`](@ref) estimator computes
+    Shannon entropy using order statistics.
 
 ### Other complexity measures
 

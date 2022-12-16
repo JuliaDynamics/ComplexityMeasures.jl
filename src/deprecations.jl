@@ -8,6 +8,14 @@ function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})
     probabilities(x, ValueHistogram(ε))
 end
 
+function probabilities(x, est::ProbabilitiesEstimator)
+    @warn """
+    `probabilities(x, est::ProbabilitiesEstimator)`
+    is deprecated, use `probabilities(est::ProbabilitiesEstimator, x) instead`.
+    """
+    return probabilities(est, x)
+end
+
 export genentropy, permentropy
 
 function permentropy(x; τ = 1, m = 3, base = MathConstants.e)

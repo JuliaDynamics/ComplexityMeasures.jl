@@ -208,7 +208,7 @@ end
 ##################################################################
 # low level histogram call
 ##################################################################
-# This method is called by `probabilities(x::Array_or_Dataset, est::ValueHistogram)`
+# This method is called by `probabilities(est::ValueHistogram, x::Array_or_Dataset)`
 """
     fasthist(x::Vector_or_Dataset, ϵ::RectangularBinEncoding)
 Intermediate method that runs `fasthist!` in the encoded space

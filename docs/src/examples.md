@@ -137,9 +137,9 @@ for (i, r) in enumerate(rs)
     lyaps[i] = lyapunov(ds, N_lyap)
 
     x = trajectory(ds, N_ent) # time series
-    hperm = entropy(x, SymbolicPermutation(; m, τ))
-    hwtperm = entropy(x, SymbolicWeightedPermutation(; m, τ))
-    hampperm = entropy(x, SymbolicAmplitudeAwarePermutation(; m, τ))
+    hperm = entropy(SymbolicPermutation(; m, τ), x)
+    hwtperm = entropy(SymbolicWeightedPermutation(; m, τ), x)
+    hampperm = entropy(SymbolicAmplitudeAwarePermutation(; m, τ), x)
 
     hs_perm[i] = hperm; hs_wtperm[i] = hwtperm; hs_ampperm[i] = hampperm
 end
@@ -173,7 +173,7 @@ using DynamicalSystemsBase, CairoMakie, Distributions
 N = 500
 D = Dataset(sort([rand(𝒩) for i = 1:N]))
 x, y = columns(D)
-p = probabilities(D, NaiveKernel(1.5))
+p = probabilities(NaiveKernel(1.5), D)
 fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
     markersize=8, axis=(type = Axis3,)
 )
@@ -301,9 +301,9 @@ des = zeros(length(windows))
 pes = zeros(length(windows))
 
 m, c = 2, 6
-est_de = Dispersion(encoding = GaussianCDFEncoding(c), m = m, τ = 1)
+est_de = Dispersion(c = c, m = m, τ = 1)
 for (i, window) in enumerate(windows)
-    des[i] = entropy_normalized(Renyi(), y[window], est_de)
+    des[i] = entropy_normalized(Renyi(), est_de, y[window])
 end
 
 fig = Figure()
@@ -344,8 +344,8 @@ for N in (N1, N2)
     local w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
 
     for q in (x, y, z, w)
-        h = entropy(q, PowerSpectrum())
-        n = entropy_normalized(q, PowerSpectrum())
+        h = entropy(PowerSpectrum(), q)
+        n = entropy_normalized(PowerSpectrum(), q)
         println("entropy: $(h), normalized: $(n).")
     end
 end

@@ -30,7 +30,7 @@ struct WaveletOverlap{W<:Wavelets.WT.OrthoWaveletClass} <: ProbabilitiesEstimato
 end
 WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
 
-function probabilities_and_outcomes(x, est::WaveletOverlap)
+function probabilities_and_outcomes(est::WaveletOverlap, x)
     @assert x isa AbstractVector{<:Real} "`WaveletOverlap` only works for timeseries input!"
     p = Probabilities(time_scale_density(x, est.wl))
     return p, 1:length(p)

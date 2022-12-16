@@ -85,8 +85,8 @@ function weights_from_variance(x, m::Int)
 end
 
 
-function probabilities_and_outcomes(x::AbstractDataset{m, T},
-        est::SymbolicWeightedPermutation) where {m, T}
+function probabilities_and_outcomes(est::SymbolicWeightedPermutation,
+        x::AbstractDataset{m, T}) where {m, T}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
@@ -101,8 +101,8 @@ function probabilities_and_outcomes(x::AbstractDataset{m, T},
    return Probabilities(probs), observed_outcomes
 end
 
-function probabilities_and_outcomes(x::AbstractVector{T},
-        est::SymbolicWeightedPermutation) where {T<:Real}
+function probabilities_and_outcomes(est::SymbolicWeightedPermutation,
+        x::AbstractVector{T}) where {T<:Real}
     # We need to manually embed here instead of just calling the method above,
     # because the embedding vectors are needed to compute weights.
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
