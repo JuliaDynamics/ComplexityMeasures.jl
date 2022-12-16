@@ -6,6 +6,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
 @testset "Entropies.jl" begin
     include("probabilities/probabilities.jl")
     include("entropies/entropies.jl")
+    testfile("multiscale/multiscale.jl")
 
     # Various
     testfile("utils/fasthist.jl")

@@ -14,7 +14,7 @@ The supertype for all multiscale algorithms.
 abstract type MultiScaleAlgorithm end
 
 """
-    downsample(algorithm::MultiScaleAlgorithm, x, s::Int)
+    downsample(algorithm::MultiScaleAlgorithm, s::Int, x)
 
 Downsample and coarse-grain `x` to scale `s` according to the given multiscale `algorithm`.
 
@@ -36,22 +36,25 @@ function multiscale end
 function multiscale_normalized end
 
 """
-    multiscale(e::Entropy, alg, est, x; maxscale::Int = 10)
+    multiscale(alg::MultiScaleAlgorithm, e::Entropy, est::EntropyEstimator, x; kwargs...)
+    multiscale(alg::MultiScaleAlgorithm, e::Entropy, est::ProbabilitiesEstimator, x; kwargs...)
 
-Compute the multi-scale entropy `e` with probabilities estimator `est` for timeseries `x`.
+Compute the multi-scale entropy `e` with estimator `est` for timeseries `x`.
+
+The first signature estimates differential/continuous multiscale entropy. The second
+signature estimates discrete multiscale entropy.
+
+This function generalizes *all* multi-scale entropy estimators, as long as a relevant
+[`MultiScaleAlgorithm`](@ref), [`downsample`](@ref) method and estimator is defined.
+Multi-scale complexity ("entropy-like") measures, such as "sample entropy", are found in
+the Complexity.jl package.
 
 ## Description
 
 Utilizes [`downsample`](@ref) to compute the entropy/complexity of coarse-grained,
 downsampled versions of `x` for scale factors `1:maxscale`. If `N = length(x)`, then the
-length of the most severely downsampled version of `x` is `N ÷ scalemax`, while for scale
+length of the most severely downsampled version of `x` is `N ÷ maxscale`, while for scale
 factor `1`, the original time series is considered.
-
-Provided the [`MultiScaleAlgorithm`](@ref), [`downsample`](@ref)
-method and [`EntropyEstimator`](@ref) or [`ProbabilitiesEstimator`](@ref) is defined,
-this function generalizes all multi-scale entropy estimators (discrete or continuous).
-
-Multi-scale complexity ("entropy-like") measures are found in the Complexity.jl package.
 
 ## Arguments
 
@@ -74,27 +77,27 @@ Multi-scale complexity ("entropy-like") measures are found in the Complexity.jl 
 [^Costa2002]: Costa, M., Goldberger, A. L., & Peng, C. K. (2002). Multiscale entropy
     analysis of complex physiologic time series. Physical review letters, 89(6), 068102.
 """
-function multiscale(e::Entropy, alg::MultiScaleAlgorithm,
+function multiscale(alg::MultiScaleAlgorithm, e::Entropy,
         est::Union{ProbabilitiesEstimator, EntropyEstimator}, x)
     msg = "`multiscale` entropy not implemented for $e $est on data type $(typeof(x))"
     throw(ArgumentError(msg))
 end
 
 """
-    multiscale_normalized(e::Entropy, alg, est, x)
+    multiscale_normalized(alg::MultiScaleAlgorithm, e::Entropy,
+        est::ProbabilitiesEstimator, x)
 
 The same as [`multiscale`](@ref), but normalizes the entropy if [`entropy_maximum`](@ref)
 is implemented for `e`.
 
-Only works if `est` is an [`EntropyEstimator`](@ref).
+Note: this doesn't work if `est` is an [`EntropyEstimator`](@ref).
 """
-function multiscale_normalized(e::Entropy, alg::MultiScaleAlgorithm,
-        est::ProbabilitiesEstimator, x)
-    msg = "`multiscale_normalized` not implemented for $e $est on data type $(typeof(x))"
+function multiscale_normalized(alg::MultiScaleAlgorithm, e::Entropy, est, x)
+    msg = "`multiscale_normalized` not implemented for $e $(typeof(est)) on data type $(typeof(x))"
     throw(ArgumentError(msg))
 end
 
-multiscale_normalized(e::Entropy, alg::MultiScaleAlgorithm, est::EntropyEstimator, x) =
+multiscale_normalized(alg::MultiScaleAlgorithm, e::Entropy, est::EntropyEstimator, x) =
     error("multiscale_normalized not defined for $(typeof(est))")
 
 max_scale_level(method::MultiScaleAlgorithm, x) = length(x) ÷ 2

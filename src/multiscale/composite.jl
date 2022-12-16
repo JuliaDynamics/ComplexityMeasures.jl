@@ -91,11 +91,12 @@ function downsample(method::Composite, s::Int, x::AbstractVector{T}, args...;
     end
 end
 
-function multiscale(e::Entropy, alg::Composite, est::ProbabilitiesEstimator,
+function multiscale(alg::Composite, e::Entropy,
+        est::Union{ProbabilitiesEstimator, EntropyEstimator},
         x::AbstractVector;
-        maxscale::Int = 10)
+        maxscale::Int = 8)
 
-    downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
+    downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
     hs = zeros(Float64, maxscale)
     for s in 1:maxscale
         hs[s] = mean(entropy.(Ref(e), Ref(est), downscaled_timeseries[s]))
@@ -104,11 +105,11 @@ function multiscale(e::Entropy, alg::Composite, est::ProbabilitiesEstimator,
     return hs
 end
 
-function multiscale_normalized(e::Entropy, alg::Composite, est::ProbabilitiesEstimator,
+function multiscale_normalized(alg::Composite, e::Entropy, est::ProbabilitiesEstimator,
         x::AbstractVector;
-        maxscale::Int = 10)
+        maxscale::Int = 8)
 
-    downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
+    downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
     hs = zeros(Float64, maxscale)
     for s in 1:maxscale
         hs[s] = mean(entropy_normalized.(Ref(e), Ref(est), downscaled_timeseries[s]))

@@ -46,7 +46,7 @@ Base.@kwdef struct Regular <: MultiScaleAlgorithm
     f::Function = Statistics.mean
 end
 
-function downsample(method::Regular, x::AbstractVector{T}, s::Int, args...; kwargs...) where T
+function downsample(method::Regular, s::Int, x::AbstractVector{T}, args...; kwargs...) where T
     f = method.f
     verify_scale_level(method, s, x)
 
@@ -66,18 +66,19 @@ function downsample(method::Regular, x::AbstractVector{T}, s::Int, args...; kwar
     end
 end
 
-function multiscale(e::Entropy, alg::Regular, x::AbstractVector,
-        est::ProbabilitiesEstimator;
+function multiscale(alg::Regular, e::Entropy,
+        est::Union{ProbabilitiesEstimator, EntropyEstimator},
+        x::AbstractVector;
         maxscale::Int = 8)
 
-    downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
+    downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
     return entropy.(Ref(e), Ref(est), downscaled_timeseries)
 end
 
-function multiscale_normalized(e::Entropy, alg::Regular, x::AbstractVector,
-        est::ProbabilitiesEstimator;
+function multiscale_normalized(alg::Regular, e::Entropy,
+        est::ProbabilitiesEstimator, x::AbstractVector,;
         maxscale::Int = 8)
 
-    downscaled_timeseries = [downsample(alg, x, s) for s in 1:maxscale]
+    downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
     return entropy_normalized.(Ref(e), Ref(est), downscaled_timeseries)
 end
