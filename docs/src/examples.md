@@ -72,7 +72,7 @@ nats for this distribution is `ln(1 - 0) = 0`.
 ```@example MAIN
 using Entropies
 using Statistics
-using Distributions
+using Distributions: Uniform
 using CairoMakie
 
 # Define estimators
@@ -221,7 +221,7 @@ Here, we show the sensitivity of the various entropies to variations in their pa
 ### Curado entropy
 
 Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
-how the [Curado](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
+how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
 ```@example MAIN
@@ -241,6 +241,33 @@ fig
 
 [^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
     entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
+
+### Kaniadakis entropy
+
+Here, we show how [`Kaniadakis`](@ref) entropy changes as function of the parameter `a` for 
+a range of two-element probability distributions given by
+`Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
+
+```@example MAIN
+using Entropies
+using CairoMakie
+
+probs = [Probabilities([p, 1-p]) for p in 0.0:0.01:1.0]
+ps = collect(0.0:0.01:1.0);
+κs = [-0.99, -0.66, -0.33, 0, 0.33, 0.66, 0.99];
+Hs = [[entropy(Kaniadakis(κ = κ), p) for p in probs] for κ in κs];
+
+fig = Figure()
+ax = Axis(fig[1, 1], xlabel = "p", ylabel = "H(p)")
+
+for (i, H) in enumerate(Hs)
+    lines!(ax, ps, H, label = "$(κs[i])")
+end
+
+axislegend()
+
+fig
+```
 
 ### Stretched exponential entropy
 
@@ -285,7 +312,6 @@ using Entropies
 using DynamicalSystemsBase
 using Random
 using CairoMakie
-using Distributions
 
 n = 1000
 ts = 1:n
