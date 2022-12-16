@@ -62,11 +62,11 @@ const VisitationFrequency = ValueHistogram
 # The source code of `ValueHistogram` operates as rather simple calls to
 # the underlying encoding and the `fasthist` function and extensions.
 # See the `rectangular_binning.jl` file for more.
-function probabilities(x, est::ValueHistogram)
+function probabilities(est::ValueHistogram, x)
     Probabilities(fasthist(x, est.encoding)[1])
 end
 
-function probabilities_and_outcomes(x, est::ValueHistogram)
+function probabilities_and_outcomes(est::ValueHistogram, x)
     probs, bins = fasthist(x, est.encoding) # bins are integers here
     unique!(bins) # `bins` is already sorted from `fasthist!`
     # Here we transfor the cartesian coordinate based bins into data unit bins:

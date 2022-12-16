@@ -42,6 +42,7 @@ Base.IteratorSize(::Probabilities) = Base.HasLength()
 @inline Base.sum(::Probabilities{T}) where T = one(T)
 
 """
+    ProbabilitiesEstimator
 The supertype for all probabilities estimators.
 
 In Entropies.jl, probability distributions are estimated from data by defining a set of

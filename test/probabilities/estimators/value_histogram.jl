@@ -21,7 +21,7 @@ using Random
     for bin in binnings
         @testset "ϵ isa $(typeof(bin.ϵ))" begin
             est = ValueHistogram(x, bin)
-            p = probabilities(x, est)
+            p = probabilities(est, x)
             @test length(p) == 100
             @test all(e -> 0.009 ≤ e ≤ 0.011, p)
         end
@@ -29,7 +29,7 @@ using Random
 
     @testset "Check rogue 1s" begin
         b = RectangularBinning(0.1) # no `nextfloat` here, so the rogue (1, 1) is in extra bin!
-        p = probabilities(x, ValueHistogram(x, b))
+        p = probabilities(ValueHistogram(x, b), x)
         @test length(p) == 100 + 1
         @test p[end] ≈ 1/100_000 atol = 1e-5
     end
@@ -40,7 +40,7 @@ using Random
         n = 10 # boxes cover 0 - 1 in steps of slightly more than 0.1
         ε = nextfloat(0.1) # this guarantees that we get the same as the `n` above!
         for bin in (RectangularBinning(n), RectangularBinning(ε))
-            p = probabilities(x, ValueHistogram(x, bin))
+            p = probabilities(ValueHistogram(x, bin), x)
             @test length(p) == 10
             @test all(e -> 0.09 ≤ e ≤ 0.11, p)
         end
