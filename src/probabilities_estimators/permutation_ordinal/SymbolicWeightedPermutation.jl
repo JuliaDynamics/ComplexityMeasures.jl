@@ -9,11 +9,12 @@ export SymbolicWeightedPermutation
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
 based on the weighted permutation entropy (Fadlallah et al., 2013).
 
-## Outcomes
+## Outcome space
 
 Like for [`SymbolicPermutation`](@ref), the outcome space `Ω` for
-`SymbolicWeightedPermutation` is the set `{1, 2, …, factorial(m)}`, where each integer
-correspond to a unique ordinal pattern.
+`SymbolicWeightedPermutation` is the lexiographically ordered set of
+length-`m` ordinal patterns (i.e. permutations) that can be formed by the integers
+`1, 2, …, m`. There are `factorial(m)` such patterns.
 
 ## Description
 
@@ -84,27 +85,40 @@ function weights_from_variance(x, m::Int)
 end
 
 
-function probabilities_and_outcomes(x::AbstractDataset{m, T},
-        est::SymbolicWeightedPermutation) where {m, T}
+function probabilities_and_outcomes(est::SymbolicWeightedPermutation,
+        x::AbstractDataset{m, T}) where {m, T}
     m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
     πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))  # motif length controlled by dimension of input data
     wts = weights_from_variance.(x.data, m)
     probs = symprobs(πs, wts, normalize = true)
-    observed_outcomes = sort(unique(πs))
+
+    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
+    # integer corresponds to a unique permutation. Decoding an integer gives the original
+    # permutation as a `SVector{m, Int}`.
+    observed_encodings = sort(unique(πs))
+    observed_outcomes = decode_motif.(observed_encodings, est.m)
 
    return Probabilities(probs), observed_outcomes
 end
 
-function probabilities_and_outcomes(x::AbstractVector{T},
-        est::SymbolicWeightedPermutation) where {T<:Real}
+function probabilities_and_outcomes(est::SymbolicWeightedPermutation,
+        x::AbstractVector{T}) where {T<:Real}
+    # We need to manually embed here instead of just calling the method above,
+    # because the embedding vectors are needed to compute weights.
     τs = tuple([est.τ*i for i = 0:est.m-1]...)
     emb = genembed(x, τs)
-    πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt)) # motif length controlled by estimator m
+    πs = outcomes(x, OrdinalPatternEncoding(m = est.m, lt = est.lt)) # motif length controlled by estimator m
     wts = weights_from_variance.(emb.data, est.m)
     probs = symprobs(πs, wts, normalize = true)
-    observed_outcomes = sort(unique(πs))
+
+    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
+    # integer corresponds to a unique permutation. Decoding an integer gives the original
+    # permutation as a `SVector{m, Int}`.
+    observed_encodings = sort(unique(πs))
+    observed_outcomes = decode_motif.(observed_encodings, est.m)
 
     return Probabilities(probs), observed_outcomes
 end
 
 total_outcomes(est::SymbolicWeightedPermutation)::Int = factorial(est.m)
+outcome_space(est::SymbolicWeightedPermutation) = permutations(1:est.m) |> collect

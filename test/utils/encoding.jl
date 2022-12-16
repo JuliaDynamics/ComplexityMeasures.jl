@@ -1,10 +1,9 @@
-using DelayEmbeddings: genembed, Dataset
+using StateSpaceSets: Dataset
+using DelayEmbeddings: genembed
 using StaticArrays: SVector
+using Entropies: encode_motif, decode_motif
 
 @testset "Ordinal patterns" begin
-    @test Entropies.encode_motif([2, 3, 1]) isa Int
-    @test 0 <= Entropies.encode_motif([2, 3, 1]) <= factorial(3) - 1
-
     scheme = OrdinalPatternEncoding(m = 5, τ = 1)
     N = 100
     x = Dataset(repeat([1.1 2.2 3.3], N))
@@ -34,6 +33,30 @@ using StaticArrays: SVector
     D = Dataset(rand(N, m))
     s = fill(-1, length(D))
     @test all(0 .<= Entropies.outcomes!(s, D, scheme) .< factorial(m))
+
+    # This is not part of the public API, but this is crucial to test directly to
+    # ensure its correctness. It makes no sense to test it though "end-product" code,
+    # because there would be no obvious way of debugging the forward/inverse Lehmer-code
+    # code from end-product code. We therefore test the internals here.
+    @testset "Encoding/decoding" begin
+        m = 4
+        # All possible permutations for length-4 vectors.
+        πs = [
+            [1, 2, 3, 4], [1, 2, 4, 3], [1, 3, 2, 4], [1, 3, 4, 2], [1, 4, 2, 3],
+            [1, 4, 3, 2], [2, 1, 3, 4], [2, 1, 4, 3], [2, 3, 1, 4], [2, 3, 4, 1],
+            [2, 4, 1, 3], [2, 4, 3, 1], [3, 1, 2, 4], [3, 1, 4, 2], [3, 2, 1, 4],
+            [3, 2, 4, 1], [3, 4, 1, 2], [3, 4, 2, 1], [4, 1, 2, 3], [4, 1, 3, 2],
+            [4, 2, 1, 3], [4, 2, 3, 1], [4, 3, 1, 2], [4, 3, 2, 1]
+        ]
+        encoded_πs = encode_motif.(πs, m)
+        @test encoded_πs == 0:(factorial(m) - 1) |> collect
+        @test all(isa.(encoded_πs, Int))
+
+        # Decoded permutations (`SVector{m, Int}`s)
+        decoded_πs = decode_motif.(encoded_πs, m)
+        @test all(length.(decoded_πs) .== m)
+        @test all(decoded_πs .== πs)
+    end
 end
 
 @testset "Gaussian symbolization" begin
@@ -98,6 +121,17 @@ end
         @test total_outcomes(symb_same) == N^2
         @test total_outcomes(D, symb_diff) == N^2
         @test total_outcomes(D, symb_same) == N^2
+
+        # all possible outcomes
+        o = outcome_space(symb_diff)
+        @test length(o) == N^2
+        @test eltype(o) == SVector{2, Int}
+        for i in 1:N
+            for j in 1:N
+                @test SVector(i, j) ∈ o
+            end
+        end
+
         # For univariate timeseries
         # --------------------------------
         # bins are indexed from 0, so should get [0, 4, 9] with N = 10
@@ -160,7 +194,7 @@ end
             [0, 4, 9]
     end
 
-    @testset "Alphabet length" begin
+    @testset "outcome length" begin
         X = Dataset(rand(10, 3))
         x = rand(10)
         rbN = RectangularBinning(5)

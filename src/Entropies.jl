@@ -9,20 +9,21 @@ To install it, run `import Pkg; Pkg.add("Entropies")`.
 """
 module Entropies
 
-using DelayEmbeddings
-using DelayEmbeddings: AbstractDataset, Dataset, dimension
-export AbstractDataset, Dataset
-export DelayEmbeddings
+using StateSpaceSets
+export Dataset, SVector
+using DelayEmbeddings: embed, genembed
+
 const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
 const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
 
+# Core API types and functions
 include("probabilities.jl")
 include("entropy.jl")
-include("encoding/outcomes.jl")
+include("encodings.jl")
+# Library implementations (files include other files)
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
-include("multiscale.jl")
-
+include("encoding/all_encodings.jl")
 include("deprecations.jl")
 
 

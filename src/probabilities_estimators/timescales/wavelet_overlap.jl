@@ -5,25 +5,21 @@ import Wavelets
     WaveletOverlap([wavelet]) <: ProbabilitiesEstimator
 
 Apply the maximal overlap discrete wavelet transform (MODWT) to a
-signal, then compute probabilities/entropy from the energies at different
+signal, then compute probabilities as the (normalized) energies at different
 wavelet scales. These probabilities are used to compute the wavelet entropy,
 according to Rosso et al. (2001)[^Rosso2001].
-
-The probability `p[i]` is the relative energy for the `i`-th wavelet scale.
-To obtain a better understanding of what these probabilities mean, we prepared
-a notebook you can
-[view online](https://github.com/kahaaga/waveletentropy_example/blob/main/wavelet_entropy_example.ipynb).
-As such, this estimator only works for timeseries input.
 
 By default the wavelet `Wavelets.WT.Daubechies{12}()`
 is used. Otherwise, you may choose a wavelet from the `Wavelets` package
 (it must subtype `OrthoWaveletClass`).
 
-# Outcomes
+## Outcome space
 
-The outcomes `Ω` for `WaveletOverlap` are the integers `1, 2, …, N` enumerating the
-wavelet scales. Use [`probabilities_and_outcomes`](@ref) to obtain these together
-with the probabilities.
+The outcome space for `WaveletOverlap` are the integers `1, 2, …, N` enumerating the
+wavelet scales. To obtain a better understanding of what these mean, we
+prepared a notebook you can [view online](
+https://github.com/kahaaga/waveletentropy_example/blob/main/wavelet_entropy_example.ipynb).
+As such, this estimator only works for timeseries input.
 
 [^Rosso2001]:
     Rosso et al. (2001). Wavelet entropy: a new tool for analysis of short duration
@@ -34,9 +30,15 @@ struct WaveletOverlap{W<:Wavelets.WT.OrthoWaveletClass} <: ProbabilitiesEstimato
 end
 WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
 
-function probabilities(x, est::WaveletOverlap)
+function probabilities_and_outcomes(est::WaveletOverlap, x)
     @assert x isa AbstractVector{<:Real} "`WaveletOverlap` only works for timeseries input!"
-    Probabilities(time_scale_density(x, est.wl))
+    p = Probabilities(time_scale_density(x, est.wl))
+    return p, 1:length(p)
+end
+
+function outcome_space(x, ::WaveletOverlap)
+    nscales = Wavelets.WT.maxmodwttransformlevels(x)
+    return 1:nscales
 end
 
 function time_scale_density(x, wl::Wavelets.WT.OrthoWaveletClass)
@@ -61,4 +63,3 @@ function relative_wavelet_energies(W::AbstractMatrix)
 end
 
 energy_at_scale(W, j::Int) = sum(w*w for w in @view(W[:, j]))
-energy_at_time(W, t::Int) = sum(w*w for w in @view(W[t, :]))

@@ -1,3 +1,5 @@
+using Combinatorics: permutations
+
 export SymbolicPermutation
 
 """
@@ -17,11 +19,11 @@ embedding delay `τ` and dimension `m`, and then converted to a symbol time seri
 estimated. If applied to a `Dataset`, then `τ` and `m` are ignored, and probabilities are
 computed directly from the state vectors.
 
-## Outcomes
+## Outcome space
 
-The outcomes `Ω` for `SymbolicPermutation` is the set `{1, 2, …, factorial(m)}`,
-where each integer correspond to a unique ordinal pattern, but
-[`probabilities_and_outcomes`](@ref) is not yet implemented for this estimator.
+The outcome space `Ω` for `SymbolicPermutation` is the set of length-`m` ordinal
+patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`,
+ordered lexicographically. There are `factorial(m)` such patterns.
 
 ## In-place symbolization
 
@@ -38,15 +40,15 @@ est = SymbolicPermutation(; m, τ)
 # For a time series
 x_ts = rand(N)
 πs_ts = zeros(Int, N - (m - 1)*τ)
-p = probabilities!(πs_ts, x_ts, est)
-h = entropy!(πs_ts, Renyi(),  x_ts, est)
+p = probabilities!(πs_ts, est, x_ts)
+h = entropy!(πs_ts, Renyi(), est, x_ts)
 
 # For a pre-discretized `Dataset`
 x_symb = outcomes(x_ts, OrdinalPatternEncoding(m = 2, τ = 1))
 x_d = genembed(x_symb, (0, -1, -2))
 πs_d = zeros(Int, length(x_d))
-p = probabilities!(πs_d, x_d, est)
-h = entropy!(πs_d, Renyi(), x_d, est)
+p = probabilities!(πs_d, est, x_d)
+h = entropy!(πs_d, Renyi(), est, x_d)
 ```
 
 See [`SymbolicWeightedPermutation`](@ref) and [`SymbolicAmplitudeAwarePermutation`](@ref)
@@ -77,73 +79,78 @@ function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where
     SymbolicPermutation{F}(τ, m, lt)
 end
 
-function probabilities!(πs::AbstractVector{Int}, x::AbstractDataset{m, T}, est::SymbolicPermutation) where {m, T}
-    length(πs) == length(x) || throw(ArgumentError("Need length(πs) == length(x), got `length(πs)=$(length(πs))` and `length(x)==$(length(x))`."))
+function probabilities!(πs::AbstractVector{Int}, est::SymbolicPermutation, x::AbstractDataset{m, T}) where {m, T}
+    length(πs) == length(x) || throw(ArgumentError("Need length(πs) == length(x), got `length(πs)=$(length(πs))` and `length(x)==$(length(x))`."))
     m >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series embed it using `genembed` first.")
-
-    @inbounds for i in eachindex(x)
-        πs[i] = encode_motif(x[i], m)
-    end
-    probabilities(πs)
+    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
+    probabilities(outcomes!(πs, x, encoding))
 end
 
-function probabilities!(πs::AbstractVector{Int}, x::AbstractVector{T}, est::SymbolicPermutation) where {T<:Real}
-    L = length(x)
-    N = L - (est.m-1)*est.τ
+function probabilities!(πs::AbstractVector{Int}, est::SymbolicPermutation, x::AbstractVector{T}) where {T<:Real}
+    N = length(x) - (est.m - 1)*est.τ
     length(πs) == N || error("Pre-allocated symbol vector `πs` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(πs)=$(length(πs)) and length(x)=$(L).")
-
-    τs = tuple([est.τ*i for i = 0:est.m-1]...)
-    x_emb = genembed(x, τs)
-
-    probabilities!(πs, x_emb, est)
+    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
+    probabilities(outcomes!(πs, x, encoding))
 end
 
-function probabilities_and_outcomes(x::AbstractDataset{m, T},
-        est::SymbolicPermutation) where {m, T}
-    πs = zeros(Int, length(x))
-    probs = probabilities!(πs, x, est)
-    observed_outcomes = sort(unique(πs))
+function probabilities_and_outcomes(est::SymbolicPermutation, x::AbstractDataset{m, T}) where {m, T}
+    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
+    πs = outcomes(x, encoding)
+    probs = probabilities(πs)
 
-    probs, observed_outcomes
-end
-
-function probabilities_and_outcomes(x::AbstractVector{T},
-        est::SymbolicPermutation) where {T<:Real}
-    τs = tuple([est.τ*i for i = 0:est.m-1]...)
-    x_emb = genembed(x, τs)
-
-    # Create symbol vector and fill it.
-    πs = zeros(Int, length(x_emb))
-    probs = probabilities!(πs, x_emb, est)
-    observed_outcomes = sort(unique(πs))
+    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
+    # integer corresponds to a unique permutation. Decoding an integer gives the original
+    # permutation as a `SVector{m, Int}`.
+    observed_encodings = sort(unique(πs))
+    observed_outcomes = decode_motif.(observed_encodings, est.m)
 
     return probs, observed_outcomes
 end
 
-function entropy!(e::Entropy,
+function probabilities_and_outcomes(est::SymbolicPermutation, x::AbstractVector{T}) where {T<:Real}
+    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
+    πs = outcomes(x, encoding)
+    probs = probabilities(πs)
+
+    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
+    # integer corresponds to a unique permutation. Decoding an integer gives the original
+    # permutation as a `SVector{m, Int}`.
+    observed_encodings = sort(unique(πs))
+    observed_outcomes = decode_motif.(observed_encodings, est.m)
+
+    return probs, observed_outcomes
+end
+
+function entropy!(
     s::AbstractVector{Int},
-    x::AbstractDataset{m, T},
-    est::SymbolicPermutation;
+    e::Entropy,
+    est::SymbolicPermutation,
+    x::AbstractDataset{m, T};
     ) where {m, T}
 
     length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(πs)=$(length(πs)) and length(x)=$(L).")
-    ps = probabilities!(s, x, est)
+    ps = probabilities!(s, est, x)
 
     entropy(e, ps)
 end
 
-function entropy!(e::Entropy,
+function entropy!(
         s::AbstractVector{Int},
+        e::Entropy,
+        est::SymbolicPermutation,
         x::AbstractVector{T},
-        est::SymbolicPermutation
     ) where {T<:Real}
 
     L = length(x)
     N = L - (est.m-1)*est.τ
     length(s) == N || error("Pre-allocated symbol vector `s` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
 
-    ps = probabilities!(s, x, est)
+    ps = probabilities!(s, est, x)
     entropy(e, ps)
 end
 
+entropy!(s::AbstractVector{Int}, est::SymbolicPermutation, x) =
+    entropy!(s, Shannon(base = 2), est, x)
+
 total_outcomes(est::SymbolicPermutation)::Int = factorial(est.m)
+outcome_space(est::SymbolicPermutation) = permutations(1:est.m) |> collect
