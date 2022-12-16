@@ -50,7 +50,7 @@ end
 
 function downsample(method::Composite, s::Int, x::AbstractVector{T}, args...;
         kwargs...) where T
-    verify_scale_level(method, x, s)
+    verify_scale_level(method, s, x)
 
     f = method.f
     ET = eltype(one(1.0)) # always return floats, even if input is e.g. integer-valued
