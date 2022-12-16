@@ -72,7 +72,7 @@ nats for this distribution is `ln(1 - 0) = 0`.
 ```@example MAIN
 using Entropies
 using Statistics
-using Distributions
+using Distributions: Uniform
 using CairoMakie
 
 # Define estimators
