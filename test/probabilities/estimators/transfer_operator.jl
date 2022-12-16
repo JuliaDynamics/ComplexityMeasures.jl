@@ -1,3 +1,5 @@
+using StateSpaceSets: Dataset
+
 @test TransferOperator(RectangularBinning(3)) isa TransferOperator
 
 D = Dataset(rand(100, 2))
