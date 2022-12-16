@@ -24,6 +24,14 @@ using Random
             p = probabilities(est, x)
             @test length(p) == 100
             @test all(e -> 0.009 ≤ e ≤ 0.011, p)
+
+            p2, o = probabilities_and_outcomes(est, x)
+            @test p2 == p
+            @test o isa Vector{SVector{2, Float64}}
+            @test length(o) == length(p)
+            @test all(x -> x < 1, maximum(o))
+            o2 = outcomes(x, est)
+            @test o2 == o
         end
     end
 

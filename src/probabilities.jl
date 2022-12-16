@@ -42,7 +42,7 @@ Base.IteratorSize(::Probabilities) = Base.HasLength()
 @inline Base.sum(::Probabilities{T}) where T = one(T)
 
 """
-    ProbabilitiesEstimator
+ProbabilitiesEstimator
 The supertype for all probabilities estimators.
 
 In Entropies.jl, probability distributions are estimated from data by defining a set of
@@ -204,5 +204,5 @@ Equivalent with `probabilities_and_outcomes(x, est)[2]`, but for some estimators
 it may be explicitly extended for better performance.
 """
 function outcomes(x, est::ProbabilitiesEstimator)
-    return probabilities_and_outcomes(x, est)[2]
+    return probabilities_and_outcomes(est, x)[2]
 end
