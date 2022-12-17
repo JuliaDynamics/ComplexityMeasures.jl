@@ -30,7 +30,7 @@ using Random
             @test o isa Vector{SVector{2, Float64}}
             @test length(o) == length(p)
             @test all(x -> x < 1, maximum(o))
-            o2 = outcomes(x, est)
+            o2 = outcomes(est, x)
             @test o2 == o
         end
     end

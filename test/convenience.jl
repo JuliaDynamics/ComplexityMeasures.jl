@@ -26,7 +26,7 @@ import Statistics
     end
 end
 
-@testset "`probabilities` defaults to `CountOccurrences`" begin
+@testset "probabilities(x)" begin
     x = [1, 1, 2, 2, 3, 3]
-    @test probabilities(x) == probabilities(CountOccurrences(), x) == [1/3, 1/3, 1/3]
+    @test probabilities(x) == probabilities(CountOccurrences(x), x) == [1/3, 1/3, 1/3]
 end

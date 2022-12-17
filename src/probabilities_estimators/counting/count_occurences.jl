@@ -1,7 +1,7 @@
 export CountOccurrences
 
 """
-    CountOccurrences()
+    CountOccurrences(x)
 
 A probabilities/entropy estimator based on straight-forward counting of distinct elements in
 a univariate time series or multivariate dataset. This is the same as giving no
@@ -9,8 +9,11 @@ estimator to [`probabilities`](@ref).
 
 ## Outcome space
 The outcome space is the unique sorted values of the input.
+Hence, input `x` is needed for a well-defined outcome space.
 """
-struct CountOccurrences <: ProbabilitiesEstimator end
+struct CountOccurrences{X} <: ProbabilitiesEstimator
+    x::X
+end
 
 function probabilities_and_outcomes(::CountOccurrences, x::Array_or_Dataset)
     z = copy(x)
@@ -19,7 +22,7 @@ function probabilities_and_outcomes(::CountOccurrences, x::Array_or_Dataset)
     return probs, unique!(z)
 end
 
-outcome_space(x, ::CountOccurrences) = sort!(unique(x))
+outcome_space(est::CountOccurrences) = sort!(unique(est.x))
 
 probabilities(::CountOccurrences, x::Array_or_Dataset) = probabilities(x)
 function probabilities(x::Array_or_Dataset)
