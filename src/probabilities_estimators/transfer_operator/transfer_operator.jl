@@ -168,15 +168,18 @@ points that visits `bins[i]`.
 
 See also: [`RectangularBinning`](@ref).
 """
-struct TransferOperatorApproximationRectangular{T<:Real, E}
+struct TransferOperatorApproximationRectangular{
+        T<:Real,
+        BINNING <: RectangularBinning,
+        BINS,
+        E}
     transfermatrix::AbstractArray{T, 2}
-    binning::RectangularBinning
+    binning::BINNING
     encoder::E
-    bins
+    bins::BINS
     sort_idxs::Vector{Int}
     visitors::Vector{Vector{Int}}
 end
-# TODO: The above is type unstable!
 
 """
     transferoperator(pts::AbstractDataset,
@@ -273,10 +276,6 @@ function transferoperator(pts::AbstractDataset{D, T},
         # in after the forward linear map of the points.
         if n_visitsᵢ > 1
             timeindices_visiting_pts = visitors[i]
-
-            # TODO: Introduce circular boundary condition. Simply excluding
-            # might lead to a cascade of loosing points.
-
             # If bᵢ is the bin visited by the last point in the orbit, then
             # the last entry of `visiting_pts` will be the time index of the
             # last point of the orbit. In the next time step, that point will
