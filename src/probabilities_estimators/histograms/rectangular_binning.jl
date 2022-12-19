@@ -95,7 +95,7 @@ function Base.show(io::IO, x::RectangularBinEncoding)
     )
 end
 
-function encode(point, e::RectangularBinEncoding)
+function encode(e::RectangularBinEncoding, point)
     (; mini, edgelengths) = e
     # Map a data point to its bin edge (plus one because indexing starts from 1)
     bin = floor.(Int, (point .- mini) ./ edgelengths) .+ 1
@@ -110,7 +110,7 @@ function encode(point, e::RectangularBinEncoding)
     end
 end
 
-function decode(bin::Int, e::RectangularBinEncoding{B, D, T}) where {B, D, T}
+function decode(e::RectangularBinEncoding{B, D, T}, bin::Int) where {B, D, T}
     V = SVector{D,T}
     if checkbounds(Bool, e.ci, bin)
         @inbounds cartesian = e.ci[bin]
@@ -178,7 +178,7 @@ total_outcomes(e::RectangularBinEncoding) = prod(e.histsize)
 
 function outcome_space(e::RectangularBinEncoding)
     # this is super simple :P could be optimized but its not a frequent operation
-    return [decode(i, e) for i in 1:total_outcomes(e)]
+    return [decode(e, i) for i in 1:total_outcomes(e)]
 end
 
 ##################################################################
@@ -192,7 +192,7 @@ and returns the encoded space histogram (counts) and corresponding bins.
 Also skips any instances of out-of-bound points for the histogram.
 """
 function fasthist(encoder::RectangularBinEncoding, x)
-    bins = map(y -> encode(y, encoder), x)
+    bins = map(y -> encode(encoder, y), x)
     # We discard `-1`, as it encodes points outside the histogram limit
     # (which should only happen for `Fixed` binnings)
     discard_minus_ones!(bins)
