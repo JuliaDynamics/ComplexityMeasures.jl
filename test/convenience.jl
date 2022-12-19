@@ -1,17 +1,16 @@
 using Entropies
 using Test
-import Statistics
 
 @testset "Common literature names" begin
     x = randn(1000)
-    σ = 0.2*Statistics.std(x)
+    σ = 0.2
 
     @testset "Permutation entropy" begin
         @test entropy_permutation(x) == entropy(SymbolicPermutation(), x)
     end
 
     @testset "Wavelet entropy" begin
-        @test entropy_wavelet(x) == entropy(WaveletOverlap(), x)
+        @test entropy_wavelet(x) == entropy(WaveletOverlap(x), x)
     end
 
     @testset "Dispersion entropy" begin
@@ -26,7 +25,7 @@ import Statistics
     end
 end
 
-@testset "`probabilities` defaults to `CountOccurrences`" begin
+@testset "probabilities(x)" begin
     x = [1, 1, 2, 2, 3, 3]
-    @test probabilities(x) == probabilities(CountOccurrences(), x) == [1/3, 1/3, 1/3]
+    @test probabilities(x) == probabilities(CountOccurrences(x), x) == [1/3, 1/3, 1/3]
 end

@@ -7,7 +7,7 @@ abstract type HistogramEncoding <: Encoding end
 ##################################################################
 # Structs and docstrings
 ##################################################################
-# Notice that the binning types are intermediate structs that are NOT retained
+# Notice that the binning types are intermediate structs that are not used directly
 # in the source code. Their only purpose is instructions of how to create a
 # `RectangularBinEncoder`. All actual source code functionality of `ValueHistogram`
 # is implemented based on `RectangularBinEncoder`.
@@ -39,43 +39,34 @@ const ValidFixedBinInputs = Union{Number, NTuple}
 
 """
     FixedRectangularBinning <: AbstractBinning
-    FixedRectangularBinning(ϵmin::E, ϵmax::E, N::Int) where E
+    FixedRectangularBinning(ϵmin::NTuple, ϵmax::NTuple, N::Int)
 
 Rectangular box partition of state space where the extent of the grid is explicitly
 specified by `ϵmin` and `emax`, and along each dimension, the grid is subdivided into `N`
 subintervals. Points falling outside the partition do not attribute to probabilities.
+This binning type leads to a well-defined outcome space without knowledge of input,
+see [`ValueHistogram`](@ref).
 
-Binning instructions are deduced from the types of `ϵmin`/`emax` as follows:
+`ϵmin`/`emax` must be `NTuple{D, <:Real}` for input of `D`-dimensional data.
 
-1. `E<:Real` sets the grid range along all dimensions to to `[ϵmin, ϵmax]`.
-2. `E::NTuple{D, <:Real}` sets ranges along each dimension individually, i.e.
-    `[ϵmin[i], ϵmax[i]]` is the range along the `i`-th dimension.
+    FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N::Int, D::Int = 1)
 
-If the grid spans the range `[r1, r2]` along a particular dimension, then this range
-is subdivided into `N` subintervals of equal length `nextfloat((r2 - r1)/N)`.
-Thus, for `D`-dimensional data, there are `N^D` boxes.
-
-Generally it is preferred to use the second method (`E::NTuple{D, <:Real}`) which
-has a well defined outcome space irrespectively of input data.
+This is a convenience method where each dimension of the binning has the same extent
+and the input data are `D` dimensional, which defaults to 1 (timeseries).
 """
-struct FixedRectangularBinning{E} <: AbstractBinning
-    ϵmin::E
-    ϵmax::E
+struct FixedRectangularBinning{D,T<:Real} <: AbstractBinning
+    ϵmin::NTuple{D,T}
+    ϵmax::NTuple{D,T}
     N::Int
-
-    function FixedRectangularBinning(ϵmin::E1, ϵmax::E2, N::Int) where {E1 <: ValidFixedBinInputs, E2 <: ValidFixedBinInputs}
-        f_ϵmin = float.(ϵmin)
-        f_ϵmax = float.(ϵmax)
-        return new{typeof(f_ϵmin)}(f_ϵmin, f_ϵmax, N)
-    end
 end
-
-const Floating_or_Fixed_RectBinning = Union{RectangularBinning, FixedRectangularBinning}
+function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N::Int, D::Int = 1)
+    FixedRectangularBinning(ntuple(x->ϵmin, D), ntuple(x->ϵmax, D), N)
+end
 
 """
     RectangularBinEncoding <: Encoding
-    RectangularBinEncoding(x, binning::AbstractBinning)
-    RectangularBinEncoding(binning::FixedRectangularBinning{<:NTuple{D}})
+    RectangularBinEncoding(binning::RectangularBinning, x)
+    RectangularBinEncoding(binning::FixedRectangularBinning)
 
 Struct used in [`outcomes`](@ref) to map points of `x` into their respective bins.
 It finds the minima along each dimension, and computes appropriate
@@ -104,7 +95,7 @@ function Base.show(io::IO, x::RectangularBinEncoding)
     )
 end
 
-function encode(point, e::RectangularBinEncoding)
+function encode(e::RectangularBinEncoding, point)
     (; mini, edgelengths) = e
     # Map a data point to its bin edge (plus one because indexing starts from 1)
     bin = floor.(Int, (point .- mini) ./ edgelengths) .+ 1
@@ -119,7 +110,7 @@ function encode(point, e::RectangularBinEncoding)
     end
 end
 
-function decode(bin::Int, e::RectangularBinEncoding{B, D, T}) where {B, D, T}
+function decode(e::RectangularBinEncoding{B, D, T}, bin::Int) where {B, D, T}
     V = SVector{D,T}
     if checkbounds(Bool, e.ci, bin)
         @inbounds cartesian = e.ci[bin]
@@ -134,8 +125,9 @@ end
 ##################################################################
 # Initialization of encodings
 ##################################################################
+# TODO: Document `n_eps`
 # Data-controlled grid
-function RectangularBinEncoding(x, b::RectangularBinning; n_eps = 2)
+function RectangularBinEncoding(b::RectangularBinning, x; n_eps = 2)
     # This function always returns static vectors and is type stable
     D = dimension(x)
     T = eltype(x)
@@ -166,33 +158,17 @@ function RectangularBinEncoding(x, b::RectangularBinning; n_eps = 2)
 end
 
 # fixed grid
-function RectangularBinEncoding(x, b::FixedRectangularBinning{E}; n_eps = 2) where {E}
-    D = dimension(x)
-    T = eltype(x)
-    D ≠ length(E) && error("Dimension of data and fixed rectangular binning don't match!")
+function RectangularBinEncoding(b::FixedRectangularBinning{D, T}; n_eps = 2) where {D,T}
     # This function always returns static vectors and is type stable
     ϵmin, ϵmax = b.ϵmin, b.ϵmax
-    if E <: Real
-        mini = SVector{D, T}(repeat([ϵmin], D))
-        maxi = SVector{D, T}(repeat([ϵmax], D))
-    elseif E <: NTuple{D}
-        mini = SVector{D, T}(ϵmin)
-        maxi = SVector{D, T}(ϵmax)
-    else
-        error("Invalid ϵmin or ϵmax for binning of a dataset")
-    end
+    mini = SVector{D, T}(ϵmin)
+    maxi = SVector{D, T}(ϵmax)
     edgelengths_nonadjusted = @. (maxi .- mini) / b.N
     edgelengths = nextfloat.(edgelengths_nonadjusted, n_eps)
     histsize = SVector{D,Int}(fill(b.N, D))
     ci = CartesianIndices(Tuple(histsize))
     li = LinearIndices(ci)
-    RectangularBinEncoding(b, mini, edgelengths, histsize, ci, li)
-end
-
-# This version exists if the given `ϵ`s are already tuples.
-# Then, the dataset doesn't need to be provided.
-function RectangularBinEncoding(b::FixedRectangularBinning{<:NTuple{D,T}}; n_eps = 2) where {D,T}
-    return RectangularBinEncoding(Dataset{D,T}(), b; n_eps)
+    RectangularBinEncoding(b, typeof(edgelengths)(mini), edgelengths, histsize, ci, li)
 end
 
 ##################################################################
@@ -202,7 +178,7 @@ total_outcomes(e::RectangularBinEncoding) = prod(e.histsize)
 
 function outcome_space(e::RectangularBinEncoding)
     # this is super simple :P could be optimized but its not a frequent operation
-    return [decode(i, e) for i in 1:total_outcomes(e)]
+    return [decode(e, i) for i in 1:total_outcomes(e)]
 end
 
 ##################################################################
@@ -210,13 +186,13 @@ end
 ##################################################################
 # This method is called by `probabilities(est::ValueHistogram, x::Array_or_Dataset)`
 """
-    fasthist(x::Vector_or_Dataset, ϵ::RectangularBinEncoding)
+    fasthist(c::RectangularBinEncoding, x::Vector_or_Dataset)
 Intermediate method that runs `fasthist!` in the encoded space
 and returns the encoded space histogram (counts) and corresponding bins.
 Also skips any instances of out-of-bound points for the histogram.
 """
-function fasthist(x, encoder::RectangularBinEncoding)
-    bins = map(y -> encode(y, encoder), x)
+function fasthist(encoder::RectangularBinEncoding, x)
+    bins = map(y -> encode(encoder, y), x)
     # We discard `-1`, as it encodes points outside the histogram limit
     # (which should only happen for `Fixed` binnings)
     discard_minus_ones!(bins)

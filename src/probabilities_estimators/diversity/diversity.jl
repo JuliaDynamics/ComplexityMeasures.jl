@@ -7,7 +7,7 @@ export Diversity
 
 A [`ProbabilitiesEstimator`](@ref) based on the cosine similarity.
 It can be used with [`entropy`](@ref) to
-compute diversity entropy (Wang et al., 2020)[^Wang2020].
+compute the diversity entropy of an input timeseries[^Wang2020].
 
 The implementation here allows for `τ != 1`, which was not considered in the original paper.
 
@@ -26,12 +26,8 @@ Diversity probabilities are computed as follows.
 5. Sum-normalize the histogram to obtain probabilities.
 
 ## Outcome space
-The outcome space for `Diversity` is the bins of the `[-1, 1]` interval.
-The left side of each bin is returned in [`outcome_space`](@ref).
-
-- [`probabilities_and_outcomes`](@ref). Events are the corners of the cosine similarity bins.
-    Each bin has width `nextfloat(2 / nbins)`.
-- [`total_outcomes`](@ref). The total number of states is given by `nbins`.
+The outcome space for `Diversity` is the bins of the `[-1, 1]` interval,
+and the return configuration is the same as in [`ValueHistogram`](@ref) (left bin edge).
 
 [^Wang2020]:
     Wang, X., Si, S., & Li, Y. (2020). Multiscale diversity entropy: A novel
@@ -45,18 +41,18 @@ Base.@kwdef struct Diversity <: ProbabilitiesEstimator
 end
 
 function probabilities(est::Diversity, x::AbstractVector{T}) where T <: Real
-    ds, binning = similarities_and_binning(est, x)
-    return fasthist(ds, binning)[1]
+    ds, rbc = similarities_and_binning(est, x)
+    bins = fasthist(rbc, ds)[1]
+    return Probabilities(bins)
 end
 
 function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
-    ds, binning = similarities_and_binning(est, x)
-    return probabilities_and_outcomes(ValueHistogram(binning), ds)
+    ds, rbc = similarities_and_binning(est, x)
+    return probabilities_and_outcomes(ValueHistogram(rbc), ds)
 end
 
+outcome_space(est::Diversity) = outcome_space(binning_for_diversity(est))
 total_outcomes(est::Diversity) = est.nbins
-
-outcome_space(x, est::Diversity) = outcome_space(x, binning_for_diversity(est))
 
 function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T <: Real
     # embed and then calculate cosine similary for each consecutive pair of delay vectors
@@ -68,7 +64,8 @@ function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T 
     end
     # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval.
     binning = binning_for_diversity(est)
-    return ds, binning
+    rbc = RectangularBinEncoding(binning)
+    return ds, rbc
 end
 
 cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))

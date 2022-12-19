@@ -58,7 +58,7 @@ entropy(Shannon(base), est, x)
 See [`WaveletOverlap`](@ref) for more info.
 """
 function entropy_wavelet(x; wavelet = Wavelets.WT.Daubechies{12}(), base = 2)
-    est = WaveletOverlap(wavelet)
+    est = WaveletOverlap(x, wavelet)
     entropy(Shannon(; base), est, x)
 end
 

@@ -1,12 +1,13 @@
 export OrdinalPatternEncoding
+#TODO: The docstring here, and probably the source code, needs a full re-write
+# based on new `encode` interface.
 
 """
     OrdinalPatternEncoding <: Encoding
     OrdinalPatternEncoding(m = 3, τ = 1; lt = est.lt)
 
 A encoding scheme that converts the input time series to ordinal patterns, which are
-then encoded to integers using [`encode_motif`](@ref), used with
-[`outcomes`](@ref).
+then encoded to integers using [`encode`](@ref).
 
 !!! note
     `OrdinalPatternEncoding` is intended for symbolizing *time series*. If providing a short vector,

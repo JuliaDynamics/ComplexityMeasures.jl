@@ -32,17 +32,18 @@ function Probabilities(x::AbstractVector{<:Integer})
     return Probabilities(x ./ s, true)
 end
 
-
 # extend base Vector interface:
-for f in (:length, :size, :eachindex, :eltype,
+for f in (:length, :size, :eachindex, :eltype, :parent,
     :lastindex, :firstindex, :vec, :getindex, :iterate)
     @eval Base.$(f)(d::Probabilities, args...) = $(f)(d.p, args...)
 end
 Base.IteratorSize(::Probabilities) = Base.HasLength()
+# Special extension due to the rules of the API
 @inline Base.sum(::Probabilities{T}) where T = one(T)
 
 """
-ProbabilitiesEstimator
+    ProbabilitiesEstimator
+
 The supertype for all probabilities estimators.
 
 In Entropies.jl, probability distributions are estimated from data by defining a set of
@@ -65,6 +66,11 @@ _hashable_. This allows for conveniently tracking the probability of a specific 
 across experimental realizations, by using the outcome as a dictionary key and the
 probability as the value for that key (or, alternatively, the key remains the outcome
 and one has a vector of probabilities, one for each experimental realization).
+
+We have made the design decision that all probabilities estimators have a well defined
+outcome space when instantiated. For some estimators this means that the input data
+`x` must be provided both when instantiating the estimator, but also when computing
+the probabilities.
 
 All currently implemented probability estimators are:
 
@@ -110,13 +116,14 @@ function probabilities(est::ProbabilitiesEstimator, x)
 end
 
 """
-    probabilities_and_outcomes(x, est) → (probs, Ω::Vector)
+    probabilities_and_outcomes(est, x)
 
-Return `probs, Ω`, where `probs = probabilities(x, est)` and
-`Ω[i]` is the outcome with probability `probs[i]`.
-The element type of `Ω` depends on the estimator.
+Return `probs, outs`, where `probs = probabilities(x, est)` and
+`outs[i]` is the outcome with probability `probs[i]`.
+The element type of `outs` depends on the estimator.
+`outs` is a subset of the [`outcome_space`](@ref) of `est`.
 
-See also [`outcomes`](@ref), [`total_outcomes`](@ref), and [`outcome_space`](@ref).
+See also [`outcomes`](@ref), [`total_outcomes`](@ref).
 """
 function probabilities_and_outcomes(est::ProbabilitiesEstimator, x)
     error("`probabilities_and_outcomes` not implemented for estimator $(typeof(est)).")
@@ -136,73 +143,42 @@ function probabilities! end
 # Outcome space
 ###########################################################################################
 """
-    outcome_space([x,] est::ProbabilitiesEstimator) → Ω
+    outcome_space(est::ProbabilitiesEstimator) → Ω
 
-Return a container (typically `Vector`) containing all _possible_ outcomes of `est`,
-i.e., the outcome space `Ω`.
-Only possible for estimators that implement [`total_outcomes`](@ref),
-and similarly, for some estimators `x` is not needed. The _values_ of `x` are never needed;
-but some times the type and dimensional layout of `x` is.
+Return a container containing all _possible_ outcomes of `est`.
 """
-function outcome_space(x, est::ProbabilitiesEstimator)
-    outcome_space(est)
-end
 function outcome_space(est::ProbabilitiesEstimator)
-    error(
-        "`outcome_space(est)` not known/implemented for estimator $(typeof(est))."*
-        "Try providing some input data, e.g. `outcomes_space(x, est)`."*
-        "In some cases, this gives the dimensional layout/type information needed "*
-        "to define the outcome space."
-        )
+    error("`outcome_space` not implemented for estimator $(typeof(est)).")
 end
 
 """
-    total_outcomes([x::Array_or_Dataset,] est::ProbabilitiesEstimator) → Int
+    total_outcomes(est::ProbabilitiesEstimator)
 
-Return the size/cardinality of the outcome space ``\\Omega`` defined by the probabilities
-estimator `est` imposed on the input data `x`.
-
-For some estimators, the total number of outcomes is independent of `x`, in which case
-the input `x` is ignored and the method `total_outcomes(est)` is called. If the total
-number of states cannot be known a priori, an error is thrown. Primarily used in
-[`entropy_normalized`](@ref).
-
-## Examples
-
-```jldoctest setup = :(using Entropies)
-julia> est = SymbolicPermutation(m = 4);
-
-julia> total_outcomes(rand(42), est) # same as `factorial(m)` for any `x`
-24
-```
+Return the length (cardinality) of the outcome space ``\\Omega`` of `est`.
 """
-function total_outcomes(x, est::ProbabilitiesEstimator)
-    return length(outcome_space(x, est))
-end
+total_outcomes(est::ProbabilitiesEstimator) = length(outcome_space(est))
 
 """
-    missing_outcomes(x, est::ProbabilitiesEstimator) → n_missing::Int
+    missing_outcomes(est::ProbabilitiesEstimator, x) → n_missing::Int
 
 Estimate a probability distribution for `x` using the given estimator, then count the number
 of missing (i.e. zero-probability) outcomes.
 
-Works for estimators that implement [`total_outcomes`](@ref).
-
 See also: [`MissingDispersionPatterns`](@ref).
 """
-function missing_outcomes(x::Array_or_Dataset, est::ProbabilitiesEstimator)
+function missing_outcomes(est::ProbabilitiesEstimator, x::Array_or_Dataset)
     probs = probabilities(x, est)
-    L = total_outcomes(x, est)
+    L = total_outcomes(est)
     O = count(!iszero, probs)
     return L - O
 end
 
 """
-    outcomes(x, est::ProbabilitiesEstimator)
+    outcomes(est::ProbabilitiesEstimator, x)
 Return all (unique) outcomes contained in `x` according to the given estimator.
 Equivalent with `probabilities_and_outcomes(x, est)[2]`, but for some estimators
 it may be explicitly extended for better performance.
 """
-function outcomes(x, est::ProbabilitiesEstimator)
+function outcomes(est::ProbabilitiesEstimator, x)
     return probabilities_and_outcomes(est, x)[2]
 end
