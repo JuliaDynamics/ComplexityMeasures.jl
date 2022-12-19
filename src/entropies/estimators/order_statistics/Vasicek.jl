@@ -4,7 +4,7 @@ export Vasicek
     Vasicek <: EntropyEstimator
     Vasicek(; m::Int = 1, base = 2)
 
-The `Vasicek` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
+The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
 (a multi-dimensional `Dataset`) to the given `base` using the method from
 Vasicek (1976)[^Vasicek1976].
 

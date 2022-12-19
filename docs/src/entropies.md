@@ -2,62 +2,80 @@
 
 ```@docs
 entropy
-entropy!
+Entropy
 ```
 
-## Rényi (generalized) entropy
-
-```@docs
-Renyi
-```
-
-## Tsallis (generalized) entropy
-
-```@docs
-Tsallis
-```
-
-## Shannon entropy (convenience)
+## Generalized entropies
 
 ```@docs
 Shannon
-```
-
-## Curado entropy
-
-```@docs
+Renyi
+Tsallis
 Curado
-```
-
-## Stretched exponental entropy
-
-```@docs
 StretchedExponential
 ```
 
-## Normalized entropies
+## Implementations
+
+### Discrete entropies
+
+Discrete entropies are just simple functions (sums, actually) of
+probability mass functions [(pmf)](https://en.wikipedia.org/wiki/Probability_mass_function),
+which you can estimate using [`ProbabilitiesEstimator`](@ref)s.
+
+Any [`ProbabilitiesEstimator`](@ref) may therefore be used as a naive plug-in estimator
+for discrete [`entropy`](@ref). No bias correction is currently applied to any of the
+discrete estimators.
+
+Tables scroll sideways, so are best viewed on a large screen.
+
+| Estimator                                   | Principle                   | Input data          | [`Shannon`](@ref) | [`Renyi`](@ref) | [`Tsallis`](@ref) | [`Curado`](@ref) | [`StretchedExponential`](@ref) |
+| ------------------------------------------- | --------------------------- | ------------------- | :---------------: | :-------------: | :---------------: | :--------------: | :----------------------------: |
+| [`CountOccurrences`](@ref)                  | Frequencies                 | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`LocalLikelihood`](@ref)                   | Local likelihood Estimation | `Dataset`           |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`Dispersion`](@ref)                        | Dispersion patterns         | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`Diversity`](@ref)                         | Cosine similarity           | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+
+### Continuous/differential entropies
+
+The following estimators are *differential* entropy estimators, and can also be used
+with [`entropy`](@ref). Differential) entropies are functions of *integrals*, and usually
+rely on estimating some density functional.
+
+Each [`EntropyEstimator`](@ref)s uses a specialized technique to approximating relevant
+densitie/integrals, and is often tailored to one or a few types of generalized entropy.
+For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy, while
+[`LeonenkoProzantoSavani`](@ref) estimates [`Shannon`](@ref), [`Renyi`](@ref), and
+[`Tsallis`](@ref) entropies.
+
+| Estimator                    | Principle         | Input data | [`Shannon`](@ref) | [`Renyi`](@ref) | [`Tsallis`](@ref) | [`Curado`](@ref) | [`StretchedExponential`](@ref) |
+| ---------------------------- | ----------------- | ---------- | :---------------: | :-------------: | :---------------: | :--------------: | :----------------------------: |
+| [`KozachenkoLeonenko`](@ref) | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |        x         |               x                |
+| [`Kraskov`](@ref)            | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |        x         |               x                |
+| [`Zhu`](@ref)                | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |        x         |               x                |
+| [`ZhuSingh`](@ref)           | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |        x         |               x                |
+| [`Vasicek`](@ref)            | Order statistics  | `Vector`   |        ✅         |        x        |         x         |        x         |               x                |
+| [`Ebrahimi`](@ref)           | Order statistics  | `Vector`   |        ✅         |        x        |         x         |        x         |               x                |
+| [`Correa`](@ref)             | Order statistics  | `Vector`   |        ✅         |        x        |         x         |        x         |               x                |
+| [`AlizadehArghami`](@ref)    | Order statistics  | `Vector`   |        ✅         |        x        |         x         |        x         |               x                |
 
 ```@docs
-entropy_maximum
-entropy_normalized
+EntropyEstimator
 ```
-
-## Indirect entropies
-
-Here we list functions which compute Shannon entropies via alternate means, without explicitly computing some probability distributions and then using the Shannon formula.
-
-### Nearest neighbors entropy
 
 ```@docs
 Kraskov
 KozachenkoLeonenko
 Zhu
 ZhuSingh
-```
-
-### Order statistics entropy
-
-```@docs
 Vasicek
 AlizadehArghami
 Ebrahimi

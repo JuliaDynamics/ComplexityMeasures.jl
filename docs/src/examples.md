@@ -1,6 +1,6 @@
 # Entropies.jl Examples
 
-## Indirect entropy (nearest neighbors)
+## Differential entropy (nearest neighbors)
 
 Here, we reproduce Figure 1 in Charzyńska & Gambin (2016)[^Charzyńska2016]. Their example
 demonstrates how the [`Kraskov`](@ref) and [`KozachenkoLeonenko`](@ref) nearest neighbor
@@ -22,10 +22,10 @@ w = 0 # Theiler window of 0 (only exclude the point itself during neighbor searc
 estimators = [
     # with k = 1, Kraskov is virtually identical to
     # Kozachenko-Leonenko, so pick a higher number of neighbors for Kraskov
-    Kraskov(; k = 3, w, base),
-    KozachenkoLeonenko(; w, base),
-    Zhu(; k = 3, w, base),
-    ZhuSingh(; k = 3, w, base),
+    Kraskov(; k = 3, w),
+    KozachenkoLeonenko(; w),
+    Zhu(; k = 3, w),
+    ZhuSingh(; k = 3, w),
 ]
 labels = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh"]
 
@@ -57,7 +57,7 @@ end
 fig
 ```
 
-## Indirect entropy (order statistics)
+## Differential entropy (order statistics)
 
 Entropies.jl also provides entropy estimators based on
 [order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators

@@ -4,9 +4,9 @@ export AlizadehArghami
     AlizadehArghami <: EntropyEstimator
     AlizadehArghami(; m::Int = 1, base = 2)
 
-The `AlizadehArghami`estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) to the given `base` using the method from Alizadeh & Arghami
-(2010)[^Alizadeh2010].
+The `AlizadehArghami`estimator computes the [`Shannon`](@ref) differential
+[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) to the given `base` using the
+method from Alizadeh & Arghami (2010)[^Alizadeh2010].
 
 ## Description
 

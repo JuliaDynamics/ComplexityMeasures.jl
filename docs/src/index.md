@@ -38,13 +38,14 @@ Thus, any of the implemented [probabilities estimators](@ref probabilities_estim
 !!! tip "There aren't many entropies, really."
     A crucial thing to clarify is that many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are new probabilities estimators. They simply devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probabilities estimators are smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
 
-    These names are common place, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
+    These names are commonplace, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
 
     In addition to `ProbabilitiesEstimators`, we also provide [`EntropyEstimator`](@ref)s, 
     which compute entropies via alternate means, without explicitly computing some 
-    probability distribution. For example, [`Kraskov`](@ref) estimator computes Shannon 
-    entropy via a nearest neighbor algorithm, while the [`Zhu`](@ref) estimator computes
-    Shannon entropy using order statistics.
+    probability distribution. Differential/continuous entropy, for example, is computed
+    using a dedicated [`EntropyEstimator`](@ref). For example, the [`Kraskov`](@ref) 
+    estimator computes Shannon differential entropy via a nearest neighbor algorithm, while 
+    the [`Zhu`](@ref) estimator computes Shannon differential entropy using order statistics.
 
 ### Other complexity measures
 
