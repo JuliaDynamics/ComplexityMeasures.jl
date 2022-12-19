@@ -1,4 +1,3 @@
-# TODO: This needs its own docpage I feel.
 using DelayEmbeddings, SparseArrays
 using StaticArrays
 
