@@ -60,8 +60,8 @@ abstract type EntropyEstimator <: AbstractEntropy end
     entropy([e::Entropy,] est::ProbabilitiesEstimator, x)
     entropy([e::Entropy,] est::EntropyEstimator, x)
 
-Compute `h`, with `h::Real ∈ [0, ∞)`, which is
-a (generalized) [`Entropy`](@ref) of type `e`, in one of three ways:
+Compute `h::Real`, which is
+a (generalized) entropy defined by `e`, in one of three ways:
 
 1. Directly from existing [`Probabilities`](@ref) `probs`.
 2. From input data `x`, by first estimating a probability distribution using the provided
