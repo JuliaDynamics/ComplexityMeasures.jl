@@ -4,7 +4,7 @@ include("rectangular_binning.jl")
 include("fasthist.jl")
 
 """
-    ValueHistogram(x, b::AbstractBinning) <: ProbabilitiesEstimator
+    ValueHistogram(x, b::RectangularBinning) <: ProbabilitiesEstimator
     ValueHistogram(b::FixedRectangularBinning) <: ProbabilitiesEstimator
 
 A probability estimator based on binning the values of the data as dictated by
@@ -42,8 +42,8 @@ struct ValueHistogram{H<:HistogramEncoding} <: ProbabilitiesEstimator
     encoding::H
 end
 ValueHistogram(x, ϵ::Union{Real,Vector}) = ValueHistogram(x, RectangularBinning(ϵ))
-function ValueHistogram(x, b::AbstractBinning)
-    encoding = RectangularBinEncoding(x, b)
+function ValueHistogram(x, b::RectangularBinning)
+    encoding = RectangularBinEncoding(b, x)
     return ValueHistogram(encoding)
 end
 function ValueHistogram(b::FixedRectangularBinning)

@@ -158,7 +158,7 @@ function RectangularBinEncoding(b::RectangularBinning, x; n_eps = 2)
 end
 
 # fixed grid
-function RectangularBinEncoding(b::FixedRectangularBinning{D,T}; n_eps = 2) where {D,T}
+function RectangularBinEncoding(b::FixedRectangularBinning{D, T}; n_eps = 2) where {D,T}
     # This function always returns static vectors and is type stable
     ϵmin, ϵmax = b.ϵmin, b.ϵmax
     mini = SVector{D, T}(ϵmin)
@@ -168,7 +168,7 @@ function RectangularBinEncoding(b::FixedRectangularBinning{D,T}; n_eps = 2) wher
     histsize = SVector{D,Int}(fill(b.N, D))
     ci = CartesianIndices(Tuple(histsize))
     li = LinearIndices(ci)
-    RectangularBinEncoding(b, mini, edgelengths, histsize, ci, li)
+    RectangularBinEncoding(b, typeof(edgelengths)(mini), edgelengths, histsize, ci, li)
 end
 
 ##################################################################

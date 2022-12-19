@@ -63,15 +63,42 @@ using Random
         x2 = [0.4125754262679051, 0.52844411982339560, 0.4535277505543355, 0.25502420827802674, 0.77862522996085940, 0.6081939026664078, 0.2628674795466387, 0.18846258495465185, 0.93320375283233840, 0.40093871561247874, 0.8032730760974603, 0.3531608285217499, 0.018436525139752136, 0.55541857934068420, 0.9907521337888632, 0.15382361136212420, 0.01774321666660561, 0.67569337507728300, 0.06130971689608822, 0.31417161558476836]
         N = 10
         b = RectangularBinning(N)
-        rb1 = RectangularBinEncoding(x1, b, n_eps = 1)
-        rb2 = RectangularBinEncoding(x1, b, n_eps = 2)
+        rb1 = RectangularBinEncoding(b, x1; n_eps = 1)
+        rb2 = RectangularBinEncoding(b, x1; n_eps = 2)
         @test encode(maximum(x1), rb1) == -1 # shouldn't occur, but does when tolerance is too low
         @test encode(maximum(x1), rb2) == 10
 
-        rb1 = RectangularBinEncoding(x2, b, n_eps = 1)
-        rb2 = RectangularBinEncoding(x2, b, n_eps = 2)
+        rb1 = RectangularBinEncoding(b, x2; n_eps = 1)
+        rb2 = RectangularBinEncoding(b, x2; n_eps = 2)
         @test encode(maximum(x2), rb1) == -1 # shouldn't occur, but does when tolerance is too low
         @test encode(maximum(x2), rb2) == 10
     end
+
+end
+
+
+@testset "Fixed Rectangular binning" begin
+
+    x = Dataset(rand(Random.MersenneTwister(1234), 100_000, 2))
+    push!(x, SVector(0, 0)) # ensure both 0 and 1 have values in, exactly.
+    push!(x, SVector(1, 1))
+    # All these binnings should give approximately same probabilities
+    n = 10 # boxes cover 0 - 1 in steps of slightly more than 0.1
+    ε = nextfloat(0.1, 2) # this guarantees that we get the same as the `n` above!
+
+    bin = FixedRectangularBinning(0, 1, n, 2)
+
+    est = ValueHistogram(bin)
+    p = probabilities(est, x)
+    @test length(p) == 100
+    @test all(e -> 0.009 ≤ e ≤ 0.011, p)
+
+    p2, o = probabilities_and_outcomes(est, x)
+    @test p2 == p
+    @test o isa Vector{SVector{2, Float64}}
+    @test length(o) == length(p)
+    @test all(x -> x < 1, maximum(o))
+    o2 = outcomes(est, x)
+    @test o2 == o
 
 end
