@@ -214,10 +214,7 @@ function transferoperator(pts::AbstractDataset{D, T},
     # here as cartesian coordinates, not absolute bins):
     visited_bins = map(pᵢ -> encode_as_bin(pᵢ, encoder), pts)
     sort_idxs = sortperm(visited_bins)
-
-    # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
-    # For now, bins are sorted after order of first appearance according to the input `pts`.
-    #sort!(visited_bins)
+    #sort!(visited_bins) # see todo on github
 
     # There are N=length(unique(visited_bins)) unique bins.
     # Which of the unqiue bins does each of the L points visit?
