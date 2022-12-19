@@ -42,7 +42,8 @@ end
 
 function probabilities(est::Diversity, x::AbstractVector{T}) where T <: Real
     ds, rbc = similarities_and_binning(est, x)
-    return fasthist(rbc, ds)[1]
+    bins = fasthist(rbc, ds)[1]
+    return Probabilities(bins)
 end
 
 function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
@@ -69,4 +70,4 @@ end
 
 cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
 
-binning_for_diversity(est::Diversity) = FixedRectangularBinning((-1.0,), (1.0,), est.nbins)
+binning_for_diversity(est::Diversity) = FixedRectangularBinning(-1.0, 1.0, est.nbins)

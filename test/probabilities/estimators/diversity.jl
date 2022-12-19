@@ -1,3 +1,5 @@
+using Entropies, Test
+
 # Analytical example from Wang et al. (2020)
 x = [1, 2, 13, 7, 9, 5, 4]
 nbins = 10
@@ -22,5 +24,5 @@ bins = floor.(Int, (ds .- (-1.0)) / binsize)
 
 # The coordinates corresponding to the left corners of these bins are as
 # follows, and should correspond with the events.
-coords = ((bins .- 1) .* binsize) .+ (-1.0)
-@test all(round.(events, digits = 13) == round.(unique(coords), digits = 13))
+coords = (bins .* binsize) .+ (-1.0)
+@test all(round.(only.(events), digits = 13) == round.(unique(coords), digits = 13))
