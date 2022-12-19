@@ -4,10 +4,10 @@ export KozachenkoLeonenko
     KozachenkoLeonenko <: EntropyEstimator
     KozachenkoLeonenko(; k::Int = 1, w::Int = 1, base = 2)
 
-The `KozachenkoLeonenko` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) to the given `base`, based on nearest neighbor searches
-using the method from Kozachenko & Leonenko (1987)[^KozachenkoLeonenko1987], as described in
-Charzyńska and Gambin[^Charzyńska2016].
+The `KozachenkoLeonenko` estimator computes the [`Shannon`](@ref) differential
+[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) to the given `base`, based on
+nearest neighbor searches using the method from Kozachenko & Leonenko
+(1987)[^KozachenkoLeonenko1987], as described in Charzyńska and Gambin[^Charzyńska2016].
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded

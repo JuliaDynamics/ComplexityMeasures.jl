@@ -46,8 +46,9 @@ explicitly estimating a probability distribution. Currently implemented estimato
 - [`Correa`](@ref)
 - [`AlizadehArghami`](@ref)
 
-For example, [`entropy`](@ref)`(Shannon(), Kraskov(), x)` computes the Shannon entropy
-of the input data `x` using the [`Kraskov`](@ref) `k`-th nearest neighbor estimator.
+For example, [`entropy`](@ref)`(Shannon(), Kraskov(), x)` computes the Shannon
+differential entropy of the input data `x` using the [`Kraskov`](@ref) `k`-th nearest
+neighbor estimator.
 """
 abstract type EntropyEstimator <: AbstractEntropy end
 

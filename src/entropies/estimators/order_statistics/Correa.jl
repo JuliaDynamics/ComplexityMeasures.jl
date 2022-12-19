@@ -4,7 +4,7 @@ export Correa
     Correa <: EntropyEstimator
     Correa(; m::Int = 1, base = 2)
 
-The `Correa` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
+The `Correa` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
 (a multi-dimensional `Dataset`) to the given `base` using the method from
 Correa (1995)[^Correa1995].
 

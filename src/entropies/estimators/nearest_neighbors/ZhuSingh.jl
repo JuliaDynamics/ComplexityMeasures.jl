@@ -10,7 +10,7 @@ export ZhuSingh
     ZhuSingh(k = 1, w = 0)
 
 The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
-[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`).
+differential [`entropy`](@ref) of `x` (a multi-dimensional `Dataset`).
 
 Like [`Zhu`](@ref), this estimator approximates probabilities within hyperrectangles
 surrounding each point `xᵢ ∈ x` using using `k` nearest neighbor searches. However,
