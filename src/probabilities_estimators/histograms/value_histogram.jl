@@ -41,7 +41,7 @@ See also: [`RectangularBinning`](@ref).
 struct ValueHistogram{H<:HistogramEncoding} <: ProbabilitiesEstimator
     encoding::H
 end
-ValueHistogram(ϵ::Union{Real,Vector}) = ValueHistogram(RectangularBinning(ϵ))
+ValueHistogram(x, ϵ::Union{Real,Vector}) = ValueHistogram(x, RectangularBinning(ϵ))
 function ValueHistogram(x, b::AbstractBinning)
     encoding = RectangularBinEncoding(x, b)
     return ValueHistogram(encoding)
@@ -63,7 +63,7 @@ const VisitationFrequency = ValueHistogram
 # the underlying encoding and the `fasthist` function and extensions.
 # See the `rectangular_binning.jl` file for more.
 function probabilities(est::ValueHistogram, x)
-    Probabilities(fasthist(x, est.encoding)[1])
+    Probabilities(fasthist(est.encoding, x)[1])
 end
 
 function probabilities_and_outcomes(est::ValueHistogram, x)
@@ -74,5 +74,4 @@ function probabilities_and_outcomes(est::ValueHistogram, x)
     return Probabilities(probs), vec(outcomes)
 end
 
-outcome_space(x, est::ValueHistogram) = outcome_space(est.encoding)
-total_outcomes(x, est::ValueHistogram) = total_outcomes(est.encoding)
+outcome_space(est::ValueHistogram) = outcome_space(est.encoding)

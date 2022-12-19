@@ -17,16 +17,16 @@ Current available encodings are:
 abstract type Encoding end
 
 """
-    encode(χ, e::Encoding) -> i::Int
+    encode(χ, c::Encoding) -> i::Int
 Encoding an element `χ ∈ x` of input data `x` (those given to [`probabilities`](@ref))
-using encoding `e`. The special value of `-1` is reserved as a return value for
+using encoding `c`. The special value of `-1` is reserved as a return value for
 inappropriate elements `χ` that cannot be encoded according to `e`.
 """
 function encode end
 
 """
-    decode(i::Int, e::Encoding) -> ω
+    decode(i::Int, c::Encoding) -> ω
 Decode an encoded element `i::Int` into the outcome it corresponds to `ω ∈ Ω`.
-`Ω` is the [`outcome_space`](@ref) of a probabilities estimator that uses encoding `e`.
+`Ω` is the [`outcome_space`](@ref) of a probabilities estimator that uses encoding `c`.
 """
 function decode end

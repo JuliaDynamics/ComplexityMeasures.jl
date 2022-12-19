@@ -118,11 +118,11 @@ function probabilities_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
     return Probabilities(hist), dispersion_patterns
 end
 
-total_outcomes(est::Dispersion)::Int = est.encoding.c ^ est.m
-
 function outcome_space(est::Dispersion)
     c, m = 1:est.encoding.c, est.m
     cart = CartesianIndices(ntuple(i -> c, m))
     V = SVector{m, Int}
     return map(i -> V(Tuple(i)), vec(cart))
 end
+# Performance extension
+total_outcomes(est::Dispersion)::Int = total_outcomes(est.encoding) ^ est.m
