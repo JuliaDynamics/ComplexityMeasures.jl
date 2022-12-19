@@ -20,6 +20,24 @@ total_outcomes
 missing_outcomes
 ```
 
+## Overview
+
+Any of the following estimators can be used with [`probabilities`](@ref).
+
+| Estimator                                   | Principle                   | Input data          |
+| ------------------------------------------- | --------------------------- | ------------------- |
+| [`CountOccurrences`](@ref)                  | Frequencies                 | `Vector`, `Dataset` |
+| [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |
+| [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |
+| [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |
+| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`            |
+| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`            |
+| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`            |
+| [`Dispersion`](@ref)                        | Dispersion patterns         | `Vector`            |
+| [`Diversity`](@ref)                         | Cosine similarity           | `Vector`            |
+| [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |
+| [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |
+
 ## Count occurrences (counting)
 
 ```@docs
