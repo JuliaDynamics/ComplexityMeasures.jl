@@ -71,7 +71,8 @@ a (generalized) entropy defined by `e`, in one of three ways:
 3. From input data `x`, by using a dedicated [`EntropyEstimator`](@ref) that computes
    entropy in a way that doesn't involve explicitly computing probabilities first.
 
-The entropy (first argument) is optional. When `est` is a probability estimator,
+The entropy definition (first argument) is optional.
+When `est` is a probability estimator,
 `Shannon()` is used by default. When `est` is a dedicated entropy estimator,
 the default entropy type is inferred from the estimator (e.g. [`Kraskov`](@ref)
 estimates the [`Shannon`](@ref) entropy).

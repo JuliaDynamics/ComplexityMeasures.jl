@@ -210,12 +210,12 @@ end
 ##################################################################
 # This method is called by `probabilities(est::ValueHistogram, x::Array_or_Dataset)`
 """
-    fasthist(x::Vector_or_Dataset, ϵ::RectangularBinEncoding)
+    fasthist(c::RectangularBinEncoding, x::Vector_or_Dataset)
 Intermediate method that runs `fasthist!` in the encoded space
 and returns the encoded space histogram (counts) and corresponding bins.
 Also skips any instances of out-of-bound points for the histogram.
 """
-function fasthist(x, encoder::RectangularBinEncoding)
+function fasthist(encoder::RectangularBinEncoding, x)
     bins = map(y -> encode(y, encoder), x)
     # We discard `-1`, as it encodes points outside the histogram limit
     # (which should only happen for `Fixed` binnings)
