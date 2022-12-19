@@ -7,12 +7,12 @@ using Entropies, Test
     x = sin.(t .+  cos.(t/0.1)) .- 0.1;
 
     @testset "WaveletOverlap" begin
-        wl = Entropies.Wavelets.WT.Daubechies{4}()
+        wl = Entropies.Wavelets.WT.Daubechies{4}(x)
         est = WaveletOverlap(wl)
         ps = probabilities(est, x)
         @test length(ps) == 8
         @test ps isa Probabilities
-        @test entropy(Renyi( q = 1, base = 2), WaveletOverlap(), x) isa Real
+        @test entropy(Renyi( q = 1, base = 2), WaveletOverlap(x), x) isa Real
     end
 
     @testset "Fourier Spectrum" begin
