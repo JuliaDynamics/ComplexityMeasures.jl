@@ -7,8 +7,8 @@ using Entropies, Test
     x = sin.(t .+  cos.(t/0.1)) .- 0.1;
 
     @testset "WaveletOverlap" begin
-        wl = Entropies.Wavelets.WT.Daubechies{4}(x)
-        est = WaveletOverlap(wl)
+        wl = Entropies.Wavelets.WT.Daubechies{4}()
+        est = WaveletOverlap(x, wl)
         ps = probabilities(est, x)
         @test length(ps) == 8
         @test ps isa Probabilities
