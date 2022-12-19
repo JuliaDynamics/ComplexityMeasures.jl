@@ -67,6 +67,11 @@ across experimental realizations, by using the outcome as a dictionary key and t
 probability as the value for that key (or, alternatively, the key remains the outcome
 and one has a vector of probabilities, one for each experimental realization).
 
+We have made the design decision that all probabilities estimators have a well defined
+outcome space when instantiated. For some estimators this means that the input data
+`x` must be provided both when instantiating the estimator, but also when computing
+the probabilities.
+
 All currently implemented probability estimators are:
 
 - [`CountOccurrences`](@ref).

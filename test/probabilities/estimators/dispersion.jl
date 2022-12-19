@@ -1,4 +1,6 @@
-using Entropies, Test
+using Entropies
+using Test
+import DelayEmbeddings
 
 @testset "Dispersion" begin
 
@@ -12,7 +14,7 @@ using Entropies, Test
         s = GaussianCDFEncoding(c)
 
         # Symbols should be in the set [1, 2, …, c].
-        symbols = Entropies.outcomes(x, s)
+        symbols = outcomes(x, s)
         @test all([s ∈ collect(1:c) for s in symbols])
 
         # Dispersion patterns should have a normalized histogram that sums to 1.0.

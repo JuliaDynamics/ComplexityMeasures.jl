@@ -152,20 +152,16 @@ entropy(est::EntropyEstimator, x; base = 2) = entropy(Shannon(; base), est, x)
 # Normalize API
 ###########################################################################################
 """
-    entropy_maximum(e::Entropy, est::ProbabilitiesEstimator, x) → m::Real
+    entropy_maximum(e::Entropy, est::ProbabilitiesEstimator) → m::Real
 
-Return the maximum value `m` of the given entropy type based on the given estimator
-and the given input `x` (whose values are not important, but layout and type are).
-
-This function only works if the maximum value is deducable, which is possible only
-when the estimator has a known [`total_outcomes`](@ref).
+Return the maximum value `m` of the given entropy definition based on the given estimator.
 
     entropy_maximum(e::Entropy, L::Int) → m::Real
 
 Alternatively, compute the maximum entropy from the number of total outcomes `L` directly.
 """
-function entropy_maximum(e::Entropy, est::ProbabilitiesEstimator, x)
-    L = total_outcomes(x, est)
+function entropy_maximum(e::Entropy, est::ProbabilitiesEstimator)
+    L = total_outcomes(est)
     return entropy_maximum(e, L)
 end
 function entropy_maximum(e::Entropy, ::Int)
@@ -184,7 +180,7 @@ Notice that unlike for [`entropy`](@ref), here there is no method
 the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs`.
 """
 function entropy_normalized(e::Entropy, est::ProbabilitiesEstimator, x)
-    return entropy(e, est, x) / entropy_maximum(e, est, x)
+    return entropy(e, est, x) / entropy_maximum(e, est)
 end
 function entropy_normalized(est::ProbabilitiesEstimator, x::Array_or_Dataset)
     return entropy_normalized(Shannon(), est, x)

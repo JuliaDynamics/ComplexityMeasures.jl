@@ -41,13 +41,13 @@ Base.@kwdef struct Diversity <: ProbabilitiesEstimator
 end
 
 function probabilities(est::Diversity, x::AbstractVector{T}) where T <: Real
-    ds, binning = similarities_and_binning(est, x)
-    return fasthist(ds, binning)[1]
+    ds, rbc = similarities_and_binning(est, x)
+    return fasthist(rbc, ds)[1]
 end
 
 function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
-    ds, binning = similarities_and_binning(est, x)
-    return probabilities_and_outcomes(ValueHistogram(binning), ds)
+    ds, rbc = similarities_and_binning(est, x)
+    return probabilities_and_outcomes(ValueHistogram(rbc), ds)
 end
 
 outcome_space(est::Diversity) = outcome_space(binning_for_diversity(est))
@@ -63,9 +63,10 @@ function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T 
     end
     # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval.
     binning = binning_for_diversity(est)
-    return ds, binning
+    rbc = RectangularBinEncoding(binning)
+    return ds, rbc
 end
 
 cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
 
-binning_for_diversity(est::Diversity) = FixedRectangularBinning(-1.0, 1.0, est.nbins)
+binning_for_diversity(est::Diversity) = FixedRectangularBinning((-1.0,), (1.0,), est.nbins)
