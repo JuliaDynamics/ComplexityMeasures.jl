@@ -87,9 +87,10 @@ struct SpatialSymbolicPermutation{D,P,V} <: ProbabilitiesEstimator
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
     valid::V
+    lt::Function
 end
 function SpatialSymbolicPermutation(
-        stencil, x::AbstractArray, p::Bool = true
+        stencil, x::AbstractArray, p::Bool = true; lt = isless_rand,
     )
     arraysize = size(x)
     stencil, D = stencil_to_offsets(stencil)
@@ -107,7 +108,7 @@ function SpatialSymbolicPermutation(
         )
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
-    SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid)
+    SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid, lt)
 end
 
 # get stencil in the form of vectors of cartesian indices from either input type
@@ -144,10 +145,10 @@ function probabilities(est::SpatialSymbolicPermutation, x::AbstractArray)
 end
 
 function probabilities!(s, est::SpatialSymbolicPermutation, x)
-    m = length(est.stencil)
+    encoding = OrdinalPatternEncoding(; m = length(est.stencil), lt = est.lt)
     for (i, pixel) in enumerate(est.valid)
         pixels = pixels_in_stencil(pixel, est)
-        s[i] = encode_motif(view(x, pixels), m)
+        s[i] = encode(encoding, view(x, pixels))
     end
     return probabilities(s)
 end

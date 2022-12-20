@@ -65,8 +65,8 @@ end
 
 """
     RectangularBinEncoding <: Encoding
-    RectangularBinEncoding(binning::RectangularBinning, x)
-    RectangularBinEncoding(binning::FixedRectangularBinning)
+    RectangularBinEncoding(binning::RectangularBinning, x; n_eps = 2)
+    RectangularBinEncoding(binning::FixedRectangularBinning; n_eps = 2)
 
 Struct used in [`outcomes`](@ref) to map points of `x` into their respective bins.
 It finds the minima along each dimension, and computes appropriate
@@ -75,6 +75,9 @@ edge lengths for each dimension of `x` given a rectangular binning.
 The second signature does not need `x` because (1) the binning is fixed, and the
 size of `x` doesn't matter, and (2) because the binning contains the dimensionality
 information as `ϵmin/max` is already an `NTuple`.
+
+Due to roundoff error when computing bin edges, a small tolerance `n_eps * eps()`
+is added to bin widths to ensure the correct number of bins is produced.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """
@@ -125,7 +128,6 @@ end
 ##################################################################
 # Initialization of encodings
 ##################################################################
-# TODO: Document `n_eps`
 # Data-controlled grid
 function RectangularBinEncoding(b::RectangularBinning, x; n_eps = 2)
     # This function always returns static vectors and is type stable

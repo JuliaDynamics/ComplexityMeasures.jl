@@ -1,93 +1,150 @@
+using StaticArrays: MVector
+using StateSpaceSets: AbstractDataset
+
 export OrdinalPatternEncoding
 #TODO: The docstring here, and probably the source code, needs a full re-write
 # based on new `encode` interface.
 
 """
     OrdinalPatternEncoding <: Encoding
-    OrdinalPatternEncoding(m = 3, τ = 1; lt = est.lt)
+    OrdinalPatternEncoding(; m::Int, lt = est.lt)
 
-A encoding scheme that converts the input time series to ordinal patterns, which are
-then encoded to integers using [`encode`](@ref).
+An encoding scheme that [`encode`](@ref)s `m`-dimensional permutation/ordinal patterns to
+integers and [`decode`](@ref)s these integers to permutation patterns based on the Lehmer
+code.
 
-!!! note
-    `OrdinalPatternEncoding` is intended for symbolizing *time series*. If providing a short vector,
-    say `x = [2, 5, 2, 1, 3, 4]`, then `outcomes(x, OrdinalPatternEncoding(m = 2, τ = 1)` will
-    first embed `x`, then encode/symbolize each resulting *state vector*, not the original
-    input. For symbolizing a single vector, use `sortperm` on it and use
-    [`encode_motif`](@ref) on the resulting permutation indices.
+## Usage
 
-# Usage
+Used in [`outcomes`](@ref) with probabilities estimators such as
+[`SymbolicPermutation`](@ref) to map state vectors `xᵢ ∈ x` into their
+integer symbol representations `πᵢ`.
 
-    outcomes(x, scheme::OrdinalPatternEncoding) → Vector{Int}
-    outcomes!(πs, x, scheme::OrdinalPatternEncoding) → Vector{Int}
+## Description
 
-If applied to an `m`-dimensional `Dataset` `x`, then `m` and `τ` are ignored,
-and `m`-dimensional permutation patterns are obtained directly for each
-`xᵢ ∈ x`. Permutation patterns are then encoded as integers using [`encode_motif`](@ref).
-Optionally, symbols can be written directly into a pre-allocated integer vector `πs`, where
-`length(πs) == length(x)` using `outcomes!`.
+The Lehmer code is a bijection between the set of `factorial(n)` possible permutations
+for a length-`n` sequence, and the integers `0, 1, …, n - 1`.
 
-If applied to a univariate vector `x`, then `x` is first converted to a delay
-reconstruction using embedding dimension `m` and lag `τ`. Permutation patterns are then
-computed for each of the resulting `m`-dimensional `xᵢ ∈ x`, and each permutation
-is then encoded as an integer using [`encode_motif`](@ref).
-If using the in-place variant with univariate input, `πs` must obey
-`length(πs) == length(x)-(est.m-1)*est.τ`.
+- *Encoding* converts an `m`-dimensional permutation pattern `p` into its unique integer
+    symbol ``\\omega \\in \\{0, 1, \\ldots, m - 1 \\}``, using Algorithm 1 in Berger
+    et al. (2019)[^Berger2019].
+- *Decoding* converts an ``\\omega_i \\in \\Omega` ` to its original permutation pattern.
 
-## Examples
+`OrdinalPatternEncoding` is thus meant to be applied on a *permutation*, i.e.
+a vector of indices that would sort some vector in ascending order (in practice: the
+result of calling `sortperm(x)` for some input vector `x`).
 
-```julia
-using DelayEmbeddings, Entropies
-D = Dataset([rand(7) for i = 1:1000])
-πs = outcomes(D, OrdinalPatternEncoding())
+## Example
+
+```jldoctest
+julia> using Entropies
+
+julia> x = [1.2, 5.4, 2.2, 1.1]; encoding = OrdinalPatternEncoding(m = length(x));
+
+julia> xs = sortperm(x)
+4-element Vector{Int64}:
+ 4
+ 1
+ 3
+ 2
+
+julia> s = encode(encoding, xs)
+19
+
+julia> decode(encoding, s)
+4-element SVector{4, Int64} with indices SOneTo(4):
+ 4
+ 1
+ 3
+ 2
 ```
 
-See also: [`outcomes`](@ref).
+[^Berger2019]:
+    Berger, Sebastian, et al. "Teaching Ordinal Patterns to a Computer: Efficient
+    Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
 """
-Base.@kwdef struct OrdinalPatternEncoding <: Encoding
-    m::Int = 3
-    τ::Int = 1
+Base.@kwdef struct OrdinalPatternEncoding{M <: Integer} <: Encoding
+    m::M = 3
     lt::Function = isless_rand
 end
 
-function fill_symbolvector!(πs, x, sp, m::Int; lt::Function = isless_rand)
-    @inbounds for i in eachindex(x)
-        sortperm!(sp, x[i], lt = lt)
-        πs[i] = encode_motif(sp, m)
+function encode(encoding::OrdinalPatternEncoding, perm)
+    m = encoding.m
+    n = 0
+    for i = 1:m-1
+        for j = i+1:m
+            n += perm[i] > perm[j] ? 1 : 0
+        end
+        n = (m-i)*n
     end
+
+    return n
 end
 
-function outcomes(x::AbstractDataset{m, T}, scheme::OrdinalPatternEncoding) where {m, T}
-    m >= 2 || error("Data must be at least 2-dimensional to discretize. If data is a univariate time series, embed it using `genembed` first.")
-    πs = zeros(Int, length(x))
-    outcomes!(πs, x, scheme)
-    return πs
+# I couldn't find any efficient algorithm in the literature for converting
+# between factorial number system representations and Lehmer codes, so we'll just have to
+# use this naive approach for now. It is probably possible to do this in a faster way.
+function decode(encoding::OrdinalPatternEncoding, s::Int)
+    m = encoding.m
+    # Convert integer to its factorial number representation. Each factorial number
+    # corresponds to a unique permutation of the numbers `1, 2, ..., m`.
+    f = base10_to_factorial(s, m)
+
+    # Reconstruct the permutation from the factorial representation
+    xs = 1:m |> collect
+    perm = zeros(MVector{m, Int})
+    for i = 1:m
+        perm[i] = popat!(xs, f[i] + 1)
+    end
+
+    return SVector{m, Int}(perm) # converting from SVector to MVector is essentially free
 end
 
-function outcomes(x::AbstractVector{T}, scheme::OrdinalPatternEncoding) where {T}
-    τs = tuple([scheme.τ*i for i = 0:scheme.m-1]...)
-    x_emb = genembed(x, τs)
+"""
+    base10_to_factorial(s::Int,
+        ndigits::Int = ndigits_in_factorial_base(s)) → f::SVector{ndigits, Int}
 
-    πs = zeros(Int, length(x_emb))
-    outcomes!(πs, x_emb, scheme)
-    return πs
+Convert a base-10 integer to its factorial number system representation. `f` is a
+vector where `f[k]` is the multiplier of `factorial(k - 1)`.
+
+For example, the base-10 integer `567`, in the factorial number system, is
+``4\\cdot 5! + 3\\cdot 4! + 2\\cdot 3! + 1\\cdot 2! + 1\\cdot 1! + 0\\cdot 0!``.
+For this example, `base10_to_factorial` would return the `SVector` `[4, 3, 2, 1, 1, 0]`.
+
+`ndigits` fixes the number of digits in `f` (this just prepends a zero to `f` for each
+extraneous radix/base). This is useful when using factorial number for decoding Lehmer codes
+into permutations
+"""
+function base10_to_factorial(s::Int, ndigits::Int = ndigits_in_factorial_base(s))
+    remainders = zeros(MVector{ndigits, Int})
+    q = s ÷ 1
+    r = s % 1
+    remainders[end] = r
+    for k = 2:ndigits
+        r = q % k
+        q = q ÷ k
+        remainders[end - k + 1] = r
+    end
+
+    return SVector{ndigits, Int}(remainders)
 end
 
-function outcomes!(πs::AbstractVector{Int}, x::AbstractDataset{m, T},
-        scheme::OrdinalPatternEncoding) where {m, T}
 
-    @assert length(πs) == length(x)
-
-    sp = zeros(Int, m) # pre-allocate a single-symbol vector that can be overwritten.
-    fill_symbolvector!(πs, x, sp, m, lt = scheme.lt)
-
-    return πs
+""" Compute how many digits a base-10 integer needs in the factorial number system. """
+function ndigits_in_factorial_base(n::Int)
+    k = 1
+    while factorial(k) < n
+        k += 1
+    end
+    return k
 end
 
-function outcomes!(πs::AbstractVector{Int}, x::AbstractVector{T},
-        scheme::OrdinalPatternEncoding) where T
 
-    τs = tuple([scheme.τ*i for i = 0:scheme.m-1]...)
-    x_emb = genembed(x, τs)
-    outcomes!(πs, x_emb, scheme)
+function isless_rand(a, b)
+    if a == b
+        rand(Bool)
+    elseif a < b
+        true
+    else
+        false
+    end
 end

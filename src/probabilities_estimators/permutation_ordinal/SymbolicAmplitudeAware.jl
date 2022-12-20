@@ -1,6 +1,7 @@
 export SymbolicAmplitudeAwarePermutation
 
 """
+    SymbolicAmplitudeAwarePermutation <: ProbabilitiesEstimator
     SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand)
 
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
@@ -47,7 +48,7 @@ another estimator that incorporates amplitude information.
     Illustration in spike detection and signal segmentation. Computer methods and programs
     in biomedicine, 128, 40-51.
 """
-struct SymbolicAmplitudeAwarePermutation{F} <: ProbabilitiesEstimator
+struct SymbolicAmplitudeAwarePermutation{F} <: PermutationProbabilitiesEstimator
     τ::Int
     m::Int
     A::Float64
@@ -55,9 +56,12 @@ struct SymbolicAmplitudeAwarePermutation{F} <: ProbabilitiesEstimator
 end
 function SymbolicAmplitudeAwarePermutation(; τ::Int = 1, m::Int = 2, A::Real = 0.5,
         lt::F = isless_rand) where {F <: Function}
-    2 ≤ m || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-    0 ≤ A ≤ 1 || error("Weighting factor A must be on interval [0, 1]. Got A=$A.")
+    2 ≤ m || throw(ArgumentError("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols."))
+    0 ≤ A ≤ 1 || throw(ArgumentError("Weighting factor A must be on interval [0, 1]. Got A=$A."))
     SymbolicAmplitudeAwarePermutation{F}(τ, m, A, lt)
+end
+function permutation_weights(est::SymbolicAmplitudeAwarePermutation, x::AbstractDataset)
+    AAPE.(x.data, A = est.A, m = est.m)
 end
 
 """
@@ -72,39 +76,10 @@ function AAPE(x; A::Real = 0.5, m::Int = length(x))
     (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
 end
 
-function probabilities_and_outcomes(est::SymbolicAmplitudeAwarePermutation,
-        x::AbstractDataset{m, T}) where {m, T}
-    πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))
-    wts = AAPE.(x.data, A = est.A, m = est.m)
-    probs = symprobs(πs, wts, normalize = true)
-
-    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
-    # integer corresponds to a unique permutation. Decoding an integer gives the original
-    # permutation as a `SVector{m, Int}`.
-    observed_encodings = sort(unique(πs))
-    observed_outcomes = decode_motif.(observed_encodings, est.m)
-
-    return Probabilities(probs), observed_outcomes
-end
-
-function probabilities_and_outcomes(
-        est::SymbolicAmplitudeAwarePermutation,
-        x::AbstractVector{T}) where {T<:Real}
-    # We need to manually embed here instead of just calling the method above,
-    # because the embedding vectors are needed to compute weights.
-    τs = tuple([est.τ*i for i = 0:est.m-1]...)
-    emb = genembed(x, τs)
-    πs = outcomes(emb, OrdinalPatternEncoding(m = est.m, lt = est.lt))
-    wts = AAPE.(emb.data, A = est.A, m = est.m)
-    probs = symprobs(πs, wts, normalize = true)
-
-    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
-    # integer corresponds to a unique permutation. Decoding an integer gives the original
-    # permutation as a `SVector{m, Int}`.
-    observed_encodings = sort(unique(πs))
-    observed_outcomes = decode_motif.(observed_encodings, est.m)
-
-    return Probabilities(probs), observed_outcomes
+probabilities(est::SymbolicAmplitudeAwarePermutation, x) = encodings_and_probs(est, x)[2]
+function probabilities_and_outcomes(est::SymbolicAmplitudeAwarePermutation, x)
+    encodings, probs = encodings_and_probs(est, x)
+    return probs, observed_outcomes(est, encodings)
 end
 
 total_outcomes(est::SymbolicAmplitudeAwarePermutation)::Int = factorial(est.m)

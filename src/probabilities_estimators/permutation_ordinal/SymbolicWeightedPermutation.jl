@@ -4,6 +4,7 @@ import Statistics: mean
 export SymbolicWeightedPermutation
 
 """
+    SymbolicWeightedPermutation <: ProbabilitiesEstimator
     SymbolicWeightedPermutation(; τ = 1, m = 3, lt = Entropies.isless_rand)
 
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
@@ -70,7 +71,7 @@ another estimator that incorporates amplitude information.
     measure for time series incorporating amplitude information." Physical Review E 87.2
     (2013): 022911.
 """
-struct SymbolicWeightedPermutation{F} <: ProbabilitiesEstimator
+struct SymbolicWeightedPermutation{F} <: PermutationProbabilitiesEstimator
     τ::Int
     m::Int
     lt::F
@@ -80,45 +81,17 @@ function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::F = isless_r
     SymbolicWeightedPermutation{F}(τ, m, lt)
 end
 
-function weights_from_variance(x, m::Int)
-    sum((x .- mean(x)) .^ 2)/m
+function permutation_weights(est::SymbolicWeightedPermutation, x::AbstractDataset)
+    weights_from_variance.(x.data, est.m)
+end
+weights_from_variance(x, m::Int) = sum((x .- mean(x)) .^ 2)/m
+
+probabilities(est::SymbolicWeightedPermutation, x) = encodings_and_probs(est, x)[2]
+function probabilities_and_outcomes(est::SymbolicWeightedPermutation, x)
+    encodings, probs = encodings_and_probs(est, x)
+    return probs, observed_outcomes(est, encodings)
 end
 
-
-function probabilities_and_outcomes(est::SymbolicWeightedPermutation,
-        x::AbstractDataset{m, T}) where {m, T}
-    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
-    πs = outcomes(x, OrdinalPatternEncoding(m = m, lt = est.lt))  # motif length controlled by dimension of input data
-    wts = weights_from_variance.(x.data, m)
-    probs = symprobs(πs, wts, normalize = true)
-
-    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
-    # integer corresponds to a unique permutation. Decoding an integer gives the original
-    # permutation as a `SVector{m, Int}`.
-    observed_encodings = sort(unique(πs))
-    observed_outcomes = decode_motif.(observed_encodings, est.m)
-
-   return Probabilities(probs), observed_outcomes
-end
-
-function probabilities_and_outcomes(est::SymbolicWeightedPermutation,
-        x::AbstractVector{T}) where {T<:Real}
-    # We need to manually embed here instead of just calling the method above,
-    # because the embedding vectors are needed to compute weights.
-    τs = tuple([est.τ*i for i = 0:est.m-1]...)
-    emb = genembed(x, τs)
-    πs = outcomes(x, OrdinalPatternEncoding(m = est.m, lt = est.lt)) # motif length controlled by estimator m
-    wts = weights_from_variance.(emb.data, est.m)
-    probs = symprobs(πs, wts, normalize = true)
-
-    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
-    # integer corresponds to a unique permutation. Decoding an integer gives the original
-    # permutation as a `SVector{m, Int}`.
-    observed_encodings = sort(unique(πs))
-    observed_outcomes = decode_motif.(observed_encodings, est.m)
-
-    return Probabilities(probs), observed_outcomes
-end
 
 total_outcomes(est::SymbolicWeightedPermutation)::Int = factorial(est.m)
 outcome_space(est::SymbolicWeightedPermutation) = permutations(1:est.m) |> collect

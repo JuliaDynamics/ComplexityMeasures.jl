@@ -65,13 +65,13 @@ using Random
         b = RectangularBinning(N)
         rb1 = RectangularBinEncoding(b, x1; n_eps = 1)
         rb2 = RectangularBinEncoding(b, x1; n_eps = 2)
-        @test encode(maximum(x1), rb1) == -1 # shouldn't occur, but does when tolerance is too low
-        @test encode(maximum(x1), rb2) == 10
+        @test encode(rb1, maximum(x1)) == -1 # shouldn't occur, but does when tolerance is too low
+        @test encode(rb2, maximum(x1)) == 10
 
         rb1 = RectangularBinEncoding(b, x2; n_eps = 1)
         rb2 = RectangularBinEncoding(b, x2; n_eps = 2)
-        @test encode(maximum(x2), rb1) == -1 # shouldn't occur, but does when tolerance is too low
-        @test encode(maximum(x2), rb2) == 10
+        @test encode(rb1, maximum(x2)) == -1 # shouldn't occur, but does when tolerance is too low
+        @test encode(rb2, maximum(x2)) == 10
     end
 
 end

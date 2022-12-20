@@ -1,4 +1,3 @@
-# TODO: This needs its own docpage I feel.
 using DelayEmbeddings, SparseArrays
 using StaticArrays
 
@@ -169,15 +168,18 @@ points that visits `bins[i]`.
 
 See also: [`RectangularBinning`](@ref).
 """
-struct TransferOperatorApproximationRectangular{T<:Real, E}
+struct TransferOperatorApproximationRectangular{
+        T<:Real,
+        BINNING <: RectangularBinning,
+        BINS,
+        E}
     transfermatrix::AbstractArray{T, 2}
-    binning::RectangularBinning
+    binning::BINNING
     encoder::E
-    bins
+    bins::BINS
     sort_idxs::Vector{Int}
     visitors::Vector{Vector{Int}}
 end
-# TODO: The above is type unstable!
 
 """
     transferoperator(pts::AbstractDataset,
@@ -212,10 +214,7 @@ function transferoperator(pts::AbstractDataset{D, T},
     # here as cartesian coordinates, not absolute bins):
     visited_bins = map(pᵢ -> encode_as_bin(pᵢ, encoder), pts)
     sort_idxs = sortperm(visited_bins)
-
-    # TODO: fix re-indexing after sorting. Sorting is much faster, so we want to do so.
-    # For now, bins are sorted after order of first appearance according to the input `pts`.
-    #sort!(visited_bins)
+    #sort!(visited_bins) # see todo on github
 
     # There are N=length(unique(visited_bins)) unique bins.
     # Which of the unqiue bins does each of the L points visit?
@@ -274,10 +273,6 @@ function transferoperator(pts::AbstractDataset{D, T},
         # in after the forward linear map of the points.
         if n_visitsᵢ > 1
             timeindices_visiting_pts = visitors[i]
-
-            # TODO: Introduce circular boundary condition. Simply excluding
-            # might lead to a cascade of loosing points.
-
             # If bᵢ is the bin visited by the last point in the orbit, then
             # the last entry of `visiting_pts` will be the time index of the
             # last point of the orbit. In the next time step, that point will
