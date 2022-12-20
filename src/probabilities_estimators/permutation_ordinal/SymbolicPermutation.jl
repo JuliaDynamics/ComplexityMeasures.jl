@@ -1,13 +1,8 @@
 using Combinatorics: permutations
 
 export SymbolicPermutation
-
 """
-A probability estimator based on permutations.
-"""
-abstract type PermutationProbabilityEstimator <: ProbabilitiesEstimator end
-
-"""
+    SymbolicPermutation <: ProbabilitiesEstimator
     SymbolicPermutation(; m = 3, τ = 1, lt::Function = Entropies.isless_rand)
 
 A probabilities estimator based on ordinal permutation patterns, originally used by
@@ -69,56 +64,40 @@ information about within-state-vector amplitudes.
     Permutation entropy based time series analysis: Equalities in the input signal can
     lead to false conclusions. Physics Letters A, 381(22), 1883-1892.
 """
-struct SymbolicPermutation{F} <: PermutationProbabilityEstimator
+struct SymbolicPermutation{F} <: PermutationProbabilitiesEstimator
     τ::Int
     m::Int
     lt::F
 end
 function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F <: Function}
-    m >= 2 || error("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols.")
+    m >= 2 || throw(ArgumentError("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols."))
     SymbolicPermutation{F}(τ, m, lt)
 end
 
-function probabilities!(πs::AbstractVector{Int}, est::SymbolicPermutation, x::AbstractDataset{m, T}) where {m, T}
-    length(πs) == length(x) || throw(ArgumentError("Need length(πs) == length(x), got `length(πs)=$(length(πs))` and `length(x)==$(length(x))`."))
-    m >= 2 || error("Data must be at least 2-dimensional to compute the permutation entropy. If data is a univariate time series embed it using `genembed` first.")
-    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
-    probabilities(outcomes!(πs, x, encoding))
+function probabilities(est::SymbolicPermutation, x::AbstractDataset{m, T}) where {m, T}
+    πs = zeros(Int, length(x))
+    probabilities(encodings_from_permutations!(πs, est, x))
 end
 
-function probabilities!(πs::AbstractVector{Int}, est::SymbolicPermutation, x::AbstractVector{T}) where {T<:Real}
+function probabilities(est::SymbolicPermutation, x::AbstractVector) where {T}
     N = length(x) - (est.m - 1)*est.τ
-    length(πs) == N || error("Pre-allocated symbol vector `πs` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(πs)=$(length(πs)) and length(x)=$(L).")
-    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
-    probabilities(outcomes!(πs, x, encoding))
+    πs = zeros(Int, N)
+    probabilities(encodings_from_permutations!(πs, est, x))
+end
+
+function probabilities!(πs::AbstractVector{Int}, est::SymbolicPermutation, x)
+    encodings_from_permutations!(πs, est, x)
+    probabilities(πs)
 end
 
 function probabilities_and_outcomes(est::SymbolicPermutation, x::AbstractDataset{m, T}) where {m, T}
-    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
-    πs = outcomes(x, encoding)
-    probs = probabilities(πs)
-
-    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
-    # integer corresponds to a unique permutation. Decoding an integer gives the original
-    # permutation as a `SVector{m, Int}`.
-    observed_encodings = sort(unique(πs))
-    observed_outcomes = decode_motif.(observed_encodings, est.m)
-
-    return probs, observed_outcomes
+    πs = encodings_from_permutations(est, x)
+    return probabilities(πs), observed_outcomes(est, πs)
 end
 
 function probabilities_and_outcomes(est::SymbolicPermutation, x::AbstractVector{T}) where {T<:Real}
-    encoding = OrdinalPatternEncoding(m = est.m, τ = est.τ, lt = est.lt)
-    πs = outcomes(x, encoding)
-    probs = probabilities(πs)
-
-    # The observed integer encodings are in the set `{0, 1, ..., factorial(m)}`, and each
-    # integer corresponds to a unique permutation. Decoding an integer gives the original
-    # permutation as a `SVector{m, Int}`.
-    observed_encodings = sort(unique(πs))
-    observed_outcomes = decode_motif.(observed_encodings, est.m)
-
-    return probs, observed_outcomes
+    πs = encodings_from_permutations(est, x)
+    return probabilities(πs), observed_outcomes(est, πs)
 end
 
 function entropy!(
