@@ -12,12 +12,13 @@ end
 
 function encodings_from_permutations!(πs::AbstractVector{Int}, est::PermutationProbabilitiesEstimator,
         x::AbstractDataset{m, T}) where {m, T}
+
     if length(πs) != length(x)
         throw(ArgumentError("Need length(πs) == length(x), got `length(πs)=$(length(πs))` and `length(x)==$(length(x))`."))
     end
 
     encoding = OrdinalPatternEncoding(; m, lt = est.lt)
-    perm = @MVector zeros(Int, 3)
+    perm = @MVector zeros(Int, m)
     @inbounds for (i, xᵢ) in enumerate(x)
         sortperm!(perm, xᵢ, lt = est.lt)
         πs[i] = encode(encoding, perm)
