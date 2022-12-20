@@ -33,6 +33,11 @@ computed. The authors recommend that
 `total_outcomes(est.symbolization)^est.m << length(x) - est.m*est.τ + 1` to avoid
 undersampling.
 
+!!! note "Encoding"
+    [`Dispersion`](@ref)'s linear mapping from CDFs to integers is based on equidistant
+    partitioning of the interval `[0, 1]`. This is slightly different from Zhou et
+    al. (2022), which uses the linear mapping ``s_i := \\text{round}(y + 0.5)``.
+
 ## Usage
 
 In Zhou et al. (2022), [`MissingDispersionPatterns`](@ref) is used to detect nonlinearity

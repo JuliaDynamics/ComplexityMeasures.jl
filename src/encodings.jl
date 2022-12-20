@@ -20,7 +20,9 @@ abstract type Encoding end
     encode(c::Encoding, χ) -> i::Int
 
 Encode an element `χ ∈ x` of input data `x` (those given to [`probabilities`](@ref))
-using encoding `c`. The special value of `-1` is reserved as a return value for
+using encoding `c`.
+
+The special value of `-1` is reserved as a return value for
 inappropriate elements `χ` that cannot be encoded according to `c`.
 """
 function encode end
@@ -29,6 +31,7 @@ function encode end
     decode(c::Encoding, i::Int) -> ω
 
 Decode an encoded element `i` into the outcome `ω ∈ Ω` it corresponds to.
+
 `Ω` is the [`outcome_space`](@ref) of a probabilities estimator that uses encoding `c`.
 """
 function decode end

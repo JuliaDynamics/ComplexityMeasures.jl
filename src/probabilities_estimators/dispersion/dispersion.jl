@@ -1,3 +1,4 @@
+using Statistics
 import DelayEmbeddings
 export Dispersion
 
@@ -17,25 +18,26 @@ categories for the Gaussian symbol mapping.
 Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. First, this time series
 is discretized a "Gaussian encoding", which uses the normal cumulative distribution
 function (CDF) to encode a timeseries ``x`` as integers like so:
-each ``x_i`` to a new real number ``y_i \\in [0, 1]`` by using the normal
-cumulative distribution function (CDF), ``x_i \\to y_i : y_i = \\dfrac{1}{ \\sigma
-\\sqrt{2 \\pi}} \\int_{-\\infty}^{x_i} e^{(-(x_i - \\mu)^2)/(2 \\sigma^2)} dx``,
-where ``\\mu`` and ``\\sigma`` are the empirical mean and standard deviation of ``X``.
-Other choices of CDFs are also possible, but currently only Gaussian is implemented.
-Next, each ``y_i`` is linearly mapped to an integer
-``z_i \\in [1, 2, \\ldots, c]`` using the map
-``y_i \\to z_i : z_i = R(y_i(c-1) + 0.5)``, where ``R`` indicates rounding up to the
-nearest integer. This procedure subdivides the interval ``[0, 1]`` into ``c``
-different subintervals that form a covering of ``[0, 1]``, and assigns each ``y_i`` to one
-of these subintervals. The original time series ``X`` is thus transformed to a symbol time
-series ``S = \\{ s_i \\}_{i=1}^N``, where ``s_i \\in [1, 2, \\ldots, c]``.
 
-Next, the symbol time series ``S`` is embedded into an
-``m``-dimensional time series, using an embedding lag of ``\\tau = 1``, which yields a
-total of ``N - (m - 1)\\tau`` points, or "dispersion patterns". Because each ``z_i`` can
-take on ``c`` different values, and each embedding point has ``m`` values, there
-are ``c^m`` possible dispersion patterns. This number is used for normalization when
-computing dispersion entropy.
+- Each ``x_i`` is mapped to a new real number ``y_i \\in [0, 1]`` by using the normal
+    cumulative distribution function (CDF), ``x_i \\to y_i : y_i = \\dfrac{1}{ \\sigma
+    \\sqrt{2 \\pi}} \\int_{-\\infty}^{x_i} e^{(-(x_i - \\mu)^2)/(2 \\sigma^2)} dx``,
+    where ``\\mu`` and ``\\sigma`` are the empirical mean and standard deviation of ``X``.
+    Other choices of CDFs are also possible, but currently only Gaussian is implemented.
+- Next, each ``y_i`` is linearly mapped to an integer
+    ``z_i \\in [1, 2, \\ldots, c]`` using the map
+    ``y_i \\to z_i : z_i = \\text{floor}(y_i ./ (1 / c)) + 1`` (*note: this mapping differs
+    slightly from the linear mapping in the original paper*). This procedure subdivides the
+    interval ``[0, 1]`` into ``c``
+    different subintervals that form a covering of ``[0, 1]``, and assigns each ``y_i`` to one
+    of these subintervals. The original time series ``X`` is thus transformed to a symbol time
+    series ``S = \\{ s_i \\}_{i=1}^N``, where ``s_i \\in [1, 2, \\ldots, c]``.
+- Next, the symbol time series ``S`` is embedded into an
+    ``m``-dimensional time series, using an embedding lag of ``\\tau = 1``, which yields a
+    total of ``N - (m - 1)\\tau`` points, or "dispersion patterns". Because each ``z_i`` can
+    take on ``c`` different values, and each embedding point has ``m`` values, there
+    are ``c^m`` possible dispersion patterns. This number is used for normalization when
+    computing dispersion entropy.
 
 ### Computing dispersion probabilities and entropy
 
@@ -46,8 +48,9 @@ Note that dispersion patterns that are not present are not counted. Therefore, y
 always get non-zero probabilities using the `Dispersion` probability estimator.
 
 ## Outcome space
-The outcome space for `Dispersion` is the unique delay vectos with elements the
-the symbols (integers) encoded by the Gaussian PDF.
+
+The outcome space for `Dispersion` is the unique delay vectors with elements the
+the symbols (integers) encoded by the Gaussian CDF.
 Hence, the outcome space is all `m`-dimensional delay vectors whose elements
 are all possible values in `1:c`.
 
@@ -76,15 +79,12 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
 [^Rostaghi2016]: Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.
 [^Li2018]: Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale dispersion entropy and wavelet threshold denoising. Entropy, 21(1), 11.
 """
-struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
-    encoding::S
-    m::Int
-    τ::Int
-    check_unique::Bool
-end
-
-function Dispersion(; c = 5, m = 2, τ = 1, check_unique = false)
-    return Dispersion(GaussianCDFEncoding(c), m, τ, check_unique)
+Base.@kwdef struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
+    encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`
+    c::Int = 3 # The number of categories to map encoded values to.
+    m::Int = 2
+    τ::Int = 1
+    check_unique::Bool = false
 end
 
 function dispersion_histogram(x::AbstractDataset, N, m, τ)
@@ -93,15 +93,20 @@ end
 
 # A helper function that makes sure the algorithm doesn't crash when input contains
 # a singular value.
-function symbolize_for_dispersion(x, est::Dispersion)
+function symbolize_for_dispersion(est::Dispersion, x)
+    σ = std(x)
+    μ = mean(x)
+    ENCODING_TYPE = est.encoding
+    encoding = ENCODING_TYPE(; σ, μ, c = est.c)
+
     if est.check_unique
         if length(unique(x)) == 1
             symbols = repeat([1], length(x))
         else
-            symbols = outcomes(x, est.encoding)
+            symbols = encode.(Ref(encoding), x)
         end
     else
-        symbols = outcomes(x, est.encoding)
+        symbols = encode.(Ref(encoding), x)
     end
 
     return symbols::Vector{Int}
@@ -109,7 +114,7 @@ end
 
 function probabilities_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
     N = length(x)
-    symbols = symbolize_for_dispersion(x, est)
+    symbols = symbolize_for_dispersion(est, x)
     # We must use genembed, not embed, to make sure the zero lag is included
     m, τ = est.m, est.τ
     τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
@@ -119,10 +124,10 @@ function probabilities_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
 end
 
 function outcome_space(est::Dispersion)
-    c, m = 1:est.encoding.c, est.m
+    c, m = 1:est.c, est.m
     cart = CartesianIndices(ntuple(i -> c, m))
     V = SVector{m, Int}
     return map(i -> V(Tuple(i)), vec(cart))
 end
 # Performance extension
-total_outcomes(est::Dispersion)::Int = total_outcomes(est.encoding) ^ est.m
+total_outcomes(est::Dispersion)::Int = est.c ^ est.m
