@@ -76,7 +76,7 @@ The second signature does not need `x` because (1) the binning is fixed, and the
 size of `x` doesn't matter, and (2) because the binning contains the dimensionality
 information as `ϵmin/max` is already an `NTuple`.
 
-Due to roundoff error when computing bin edges, a small tolerance `n_eps` of `n_eps * eps()`
+Due to roundoff error when computing bin edges, a small tolerance `n_eps * eps()`
 is added to bin widths to ensure the correct number of bins is produced.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
