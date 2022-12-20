@@ -38,16 +38,19 @@ function multiscale_normalized end
 """
     multiscale(alg::MultiScaleAlgorithm, e::Entropy, est::EntropyEstimator, x; kwargs...)
     multiscale(alg::MultiScaleAlgorithm, e::Entropy, est::ProbabilitiesEstimator, x; kwargs...)
+    multiscale(alg::MultiScaleAlgorithm, c::ComplexityMeasure, x::AbstractVector; kwargs...)
 
-Compute the multi-scale entropy `e` with estimator `est` for timeseries `x`.
+Compute the multi-scale entropy `e` with estimator `est`, or the complexity measure `c`,
+for timeseries `x`.
 
 The first signature estimates differential/continuous multiscale entropy. The second
-signature estimates discrete multiscale entropy.
+signature estimates discrete multiscale entropy. The third signature estimate some
+other multiscale complexity measure that is not, strictly speaking, an entropy.
 
 This function generalizes *all* multi-scale entropy estimators, as long as a relevant
-[`MultiScaleAlgorithm`](@ref), [`downsample`](@ref) method and estimator is defined.
-Multi-scale complexity ("entropy-like") measures, such as "sample entropy", are found in
-the Complexity.jl package.
+[`MultiScaleAlgorithm`](@ref), a [`downsample`](@ref) method and an estimator is defined.
+It also generalizes all multi-scale complexity measures, provided a relevant
+[`ComplexityMeasre`](@ref) is defined.
 
 ## Description
 
@@ -59,6 +62,8 @@ factor `1`, the original time series is considered.
 ## Arguments
 
 - `e::Entropy`. A valid [entropy type](@ref entropies), i.e. `Shannon()` or `Renyi()`.
+- `c::ComplexityMeasure`. A valid complexity measure, i.e. [`SampleEntropy`](@ref),
+    or [`ApproximateEntropy`](@ref).
 - `alg::MultiScaleAlgorithm`. A valid [multiscale algorithm](@ref multiscale_algorithms),
     i.e. `Regular()` or `Composite()`, which determines how down-sampling/coarse-graining
     is performed.
@@ -71,8 +76,9 @@ factor `1`, the original time series is considered.
 ## Keyword Arguments
 
 - `maxscale::Int`. The maximum number of scales (i.e. levels of downsampling). The actual
-    maximum scale level is `length(x) ÷ 2`, but the default is `length(x) ÷ 5`, to avoid
-    computing the entropies for time series that are extremely short.
+    maximum scale level is `length(x) ÷ 2`, but to avoid applying the method to time
+    series that are extremely short, maybe consider limiting `maxscale` (e.g.
+    `maxscale = length(x) ÷ 5`).
 
 [^Costa2002]: Costa, M., Goldberger, A. L., & Peng, C. K. (2002). Multiscale entropy
     analysis of complex physiologic time series. Physical review letters, 89(6), 068102.

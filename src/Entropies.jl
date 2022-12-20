@@ -20,12 +20,14 @@ const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
 include("probabilities.jl")
 include("entropy.jl")
 include("encodings.jl")
+include("complexity.jl")
 include("multiscale.jl")
 
 # Library implementations (files include other files)
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
 include("encoding/all_encodings.jl")
+include("complexity/complexity_measures.jl") # relies on encodings, so include after
 include("deprecations.jl")
 
 
