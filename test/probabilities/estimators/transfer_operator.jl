@@ -9,6 +9,7 @@ binnings = [
     RectangularBinning(0.2),
     RectangularBinning([2, 3]),
     RectangularBinning([0.2, 0.3]),
+    FixedRectangularBinning(0, 1, 5, 2)
 ]
 
 # There's not easy way of constructing an analytical example for the resulting
@@ -17,17 +18,6 @@ binnings = [
 # generically here.
 # TODO: make a stupidly simple example where we can actually compute the measure of
 # each bin exactly.
-fb = FixedRectangularBinning(0, 1, 2)
-@test total_outcomes(D, fb) == 2^2
-@test outcome_space(D, fb) ≈ SVector.([(0.0, 0.0), (0.5, 0.0), (0.0, 0.5), (0.5, 0.5)])
-
-# For non-fixed binnings, an error should be thrown for both `total_outcomes` and
-# `outcome_space`.
-@testset "Binning test $i" for i in eachindex(binnings)
-    @test_throws ErrorException total_outcomes(D, binnings[i]) == 2^2
-    @test_throws ErrorException outcome_space(D, binnings[i]) == 2^2
-
-end
 
 @testset "Binning test $i" for i in eachindex(binnings)
     to = Entropies.transferoperator(D, binnings[i])
@@ -38,7 +28,7 @@ end
 
     p, bins = invariantmeasure(iv)
     @test p isa Probabilities
-    @test bins isa Vector{<:SVector}
+    @test bins isa Vector{Int}
 
     est = TransferOperator(binnings[i])
     @test probabilities(est, D) isa Probabilities

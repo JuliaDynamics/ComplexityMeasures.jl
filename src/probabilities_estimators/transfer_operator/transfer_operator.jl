@@ -170,17 +170,26 @@ See also: [`RectangularBinning`](@ref).
 """
 struct TransferOperatorApproximationRectangular{
         T<:Real,
-        BINNING <: RectangularBinning,
         BINS,
         E}
     transfermatrix::AbstractArray{T, 2}
-    binning::BINNING
     encoder::E
     bins::BINS
     sort_idxs::Vector{Int}
     visitors::Vector{Vector{Int}}
 end
 
+function transferoperatorencoder(
+    binning::Union{FixedRectangularBinning, RectangularBinning}, x::AbstractDataset
+)
+    if binning isa FixedRectangularBinning
+        return RectangularBinEncoding(binning)
+    elseif binning isa RectangularBinning
+        return RectangularBinEncoding(binning, x)
+    else
+        throw(ArgumentError("Binning $(typeof(binning)) not supported for transfer operator"))
+    end
+end
 """
     transferoperator(pts::AbstractDataset,
         binning::RectangularBinning) → TransferOperatorApproximationRectangular
@@ -208,11 +217,11 @@ function transferoperator(pts::AbstractDataset{D, T},
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
-    encoder = RectangularBinEncoding(pts, binning)
+    encoder = transferoperatorencoder(binning, pts)
 
     # The L points visits a total of L bins, which are the following bins (referenced
     # here as cartesian coordinates, not absolute bins):
-    visited_bins = map(pᵢ -> encode_as_bin(pᵢ, encoder), pts)
+    visited_bins = map(pᵢ -> encode(encoder, pᵢ), pts)
     sort_idxs = sortperm(visited_bins)
     #sort!(visited_bins) # see todo on github
 
@@ -306,13 +315,10 @@ function transferoperator(pts::AbstractDataset{D, T},
     # Transfer operator is just the normalized transition probabilities between the boxes.
     TO = sparse(I, J, P)
 
-    # Compute the coordinates of the visited bins. bins[i] corresponds to the i-th
-    # row/column of the transfer operator
+    # visited_bins[i] corresponds to the i-th row/column of the transfer operator
     unique!(visited_bins)
-    bins = map(bᵢ -> decode_from_bin(bᵢ, encoder), visited_bins)
-
     TransferOperatorApproximationRectangular(
-        TO, binning, encoder, bins, sort_idxs, visitors)
+        TO, encoder, visited_bins, sort_idxs, visitors)
 end
 
 """
@@ -473,18 +479,16 @@ function transfermatrix(iv::InvariantMeasure)
 end
 
 function probabilities_and_outcomes(est::TransferOperator, x::Array_or_Dataset)
-    to = transferoperator(x, est.binning)
+    encoder = transferoperatorencoder(est.binning, x)
+    to = transferoperator(x, encoder.binning)
     probs = invariantmeasure(to).ρ
-
-    encoder = RectangularBinEncoding(x, est.binning)
 
     # Note: bins are *not* sorted. They occur in the order of first appearance, according
     # to the input time series. Taking the unique bins preserves the order of first
     # appearance
     bins = to.bins
     unique!(bins)
-    # From bins represented by cartesian coordinates to bins represented by data units.
-    outcomes = map(b -> decode_from_bin(b, encoder), bins)
+    outcomes = decode.(Ref(to.encoder), bins) # coordinates of the visited bins
     return probs, outcomes
 end
 
