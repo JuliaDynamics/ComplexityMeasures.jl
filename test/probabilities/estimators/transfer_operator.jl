@@ -9,6 +9,7 @@ binnings = [
     RectangularBinning(0.2),
     RectangularBinning([2, 3]),
     RectangularBinning([0.2, 0.3]),
+    FixedRectangularBinning(0, 1, 5, 2)
 ]
 
 # There's not easy way of constructing an analytical example for the resulting
@@ -27,7 +28,7 @@ binnings = [
 
     p, bins = invariantmeasure(iv)
     @test p isa Probabilities
-    @test bins isa Vector{<:SVector}
+    @test bins isa Vector{Int}
 
     est = TransferOperator(binnings[i])
     @test probabilities(est, D) isa Probabilities
