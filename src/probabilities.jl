@@ -167,7 +167,7 @@ of missing (i.e. zero-probability) outcomes.
 See also: [`MissingDispersionPatterns`](@ref).
 """
 function missing_outcomes(est::ProbabilitiesEstimator, x::Array_or_Dataset)
-    probs = probabilities(x, est)
+    probs = probabilities(est, x)
     L = total_outcomes(est)
     O = count(!iszero, probs)
     return L - O
