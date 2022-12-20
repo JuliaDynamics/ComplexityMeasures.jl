@@ -72,8 +72,8 @@ end
     ts = rand(1:3, 100)
     D = genembed(ts, τs)
 
-    est_isless = SymbolicPermutation(m = 5, τ = 1, lt = Base.isless)
-    est_isless_rand = SymbolicPermutation(m = 5, τ = 1, lt = Entropies.isless_rand)
+    est_isless = SymbolicPermutation(; m, τ = 1, lt = Base.isless)
+    est_isless_rand = SymbolicPermutation(; m, τ = 1, lt = Entropies.isless_rand)
     @test probabilities(est_isless, D) isa Probabilities
     @test probabilities(est_isless_rand, D) isa Probabilities
 end
