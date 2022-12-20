@@ -67,7 +67,7 @@ Base.@kwdef struct OrdinalPatternEncoding{M <: Integer} <: Encoding
     lt::Function = isless_rand
 end
 
-function encode(encoding::OrdinalPatternEncoding, perm::AbstractVector{Int})
+function encode(encoding::OrdinalPatternEncoding, perm)
     m = encoding.m
     n = 0
     for i = 1:m-1
