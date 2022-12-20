@@ -3,7 +3,7 @@ using Distances: Metric, Euclidean
 export NaiveKernel, KDTree, BruteForce
 
 """
-    NaiveKernel(x, ϵ::Real; ss = KDTree, w = 0, metric = Euclidean()) <: ProbabilitiesEstimator
+    NaiveKernel(x, ϵ::Real; method = KDTree, w = 0, metric = Euclidean()) <: ProbabilitiesEstimator
 
 Estimate probabilities/entropy using a "naive" kernel density estimation approach (KDE), as
 discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
@@ -19,7 +19,7 @@ P_i( X, \\epsilon) \\approx \\dfrac{1}{N} \\sum_{s} B(||X_i - X_j|| < \\epsilon)
 where ``B`` gives 1 if the argument is `true`. Probabilities are then normalized.
 
 ## Keyword arguments
-- `ss = KDTree`: the search structure supported by Neighborhood.jl.
+- `method = KDTree`: the search structure supported by Neighborhood.jl.
   Specifically, use `KDTree` to use a tree-based neighbor search, or `BruteForce` for
   the direct distances between all points. KDTrees heavily outperform direct distances
   when the dimensionality of the data is much smaller than the data length.
@@ -47,6 +47,10 @@ function NaiveKernel(x, ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
     ϵ > 0 || error("Radius ϵ must be larger than zero!")
     return NaiveKernel(ϵ, method, w, metric, eachindex(x))
 end
+
+NaiveKernel(ϵ::Real; kwargs...) =
+    throw(ArgumentError("""NaiveKernel constructor requires input data as the first \
+        argument. Do `NaiveKernel(x, ϵ).`"""))
 
 function probabilities_and_outcomes(est::NaiveKernel, x::AbstractDataset)
     theiler = Theiler(est.w)

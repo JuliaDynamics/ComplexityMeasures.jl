@@ -7,21 +7,13 @@ rng = MersenneTwister(1234)
 # Their values:
 x = [12, 5, 2, 1.5, -1, 3.8, 9, 10, 4.5, 0.9, 8, 2.99]
 s = [3, 2, 1, 1, 1, 2, 3, 3, 2, 1, 3, 1]
-# There might be a typo in the paper. With the same Gaussian symbolization parameters,
-# we get an identical symbol sequence, with the exception of the one element. To see this,
-# run count(!isone, outcomes(x, est.symbolization) .== s), which gives 1 as a result.
-#
-# In the following, I'll assume that this is a typo from their side, because the
-# symbolization they claim to use is the same as for the `Dispersion` estimator,
-# which we analytically test elsewhere using test cases from the original paper.
 dispest = Dispersion(c = 3, m = 2)
 est = MissingDispersionPatterns(dispest)
-# If we take *our* discretized sequence with m = 2,
-# s = [3, 2, 1, 1, 1, 2, 3, 3, 2, 1, 3, 1],
-# then the symbols (3, 1) and (2, 2) don't occur, so the number of missing dispersion
-# patterns is 2, not 1 (as in the paper).
-@test complexity(est, x) == 2.0
-@test complexity_normalized(est, x) == 2/9
+# If we embed take the discretized sequence s = [3, 2, 1, 1, 1, 2, 3, 3, 2, 1, 3, 1],
+# with m = 2 and τ = 1, hen the symbol (2, 2) doesn't occur, so the number of missing
+# dispersion patterns is 1
+@test complexity(est, x) == 1
+@test complexity_normalized(est, x) == 1/9
 
 # For uniformly distributed noise, with sufficiently low-dimensional embeddings and
 # few enough categories for the symbolization, it is expected that all dispersion patterns

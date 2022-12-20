@@ -6,8 +6,7 @@ export distance_to_whitenoise
 
 """
     ReverseDispersion <: ComplexityMeasure
-    ReverseDispersion(; m = 2, τ = 1, check_unique = true,
-        encoding::Encoding = GaussianCDFEncoding(c = 5)
+    ReverseDispersion(; c = 3, m = 2, τ = 1, check_unique = true,
     )
 
 Estimator for the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019].
@@ -48,19 +47,15 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
 """
-struct ReverseDispersion{S <: Encoding} <: ComplexityMeasure
-    encoding::S
-    m::Int
-    τ::Int
-    check_unique::Bool
-
-    function ReverseDispersion(; c = 5, m = 2, τ = 1, check_unique::Bool = false)
-        encoding = GaussianCDFEncoding(; c)
-        new{typeof(encoding)}(encoding, m, τ, check_unique)
-    end
+Base.@kwdef struct ReverseDispersion{S <: Encoding} <: ComplexityMeasure
+    encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`
+    c::Int = 3 # The number of categories to map encoded values to.
+    m::Int = 2
+    τ::Int = 1
+    check_unique::Bool = false
 end
 
-total_outcomes(est::ReverseDispersion)::Int = total_outcomes(est.encoding) ^ est.m
+total_outcomes(est::ReverseDispersion)::Int = est.c ^ est.m
 
 """
     distance_to_whitenoise(estimator::ReverseDispersion, p::Probabilities;
@@ -91,13 +86,13 @@ function distance_to_whitenoise(est::ReverseDispersion, p::Probabilities; normal
 end
 
 function complexity(measure::ReverseDispersion, x)
-    (; encoding, m, τ, check_unique) = measure
-    p = probabilities(Dispersion(; c = encoding.c, m, τ, check_unique), x)
+    (; encoding, c, m, τ, check_unique) = measure
+    p = probabilities(Dispersion(; c, m, τ, check_unique), x)
     return distance_to_whitenoise(measure, p, normalize = false)
 end
 
 function complexity_normalized(measure::ReverseDispersion, x)
-    (; encoding, m, τ, check_unique) = measure
-    p = probabilities(Dispersion(; c = encoding.c, m, τ, check_unique), x)
+    (; encoding, c, m, τ, check_unique) = measure
+    p = probabilities(Dispersion(; c, m, τ, check_unique), x)
     return distance_to_whitenoise(measure, p, normalize = true)
 end
