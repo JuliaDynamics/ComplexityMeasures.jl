@@ -5,14 +5,31 @@ export SymbolicPermutation
     SymbolicPermutation <: ProbabilitiesEstimator
     SymbolicPermutation(; m = 3, τ = 1, lt::Function = Entropies.isless_rand)
 
-A probabilities estimator based on ordinal permutation patterns, originally used by
-Bandt & Pompe (2002)[^BandtPompe2002] to compute permutation entropy.
+A probabilities estimator based on ordinal permutation patterns.
 
-If applied to a univariate time series, then the time series is first embedded using
-embedding delay `τ` and dimension `m`, and then converted to a symbol time series using
-[`outcomes`](@ref) with [`OrdinalPatternEncoding`](@ref), from which probabilities are
-estimated. If applied to a `Dataset`, then `τ` and `m` are ignored, and probabilities are
-computed directly from the state vectors.
+The quantity computed depends on the input data:
+
+- **Univariate data**. If applied to a univariate time series, then the time series
+    is first embedded using embedding delay `τ` and dimension `m`, resulting in embedding
+    vectors ``\\{ \\bf{x}_i \\}_{i=1}^{N-(m-1)\\tau}``. Then, for each ``\\bf{x}_i``,
+    we find its permutation pattern ``\\pi_{i}``, which we internally encode a an integer
+    ``s_i \\in \\mathbb{N}^+`` for efficient computation (integer symbols are obtained by
+    using [`encode`](@ref) with [`OrdinalPatternEncoding`](@ref)).
+    Probabilities are then
+    estimated as naive frequencies over the encoded permutation symbols
+    ``\\{ s_i \\}_{i=1}^{N-(m-1)\\tau}`` by using [`CountOccurrences`](@ref).
+    The resulting probabilities can be used to compute permutation entropy (PE;
+    Bandt & Pompe, 2002[^BandtPompe2002]).
+- **Multivariate data**. If applied to a an `D`-dimensional `Dataset`,
+    then it is assumed that the input data represents ``N`` observations of a multivariate
+    system ``\\{ \\bf{x}_i \\}_{i=1}^N``, and no embedding is constructed.
+    For each ``\\bf{x}_i \\in \\mathbb{R}^D``, we direct find its permutation pattern
+    ``\\pi_{i}`` and encode it as ``s_i \\in \\mathbb{N}^+`` (i.e. `est.τ` and `est.m` are
+    ignored, and we set `m = D` instead). Finally, probabilities are estimated as relative
+    frequencies of occurrences of the encoded permutation symbols.
+    The resulting probabilities can be used to compute multivariate permutation
+    entropy (MvPE; He et al., 2016[^He2016]), but here we don't perform any subdivision
+    of the permutation patterns (see Figure 3 in He et al., 2016).
 
 ## Outcome space
 
@@ -63,6 +80,10 @@ information about within-state-vector amplitudes.
 [^Zunino2017]: Zunino, L., Olivares, F., Scholkmann, F., & Rosso, O. A. (2017).
     Permutation entropy based time series analysis: Equalities in the input signal can
     lead to false conclusions. Physics Letters A, 381(22), 1883-1892.
+[^He2016]:
+    He, S., Sun, K., & Wang, H. (2016). Multivariate permutation entropy and its
+    application for complexity analysis of chaotic systems. Physica A: Statistical
+    Mechanics and its Applications, 461, 812-823.
 """
 struct SymbolicPermutation{F} <: PermutationProbabilitiesEstimator
     τ::Int
