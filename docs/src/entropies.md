@@ -11,6 +11,7 @@ Entropy
 Shannon
 Renyi
 Tsallis
+Kaniadakis
 Curado
 StretchedExponential
 ```
@@ -29,20 +30,20 @@ discrete estimators.
 
 Tables scroll sideways, so are best viewed on a large screen.
 
-| Estimator                                   | Principle                   | Input data          | [`Shannon`](@ref) | [`Renyi`](@ref) | [`Tsallis`](@ref) | [`Curado`](@ref) | [`StretchedExponential`](@ref) |
-| ------------------------------------------- | --------------------------- | ------------------- | :---------------: | :-------------: | :---------------: | :--------------: | :----------------------------: |
-| [`CountOccurrences`](@ref)                  | Frequencies                 | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`LocalLikelihood`](@ref)                   | Local likelihood Estimation | `Dataset`           |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`Dispersion`](@ref)                        | Dispersion patterns         | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`Diversity`](@ref)                         | Cosine similarity           | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
-| [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |        ✅        |               ✅               |
+| Estimator                                   | Principle                   | Input data          | [`Shannon`](@ref) | [`Renyi`](@ref) | [`Tsallis`](@ref) | [`Kaniadakis`](@ref) | [`StretchedExponential`](@ref) | [`Curado`](@ref) |
+| ------------------------------------------- | --------------------------- | ------------------- | :---------------: | :-------------: | :---------------: | :------------------: | :----------------------------: | :--------------: |
+| [`CountOccurrences`](@ref)                  | Frequencies                 | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`LocalLikelihood`](@ref)                   | Local likelihood Estimation | `Dataset`           |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`Dispersion`](@ref)                        | Dispersion patterns         | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`Diversity`](@ref)                         | Cosine similarity           | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
+| [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 
 ### Continuous/differential entropies
 
@@ -56,16 +57,16 @@ For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy, while
 [`LeonenkoProzantoSavani`](@ref) estimates [`Shannon`](@ref), [`Renyi`](@ref), and
 [`Tsallis`](@ref) entropies.
 
-| Estimator                    | Principle         | Input data | [`Shannon`](@ref) | [`Renyi`](@ref) | [`Tsallis`](@ref) | [`Curado`](@ref) | [`StretchedExponential`](@ref) |
-| ---------------------------- | ----------------- | ---------- | :---------------: | :-------------: | :---------------: | :--------------: | :----------------------------: |
-| [`KozachenkoLeonenko`](@ref) | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |        x         |               x                |
-| [`Kraskov`](@ref)            | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |        x         |               x                |
-| [`Zhu`](@ref)                | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |        x         |               x                |
-| [`ZhuSingh`](@ref)           | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |        x         |               x                |
-| [`Vasicek`](@ref)            | Order statistics  | `Vector`   |        ✅         |        x        |         x         |        x         |               x                |
-| [`Ebrahimi`](@ref)           | Order statistics  | `Vector`   |        ✅         |        x        |         x         |        x         |               x                |
-| [`Correa`](@ref)             | Order statistics  | `Vector`   |        ✅         |        x        |         x         |        x         |               x                |
-| [`AlizadehArghami`](@ref)    | Order statistics  | `Vector`   |        ✅         |        x        |         x         |        x         |               x                |
+| Estimator                    | Principle         | Input data | [`Shannon`](@ref) | [`Renyi`](@ref) | [`Tsallis`](@ref) | [`Kaniadakis`](@ref) | [`Curado`](@ref) | [`StretchedExponential`](@ref) |
+| ---------------------------- | ----------------- | ---------- | :---------------: | :-------------: | :---------------: | :------------------: | :--------------: | :----------------------------: |
+| [`KozachenkoLeonenko`](@ref) | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |          x           |        x         |               x                |
+| [`Kraskov`](@ref)            | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |          x           |        x         |               x                |
+| [`Zhu`](@ref)                | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |          x           |        x         |               x                |
+| [`ZhuSingh`](@ref)           | Nearest neighbors | `Dataset`  |        ✅         |        x        |         x         |          x           |        x         |               x                |
+| [`Vasicek`](@ref)            | Order statistics  | `Vector`   |        ✅         |        x        |         x         |          x           |        x         |               x                |
+| [`Ebrahimi`](@ref)           | Order statistics  | `Vector`   |        ✅         |        x        |         x         |          x           |        x         |               x                |
+| [`Correa`](@ref)             | Order statistics  | `Vector`   |        ✅         |        x        |         x         |          x           |        x         |               x                |
+| [`AlizadehArghami`](@ref)    | Order statistics  | `Vector`   |        ✅         |        x        |         x         |          x           |        x         |               x                |
 
 ```@docs
 EntropyEstimator
