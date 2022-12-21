@@ -6,26 +6,24 @@ export SpatialSymbolicPermutation
 ###########################################################################################
 
 """
-    SpatialSymbolicPermutation(stencil, x, periodic = true)
+    SpatialSymbolicPermutation(stencil, x; periodic = true)
 
 A symbolic, permutation-based probabilities estimator for spatiotemporal systems.
 
-The input data `x` are high-dimensional arrays, for example 2D arrays [^Ribeiro2012] or 3D arrays
-[^Schlemmer2018]. This approach is also known as _spatiotemporal permutation entropy_.
+The input data `x` are high-dimensional arrays, for example 2D arrays [^Ribeiro2012] or
+3D arrays [^Schlemmer2018]. This approach is also known as
+_spatiotemporal permutation entropy_.
 `x` is given because we need to know its size for optimization and bound checking.
+
+## Stencils
 
 A _stencil_ defines what local area (which points) around each pixel to
 consider, and compute ordinal patterns from.
 The number of included points in a stencil (`m`) determines the length of the vectors
 to be discretized, i.e. there are `m!` possible ordinal patterns around each pixel.
 
-Example usage:
-```julia
-data = [rand(50, 50) for _ in 1:50]
-x = data[1] # first "time slice" of a spatial system evolution
-stencil = ...
-est = SpatialSymbolicPermutation(stencil, x)
-```
+The argument `periodic` decides whether the stencil should wrap around at the end of the
+array. If `periodic = false`, pixels whose stencil exceeds the array bounds are skipped.
 
 Stencils are passed in one of the following three ways:
 
@@ -64,17 +62,34 @@ Stencils are passed in one of the following three ways:
     ```
     When passing a stencil using `extent` and `lag`, `m = prod(extent)!`.
 
-After having defined `est`, one calculates the spatial permutation entropy
-by calling [`entropy`](@ref) with `est`, and with the array data.
+## Example: spatiotemporal entropy for time series
+
+Usage is simple. First, define a `SpatialSymbolicPermutation` estimator by specifying
+a stencil and giving some input data (a matrix with the same dimensions as the data
+as you're going to analyse). Then simply call [`entropy`](@ref) with the estimator.
+
+```julia
+using Entropies
+x = rand(50, 50) # first "time slice" of a spatial system evolution
+stencil = [1 1; 0 1] # or one of the other ways of specifying stencils
+est = SpatialSymbolicPermutation(stencil, x)
+h = entropy(est, x)
+```
+
 To apply this to timeseries of spatial data, simply loop over the call, e.g.:
 
 ```julia
-h = entropy(x, est)
-h_vs_t = [entropy(d, est) for d in data]
+data = [rand(50, 50) for i in 1:50]
+est = SpatialSymbolicPermutation(stencil, first(data))
+h_vs_t = [entropy(est, d) for d in data]
 ```
 
-The argument `periodic` decides whether the stencil should wrap around at the end of the
-array. If `periodic = false`, pixels whose stencil exceeds the array bounds are skipped.
+## Outcome space
+
+The outcome space `Ω` for `SpatialSymbolicPermutation` is the set of length-`m` ordinal
+patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`,
+ordered lexicographically. There are `factorial(m)` such patterns.
+Here, `m` refers to the number of points included by `stencil`.
 
 [^Ribeiro2012]:
     Ribeiro et al. (2012). Complexity-entropy causality plane as a complexity measure
@@ -102,7 +117,6 @@ function SpatialSymbolicPermutation(stencil, x::AbstractArray{T, D};
         stencil, copy(stencil), arraysize, valid, lt, m
     )
 end
-
 
 function probabilities(est::SpatialSymbolicPermutation, x)
     # TODO: This can be literally a call to `symbolize` and then
@@ -137,6 +151,11 @@ function Base.show(io::IO, est::SpatialSymbolicPermutation{D}) where {D}
     print(io, "Spatial permutation estimator for $D-dimensional data. Stencil:")
     print(io, "\n")
     show(io, MIME"text/plain"(), est.stencil)
+end
+
+function outcome_space(est::SpatialSymbolicPermutation)
+    encoding = OrdinalPatternEncoding(; est.m, est.lt)
+    decode.(Ref(encoding), 1:factorial(est.m))
 end
 
 function total_outcomes(est::SpatialSymbolicPermutation)
