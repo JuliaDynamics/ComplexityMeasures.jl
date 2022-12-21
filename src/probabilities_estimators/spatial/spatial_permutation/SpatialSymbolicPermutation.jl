@@ -6,34 +6,44 @@ export SpatialSymbolicPermutation
 ###########################################################################################
 
 """
+    SpatialSymbolicPermutation <: ProbabilitiesEstimator
     SpatialSymbolicPermutation(stencil, x; periodic = true)
 
-A symbolic, permutation-based probabilities estimator for spatiotemporal systems.
+A symbolic, permutation-based probabilities estimator for spatiotemporal systems that
+generalises [`SymbolicPermutation`](@ref) to high-dimensional arrays.
 
-The input data `x` are high-dimensional arrays, for example 2D arrays [^Ribeiro2012] or
-3D arrays [^Schlemmer2018]. This approach is also known as
-_spatiotemporal permutation entropy_.
-`x` is given because we need to know its size for optimization and bound checking.
+`SpatialSymbolicPermutation` is based on the 2D and 3D *spatiotemporal permutation entropy*
+estimators by by Ribeiro et al. (2012)[^Ribeiro2012] and Schlemmer et al.
+(2018)[^Schlemmer2018]), respectively, but is here implemented as a pure probabilities
+probabilities estimator that is generalized for `N`-dimensional input data `x`,
+with arbitrary neighborhood regions (stencils) and periodic boundary conditions.
+
+In combination with [`entropy`](@ref) and [`entropy_normalized`](@ref), this
+probabilities estimator can be used to compute (normalized) generalized spatiotemporal
+permutation [`Entropy`](@ref) of any type.
+
+## Arguments
+
+- `stencil`. Defines what local area (hyperrectangle), or which points within this area,
+    to include around each hypervoxel (i.e. pixel in 2D). The examples below demonstrate
+    different ways of specifying stencils. For details, see
+    [`SpatialSymbolicPermutation`](@ref).
+-  `x::AbstractArray`. The input data. Must be provided because we need to know its size
+    for optimization and bound checking.
+
+## Keyword arguments
+
+- `periodic::Bool`. If `periodic == true`, then the stencil should wrap around at the
+    end of the array. If `periodic = false`, then pixels whose stencil exceeds the array
+    bounds are skipped.
 
 ## Stencils
-
-A _stencil_ defines what local area (which points) around each pixel to
-consider, and compute ordinal patterns from.
-The number of included points in a stencil (`m`) determines the length of the vectors
-to be discretized, i.e. there are `m!` possible ordinal patterns around each pixel.
-
-The argument `periodic` decides whether the stencil should wrap around at the end of the
-array. If `periodic = false`, pixels whose stencil exceeds the array bounds are skipped.
 
 Stencils are passed in one of the following three ways:
 
 1. As vectors of `CartesianIndex` which encode the pixels to include in the
     stencil, with respect to the current pixel, or integer arrays of the same dimensionality
-    as the data. For example
-
-    ```julia
-    stencil = CartesianIndex.([(0,0), (0,1), (1,1), (1,0)])
-    ```
+    as the data. For example `stencil = CartesianIndex.([(0,0), (0,1), (1,1), (1,0)])`.
     Don't forget to include the zero offset index if you want to include the point itself,
     which is almost always the case.
     Here the stencil creates a 2x2 square extending to the bottom and right of the pixel
@@ -43,11 +53,7 @@ Stencils are passed in one of the following three ways:
 2. As a `D`-dimensional array (where `D` matches the dimensionality of the input data)
     containing `0`s and `1`s, where if `stencil[index] == 1`, the corresponding pixel is
     included, and if `stencil[index] == 0`, it is not included.
-    To generate the same estimator as in 1., use
-
-    ```julia
-    stencil = [1 1; 1 1]
-    ```
+    To generate the same estimator as in 1., use `stencil = [1 1; 1 1]`.
     When passing a stencil as a `D`-dimensional array, `m = sum(stencil)`
 
 3. As a `Tuple` containing two `Tuple`s, both of length `D`, for `D`-dimensional data.
@@ -55,11 +61,7 @@ Stencils are passed in one of the following three ways:
     dictates the number of pixels to be included along the `i`th axis and `lag[i]`
     the separation of pixels along the same axis.
     This method can only generate (hyper)rectangular stencils. To create the same estimator as
-    in the previous examples, use here
-
-    ```julia
-    stencil = ((2, 2), (1, 1))
-    ```
+    in the previous examples, use here `stencil = ((2, 2), (1, 1))`.
     When passing a stencil using `extent` and `lag`, `m = prod(extent)!`.
 
 ## Example: spatiotemporal entropy for time series
@@ -82,6 +84,15 @@ To apply this to timeseries of spatial data, simply loop over the call, e.g.:
 data = [rand(50, 50) for i in 1:50]
 est = SpatialSymbolicPermutation(stencil, first(data))
 h_vs_t = [entropy(est, d) for d in data]
+```
+
+Computing generalized spatiotemporal permutation entropy is trivial, e.g. with
+[`Renyi`](@ref):
+
+```julia
+x = reshape(repeat(1:5, 500) .+ 0.1*rand(500*5), 50, 50)
+est = SpatialSymbolicPermutation(stencil, x)
+entropy(Renyi(q = 2), est, x)
 ```
 
 ## Outcome space
