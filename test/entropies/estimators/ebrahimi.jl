@@ -19,3 +19,7 @@ ea_n3 = entropy(Shannon(; base = 3), Ebrahimi(m = 100), randn(npts))
 
 x = rand(1000)
 @test_throws ArgumentError entropy(Renyi(q = 2), Ebrahimi(), x)
+
+# Default is Shannon base-2 differential entropy
+est = Ebrahimi()
+@test entropy(est, x) == entropy(Shannon(; base = 2), est, x)

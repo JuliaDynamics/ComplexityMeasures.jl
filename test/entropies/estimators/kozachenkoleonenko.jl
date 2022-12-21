@@ -19,3 +19,7 @@ ea_n3 = entropy(Shannon(; base = 3), KozachenkoLeonenko(), randn(npts))
 
 x = rand(1000)
 @test_throws ArgumentError entropy(Renyi(q = 2), KozachenkoLeonenko(), x)
+
+# Default is Shannon base-2 differential entropy
+est = KozachenkoLeonenko()
+@test entropy(est, x) == entropy(Shannon(; base = 2), est, x)
