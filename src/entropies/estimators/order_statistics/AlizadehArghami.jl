@@ -57,8 +57,8 @@ function entropy(e::Renyi, est::AlizadehArghami, x::AbstractVector{T}) where T
         "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
     ))
 
-    (; m, base) = est
+    (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
-    return entropy(Vasicek(; m, e.base), x) + (2 / n)*(m * log(base, 2))
+    return entropy(e, Vasicek(; m), x) + (2 / n)*(m * log(e.base, 2))
 end
