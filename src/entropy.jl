@@ -71,12 +71,13 @@ a (generalized) entropy defined by `e`, in one of three ways:
    [`probabilities`](@ref) and gives the result to the first method.
 3. From input data `x`, by using a dedicated [`EntropyEstimator`](@ref) that computes
    entropy in a way that doesn't involve explicitly computing probabilities first.
+   Usually, this involves computing a *differential* entropy.
 
-The entropy definition (first argument) is optional.
-When `est` is a probability estimator,
-`Shannon()` is used by default. When `est` is a dedicated entropy estimator,
+The entropy definition (first argument) is optional. Explicitly provide `e` if you need to
+specify a logarithm base for the entropy. When `est` is a probability estimator,
+`Shannon(; base = 2)` is used by default. When `est` is a dedicated entropy estimator,
 the default entropy type is inferred from the estimator (e.g. [`Kraskov`](@ref)
-estimates the [`Shannon`](@ref) entropy).
+estimates `Shannon(; base = 2)` *differential* entropy).
 
 ## Input data
 
@@ -84,12 +85,14 @@ estimates the [`Shannon`](@ref) entropy).
 
 ## Maximum entropy and normalized entropy
 
-All entropies `e` have a well defined maximum value for a given probability estimator.
+All discrete entropies `e` have a well defined maximum value for a given probability estimator.
 To obtain this value one only needs to call the [`entropy_maximum`](@ref) function with the
 chosen entropy type and probability estimator. Or, one can use [`entropy_normalized`](@ref)
 to obtain the normalized form of the entropy (divided by the maximum).
 
 ## Examples
+
+### Discrete entropies
 
 ```julia
 x = [rand(Bool) for _ in 1:10000] # coin toss
@@ -100,6 +103,13 @@ h = entropy(Shannon(), CountOccurrences(), x) # syntactically equivalent to abov
 h = entropy(SymbolicPermutation(;m=3), x) # gives about 2, again by definition
 h = entropy(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin toss
 ```
+
+### Differential/continuous entropies
+
+```julia
+# Normal distribution N(0, 1) has differential entropy 0.5*log(2π) + 0.5
+entropy(Shannon(; base = ℯ), Kraskov(k = 5), randn(100000))
+```
 """
 function entropy(e::Entropy, est::ProbabilitiesEstimator, x)
     ps = probabilities(est, x)
@@ -107,8 +117,8 @@ function entropy(e::Entropy, est::ProbabilitiesEstimator, x)
 end
 
 # Convenience
-entropy(est::ProbabilitiesEstimator, x::Array_or_Dataset) = entropy(Shannon(), est, x)
-entropy(probs::Probabilities) = entropy(Shannon(), probs)
+entropy(est::ProbabilitiesEstimator, x::Array_or_Dataset) = entropy(Shannon(; base = 2), est, x)
+entropy(probs::Probabilities) = entropy(Shannon(; base = 2), probs)
 
 """
     entropy!(s, [e::Entropy,] x, est::ProbabilitiesEstimator)
@@ -126,7 +136,7 @@ function entropy!(s::AbstractVector{Int}, e::Entropy, est::ProbabilitiesEstimato
 end
 
 function entropy!(s::AbstractVector{Int}, est::ProbabilitiesEstimator, x)
-    entropy!(s, Shannon(), est, x)
+    entropy!(s, Shannon(; base = 2), est, x)
 end
 
 ###########################################################################################
@@ -146,7 +156,7 @@ entropy(e::Entropy, est::EntropyEstimator, ::Probabilities) =
 entropy(e::Entropy, est::EntropyEstimator, x::AbstractVector) =
     entropy(e, est, Dataset(x))
 # Always default to Shannon with base-2 logs. Individual estimators may override this.
-entropy(est::EntropyEstimator, x; base = 2) = entropy(Shannon(; base), est, x)
+entropy(est::EntropyEstimator, x) = entropy(Shannon(; base = 2), est, x)
 
 
 ###########################################################################################
