@@ -383,6 +383,60 @@ end
 You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.
 
+## Spatial discrete entropy:
+
+## Spatial (2D permutation/dispersion)
+
+Let's see how the normalized permutation and dispersion entropies increase for an image
+that gets progressively more noise added to it.
+
+```@example
+using Entropies
+using Distributions
+using CairoMakie
+using Statistics
+using TestImages, ImageTransformations, CoordinateTransformations, Rotations
+img = testimage("fabio_grey_256")
+rot = warp(img, recenter(RotMatrix(-3pi/2), center(img));)
+original = Float32.(rot)
+noise_levels = collect(0.0:0.25:1.0) .* std(original) * 5 # % of 1 standard deviation
+noisy_imgs = [i == 1 ? original : original .+ rand(Uniform(0, nL), size(original)) 
+    for (i, nL) in enumerate(noise_levels)]
+# a 2x2 stencil (i.e. dispersion/permutation patterns of length 4)
+stencil = ((2, 2), (1, 1)) 
+est_disp = SpatialDispersion(stencil, original; 
+    encoding =  GaussianCDFEncoding(c = 5), 
+    periodic = false)
+est_perm = SpatialSymbolicPermutation(stencil, original;
+    periodic = false)
+hs_disp = [entropy_normalized(est_disp, img) for img in noisy_imgs]
+hs_perm = [entropy_normalized(est_perm, img) for img in noisy_imgs]
+fig = Figure(size = (800, 1000))
+ax = Axis(fig[1, 1:length(noise_levels)], 
+    xlabel = "Noise level", 
+    ylabel = "Normalized entropy")
+scatterlines!(ax, noise_levels, hs_disp, label = "Dispersion")
+scatterlines!(ax, noise_levels, hs_perm, label = "Permutation")
+ylims!(ax, 0, 1.05)
+axislegend(position = :rb)
+for (i, nl) in enumerate(noise_levels)
+    ax_i = Axis(fig[2, i])
+    image!(ax_i, Float32.(noisy_imgs[i]), label = "$nl")
+    hidedecorations!(ax_i)  # hides ticks, grid and lables
+    hidespines!(ax_i)  # hide the frame
+end
+fig
+```
+
+While the [`SpatialSymbolicPermutation`](@ref) entropy quickly approaches its
+maximum value, the [`SpatialDispersion`](@ref) entropy much better
+resolves the increase in entropy as the image gets noiser. This can probably be explained
+by the fact that for the chosen parameters, for any given `stencil`, the number of possible
+states (or [`total_outcomes`](@ref)) is larger for [`SpatialDispersion`](@ref) than for
+[`SpatialSymbolicPermutation`](@ref), so the dispersion approach is much less sensitive
+to noise addition (i.e. noise saturation over the possible states is slower
+for [`SpatialDispersion`](@ref)).
+
 ## Complexity: reverse dispersion entropy
 
 Here, we compare regular dispersion entropy (Rostaghi et al., 2016)[^Rostaghi2016], and

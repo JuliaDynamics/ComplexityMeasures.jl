@@ -1,3 +1,5 @@
+using StaticArrays: @MVector
+
 export SpatialSymbolicPermutation
 ###########################################################################################
 # type creation
@@ -82,95 +84,52 @@ array. If `periodic = false`, pixels whose stencil exceeds the array bounds are 
     Schlemmer et al. (2018). Spatiotemporal Permutation Entropy as a Measure for
     Complexity of Cardiac Arrhythmia. https://doi.org/10.3389/fphy.2018.00039
 """
-struct SpatialSymbolicPermutation{D,P,V} <: ProbabilitiesEstimator
+struct SpatialSymbolicPermutation{D,P,V} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
     valid::V
     lt::Function
+    m::Int
 end
-function SpatialSymbolicPermutation(
-        stencil, x::AbstractArray, p::Bool = true; lt = isless_rand,
+
+function SpatialSymbolicPermutation(stencil, x::AbstractArray{T, D};
+        periodic::Bool = true, lt = isless_rand) where {T, D}
+    stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
+    m = stencil_length(stencil)
+
+    SpatialSymbolicPermutation{D, periodic, typeof(valid)}(
+        stencil, copy(stencil), arraysize, valid, lt, m
     )
-    arraysize = size(x)
-    stencil, D = stencil_to_offsets(stencil)
-    @assert length(arraysize) == D "Indices and input array must match dimensionality!"
-    # Store valid indices for later iteration
-    if p
-        valid = CartesianIndices(x)
-    else
-        # collect maximum offsets in each dimension for limiting ranges
-        maxoffsets = [maximum(s[i] for s in stencil) for i in 1:D]
-        # Safety check
-        minoffsets = [min(0, minimum(s[i] for s in stencil)) for i in 1:D]
-        ranges = Iterators.product(
-            [(1-minoffsets[i]):(arraysize[i]-maxoffsets[i]) for i in 1:D]...
-        )
-        valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
-    end
-    SpatialSymbolicPermutation{D, p, typeof(valid)}(stencil, copy(stencil), arraysize, valid, lt)
-end
-
-# get stencil in the form of vectors of cartesian indices from either input type
-stencil_to_offsets(stencil::Vector{CartesianIndex{D}}) where D = stencil, D
-
-function stencil_to_offsets(stencil::NTuple{2, NTuple{D, T}}) where {D, T}
-    # get extent and lag from stencil
-    extent, lag = stencil
-    # generate a D-dimensional stencil
-    # start by generating a list of iterators for each dimension
-    iters = [0:lag[i]:extent[i]-1 for i in 1:D]
-    # then generate the stencil. We use an iterator product that we basically only reshape after that
-    stencil = CartesianIndex.(vcat(collect(Iterators.product(iters...))...))
-    return stencil, D
-end
-
-function stencil_to_offsets(stencil::AbstractArray{Int, D}) where D
-    # translate D-dim array into stencil of cartesian indices (of dimension D)
-    stencil = [idx - CartesianIndex(Tuple(ones(Int, D))) for idx in findall(Bool.(stencil))]
-    # subtract first coordinate from everything to get a stencil that contains (0,0)
-    stencil = [idx - stencil[1] for idx in stencil]
-    return stencil, D
 end
 
 
-###########################################################################################
-# probabilities implementation
-###########################################################################################
-function probabilities(est::SpatialSymbolicPermutation, x::AbstractArray)
-    # TODO: This can be literally a call to `outcomes` and then
-    # calling probabilities on it. Should do once the `outcomes` refactoring is done.
+function probabilities(est::SpatialSymbolicPermutation, x)
+    # TODO: This can be literally a call to `symbolize` and then
+    # calling probabilities on it. Should do once the `symbolize` refactoring is done.
     s = zeros(Int, length(est.valid))
     probabilities!(s, est, x)
 end
 
 function probabilities!(s, est::SpatialSymbolicPermutation, x)
-    encoding = OrdinalPatternEncoding(; m = length(est.stencil), lt = est.lt)
-    for (i, pixel) in enumerate(est.valid)
-        pixels = pixels_in_stencil(pixel, est)
-        s[i] = encode(encoding, view(x, pixels))
-    end
+    encodings_from_permutations!(s, est, x)
     return probabilities(s)
 end
 
-# This source code is a modification of the code of Agents.jl that finds neighbors
-# in grid-like spaces. It's the code of `nearby_positions` in `grid_general.jl`.
-function pixels_in_stencil(pixel, spatperm::SpatialSymbolicPermutation{D,false}) where {D}
-    @inbounds for i in eachindex(spatperm.stencil)
-        spatperm.viewer[i] = spatperm.stencil[i] + pixel
-    end
-    return spatperm.viewer
+function probabilities_and_outcomes(est::SpatialSymbolicPermutation, x)
+    # TODO: This can be literally a call to `symbolize` and then
+    # calling probabilities on it. Should do once the `symbolize` refactoring is done.
+    s = zeros(Int, length(est.valid))
+    probabilities_and_outcomes!(s, est, x)
 end
 
-function pixels_in_stencil(pixel, spatperm::SpatialSymbolicPermutation{D,true}) where {D}
-    @inbounds for i in eachindex(spatperm.stencil)
-        # It's annoying that we have to change to tuple and then to CartesianIndex
-        # because iteration over cartesian indices is not allowed. But oh well.
-        spatperm.viewer[i] = CartesianIndex{D}(
-            mod1.(Tuple(spatperm.stencil[i] + pixel), spatperm.arraysize)
-        )
-    end
-    return spatperm.viewer
+function probabilities_and_outcomes!(s, est::SpatialSymbolicPermutation, x)
+    m, lt = est.m, est.lt
+    encoding = OrdinalPatternEncoding(; m, lt)
+
+    encodings_from_permutations!(s, est, x)
+    observed_outcomes = decode.(Ref(encoding), s)
+    return probabilities(s), observed_outcomes
 end
 
 # Pretty printing
@@ -178,4 +137,47 @@ function Base.show(io::IO, est::SpatialSymbolicPermutation{D}) where {D}
     print(io, "Spatial permutation estimator for $D-dimensional data. Stencil:")
     print(io, "\n")
     show(io, MIME"text/plain"(), est.stencil)
+end
+
+function total_outcomes(est::SpatialSymbolicPermutation)
+    return factorial(est.m)
+end
+
+function check_preallocated_length!(πs, est::SpatialSymbolicPermutation{D, periodic}, x::AbstractArray{T, N}) where {D, periodic, T, N}
+    if periodic
+        # If periodic boundary conditions, then each pixel has a well-defined neighborhood,
+        # and there are as many encoded symbols as there are pixels.
+        length(πs) == length(x) ||
+            throw(
+                ArgumentError(
+                    """Need length(πs) == length(x), got `length(πs)=$(length(πs))`\
+                    and `length(x)==$(length(x))`."""
+                )
+            )
+    else
+        # If not periodic, then we must count the number of encoded symbols from the
+        # valid coordinates of the estimator.
+        length(πs) == length(est.valid) ||
+        throw(
+            ArgumentError(
+                """Need length(πs) == length(est.valid), got `length(πs)=$(length(πs))`\
+                and `length(est.valid)==$(length(est.valid))`."""
+            )
+        )
+    end
+end
+
+function encodings_from_permutations!(πs, est::SpatialSymbolicPermutation{D, periodic},
+        x::AbstractArray{T, N}) where {T, N, D, periodic}
+    m, lt = est.m, est.lt
+    check_preallocated_length!(πs, est, x)
+    encoding = OrdinalPatternEncoding(; m, lt)
+
+    perm = @MVector zeros(Int, m)
+    for (i, pixel) in enumerate(est.valid)
+        pixels = pixels_in_stencil(est, pixel)
+        sortperm!(perm, view(x, pixels)) # Find permutation for currently selected pixels.
+        πs[i] = encode(encoding, perm) # Encode based on the permutation.
+    end
+    return πs
 end
