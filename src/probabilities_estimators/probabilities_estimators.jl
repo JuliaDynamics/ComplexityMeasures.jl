@@ -6,3 +6,5 @@ include("timescales/timescales.jl")
 include("transfer_operator/transfer_operator.jl")
 include("dispersion/dispersion.jl")
 include("diversity/diversity.jl")
+
+include("spatial/spatial.jl")

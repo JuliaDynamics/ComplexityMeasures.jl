@@ -65,6 +65,7 @@ SpatialSymbolicPermutation
 
 ```@docs
 Dispersion
+SpatialDispersion
 ```
 
 ## Transfer operator (binning)
