@@ -25,7 +25,7 @@ ax.zticklabelsvisible = false
 fig
 ```
 
-## Differential entropy: nearest neighbors estimators
+## Differential entropy: estimator comparison
 
 Here, we reproduce Figure 1 in Charzyńska & Gambin (2016)[^Charzyńska2016]. Their example
 demonstrates how the [`Kraskov`](@ref) and [`KozachenkoLeonenko`](@ref) nearest neighbor
@@ -33,18 +33,27 @@ based estimators converge towards the true entropy value for increasing time ser
 We extend their example with [`Zhu`](@ref) and [`ZhuSingh`](@ref) estimators, which are also
 based on nearest neighbor searches.
 
-Input data are from a uniform 1D distribution ``U(0, 1)``, for which the true entropy is
-`ln(1 - 0) = 0`).
+Entropies.jl also provides entropy estimators based on
+[order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators
+are only defined for scalar-valued vectors, in this example, so we compute these
+estimates separately, and add these estimators ([`Vasicek`](@ref), [`Ebrahimi`](@ref),
+[`AlizadehArghami`](@ref) and [`Correa`](@ref)) to the comparison.
+
+Input data are from a normal 1D distribution ``\mathcal{N}(0, 1)``, for which the true
+entropy is `0.5*log(2π) + 0.5` nats when using natural logarithms.
 
 ```@example MAIN
 using Entropies
 using DynamicalSystemsBase, CairoMakie, Statistics
-using Distributions: Uniform, Normal
+nreps = 30
+Ns = [100:100:500; 1000:1000:10000]
+e = Shannon(; base = MathConstants.e)
 
-# Define estimators
-base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
+# --------------------------
+# kNN estimators
+# --------------------------
 w = 0 # Theiler window of 0 (only exclude the point itself during neighbor searches)
-estimators = [
+knn_estimators = [
     # with k = 1, Kraskov is virtually identical to
     # Kozachenko-Leonenko, so pick a higher number of neighbors for Kraskov
     Kraskov(; k = 3, w),
@@ -52,92 +61,71 @@ estimators = [
     Zhu(; k = 3, w),
     ZhuSingh(; k = 3, w),
 ]
-labels = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh"]
 
 # Test each estimator `nreps` times over time series of varying length.
-nreps = 50
-Ns = [100:100:500; 1000:1000:10000]
-
-Hs_uniform = [[zeros(nreps) for N in Ns] for e in estimators]
-for (i, e) in enumerate(estimators)
+Hs_uniform_knn = [[zeros(nreps) for N in Ns] for e in knn_estimators]
+for (i, est) in enumerate(knn_estimators)
     for j = 1:nreps
-        pts = rand(Uniform(0, 1), maximum(Ns)) |> Dataset
+        pts = randn(maximum(Ns)) |> Dataset
         for (k, N) in enumerate(Ns)
-            Hs_uniform[i][k][j] = entropy(e, pts[1:N])
+            Hs_uniform_knn[i][k][j] = entropy(e, est, pts[1:N])
         end
     end
 end
 
-fig = Figure(resolution = (600, length(estimators) * 200))
-for (i, e) in enumerate(estimators)
-    Hs = Hs_uniform[i]
-    ax = Axis(fig[i,1]; ylabel = "h (nats)")
-    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
-    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
-    color = (Main.COLORS[i], 0.5))
-    ylims!(-0.25, 0.25)
-    axislegend()
-end
+# --------------------------
+# Order statistic estimators
+# --------------------------
 
-fig
-```
-
-## Differential entropy: order statistics estimators
-
-Entropies.jl also provides entropy estimators based on
-[order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators
-are only defined for scalar-valued vectors, so we pass the data as `Vector{<:Real}`s instead
-of `Dataset`s, as we did for the nearest-neighbor estimators above.
-
-Here, we show how the [`Vasicek`](@ref), [`Ebrahimi`](@ref), [`AlizadehArghami`](@ref) 
-and [`Correa`](@ref) direct [`Shannon`](@ref) entropy estimators, with increasing sample size,
-approach zero for samples from a uniform distribution on  `[0, 1]`. The true entropy value in
-nats for this distribution is `ln(1 - 0) = 0`.
-
-```@example MAIN
-using Entropies
-using Statistics
-using Distributions: Uniform
-using CairoMakie
-
-# Define estimators
-base = MathConstants.e # shouldn't really matter here, because the target entropy is 0.
-# just provide types here, they are instantiated inside the loop
-estimators = [Vasicek, Ebrahimi, AlizadehArghami, Correa]
-labels = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
-
-# Test each estimator `nreps` times over time series of varying length.
-Ns = [100:100:500; 1000:1000:10000]
-nreps = 30
-
-Hs_uniform = [[zeros(nreps) for N in Ns] for e in estimators]
-for (i, e) in enumerate(estimators)
+# Just provide types here, they are instantiated inside the loop
+estimators_os = [Vasicek, Ebrahimi, AlizadehArghami, Correa]
+Hs_uniform_os = [[zeros(nreps) for N in Ns] for e in estimators_os]
+for (i, est_os) in enumerate(estimators_os)
     for j = 1:nreps
-        pts = rand(Uniform(0, 1), maximum(Ns)) # raw timeseries, not a `Dataset`
+        pts = randn(maximum(Ns)) # raw timeseries, not a `Dataset`
         for (k, N) in enumerate(Ns)
             m = floor(Int, N / 100) # Scale `m` to timeseries length
-            est = e(; m, base) # Instantiate estimator with current `m`
-            Hs_uniform[i][k][j] = entropy(est, pts[1:N])
+            est = est_os(; m) # Instantiate estimator with current `m`
+            Hs_uniform_os[i][k][j] = entropy(e, est, pts[1:N])
         end
     end
 end
 
-fig = Figure(resolution = (600, length(estimators) * 200))
-for (i, e) in enumerate(estimators)
-    Hs = Hs_uniform[i]
+# -------------
+# Plot results
+# -------------
+fig = Figure(resolution = (700, 8 * 200))
+labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh"]
+labels_os = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
+
+for (i, e) in enumerate(knn_estimators)
+    Hs = Hs_uniform_knn[i]
     ax = Axis(fig[i,1]; ylabel = "h (nats)")
-    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels[i])
-    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs);
-    color = (Main.COLORS[i], 0.5))
-    ylims!(-0.25, 0.25)
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels_knn[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs); alpha = 0.5,
+        color = (Main.COLORS[i], 0.5))
+    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, lw = 5, linestyle = :dash)
+
+    ylims!(1.2, 1.6)
+    axislegend()
+end
+
+for (i, e) in enumerate(estimators_os)
+    Hs = Hs_uniform_os[i]
+    ax = Axis(fig[i + length(knn_estimators),1]; ylabel = "h (nats)")
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels_os[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs), alpha = 0.5,
+        color = (Main.COLORS[i], 0.5))
+    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, lw = 5, linestyle = :dash)
+    ylims!(1.2, 1.6)
     axislegend()
 end
 
 fig
 ```
 
-As for the nearest neighbor estimators, both estimators also approach the
-true entropy value for this example, but is negatively biased for small sample sizes.
+All estimators approach the true differential entropy, but those based on order statistics
+are negatively biased for small sample sizes.
 
 ## Discrete entropy: permutation entropy
 
@@ -315,6 +303,7 @@ using Entropies
 using DynamicalSystemsBase
 using Random
 using CairoMakie
+using Distributions: Normal
 
 n = 1000
 ts = 1:n
