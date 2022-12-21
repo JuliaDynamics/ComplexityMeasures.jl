@@ -21,8 +21,8 @@ integer symbol representations `πᵢ`.
 
 ## Description
 
-The Lehmer code is a bijection between the set of `factorial(n)` possible permutations
-for a length-`n` sequence, and the integers `0, 1, …, n - 1`.
+The Lehmer code, as implemented here, is a bijection between the set of `factorial(n)`
+possible permutations for a length-`n` sequence, and the integers `1, 2, …, n`.
 
 - *Encoding* converts an `m`-dimensional permutation pattern `p` into its unique integer
     symbol ``\\omega \\in \\{0, 1, \\ldots, m - 1 \\}``, using Algorithm 1 in Berger
@@ -48,7 +48,7 @@ julia> xs = sortperm(x)
  2
 
 julia> s = encode(encoding, xs)
-19
+20
 
 julia> decode(encoding, s)
 4-element SVector{4, Int64} with indices SOneTo(4):
@@ -76,8 +76,9 @@ function encode(encoding::OrdinalPatternEncoding, perm)
         end
         n = (m-i)*n
     end
-
-    return n
+    # The Lehmer code actually results in 0 being an encoded symbol. Shift by 1, so that
+    # encodings are positive integers.
+    return n + 1
 end
 
 # I couldn't find any efficient algorithm in the literature for converting
@@ -87,7 +88,7 @@ function decode(encoding::OrdinalPatternEncoding, s::Int)
     m = encoding.m
     # Convert integer to its factorial number representation. Each factorial number
     # corresponds to a unique permutation of the numbers `1, 2, ..., m`.
-    f = base10_to_factorial(s, m)
+    f = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 in `encode`
 
     # Reconstruct the permutation from the factorial representation
     xs = 1:m |> collect
