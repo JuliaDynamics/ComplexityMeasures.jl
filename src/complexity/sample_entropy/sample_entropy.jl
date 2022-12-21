@@ -68,16 +68,16 @@ See also: [`sample_entropy`](@ref).
     analysis using approximate entropy and sample entropy. American Journal of
     Physiology-Heart and Circulatory Physiology, 278(6), H2039-H2049.
 """
-Base.@kwdef struct SampleEntropy{I, R, M} <: ComplexityMeasure
-    m::I = 2
-    τ::I = 1
+Base.@kwdef struct SampleEntropy{R, M} <: ComplexityMeasure
+    m::Int = 2
+    τ::Int = 1
     metric::M = Chebyshev()
     r::R
 
-    function SampleEntropy(m::I, τ::I, metric::M, r::R) where {I, R, M, B}
+    function SampleEntropy(m::Int, τ::Int, metric::M, r::R) where {R, M}
         m >= 1 || throw(ArgumentError("m must be >= 1. Got m=$(m)."))
         r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
-        new{I, R, M}(m, τ, metric, r)
+        new{R, M}(m, τ, metric, r)
     end
 
     function SampleEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1,
