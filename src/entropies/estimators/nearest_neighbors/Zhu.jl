@@ -4,18 +4,27 @@ export Zhu
     Zhu <: EntropyEstimator
     Zhu(k = 1, w = 0)
 
-The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
-differential [`entropy`](@ref) of `x` (a multi-dimensional `Dataset`), by
-approximating probabilities within hyperrectangles surrounding each point `xᵢ ∈ x` using
-using `k` nearest neighbor searches.
+The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] is an extension to
+[`KozachenkoLeonenko`](@ref), and computes the [`Shannon`](@ref)
+differential [`entropy`](@ref) of `x` (a multi-dimensional `Dataset`).
 
-`w` is the Theiler window, which determines if temporal neighbors are excluded
-during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
-when searching for neighbours).
+## Description
 
-This estimator is an extension to [`KozachenkoLeonenko`](@ref).
+Assume we have samples ``\\{\\bf{x}_1, \\bf{x}_2, \\ldots, \\bf{x}_N \\}`` from a
+continuous random variable ``X \\in \\mathbb{R}^d`` with support ``\\mathcal{X}`` and
+density function``f : \\mathbb{R}^d \\to \\mathbb{R}``. `Zhu` estimates the [Shannon](@ref)
+differential entropy
 
-See also: [`entropy`](@ref).
+```math
+H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
+```
+
+by approximating densities within hyperrectangles surrounding each point `xᵢ ∈ x` using
+using `k` nearest neighbor searches. `w` is the Theiler window, which determines if
+temporal neighbors are excluded during neighbor searches (defaults to `0`, meaning that
+only the point itself is excluded when searching for neighbours).
+
+See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`EntropyEstimator`](@ref).
 
 [^Zhu2015]:
     Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to

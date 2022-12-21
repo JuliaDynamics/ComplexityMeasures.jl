@@ -5,9 +5,22 @@ export KozachenkoLeonenko
     KozachenkoLeonenko(; k::Int = 1, w::Int = 1, base = 2)
 
 The `KozachenkoLeonenko` estimator computes the [`Shannon`](@ref) differential
-[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) to the given `base`, based on
-nearest neighbor searches using the method from Kozachenko & Leonenko
-(1987)[^KozachenkoLeonenko1987], as described in Charzyńska and Gambin[^Charzyńska2016].
+[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) to the given `base`.
+
+## Description
+
+Assume we have samples ``\\{\\bf{x}_1, \\bf{x}_2, \\ldots, \\bf{x}_N \\}`` from a
+continuous random variable ``X \\in \\mathbb{R}^d`` with support ``\\mathcal{X}`` and
+density function``f : \\mathbb{R}^d \\to \\mathbb{R}``. `KozachenkoLeonenko` estimates
+the [Shannon](@ref) differential entropy
+
+```math
+H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
+```
+
+using the nearest neighbor method from Kozachenko &
+Leonenko (1987)[^KozachenkoLeonenko1987], as described in Charzyńska and
+Gambin[^Charzyńska2016].
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
@@ -15,7 +28,8 @@ when searching for neighbours).
 
 In contrast to [`Kraskov`](@ref), this estimator uses only the *closest* neighbor.
 
-See also: [`entropy`](@ref).
+
+See also: [`entropy`](@ref), [`Kraskov`](@ref), [`EntropyEstimator`](@ref).
 
 [^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy
     estimator with applications in systems biology. Entropy, 18(1), 13.

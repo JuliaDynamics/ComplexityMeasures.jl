@@ -12,7 +12,18 @@ searches method from [^Kraskov2004].
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
 when searching for neighbours).
 
-See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref).
+## Description
+
+Assume we have samples ``\\{\\bf{x}_1, \\bf{x}_2, \\ldots, \\bf{x}_N \\}`` from a
+continuous random variable ``X \\in \\mathbb{R}^d`` with support ``\\mathcal{X}`` and
+density function``f : \\mathbb{R}^d \\to \\mathbb{R}``. `Kraskov` estimates the
+[Shannon](@ref) differential entropy
+
+```math
+H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))].
+```
+
+See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`EntropyEstimator`](@ref).
 
 [^Kraskov2004]:
     Kraskov, A., Stögbauer, H., & Grassberger, P. (2004).

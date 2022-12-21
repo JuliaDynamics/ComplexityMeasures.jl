@@ -2,33 +2,54 @@ export AlizadehArghami
 
 """
     AlizadehArghami <: EntropyEstimator
-    AlizadehArghami(; m::Int = 1, base = 2)
+    AlizadehArghami(; m::Int = 1)
 
 The `AlizadehArghami`estimator computes the [`Shannon`](@ref) differential
-[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) to the given `base` using the
+[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) using the
 method from Alizadeh & Arghami (2010)[^Alizadeh2010].
+
+The `AlizadehArghami` estimator belongs to a class of differential entropy estimators based
+on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
+*timeseries* input.
 
 ## Description
 
-The estimator first computes the
-[order statistics](https://en.wikipedia.org/wiki/Order_statistic)
-``X_{(1)} \\leq X_{(2)} \\leq \\cdots \\leq X_{(n)}`` for a random sample of length ``n``,
-i.e. the input timeseries. The entropy for the length-`n` sample is then estimated as
-the [`Vasicek`](@ref) entropy estimate, plus a correction factor
+Assume we have samples ``\\bar{X} = \\{x_1, x_2, \\ldots, x_N \\}`` from a
+continuous random variable ``X \\in \\mathbb{R}`` with support ``\\mathcal{X}`` and
+density function``f : \\mathbb{R} \\to \\mathbb{R}``. `AlizadehArghami` estimates the
+[Shannon](@ref) differential entropy
 
 ```math
-H_{A}(m, n) = H_{V}(m, n) + \\dfrac{2}{n}\\left(m \\log_{base}(2) \\right).
+H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))].
 ```
 
-See also: [`entropy`](@ref).
+However, instead of estimating the above integral directly, it makes use of the equivalent
+integral, where ``F`` is the distribution function for ``X``:
+
+```math
+H(X) = \\int_0^1 \\log \\left(\\dfrac{d}{dp}F^{-1}(p) \\right) dp.
+```
+
+This integral is approximated by first computing the
+[order statistics](https://en.wikipedia.org/wiki/Order_statistic) of ``\\bar{X}``
+(the input timeseries), i.e. ``x_{(1)} \\leq x_{(2)} \\leq \\cdots \\leq x_{(n)}``.
+The `AlizadehArghami` [`Shannon`](@ref) differential entropy estimate is then the
+the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correction factor
+
+```math
+\\hat{H}_{A}(\\bar{X}, m, n) = \\hat{H}_{V}(\\bar{X}, m, n) +
+\\dfrac{2}{n}\\left(m \\log(2) \\right).
+```
 
 [^Alizadeh2010]:
     Alizadeh, N. H., & Arghami, N. R. (2010). A new estimator of entropy.
     Journal of the Iranian Statistical Society (JIRSS).
+
+See also: [`entropy`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
+[`Vasicek`](@ref), [`EntropyEstimator`](@ref).
 """
-@Base.kwdef struct AlizadehArghami{I<:Integer, B} <: EntropyEstimator
+@Base.kwdef struct AlizadehArghami{I<:Integer} <: EntropyEstimator
     m::I = 1
-    base::B = 2
 end
 
 function entropy(e::Renyi, est::AlizadehArghami, x::AbstractVector{T}) where T
@@ -39,5 +60,5 @@ function entropy(e::Renyi, est::AlizadehArghami, x::AbstractVector{T}) where T
     (; m, base) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
-    return entropy(Vasicek(; m, base), x) + (2 / n)*(m * log(base, 2))
+    return entropy(Vasicek(; m, e.base), x) + (2 / n)*(m * log(base, 2))
 end
