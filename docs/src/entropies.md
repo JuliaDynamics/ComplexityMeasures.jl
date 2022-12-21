@@ -16,9 +16,7 @@ Curado
 StretchedExponential
 ```
 
-## Estimation
-
-### Discrete entropies
+## Estimation (discrete)
 
 Discrete entropies are just simple functions (sums, actually) of
 probability mass functions [(pmf)](https://en.wikipedia.org/wiki/Probability_mass_function),
@@ -36,7 +34,6 @@ Tables scroll sideways, so are best viewed on a large screen.
 | [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 | [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 | [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`LocalLikelihood`](@ref)                   | Local likelihood Estimation | `Dataset`           |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 | [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 | [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 | [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
@@ -45,7 +42,7 @@ Tables scroll sideways, so are best viewed on a large screen.
 | [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 | [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 
-### Continuous/differential entropies
+### Estimation (continuous/differential)
 
 The following estimators are *differential* entropy estimators, and can also be used
 with [`entropy`](@ref). Differential) entropies are functions of *integrals*, and usually
