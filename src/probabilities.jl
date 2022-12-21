@@ -78,6 +78,7 @@ All currently implemented probability estimators are:
 - [`ValueHistogram`](@ref).
 - [`TransferOperator`](@ref).
 - [`Dispersion`](@ref).
+- [`SpatialDispersion`](@ref).
 - [`WaveletOverlap`](@ref).
 - [`PowerSpectrum`](@ref).
 - [`SymbolicPermutation`](@ref).

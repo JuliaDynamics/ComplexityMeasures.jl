@@ -49,10 +49,10 @@ always get non-zero probabilities using the `Dispersion` probability estimator.
 
 ## Outcome space
 
-The outcome space for `Dispersion` is the unique delay vectors with elements the
+The outcome space for `Dispersion` is the unique delay vectors whose elements are the
 the symbols (integers) encoded by the Gaussian CDF.
 Hence, the outcome space is all `m`-dimensional delay vectors whose elements
-are all possible values in `1:c`.
+are all possible values in `1:c`. There are `c ^ m` such vectors.
 
 ## Data requirements and parameters
 

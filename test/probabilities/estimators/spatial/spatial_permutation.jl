@@ -80,3 +80,5 @@ stencil = [1 1; 1 1];
 est = SpatialSymbolicPermutation(stencil, x)
 hsp = entropy_normalized(Renyi(), est, x)
 @test round(hsp, digits = 2) == 1.00
+
+@test outcome_space(est) == outcome_space(SymbolicPermutation(m = est.m))
