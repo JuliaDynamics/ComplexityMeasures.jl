@@ -53,3 +53,5 @@ est_y_presymb = SpatialDispersion(stencil, y; skip_encoding =  true, L = 2)
 
 @test 0.99 <= round(entropy_normalized(est_y, y), digits = 2) <= 1.0
 @test 0.99 <= round(entropy_normalized(est_y_presymb, y), digits = 2) <= 1.0
+
+@test outcome_space(est_y) == outcome_space(Dispersion(c = est_y.c, m = est_y.m))
