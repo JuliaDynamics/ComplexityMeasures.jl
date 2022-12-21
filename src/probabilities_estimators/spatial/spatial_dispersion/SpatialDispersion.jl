@@ -13,7 +13,8 @@ import Base.maximum
 
 A dispersion-based probabilities/entropy estimator for `N`-dimensional spatiotemporal
 systems, based on Azami et al. (2019)'s 2D square dispersion entropy estimator,
-but here generalized for `N`-dimensional input data `x`.
+but here generalized for `N`-dimensional input data `x` (similar to [`Dispersion`](@ref),
+but accepts higher-order arrays as input).
 
 ## Arguments
 
@@ -29,8 +30,7 @@ but here generalized for `N`-dimensional input data `x`.
 - `periodic::Bool`. If `periodic == true`, then the stencil should wrap around at the
     end of the array. If `periodic = false`, then pixels whose stencil exceeds the array
     bounds are skipped.
-- `encoding::Encoding`. Determines how input data is mapped to discrete categories. Must be
-    a valid [`Encoding`](@ref).
+- `c::Int`. Determines how many discrete categories to use for the Gaussian encoding.
 - `skip_encoding`. If `skip_encoding == true`, `encoding` is ignored, and dispersion
     patterns are computed directly from `x`, under the assumption that `L` is the alphabet
     length for `x` (useful for categorical or integer data). Thus, if
@@ -39,6 +39,13 @@ but here generalized for `N`-dimensional input data `x`.
 - `L`. If `L == nothing` (default), then the number of total outcomes is inferred from
     `stencil` and `encoding`. If `L` is set to an integer, then the data is considered
     pre-encoded and the number of total outcomes is set to `L`.
+
+## Outcome space
+
+The outcome space for `SpatialDispersion` is the unique delay vectors whose elements are the
+the symbols (integers) encoded by the Gaussian CDF. Hence, the outcome space is all
+`m`-dimensional delay vectors whose elements are all possible values in `1:c`.
+There are `c ^ m` such vectors.
 
 ## Description
 
@@ -183,7 +190,4 @@ function total_outcomes(est::SpatialDispersion)::Int
     end
 end
 
-# TODO: how to represent the outcomes? We have to think about this...
-function outcome_space(est::SpatialDispersion)
-
-end
+outcome_space(est::SpatialDispersion) = outcome_space(Dispersion(; c = est.c, m = est.m))
