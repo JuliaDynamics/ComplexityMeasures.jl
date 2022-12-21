@@ -74,29 +74,22 @@ function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where
     SymbolicPermutation{F}(τ, m, lt)
 end
 
-function probabilities(est::SymbolicPermutation, x::AbstractDataset)
-    πs = zeros(Int, length(x))
-    probabilities(encodings_from_permutations!(πs, est, x))
+function probabilities(est::SymbolicPermutation, x::Vector_or_Dataset)
+    probabilities(encodings_from_permutations(est, x))
 end
 
-function probabilities(est::SymbolicPermutation, x::AbstractVector)
-    N = length(x) - (est.m - 1)*est.τ
-    πs = zeros(Int, N)
-    probabilities(encodings_from_permutations!(πs, est, x))
-end
-
-function probabilities!(πs::AbstractVector{Int}, est::SymbolicPermutation, x)
+function probabilities!(πs::AbstractVector{Int}, est::SymbolicPermutation, x::Vector_or_Dataset)
     encodings_from_permutations!(πs, est, x)
     probabilities(πs)
 end
 
-function probabilities_and_outcomes(est::SymbolicPermutation, x::AbstractDataset)
+function probabilities_and_outcomes(est::SymbolicPermutation, x::Vector_or_Dataset)
     πs = encodings_from_permutations(est, x)
     return probabilities(πs), observed_outcomes(est, πs)
 end
 
-function probabilities_and_outcomes(est::SymbolicPermutation, x::AbstractVector{<:Real})
-    πs = encodings_from_permutations(est, x)
+function probabilities_and_outcomes!(πs::AbstractVector{Int}, est::SymbolicPermutation, x::Vector_or_Dataset)
+    encodings_from_permutations!(πs, est, x)
     return probabilities(πs), observed_outcomes(est, πs)
 end
 
