@@ -428,11 +428,11 @@ end
 fig
 ```
 
-While the [`SpatialSymbolicPermutation`](@ref) entropy quickly approaches its
-maximum value, the [`SpatialDispersion`](@ref) entropy much better
+While the normalized [`SpatialSymbolicPermutation`](@ref) entropy quickly approaches its
+maximum value, the normalized [`SpatialDispersion`](@ref) entropy much better
 resolves the increase in entropy as the image gets noiser. This can probably be explained
-by the fact that for the chosen parameters, for any given `stencil`, the number of possible
-states (or [`total_outcomes`](@ref)) is larger for [`SpatialDispersion`](@ref) than for
+by the fact that the number of possible
+states (or [`total_outcomes`](@ref)) for any given `stencil` is larger for [`SpatialDispersion`](@ref) than for
 [`SpatialSymbolicPermutation`](@ref), so the dispersion approach is much less sensitive
 to noise addition (i.e. noise saturation over the possible states is slower
 for [`SpatialDispersion`](@ref)).
