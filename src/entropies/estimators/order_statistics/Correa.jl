@@ -80,9 +80,9 @@ function entropy(e::Renyi, est::Correa, x::AbstractVector{T}) where T
             den += (xⱼ - x̄ᵢ)^2
         end
         den *= n
-        HCₘₙ += log(e.base, num / den)
+        HCₘₙ += log(num / den)
     end
-    return -HCₘₙ / n
+    return (-HCₘₙ / n) / log(e.base, ℯ)
 end
 
 function local_scaled_mean(ex, i::Int, m::Int, n::Int = length(x))

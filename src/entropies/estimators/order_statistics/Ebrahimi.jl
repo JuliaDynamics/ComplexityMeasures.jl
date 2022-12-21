@@ -87,7 +87,7 @@ function entropy(e::Renyi, est::Ebrahimi, x::AbstractVector{T}) where T
         f = n / (cᵢ * m)
         dnext = ith_order_statistic(ex, i + m, n)
         dprev = ith_order_statistic(ex, i - m, n)
-        HVₘₙ += log(e.base, f * (dnext - dprev))
+        HVₘₙ += log(f * (dnext - dprev))
     end
-    return HVₘₙ / n
+    return (HVₘₙ / n) / log(e.base, ℯ)
 end
