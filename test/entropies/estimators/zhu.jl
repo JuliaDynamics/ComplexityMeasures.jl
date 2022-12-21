@@ -2,23 +2,33 @@ using DelayEmbeddings: Dataset
 
 # To ensure minimal rectangle volumes are correct, we also test internals directly here.
 # It's not feasible to construct an end-product test due to the neighbor searches.
-x = Dataset([[-1, -2], [0, -2], [3, 2]])
-y = Dataset([[3, 1], [-5, 1], [3, -2]])
+x = Dataset([[-1, -2], [0, -2], [3, 2]]);
+y = Dataset([[3, 1], [-5, 1], [3, -2]]);
 @test Entropies.volume_minimal_rect([0, 0], x) == 24
 @test Entropies.volume_minimal_rect([0, 0], y) == 40
 
-# Analytical tests for the estimated entropy
-DN = Dataset(randn(200000, 1))
-hN_base_e = 0.5 * log(MathConstants.e, 2π) + 0.5
-hN_base_2 = hN_base_e / log(2, MathConstants.e)
+# -------------------------------------------------------------------------------------
+# Check if the estimator converge to true values for some distributions with
+# analytically derivable entropy.
+# -------------------------------------------------------------------------------------
+# Entropy to log with base b of a uniform distribution on [0, 1] = ln(1 - 0)/(ln(b)) = 0
+U = 0.00
+# Entropy with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
+N = round(0.5*log(2π) + 0.5, digits = 2)
+N_base3 = round((0.5*log(2π) + 0.5) / log(3, ℯ), digits = 2) # custom base
 
-est = Zhu(k = 3)
+npts = 1000000
+ea = entropy(Shannon(; base = 2), Zhu(k = 5), rand(npts))
+ea_n = entropy(Shannon(; base = ℯ), Zhu(k = 5), randn(npts))
+ea_n3 = entropy(Shannon(; base = 3), Zhu(k = 5), randn(npts))
 
-@test round(entropy(Shannon(; base = ℯ), est, DN), digits = 1) == round(hN_base_e, digits = 1)
-@test round(entropy(Shannon(; base = 2), est, DN), digits = 1) == round(hN_base_2, digits = 1)
+@test round(ea, digits = 2) == U
+@test round(ea_n, digits = 2) == N
+@test round(ea_n3, digits = 2) == N_base3
 
-@test_throws ArgumentError entropy(Renyi(q = 2), Zhu(), DN)
+x = rand(1000)
+@test_throws ArgumentError entropy(Renyi(q = 2), Zhu(k = 5), x)
 
-# Shannon entropy is default.
-@test entropy(Shannon(; base = 2), est, DN) ==  entropy(est, DN, base = 2)
-@test entropy(Shannon(; base = ℯ), est, DN) ==  entropy(est, DN, base = ℯ)
+# Default is Shannon base-2 differential entropy
+est = Zhu()
+@test entropy(est, x) == entropy(Shannon(; base = 2), est, x)

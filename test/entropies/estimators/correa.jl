@@ -6,13 +6,20 @@
 U = 0.00
 # Entropy with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
 N = round(0.5*log(2π) + 0.5, digits = 2)
+N_base3 = round((0.5*log(2π) + 0.5) / log(3, ℯ), digits = 2) # custom base
 
-ec = Correa(m = 100, base = 2)
-ec_n = Correa(m = 100, base = MathConstants.e)
+npts = 1000000
+ea = entropy(Shannon(; base = 2), Correa(m = 100), rand(npts))
+ea_n = entropy(Shannon(; base = ℯ), Correa(m = 100), randn(npts))
+ea_n3 = entropy(Shannon(; base = 3), Correa(m = 100), randn(npts))
 
-n = 1000000
-@test round(entropy(ec, rand(rng, n)), digits = 2) == U
-@test round(entropy(ec_n, randn(rng, n)), digits = 2) == N
+@test round(ea, digits = 2) == U
+@test round(ea_n, digits = 2) == N
+@test round(ea_n3, digits = 2) == N_base3
 
 x = rand(1000)
 @test_throws ArgumentError entropy(Renyi(q = 2), Correa(), x)
+
+# Default is Shannon base-2 differential entropy
+est = Correa()
+@test entropy(est, x) == entropy(Shannon(; base = 2), est, x)

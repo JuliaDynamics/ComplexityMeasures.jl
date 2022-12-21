@@ -28,40 +28,37 @@ vol = Entropies.volume_minimal_rect(dists)
 ξ = Entropies.n_borderpoints(x, nns, dists)
 @test vol == 40.0
 @test ξ == 1.0
+using DelayEmbeddings: Dataset
 
-# Analytical tests: 1D normal distribution
-DN = Dataset(randn(100000, 1))
-σ = 1.0
-hN_base_e = 0.5 * log(MathConstants.e, 2π * σ^2) + 0.5
-hN_base_2 = hN_base_e / log(2, MathConstants.e)
+# To ensure minimal rectangle volumes are correct, we also test internals directly here.
+# It's not feasible to construct an end-product test due to the neighbor searches.
+x = Dataset([[-1, -2], [0, -2], [3, 2]]);
+y = Dataset([[3, 1], [-5, 1], [3, -2]]);
+@test Entropies.volume_minimal_rect([0, 0], x) == 24
+@test Entropies.volume_minimal_rect([0, 0], y) == 40
 
-est = ZhuSingh(k = 3)
+# -------------------------------------------------------------------------------------
+# Check if the estimator converge to true values for some distributions with
+# analytically derivable entropy.
+# -------------------------------------------------------------------------------------
+# Entropy to log with base b of a uniform distribution on [0, 1] = ln(1 - 0)/(ln(b)) = 0
+U = 0.00
+# Entropy with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
+N = round(0.5*log(2π) + 0.5, digits = 2)
+N_base3 = round((0.5*log(2π) + 0.5) / log(3, ℯ), digits = 2) # custom base
 
-@test round(entropy(est, DN, base = ℯ), digits = 1) == round(hN_base_e, digits = 1)
-@test round(entropy(est, DN, base = 2), digits = 1) == round(hN_base_2, digits = 1)
+npts = 1000000
+ea = entropy(Shannon(; base = 2), Zhu(k = 5), rand(npts))
+ea_n = entropy(Shannon(; base = ℯ), Zhu(k = 5), randn(npts))
+ea_n3 = entropy(Shannon(; base = 3), Zhu(k = 5), randn(npts))
 
-# Analytical test: 3D normal distribution
-σs = ones(3)
-μs = zeros(3)
-𝒩₂ = MvNormal(μs, Diagonal(σs))
-Σ = diagm(σs)
-n = length(μs)
-h_𝒩₂_base_ℯ = 0.5n * log(ℯ, 2π) + 0.5*log(ℯ, det(Σ)) + 0.5n
-h_𝒩₂_base_2 = h_𝒩₂_base_ℯ  / log(2, ℯ)
+@test round(ea, digits = 2) == U
+@test round(ea_n, digits = 2) == N
+@test round(ea_n3, digits = 2) == N_base3
 
-sample = Dataset(transpose(rand(𝒩₂, 50000)))
-hZS_𝒩₂_base_ℯ = entropy(Shannon(; base = ℯ), est, sample)
-hZS_𝒩₂_base_2 = entropy(Shannon(; base = 2), est, sample)
+x = rand(1000)
+@test_throws ArgumentError entropy(Renyi(q = 2), Zhu(k = 5), x)
 
-# Estimation accuracy decreases for fixed N with increasing edimension, so exact comparison
-# isn't useful. Just check that values are within 1% of the target.
-tol_ℯ  = hZS_𝒩₂_base_ℯ * 0.01
-tol_2  = hZS_𝒩₂_base_2 * 0.01
-@test h_𝒩₂_base_ℯ - tol_ℯ ≤ hZS_𝒩₂_base_ℯ ≤ h_𝒩₂_base_ℯ + tol_ℯ
-@test h_𝒩₂_base_2 - tol_2 ≤ hZS_𝒩₂_base_2 ≤ h_𝒩₂_base_2 + tol_2
-
-@test_throws ArgumentError entropy(Renyi(q = 2), ZhuSingh(), rand(100))
-
-# Shannon entropy is default.
-@test entropy(Shannon(; base = 2), est, sample) ==  entropy(est, sample, base = 2)
-@test entropy(Shannon(; base = ℯ), est, sample) ==  entropy(est, sample, base = ℯ)
+# Default is Shannon base-2 differential entropy
+est = ZhuSingh()
+@test entropy(est, x) == entropy(Shannon(; base = 2), est, x)

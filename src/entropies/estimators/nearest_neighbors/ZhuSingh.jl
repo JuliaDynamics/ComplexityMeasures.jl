@@ -12,6 +12,17 @@ export ZhuSingh
 The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
 differential [`entropy`](@ref) of `x` (a multi-dimensional `Dataset`).
 
+## Description
+
+Assume we have samples ``\\{\\bf{x}_1, \\bf{x}_2, \\ldots, \\bf{x}_N \\}`` from a
+continuous random variable ``X \\in \\mathbb{R}^d`` with support ``\\mathcal{X}`` and
+density function``f : \\mathbb{R}^d \\to \\mathbb{R}``. `ZhuSingh` estimates the
+[Shannon](@ref) differential entropy
+
+```math
+H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))].
+```
+
 Like [`Zhu`](@ref), this estimator approximates probabilities within hyperrectangles
 surrounding each point `xᵢ ∈ x` using using `k` nearest neighbor searches. However,
 it also considers the number of neighbors falling on the borders of these hyperrectangles.

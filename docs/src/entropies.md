@@ -53,9 +53,7 @@ rely on estimating some density functional.
 
 Each [`EntropyEstimator`](@ref)s uses a specialized technique to approximating relevant
 densities/integrals, and is often tailored to one or a few types of generalized entropy.
-For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy, while
-[`LeonenkoProzantoSavani`](@ref) estimates [`Shannon`](@ref), [`Renyi`](@ref), and
-[`Tsallis`](@ref) entropies.
+For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 
 | Estimator                    | Principle         | Input data | [`Shannon`](@ref) | [`Renyi`](@ref) | [`Tsallis`](@ref) | [`Kaniadakis`](@ref) | [`Curado`](@ref) | [`StretchedExponential`](@ref) |
 | ---------------------------- | ----------------- | ---------- | :---------------: | :-------------: | :---------------: | :------------------: | :--------------: | :----------------------------: |
