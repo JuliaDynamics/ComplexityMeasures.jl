@@ -1,6 +1,5 @@
 export ValueHistogram, VisitationFrequency
-# We need binning to be defined first to add it as a field to a struct
-include("rectangular_binning.jl")
+# Binnings are defined in the encoding folder!
 include("fasthist.jl")
 
 """

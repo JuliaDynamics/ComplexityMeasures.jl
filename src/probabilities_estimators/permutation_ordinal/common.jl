@@ -1,3 +1,5 @@
+# TODO: All of this file must go into the encoding
+
 using StateSpaceSets: AbstractDataset
 using StaticArrays: @MVector
 

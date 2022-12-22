@@ -1,6 +1,5 @@
-using Combinatorics: permutations
-
 export SymbolicPermutation
+
 """
     SymbolicPermutation <: ProbabilitiesEstimator
     SymbolicPermutation(; m = 3, τ = 1, lt::Function = Entropies.isless_rand)
@@ -77,65 +76,70 @@ information about within-state-vector amplitudes.
     application for complexity analysis of chaotic systems. Physica A: Statistical
     Mechanics and its Applications, 461, 812-823.
 """
-struct SymbolicPermutation{F} <: PermutationProbabilitiesEstimator
+struct SymbolicPermutation{M,F} <: PermutationProbabilitiesEstimator
+    encoding::OrdinalPatternEncoding{M,F}
     τ::Int
-    m::Int
-    lt::F
 end
-function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F <: Function}
-    m >= 2 || throw(ArgumentError("Need m ≥ 2, otherwise no dynamical information is encoded in the symbols."))
-    SymbolicPermutation{F}(τ, m, lt)
+function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+    m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
+    return SymbolicPermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ)
 end
 
-function probabilities(est::SymbolicPermutation, x::Vector_or_Dataset)
-    probabilities(encodings_from_permutations(est, x))
+# Probabilities etc. simply initialize a the datasets and containers of the encodings
+# and just map everythihng using `encode`.
+function probabilities(est::SymbolicPermutation{m}, x::Vector{<:Real}) where {m}
+    dataset = genembed(x, m, est.τ)
+    return probabilities(est, dataset)
 end
 
-function probabilities!(πs::AbstractVector{Int}, est::SymbolicPermutation, x::Vector_or_Dataset)
-    encodings_from_permutations!(πs, est, x)
-    return probabilities(πs)
+function probabilities(est::SymbolicPermutation{m}, x::AbstractDataset{D}) where {m, D}
+    m != D && throw(ArgumentError(
+        "Order of ordinal patterns and dimension of `Dataset` must match!"
+    ))
+    πs = zeros(Int, length(x))
+    return probabilities!(πs, est, x)
 end
 
-function probabilities_and_outcomes(est::SymbolicPermutation, x::Vector_or_Dataset)
-    πs = encodings_from_permutations(est, x)
-    return probabilities(πs), observed_outcomes(est, πs)
+function probabilities!(::Vector{Int}, ::SymbolicPermutation, ::AbstractVector)
+    error("""
+    In-place `probabilities!` for `SymbolicPermutation` can only be used by
+    Dataset input, not timeseries. First embed the timeseries or use the
+    normal version `probabilities`.
+    """)
 end
 
-function probabilities_and_outcomes!(πs::AbstractVector{Int}, est::SymbolicPermutation, x::Vector_or_Dataset)
-    encodings_from_permutations!(πs, est, x)
-    return probabilities(πs), observed_outcomes(est, πs)
+function _probabilities!(πs::Vector{Int}, est::SymbolicPermutation{m}, x::AbstractDataset{m}) where {m}
+    # TODO: The following loop can probably be parallelized!
+    @inbounds for (i, χ) in enumerate(x)
+        πs[i] = encode(est.encoding, χ)
+    end
+    return Probabilities(fasthist!(πs))
 end
 
-function entropy!(
-    s::AbstractVector{Int},
-    e::Entropy,
-    est::SymbolicPermutation,
-    x::AbstractDataset{m, T};
-    ) where {m, T}
-
-    length(s) == length(x) || error("Pre-allocated symbol vector s need the same number of elements as x. Got length(πs)=$(length(πs)) and length(x)=$(L).")
-    ps = probabilities!(s, est, x)
-
-    entropy(e, ps)
+function probabilities_and_outcomes(est::SymbolicPermutation{m}, x::Vector_or_Dataset) where {m}
+    # A bit of code duplication here, because we actually need the processed
+    # `πs` to invert it with `decode`. This can surely be optimized with some additional
+    # function that both maps to integers with `decode` but also keeps track of
+    # the permutation patter vectors. Anyways, I don't think `outcomes` is a function
+    # that will be called often, so we can live with this as is.
+    if x isa Vector
+        dataset = genembed(x, m, est.τ)
+    else
+        dataset = x
+    end
+    m != dimension(dataset) && throw(ArgumentError(
+        "Order of ordinal patterns and dimension of `Dataset` must match!"
+    ))
+    πs = zeros(Int, length(dataset))
+    @inbounds for (i, χ) in enumerate(dataset)
+        πs[i] = encode(est.encoding, χ)
+    end
+    probs = Probabilities(fasthist!(πs))
+    # Okay, now we compute the outcomes. (`πs` is already sorted in `fasthist!`)
+    outcomes = decode.(Ref(est.encoding), unique!(πs))
+    return probs, outcomes
 end
 
-function entropy!(
-        s::AbstractVector{Int},
-        e::Entropy,
-        est::SymbolicPermutation,
-        x::AbstractVector{T},
-    ) where {T<:Real}
-
-    L = length(x)
-    N = L - (est.m-1)*est.τ
-    length(s) == N || error("Pre-allocated symbol vector `s` needs to have length `length(x) - (m-1)*τ` to match the number of state vectors after `x` has been embedded. Got length(s)=$(length(s)) and length(x)=$(L).")
-
-    ps = probabilities!(s, est, x)
-    entropy(e, ps)
-end
-
-entropy!(s::AbstractVector{Int}, est::SymbolicPermutation, x) =
-    entropy!(s, Shannon(base = 2), est, x)
-
-total_outcomes(est::SymbolicPermutation)::Int = factorial(est.m)
-outcome_space(est::SymbolicPermutation) = permutations(1:est.m) |> collect
+# fallback
+total_outcomes(est::PermutationProbabilitiesEstimator) = total_outcomes(est.encoding)
+outcome_space(est::PermutationProbabilitiesEstimator) = outcome_space(est.encoding)

@@ -187,6 +187,7 @@ end
 # low level histogram call
 ##################################################################
 # This method is called by `probabilities(est::ValueHistogram, x::Array_or_Dataset)`
+# `fasthist!` is in the `estimators/value_histogram` folder.
 """
     fasthist(c::RectangularBinEncoding, x::Vector_or_Dataset)
 Intermediate method that runs `fasthist!` in the encoded space

@@ -24,10 +24,10 @@ include("complexity.jl")
 include("multiscale.jl")
 
 # Library implementations (files include other files)
+include("encoding/all_encodings.jl") # other structs depend on these
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies/entropies.jl")
-include("encoding/all_encodings.jl")
-include("complexity/complexity_measures.jl") # relies on encodings, so include after
+include("complexity/complexity_measures.jl")
 include("deprecations.jl")
 
 
