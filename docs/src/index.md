@@ -48,14 +48,14 @@ Thus, any of the implemented [probabilities estimators](@ref probabilities_estim
 
 ### Other complexity measures
 
-Other complexity measures, which strictly speaking don't compute entropies, and may or may
-not explicitly compute probability distributions, are found in
-[Complexity.jl](https://github.com/JuliaDynamics/Complexity.jl) package. This includes
-measures like sample entropy and approximate entropy.
+Other complexity measures, which strictly speaking don't compute entropies, and may or may not explicitly compute probability distributions, are found in
+[Complexity measures](@ref) page.
+This includes measures like sample entropy and approximate entropy.
 
 ## [Input data for Entropies.jl](@id input_data)
 
-The input data type typically depend on the probability estimator chosen. In general though, the standard DynamicalSystems.jl approach is taken and as such we have three types of input data:
+The input data type typically depend on the probability estimator chosen.
+In general though, the standard DynamicalSystems.jl approach is taken and as such we have three types of input data:
 
 - _Timeseries_, which are `AbstractVector{<:Real}`, used in e.g. with [`WaveletOverlap`](@ref).
 - _Multi-dimensional timeseries, or datasets, or state space sets_, which are [`Dataset`](@ref), used e.g. with [`NaiveKernel`](@ref).
