@@ -8,6 +8,8 @@ The probabilities API is defined by
 - [`probabilities`](@ref)
 - [`probabilities_and_outcomes`](@ref)
 
+and related functions that you will find in the following documentation block:
+
 ```@docs
 ProbabilitiesEstimator
 probabilities
@@ -20,23 +22,26 @@ total_outcomes
 missing_outcomes
 ```
 
-## Overview
+## Overview of probabilities estimators
 
-Any of the following estimators can be used with [`probabilities`](@ref).
+Any of the following estimators can be used with [`probabilities`](@ref)
+(in the column "input data"  it is assumed that the `eltype` of the input is `<: Real`).
 
 | Estimator                                   | Principle                   | Input data          |
-| ------------------------------------------- | --------------------------- | ------------------- |
+|:--------------------------------------------|:----------------------------|:--------------------|
 | [`CountOccurrences`](@ref)                  | Frequencies                 | `Vector`, `Dataset` |
 | [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |
 | [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |
 | [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |
-| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`            |
-| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`            |
-| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`            |
+| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`, `Dataset` |
+| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`, `Dataset` |
+| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`, `Dataset` |
+| [`SpatialSymbolicPermutation`](@ref)        | Ordinal patterns in space   | `Array` |
 | [`Dispersion`](@ref)                        | Dispersion patterns         | `Vector`            |
+| [`SpatialDispersion`](@ref)                 | Dispersion patterns in space        | `Array` |
 | [`Diversity`](@ref)                         | Cosine similarity           | `Vector`            |
 | [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |
-| [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |
+| [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector` |
 
 ## Count occurrences (counting)
 
