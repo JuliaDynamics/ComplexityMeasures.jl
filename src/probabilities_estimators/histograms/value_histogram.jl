@@ -1,6 +1,5 @@
 export ValueHistogram, VisitationFrequency
 # Binnings are defined in the encoding folder!
-include("fasthist.jl")
 
 """
     ValueHistogram(x, b::RectangularBinning) <: ProbabilitiesEstimator
