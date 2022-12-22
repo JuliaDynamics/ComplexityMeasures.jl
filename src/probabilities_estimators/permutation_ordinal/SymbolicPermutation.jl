@@ -107,12 +107,13 @@ function probabilities!(::Vector{Int}, ::SymbolicPermutation, ::AbstractVector)
     """)
 end
 
-function _probabilities!(πs::Vector{Int}, est::SymbolicPermutation{m}, x::AbstractDataset{m}) where {m}
+function probabilities!(πs::Vector{Int}, est::SymbolicPermutation{m}, x::AbstractDataset{m}) where {m}
     # TODO: The following loop can probably be parallelized!
     @inbounds for (i, χ) in enumerate(x)
         πs[i] = encode(est.encoding, χ)
     end
-    return Probabilities(fasthist!(πs))
+    probs = fasthist!(πs)
+    return Probabilities(probs)
 end
 
 function probabilities_and_outcomes(est::SymbolicPermutation{m}, x::Vector_or_Dataset) where {m}
@@ -130,14 +131,10 @@ function probabilities_and_outcomes(est::SymbolicPermutation{m}, x::Vector_or_Da
         "Order of ordinal patterns and dimension of `Dataset` must match!"
     ))
     πs = zeros(Int, length(dataset))
-    @inbounds for (i, χ) in enumerate(dataset)
-        πs[i] = encode(est.encoding, χ)
-        # TODO:" If ps gets weihted, make a `Set` for ps to use in decode.
-    end
-    probs = Probabilities(fasthist!(πs))
+    ps = probabilities!(πs, est, dataset)
     # Okay, now we compute the outcomes. (`πs` is already sorted in `fasthist!`)
     outcomes = decode.(Ref(est.encoding), unique!(πs))
-    return probs, outcomes
+    return ps, outcomes
 end
 
 # fallback
