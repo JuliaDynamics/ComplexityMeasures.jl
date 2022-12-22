@@ -32,19 +32,13 @@ end
         # For these two inputs, with m = 2, τ = 1, there should be two symbols (0 and 1)
         # with equal probabilities, so base-2 Shannon entropy should be
         # -(0.5 * log2(0.5) + 0.5 * log2(0.5)) = 1.0
-        x_timeseries = [repeat([1, 2], 5); 1]
         x_dataset = Dataset(repeat([1 2; 2 1], 3))
 
         # Pre-allocated integer vectors
-        s_timeseries = zeros(Int, length(x_timeseries) - (m - 1)*τ)
         s_dataset = zeros(Int, length(x_dataset))
 
-        @test entropy!(s_timeseries, Shannon(base = 2), est, x_timeseries) ≈ 1.0
-        @test entropy!(s_dataset, Shannon(base = 2), est, x_dataset) ≈ 1.0
-
-        # Should default to Shannon base 2
-        @test entropy!(s_timeseries, est, x_timeseries) ≈ 1.0
-        @test entropy!(s_dataset, est, x_dataset) ≈ 1.0
+        probs = probabilities!(s_dataset, est, x_dataset)
+        @test entropy(Shannon(base = 2), probs) ≈ 1.0
     end
 end
 

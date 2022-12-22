@@ -39,19 +39,18 @@ first the largest value, then the lowest value, and then the value in between.
 
 ## In-place symbolization
 
-`SymbolicPermutation` also implements the in-place [`entropy!`](@ref) and
-[`probabilities!`](@ref). The length of the pre-allocated symbol vector must match the
-length of the embedding: `N - (m-1)τ` for univariate timeseries, and `M` for length-`M`
-`Dataset`s). For example
+`SymbolicPermutation` also implements the in-place [`probabilities!`](@ref)
+for `Dataset` input (or embedded vector input).
+The length of the pre-allocated symbol vector must match the length of the dataset.
+For example
 
 ```julia
 using DelayEmbeddings, Entropies
-m, τ, N = 2, 1, 100
+m, N = 2, 100
 est = SymbolicPermutation(; m, τ)
-x_ts = rand(N) # timeseries example
-πs_ts = zeros(Int, N - (m - 1)*τ) # length must match length of delay embedding
-p = probabilities!(πs_ts, est, x_ts)
-h = entropy!(πs_ts, Renyi(), est, x_ts)
+x = Dataset(rand(N, m) # timeseries example
+πs_ts = zeros(Int, N) # length must match length
+p = probabilities!(πs_ts, est, x)
 ```
 
 See [`SymbolicWeightedPermutation`](@ref) and [`SymbolicAmplitudeAwarePermutation`](@ref)
@@ -133,6 +132,7 @@ function probabilities_and_outcomes(est::SymbolicPermutation{m}, x::Vector_or_Da
     πs = zeros(Int, length(dataset))
     @inbounds for (i, χ) in enumerate(dataset)
         πs[i] = encode(est.encoding, χ)
+        # TODO:" If ps gets weihted, make a `Set` for ps to use in decode.
     end
     probs = Probabilities(fasthist!(πs))
     # Okay, now we compute the outcomes. (`πs` is already sorted in `fasthist!`)

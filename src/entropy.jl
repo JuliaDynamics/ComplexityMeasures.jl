@@ -1,5 +1,5 @@
 export Entropy, EntropyEstimator
-export entropy, entropy_maximum, entropy_normalized, entropy!
+export entropy, entropy_maximum, entropy_normalized
 
 abstract type AbstractEntropy end
 
@@ -119,25 +119,6 @@ end
 # Convenience
 entropy(est::ProbabilitiesEstimator, x::Array_or_Dataset) = entropy(Shannon(; base = 2), est, x)
 entropy(probs::Probabilities) = entropy(Shannon(; base = 2), probs)
-
-"""
-    entropy!(s, [e::Entropy,] x, est::ProbabilitiesEstimator)
-
-Similar to `probabilities!`, this is an in-place version of [`entropy`](@ref) that allows
-pre-allocation of temporarily used containers.
-
-The entropy (second argument) is optional: if not given, `Shannon()` is used instead.
-
-Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
-"""
-function entropy!(s::AbstractVector{Int}, e::Entropy, est::ProbabilitiesEstimator, x)
-    probs = probabilities!(s, est, x)
-    entropy(e, probs)
-end
-
-function entropy!(s::AbstractVector{Int}, est::ProbabilitiesEstimator, x)
-    entropy!(s, Shannon(; base = 2), est, x)
-end
 
 ###########################################################################################
 # API: entropy from entropy estimators
