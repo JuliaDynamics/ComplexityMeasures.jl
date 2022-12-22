@@ -38,18 +38,18 @@ Any of the following estimators can be used with [`probabilities`](@ref)
 | [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`, `Dataset` |
 | [`SpatialSymbolicPermutation`](@ref)        | Ordinal patterns in space   | `Array` |
 | [`Dispersion`](@ref)                        | Dispersion patterns         | `Vector`            |
-| [`SpatialDispersion`](@ref)                 | Dispersion patterns in space        | `Array` |
+| [`SpatialDispersion`](@ref)                 | Dispersion patterns in space  | `Array` |
 | [`Diversity`](@ref)                         | Cosine similarity           | `Vector`            |
 | [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |
-| [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector` |
+| [`PowerSpectrum`](@ref)                     | Fourier transform           | `Vector` |
 
-## Count occurrences (counting)
+## Count occurrences
 
 ```@docs
 CountOccurrences
 ```
 
-## Visitation frequency (histograms)
+## Histograms
 
 ```@docs
 ValueHistogram
@@ -57,7 +57,7 @@ RectangularBinning
 FixedRectangularBinning
 ```
 
-## Permutation (symbolic)
+## Symbolic permutations
 
 ```@docs
 SymbolicPermutation
@@ -66,14 +66,14 @@ SymbolicAmplitudeAwarePermutation
 SpatialSymbolicPermutation
 ```
 
-## Dispersion (symbolic)
+## Dispersion patterns
 
 ```@docs
 Dispersion
 SpatialDispersion
 ```
 
-## Transfer operator (binning)
+## Transfer operator
 
 ```@docs
 TransferOperator
