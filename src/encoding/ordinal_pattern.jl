@@ -1,13 +1,10 @@
 using StaticArrays: MVector
-using StateSpaceSets: AbstractDataset
 
 export OrdinalPatternEncoding
-#TODO: The docstring here, and probably the source code, needs a full re-write
-# based on new `encode` interface.
 
 """
     OrdinalPatternEncoding <: Encoding
-    OrdinalPatternEncoding(; m::Int, lt = est.lt)
+    OrdinalPatternEncoding(; m::Int, lt = Entropies.isless_rand)
 
 An encoding scheme that [`encode`](@ref)s `m`-dimensional permutation/ordinal patterns to
 integers and [`decode`](@ref)s these integers to permutation patterns based on the Lehmer
