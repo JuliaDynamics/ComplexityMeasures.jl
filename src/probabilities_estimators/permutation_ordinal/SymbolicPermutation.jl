@@ -85,10 +85,10 @@ function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where
     return SymbolicPermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ)
 end
 
-# Probabilities etc. simply initialize a the datasets and containers of the encodings
+# Probabilities etc. simply initialize the datasets and containers of the encodings
 # and just map everythihng using `encode`.
-function probabilities(est::SymbolicPermutation{m}, x::Vector{<:Real}) where {m}
-    dataset = genembed(x, m, est.τ)
+function probabilities(est::SymbolicPermutation{m}, x::Vector{T}) where {m, T<:Real}
+    dataset::Dataset{m,T} = genembed(x, m, est.τ)
     return probabilities(est, dataset)
 end
 
