@@ -7,29 +7,27 @@ export SymbolicPermutation
 
 A probabilities estimator based on ordinal permutation patterns.
 
-The quantity computed depends on the input data:
+When passed to [`probabilities`](@ref) the output depends on the input data type:
 
-- **Univariate data**. If applied to a univariate time series, then the time series
+- **Univariate data**. If applied to a univariate timeseries (`Vector`), then the timeseries
     is first embedded using embedding delay `τ` and dimension `m`, resulting in embedding
     vectors ``\\{ \\bf{x}_i \\}_{i=1}^{N-(m-1)\\tau}``. Then, for each ``\\bf{x}_i``,
-    we find its permutation pattern ``\\pi_{i}``, which we internally encode a an integer
-    ``s_i \\in \\mathbb{N}^+`` for efficient computation (integer symbols are obtained by
-    using [`encode`](@ref) with [`OrdinalPatternEncoding`](@ref)).
-    Probabilities are then
-    estimated as naive frequencies over the encoded permutation symbols
-    ``\\{ s_i \\}_{i=1}^{N-(m-1)\\tau}`` by using [`CountOccurrences`](@ref).
-    The resulting probabilities can be used to compute permutation entropy (PE;
-    Bandt & Pompe, 2002[^BandtPompe2002]).
+    we find its permutation pattern ``\\pi_{i}``. Probabilities are then
+    estimated as the frequencies of the encoded permutation symbols
+    by using [`CountOccurrences`](@ref). The resulting probabilities, when given to
+    [`entropy`](@ref), compute the original permutation entropy[^BandtPompe2002].
 - **Multivariate data**. If applied to a an `D`-dimensional `Dataset`,
-    then it is assumed that the input data represents ``N`` observations of a multivariate
-    system ``\\{ \\bf{x}_i \\}_{i=1}^N``, and no embedding is constructed.
-    For each ``\\bf{x}_i \\in \\mathbb{R}^D``, we direct find its permutation pattern
-    ``\\pi_{i}`` and encode it as ``s_i \\in \\mathbb{N}^+`` (i.e. `est.τ` and `est.m` are
-    ignored, and we set `m = D` instead). Finally, probabilities are estimated as relative
-    frequencies of occurrences of the encoded permutation symbols.
+    then no embedding is constructed. For each vector ``\\bf{x}_i``of the dataset,
+    we directly map it to its permutation pattern
+    Like above, probabilities are estimated as the frequencies of the permutation symbols.
+    ``\\pi_{i}`` by comparing the elements in the vector. In this case, the values
+    of `m, τ` are ignored.
     The resulting probabilities can be used to compute multivariate permutation
-    entropy (MvPE; He et al., 2016[^He2016]), but here we don't perform any subdivision
-    of the permutation patterns (see Figure 3 in He et al., 2016).
+    entropy[^He2016], although here we don't perform any further subdivision
+    of the permutation patterns (as in Figure 3 of[^He2016]).
+
+Internally, [`SymbolicPermutation`](@ref) uses the [`OrdinalPatternEncoding`](@ref)
+to represent ordinal patterns as integers for efficient computations.
 
 ## Outcome space
 
@@ -37,30 +35,24 @@ The outcome space `Ω` for `SymbolicPermutation` is the set of length-`m` ordina
 patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`,
 ordered lexicographically. There are `factorial(m)` such patterns.
 
+For example, the outcome `[3, 1, 2]` corresponds to the ordinal pattern of having
+first the largest value, then the lowest value, and then the value in between.
+
 ## In-place symbolization
 
 `SymbolicPermutation` also implements the in-place [`entropy!`](@ref) and
 [`probabilities!`](@ref). The length of the pre-allocated symbol vector must match the
-length of the embedding: `N - (m-1)τ` for univariate time series, and `M` for length-`M`
-`Dataset`s), i.e.
+length of the embedding: `N - (m-1)τ` for univariate timeseries, and `M` for length-`M`
+`Dataset`s). For example
 
 ```julia
 using DelayEmbeddings, Entropies
 m, τ, N = 2, 1, 100
 est = SymbolicPermutation(; m, τ)
-
-# For a time series
-x_ts = rand(N)
-πs_ts = zeros(Int, N - (m - 1)*τ)
+x_ts = rand(N) # timeseries example
+πs_ts = zeros(Int, N - (m - 1)*τ) # length must match length of delay embedding
 p = probabilities!(πs_ts, est, x_ts)
 h = entropy!(πs_ts, Renyi(), est, x_ts)
-
-# For a pre-discretized `Dataset`
-x_symb = outcomes(x_ts, OrdinalPatternEncoding(m = 2, τ = 1))
-x_d = genembed(x_symb, (0, -1, -2))
-πs_d = zeros(Int, length(x_d))
-p = probabilities!(πs_d, est, x_d)
-h = entropy!(πs_d, Renyi(), est, x_d)
 ```
 
 See [`SymbolicWeightedPermutation`](@ref) and [`SymbolicAmplitudeAwarePermutation`](@ref)
@@ -76,9 +68,9 @@ information about within-state-vector amplitudes.
     `lt = Base.isless`).
 
 [^BandtPompe2002]: Bandt, Christoph, and Bernd Pompe. "Permutation entropy: a natural
-    complexity measure for time series." Physical review letters 88.17 (2002): 174102.
+    complexity measure for timeseries." Physical review letters 88.17 (2002): 174102.
 [^Zunino2017]: Zunino, L., Olivares, F., Scholkmann, F., & Rosso, O. A. (2017).
-    Permutation entropy based time series analysis: Equalities in the input signal can
+    Permutation entropy based timeseries analysis: Equalities in the input signal can
     lead to false conclusions. Physics Letters A, 381(22), 1883-1892.
 [^He2016]:
     He, S., Sun, K., & Wang, H. (2016). Multivariate permutation entropy and its
