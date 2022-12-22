@@ -20,8 +20,8 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     then no embedding is constructed. For each vector ``\\bf{x}_i``of the dataset,
     we directly map it to its permutation pattern
     Like above, probabilities are estimated as the frequencies of the permutation symbols.
-    ``\\pi_{i}`` by comparing the elements in the vector. In this case, the values
-    of `m, τ` are ignored.
+    ``\\pi_{i}`` by comparing the elements in the vector. In this case, `m` is ignored,
+    but `m` must still match the dimension of the dataset for optimization.
     The resulting probabilities can be used to compute multivariate permutation
     entropy[^He2016], although here we don't perform any further subdivision
     of the permutation patterns (as in Figure 3 of[^He2016]).
@@ -93,7 +93,7 @@ end
 
 function probabilities!(πs::AbstractVector{Int}, est::SymbolicPermutation, x::Vector_or_Dataset)
     encodings_from_permutations!(πs, est, x)
-    probabilities(πs)
+    return probabilities(πs)
 end
 
 function probabilities_and_outcomes(est::SymbolicPermutation, x::Vector_or_Dataset)

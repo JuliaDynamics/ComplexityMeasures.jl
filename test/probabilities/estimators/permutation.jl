@@ -1,12 +1,12 @@
-using StateSpaceSets: Dataset
-using DelayEmbeddings: genembed
-using StaticArrays: SVector
+using Entropies, Test
+using Entropies.DelayEmbeddings: genembed
 
-@test SymbolicPermutation() isa SymbolicPermutation
-@test SymbolicPermutation(lt = Base.isless) isa SymbolicPermutation
-@test SymbolicPermutation(lt = Entropies.isless_rand) isa SymbolicPermutation
-
-@test total_outcomes(SymbolicPermutation(m = 3)) == factorial(3)
+@testset "API" begin
+    @test SymbolicPermutation() isa SymbolicPermutation
+    @test SymbolicPermutation(lt = Base.isless) isa SymbolicPermutation
+    @test SymbolicPermutation(lt = Entropies.isless_rand) isa SymbolicPermutation
+    @test total_outcomes(SymbolicPermutation(m = 3)) == factorial(3)
+end
 
 @testset "Pre-allocated" begin
     @testset "Probabilities" begin
@@ -78,23 +78,25 @@ end
     @test probabilities(est_isless_rand, D) isa Probabilities
 end
 
-# With m = 2, ordinal patterns and frequencies are:
-# [1, 2] => 3
-# [2, 1] => 2
-x = [1, 2, 1, 2, 1, 2]
-# don't randomize in the case of equal values, so use Base.isless
-est = SymbolicPermutation(m = 2, lt = Base.isless)
-probs, πs = probabilities_and_outcomes(est, x)
-@test πs == SVector{2, Int}.([[1, 2], [2, 1]])
-@test probs == [3/5, 2/5]
+@testset "outcomes" begin
+    # With m = 2, ordinal patterns and frequencies are:
+    # [1, 2] => 3
+    # [2, 1] => 2
+    x = [1, 2, 1, 2, 1, 2]
+    # don't randomize in the case of equal values, so use Base.isless
+    est = SymbolicPermutation(m = 2, lt = Base.isless)
+    probs, πs = probabilities_and_outcomes(est, x)
+    @test πs == SVector{2, Int}.([[1, 2], [2, 1]])
+    @test probs == [3/5, 2/5]
 
-est3 = SymbolicPermutation(m = 3)
-@test outcome_space(est3) == [
-    [1, 2, 3],
-    [1, 3, 2],
-    [2, 1, 3],
-    [2, 3, 1],
-    [3, 1, 2],
-    [3, 2, 1],
-]
-@test total_outcomes(est3) == factorial(est3.m)
+    est3 = SymbolicPermutation(m = 3)
+    @test outcome_space(est3) == [
+        [1, 2, 3],
+        [1, 3, 2],
+        [2, 1, 3],
+        [2, 3, 1],
+        [3, 1, 2],
+        [3, 2, 1],
+    ]
+    @test total_outcomes(est3) == factorial(est3.m)
+end
