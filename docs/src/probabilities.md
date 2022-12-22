@@ -1,4 +1,4 @@
-# [Probabilities](@id probabilities_estimators)
+# [Probabilities
 
 ## Probabilities API
 
@@ -22,14 +22,14 @@ total_outcomes
 missing_outcomes
 ```
 
-## Overview of probabilities estimators
+## [Overview of probabilities estimators](@id probabilities_estimators)
 
 Any of the following estimators can be used with [`probabilities`](@ref)
 (in the column "input data"  it is assumed that the `eltype` of the input is `<: Real`).
 
 | Estimator                                   | Principle                   | Input data          |
 |:--------------------------------------------|:----------------------------|:--------------------|
-| [`CountOccurrences`](@ref)                  | Frequencies                 | `Vector`, `Dataset` |
+| [`CountOccurrences`](@ref)                  | Count of unique elements    | `Any` |
 | [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |
 | [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |
 | [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |

@@ -15,7 +15,7 @@ struct CountOccurrences{X} <: ProbabilitiesEstimator
     x::X
 end
 
-function probabilities_and_outcomes(::CountOccurrences, x::Array_or_Dataset)
+function probabilities_and_outcomes(::CountOccurrences, x)
     z = copy(x)
     probs = Probabilities(fasthist!(z))
     # notice that `z` is now sorted within `fasthist!` so we can skip sorting
@@ -24,8 +24,8 @@ end
 
 outcome_space(est::CountOccurrences) = sort!(unique(est.x))
 
-probabilities(::CountOccurrences, x::Array_or_Dataset) = probabilities(x)
-function probabilities(x::Array_or_Dataset)
+probabilities(::CountOccurrences, x) = probabilities(x)
+function probabilities(x)
     # Fast histograms code is in the `histograms` folder
     return Probabilities(fasthist!(copy(x)))
 end

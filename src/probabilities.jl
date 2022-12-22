@@ -72,8 +72,8 @@ outcome space when instantiated. For some estimators this means that the input d
 `x` must be provided both when instantiating the estimator, but also when computing
 the probabilities.
 
-All currently implemented probability estimators are listed in a nice table in
-the [Overview of probabilities estimators](@ref) section of the online documentation.
+All currently implemented probability estimators are listed in a nice table in the
+[probabilities estimators](@ref probabilities_estimators) section of the online documentation.
 """
 abstract type ProbabilitiesEstimator end
 
