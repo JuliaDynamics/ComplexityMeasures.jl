@@ -34,3 +34,47 @@ function fasthist!(x)
     sizehint!(hist, length(hist))
     return hist
 end
+
+fasthist!(x, ::Nothing) = fasthist!(x)
+
+"""
+    fasthist!(x, weights) → c::Vector{Real}
+
+Similar to `fasthist!(x)`, but here the `weights` are summed up for each unique
+entry of `x`. `x` is sorted just like in `fasthist!(x)`.
+"""
+function fasthist!(x::AbstractVector, weights::AbstractVector{T}) where {T}
+    length(x) == length(weights) || error("Need length(x) == length(weights)")
+
+    idxs = sortperm(x)
+    x .= x[idxs] # sort in-place
+    # weights = weights[idxs] # we don't have to sort them
+    L = length(x)
+
+    i = 1
+    W = zero(T)
+    ps = Vector{T}()
+    sizehint!(ps, L)
+
+    prev_sym = first(x)
+
+    @inbounds while i <= L
+        symᵢ = x[i]
+        wtᵢ = weights[idxs[i]] # get weights at the sorted index
+        if symᵢ == prev_sym
+            W += wtᵢ
+        else
+            # Finished counting weights for the previous symbol, so push
+            # the summed weights (normalization happens later).
+            push!(ps, W)
+            # We are at a new symbol, so refresh sum with the first weight
+            # of the new symbol.
+            W = wtᵢ
+        end
+        prev_sym = symᵢ
+        i += 1
+    end
+    push!(ps, W) # last entry
+    sizehint!(ps, length(ps))
+    return ps
+end

@@ -8,7 +8,8 @@ Subtypes must implement fields:
 - `lt::Function` A function determining how ties are to be broken when constructing
     permutation patterns from embedding vectors.
 """
-abstract type PermutationProbabilitiesEstimator <: ProbabilitiesEstimator end
+abstract type PermutationProbabilitiesEstimator{m} <: ProbabilitiesEstimator end
+const PermProbEst = PermutationProbabilitiesEstimator
 
 include("common.jl")
 include("utils.jl")

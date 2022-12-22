@@ -67,7 +67,7 @@ another estimator that incorporates amplitude information.
 
 
 
-[^Fadlallah2013]: Fadlallah, Bilal, et al. "Weighted-permutation entropy: A complexity
+[^Fadlallah2013]: Fadlallah, et al. "Weighted-permutation entropy: A complexity
     measure for time series incorporating amplitude information." Physical Review E 87.2
     (2013): 022911.
 """

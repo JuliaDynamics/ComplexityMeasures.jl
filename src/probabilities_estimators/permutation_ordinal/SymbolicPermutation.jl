@@ -1,5 +1,8 @@
 export SymbolicPermutation
 
+###########################################################################################
+# Types and docstrings
+###########################################################################################
 """
     SymbolicPermutation <: ProbabilitiesEstimator
     SymbolicPermutation(; m = 3, τ = 1, lt::Function = Entropies.isless_rand)
@@ -75,23 +78,52 @@ information about within-state-vector amplitudes.
     application for complexity analysis of chaotic systems. Physica A: Statistical
     Mechanics and its Applications, 461, 812-823.
 """
-struct SymbolicPermutation{M,F} <: PermutationProbabilitiesEstimator
+struct SymbolicPermutation{M,F} <: PermutationProbabilitiesEstimator{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
 end
+
+# TODO: Docstring here
+struct SymbolicWeightedPermutation{M,F} <: PermutationProbabilitiesEstimator{M}
+    encoding::OrdinalPatternEncoding{M,F}
+    τ::Int
+end
+
+struct SymbolicAmplitudeAwarePermutation{M,F} <: PermutationProbabilitiesEstimator{M}
+    encoding::OrdinalPatternEncoding{M,F}
+    τ::Int
+    A::Float64
+end
+
+# Initializations
 function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return SymbolicPermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ)
 end
+function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+    m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
+    return SymbolicWeightedPermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ)
+end
 
+function SymbolicAmplitudeAwarePermutation(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+    m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
+    return SymbolicAmplitudeAwarePermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ, A)
+end
+
+###########################################################################################
+# Implementation of the whole `probabilities` API on abstract `PermProbEst`
+###########################################################################################
 # Probabilities etc. simply initialize the datasets and containers of the encodings
-# and just map everythihng using `encode`.
-function probabilities(est::SymbolicPermutation{m}, x::Vector{T}) where {m, T<:Real}
+# and just map everythihng using `encode`. The only difference between the three
+# types is whether they compute some additional weights that are affecting
+# how the probabilities are counted.
+
+function probabilities(est::PermProbEst{m}, x::Vector{T}) where {m, T<:Real}
     dataset::Dataset{m,T} = genembed(x, m, est.τ)
     return probabilities(est, dataset)
 end
 
-function probabilities(est::SymbolicPermutation{m}, x::AbstractDataset{D}) where {m, D}
+function probabilities(est::PermProbEst{m}, x::AbstractDataset{D}) where {m, D}
     m != D && throw(ArgumentError(
         "Order of ordinal patterns and dimension of `Dataset` must match!"
     ))
@@ -99,7 +131,7 @@ function probabilities(est::SymbolicPermutation{m}, x::AbstractDataset{D}) where
     return probabilities!(πs, est, x)
 end
 
-function probabilities!(::Vector{Int}, ::SymbolicPermutation, ::AbstractVector)
+function probabilities!(::Vector{Int}, ::PermProbEst, ::AbstractVector)
     error("""
     In-place `probabilities!` for `SymbolicPermutation` can only be used by
     Dataset input, not timeseries. First embed the timeseries or use the
@@ -107,20 +139,21 @@ function probabilities!(::Vector{Int}, ::SymbolicPermutation, ::AbstractVector)
     """)
 end
 
-function probabilities!(πs::Vector{Int}, est::SymbolicPermutation{m}, x::AbstractDataset{m}) where {m}
+function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractDataset{m}) where {m}
     # TODO: The following loop can probably be parallelized!
     @inbounds for (i, χ) in enumerate(x)
         πs[i] = encode(est.encoding, χ)
     end
-    probs = fasthist!(πs)
+    weights = permutation_weights(est, x)
+    probs = fasthist!(πs, weights)
     return Probabilities(probs)
 end
 
-function probabilities_and_outcomes(est::SymbolicPermutation{m}, x::Vector_or_Dataset) where {m}
+function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_Dataset) where {m}
     # A bit of code duplication here, because we actually need the processed
     # `πs` to invert it with `decode`. This can surely be optimized with some additional
     # function that both maps to integers with `decode` but also keeps track of
-    # the permutation patter vectors. Anyways, I don't think `outcomes` is a function
+    # the permutation pattern vectors. Anyways, I don't think `outcomes` is a function
     # that will be called often, so we can live with this as is.
     if x isa Vector
         dataset = genembed(x, m, est.τ)
@@ -140,3 +173,36 @@ end
 # fallback
 total_outcomes(est::PermutationProbabilitiesEstimator) = total_outcomes(est.encoding)
 outcome_space(est::PermutationProbabilitiesEstimator) = outcome_space(est.encoding)
+
+###########################################################################################
+# Permutation weights definition
+###########################################################################################
+permutation_weights(::SymbolicPermutation, ::Any) = nothing
+
+function permutation_weights(::SymbolicWeightedPermutation{m}, x::AbstractDataset) where {m}
+    weights_from_variance.(vec(x), m)
+end
+function weights_from_variance(χ, m::Int)
+    z = mean(χ)
+    s = sum(e -> (e - z)^2, χ)
+    return s/m
+end
+
+
+function permutation_weights(est::SymbolicAmplitudeAwarePermutation{m}, x::AbstractDataset) where {m}
+    AAPE.(vec(x), est.A, m)
+end
+
+# TODO: This has absolutely terrible performance, allocating liek 10 vectors for each
+# element of a dataset...
+"""
+    AAPE(x, A::Real = 0.5, m::Int = length(x))
+
+Encode relative amplitude information of the elements of `a`.
+- `A = 1` emphasizes only average values.
+- `A = 0` emphasizes changes in amplitude values.
+- `A = 0.5` equally emphasizes average values and changes in the amplitude values.
+"""
+function AAPE(x, A::Real = 0.5, m::Int = length(x))
+    (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
+end
