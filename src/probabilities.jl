@@ -54,7 +54,7 @@ assigning to each outcome ``\\omega_i`` a probability ``p(\\omega_i)``, such tha
 1. Define ``\\Omega``, the "outcome space", which is the set of all possible outcomes over
     which probabilities are estimated. The cardinality of this set can be obtained using
     [`total_outcomes`](@ref).
-2. Define how probabilities ``p_i = p(\\omega_i)` are assigned to outcomes ``\\omega_i``.
+2. Define how probabilities ``p_i = p(\\omega_i)`` are assigned to outcomes ``\\omega_i``.
 
 In practice, probability estimation is done by calling [`probabilities`](@ref) with some
 input data and one of the following probabilities estimators. The result is a

@@ -1,4 +1,4 @@
-# [Probabilities
+# Probabilities
 
 ## Probabilities API
 
@@ -8,13 +8,20 @@ The probabilities API is defined by
 - [`probabilities`](@ref)
 - [`probabilities_and_outcomes`](@ref)
 
-and related functions that you will find in the following documentation block:
+and related functions that you will find in the following documentation blocks:
+
+### Probabilitities
 
 ```@docs
 ProbabilitiesEstimator
 probabilities
 probabilities!
 Probabilities
+```
+
+### Outcomes
+
+```@docs
 probabilities_and_outcomes
 outcomes
 outcome_space
