@@ -83,7 +83,38 @@ struct SymbolicPermutation{M,F} <: PermutationProbabilitiesEstimator{M}
     τ::Int
 end
 
-# TODO: Docstring here
+"""
+    SymbolicWeightedPermutation <: ProbabilitiesEstimator
+    SymbolicWeightedPermutation(; τ = 1, m = 3, lt::Function = Entropies.isless_rand)
+
+A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
+based on the weighted permutation entropy[^Fadlallah2013]. The outcome space and keywords
+are the same as in [`SymbolicPermutation`](@ref).
+
+## Description
+For each ordinal pattern extracted from each state (or delay) vector, a weight is attached
+to it which is the variance of the vector. Probabilities are then estimated by summing
+the weights corresponding to the same pattern, instead of just counting the occurrence
+of the same pattern.
+
+!!! note "An implementation note"
+    *Note: in equation 7, section III, of the original paper, the authors write*
+
+    ```math
+    w_j = \\dfrac{1}{m}\\sum_{k=1}^m (x_{j-(k-1)\\tau} - \\mathbf{\\hat{x}}_j^{m, \\tau})^2.
+    ```
+    *But given the formula they give for the arithmetic mean, this is **not** the variance
+    of the delay vector ``\\mathbf{x}_i``, because the indices are mixed:
+    ``x_{j+(k-1)\\tau}`` in the weights formula, vs. ``x_{j+(k+1)\\tau}`` in the arithmetic
+    mean formula. Here delay embedding and computation of the patterns and their weights
+    are completely separated processes so this ensures that we compute the arithmetic mean
+    correctly for each vector of the input dataset (which may be a delay embedded timeseries).
+
+
+[^Fadlallah2013]: Fadlallah, et al. "Weighted-permutation entropy: A complexity
+    measure for time series incorporating amplitude information." Physical Review E 87.2
+    (2013): 022911.
+"""
 struct SymbolicWeightedPermutation{M,F} <: PermutationProbabilitiesEstimator{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
@@ -104,7 +135,6 @@ function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_ran
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return SymbolicWeightedPermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ)
 end
-
 function SymbolicAmplitudeAwarePermutation(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return SymbolicAmplitudeAwarePermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ, A)
