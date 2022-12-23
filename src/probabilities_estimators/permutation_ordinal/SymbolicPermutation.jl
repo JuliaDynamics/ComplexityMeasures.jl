@@ -120,6 +120,35 @@ struct SymbolicWeightedPermutation{M,F} <: PermutationProbabilitiesEstimator{M}
     τ::Int
 end
 
+
+"""
+    SymbolicAmplitudeAwarePermutation <: ProbabilitiesEstimator
+    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand)
+
+A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
+based on the amplitude-aware permutation entropy[^Azami2016]. The outcome space and keywords
+are the same as in [`SymbolicPermutation`](@ref).
+
+## Description
+
+Similarly with [`SymbolicWeightedPermutation`](@ref), a weight ``w_i`` is attached to each
+ordinal pattern extracted from each state (or delay) vector
+``\\mathbf{x}_i = (x_1^i, x_2^i, \\ldots, x_m^i)`` as
+
+```math
+w_i = \\dfrac{A}{m} \\sum_{k=1}^m |x_k^i | + \\dfrac{1-A}{d-1}
+\\sum_{k=2}^d |x_{k}^i - x_{k-1}^i|,
+```
+
+with ``0 \\leq A \\leq 1``. When ``A=0`` , only internal differences between the
+elements of
+``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector
+elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is used.
+
+[^Azami2016]: Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy:
+    Illustration in spike detection and signal segmentation. Computer methods and programs
+    in biomedicine, 128, 40-51.
+"""
 struct SymbolicAmplitudeAwarePermutation{M,F} <: PermutationProbabilitiesEstimator{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
