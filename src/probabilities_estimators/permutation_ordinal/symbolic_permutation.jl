@@ -1,6 +1,19 @@
 export SymbolicPermutation
 export SymbolicWeightedPermutation
 export SymbolicAmplitudeAwarePermutation
+using DelayEmbeddings: embed
+
+"""
+The supertype for probability estimators based on permutation patterns.
+
+Subtypes must implement fields:
+
+- `m::Int` The dimension of the permutation patterns.
+- `lt::Function` A function determining how ties are to be broken when constructing
+    permutation patterns from embedding vectors.
+"""
+abstract type PermutationProbabilitiesEstimator{m} <: ProbabilitiesEstimator end
+const PermProbEst = PermutationProbabilitiesEstimator
 
 ###########################################################################################
 # Types and docstrings
@@ -122,7 +135,6 @@ struct SymbolicWeightedPermutation{M,F} <: PermutationProbabilitiesEstimator{M}
     τ::Int
 end
 
-
 """
     SymbolicAmplitudeAwarePermutation <: ProbabilitiesEstimator
     SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand)
@@ -160,15 +172,15 @@ end
 # Initializations
 function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return SymbolicPermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ)
+    return SymbolicPermutation{m, F}(OrdinalPatternEncoding{m}(lt), τ)
 end
 function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return SymbolicWeightedPermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ)
+    return SymbolicWeightedPermutation{m, F}(OrdinalPatternEncoding{m}(lt), τ)
 end
 function SymbolicAmplitudeAwarePermutation(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return SymbolicAmplitudeAwarePermutation{m, F}(OrdinalPatternEncoding{m, F}(m, lt), τ, A)
+    return SymbolicAmplitudeAwarePermutation{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
 
 ###########################################################################################
@@ -217,7 +229,7 @@ function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_Dataset) w
     # the permutation pattern vectors. Anyways, I don't think `outcomes` is a function
     # that will be called often, so we can live with this as is.
     if x isa Vector
-        dataset = genembed(x, m, est.τ)
+        dataset = embed(x, m, est.τ)
     else
         dataset = x
     end

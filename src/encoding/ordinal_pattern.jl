@@ -41,8 +41,11 @@ struct OrdinalPatternEncoding{M, F} <: Encoding
     perm::MVector{M, Int}
     lt::F
 end
+function OrdinalPatternEncoding{m}(lt::F) where {m,F}
+    OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
+end
 function OrdinalPatternEncoding(m = 3, lt::F = isless_rand) where {F}
-    return OrdinalPatternEncoding{m, F}(zeros(MVector{m, Int}), lt)
+    return OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
 end
 
 # So that SymbolicPerm stuff fallback here
@@ -76,7 +79,7 @@ end
 function decode(::OrdinalPatternEncoding{m}, s::Int) where {m}
     # Convert integer to its factorial number representation. Each factorial number
     # corresponds to a unique permutation of the numbers `1, 2, ..., m`.
-    f::SVector{ndigits, Int} = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 in `encode`
+    f::SVector{m, Int} = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 in `encode`
 
     # Reconstruct the permutation from the factorial representation
     xs = 1:m |> collect
