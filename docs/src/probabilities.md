@@ -70,7 +70,6 @@ FixedRectangularBinning
 SymbolicPermutation
 SymbolicWeightedPermutation
 SymbolicAmplitudeAwarePermutation
-SpatialSymbolicPermutation
 ```
 
 ## Dispersion patterns
@@ -111,4 +110,11 @@ PowerSpectrum
 
 ```@docs
 Diversity
+```
+
+## Spatial estimators
+
+```@docs
+SpatialSymbolicPermutation
+SpatialDispersion
 ```

@@ -66,37 +66,6 @@ Stencils are passed in one of the following three ways:
     in the previous examples, use here `stencil = ((2, 2), (1, 1))`.
     When passing a stencil using `extent` and `lag`, `m = prod(extent)`.
 
-## Examples: spatiotemporal entropy for time series
-
-Usage is simple. First, define a `SpatialSymbolicPermutation` estimator by specifying
-a stencil and giving some input data (a matrix with the same dimensions as the data
-as you're going to analyse). Then simply call [`entropy`](@ref) with the estimator.
-
-```julia
-using Entropies
-x = rand(50, 50) # first "time slice" of a spatial system evolution
-stencil = [1 1; 0 1] # or one of the other ways of specifying stencils
-est = SpatialSymbolicPermutation(stencil, x)
-h = entropy(est, x)
-```
-
-To apply this to timeseries of spatial data, simply loop over the call, e.g.:
-
-```julia
-data = [rand(50, 50) for i in 1:50]
-est = SpatialSymbolicPermutation(stencil, first(data))
-h_vs_t = [entropy(est, d) for d in data]
-```
-
-Computing generalized spatiotemporal permutation entropy is trivial, e.g. with
-[`Renyi`](@ref):
-
-```julia
-x = reshape(repeat(1:5, 500) .+ 0.1*rand(500*5), 50, 50)
-est = SpatialSymbolicPermutation(stencil, x)
-entropy(Renyi(q = 2), est, x)
-```
-
 [^Ribeiro2012]:
     Ribeiro et al. (2012). Complexity-entropy causality plane as a complexity measure
     for two-dimensional patterns. https://doi.org/10.1371/journal.pone.0040689

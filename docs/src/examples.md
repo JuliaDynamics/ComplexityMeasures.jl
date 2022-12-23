@@ -233,7 +233,7 @@ fig
 
 ### Kaniadakis entropy
 
-Here, we show how [`Kaniadakis`](@ref) entropy changes as function of the parameter `a` for 
+Here, we show how [`Kaniadakis`](@ref) entropy changes as function of the parameter `a` for
 a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
@@ -370,11 +370,41 @@ end
 You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.
 
+## Spatiotemporal permutation entropy
+
+Usage of a [``SpatialSymbolicPermutation`](@ref) estimator is straightforward.
+Here we get the spatial permutation entropy of a 2D array (e.g., an image):
+
+```@example MAIN
+using Entropies
+x = rand(50, 50) # some image
+stencil = [1 1; 0 1] # or one of the other ways of specifying stencils
+est = SpatialSymbolicPermutation(stencil, x)
+h = entropy(est, x)
+```
+
+To apply this to timeseries of spatial data, simply loop over the call, e.g.:
+
+```@example MAIN
+data = [rand(50, 50) for i in 1:10] # e.g., evolution of a 2D field of a PDE
+est = SpatialSymbolicPermutation(stencil, first(data))
+h_vs_t = map(d -> entropy(est, d), data)
+```
+
+Computing any other generalized spatiotemporal permutation entropy is trivial, e.g. with [`Renyi`](@ref):
+
+```@example MAIN
+x = reshape(repeat(1:5, 500) .+ 0.1*rand(500*5), 50, 50)
+est = SpatialSymbolicPermutation(stencil, x)
+entropy(Renyi(q = 2), est, x)
+```
+
+
 ## Spatial discrete entropy: Fabio
 
 Let's see how the normalized permutation and dispersion entropies increase for an image that gets progressively more noise added to it.
 
-```@example
+```@example MAIN
 using Entropies
 using Distributions
 using CairoMakie
@@ -386,11 +416,11 @@ rot = warp(img, recenter(RotMatrix(-3pi/2), center(img));)
 original = Float32.(rot)
 noise_levels = collect(0.0:0.25:1.0) .* std(original) * 5 # % of 1 standard deviation
 
-noisy_imgs = [i == 1 ? original : original .+ rand(Uniform(0, nL), size(original)) 
+noisy_imgs = [i == 1 ? original : original .+ rand(Uniform(0, nL), size(original))
     for (i, nL) in enumerate(noise_levels)]
 
 # a 2x2 stencil (i.e. dispersion/permutation patterns of length 4)
-stencil = ((2, 2), (1, 1)) 
+stencil = ((2, 2), (1, 1))
 
 est_disp = SpatialDispersion(stencil, original; c = 5, periodic = false)
 est_perm = SpatialSymbolicPermutation(stencil, original; periodic = false)
@@ -399,8 +429,8 @@ hs_perm = [entropy_normalized(est_perm, img) for img in noisy_imgs]
 
 # Plot the results
 fig = Figure(size = (800, 1000))
-ax = Axis(fig[1, 1:length(noise_levels)], 
-    xlabel = "Noise level", 
+ax = Axis(fig[1, 1:length(noise_levels)],
+    xlabel = "Noise level",
     ylabel = "Normalized entropy")
 scatterlines!(ax, noise_levels, hs_disp, label = "Dispersion")
 scatterlines!(ax, noise_levels, hs_perm, label = "Permutation")
