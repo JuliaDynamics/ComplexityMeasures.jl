@@ -1,4 +1,6 @@
 export SymbolicPermutation
+export SymbolicWeightedPermutation
+export SymbolicAmplitudeAwarePermutation
 
 ###########################################################################################
 # Types and docstrings
