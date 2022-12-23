@@ -70,15 +70,15 @@ end
 
 total_outcomes(encoding::GaussianCDFEncoding) = encoding.c
 
-g(xᵢ, μ, σ) = exp((-(xᵢ - μ)^2)/(2σ^2))
+gaussian(x, μ, σ) = exp((-(x - μ)^2)/(2σ^2))
 
-function encode(encoding::GaussianCDFEncoding, x)
+function encode(encoding::GaussianCDFEncoding, x::Real)
     (; c, σ, μ) = encoding
     # We only need the value of the integral (not the error), so
     # index first element returned from quadgk
     k = 1/(σ*sqrt(2π))
-    y = k * first(quadgk(xᵢ -> g(xᵢ, μ, σ), -Inf, x))
-    return floor.(Int, y ./ (1 / c)) + 1
+    y = k * first(quadgk(x -> gaussian(x, μ, σ), -Inf, x))
+    return floor(Int, y / (1 / c)) + 1
 end
 
 function decode(encoding::GaussianCDFEncoding, i::Int)
