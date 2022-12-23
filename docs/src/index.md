@@ -44,7 +44,7 @@ Thus, any of the implemented [probabilities estimators](@ref probabilities_estim
     probability distribution. Differential/continuous entropy, for example, is computed
     using a dedicated [`EntropyEstimator`](@ref). For example, the [`Kraskov`](@ref)
     estimator computes Shannon differential entropy via a nearest neighbor algorithm, while
-    the [`Zhu`](@ref) estimator computes Shannon differential entropy using order statistics.
+    the [`Correa`](@ref) estimator computes Shannon differential entropy using order statistics.
 
 ### Other complexity measures
 
