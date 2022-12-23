@@ -44,7 +44,8 @@ struct NaiveKernel{KM, M <: Metric, I} <: ProbabilitiesEstimator
     indices::I
 end
 function NaiveKernel(x, ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
-    ϵ > 0 || error("Radius ϵ must be larger than zero!")
+    x isa Vector && throw(ArgumentError("Input must be dataset, not vector."))
+    ϵ ≤ 0 && throw(ArgumentError("Radius ϵ must be larger than zero!"))
     return NaiveKernel(ϵ, method, w, metric, eachindex(x))
 end
 

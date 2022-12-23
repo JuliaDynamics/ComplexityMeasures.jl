@@ -1,7 +1,8 @@
 using Entropies
 using Test
 using Statistics: mean, std
-using DelayEmbeddings
+using Entropies.DelayEmbeddings: embed
+
 @testset "Dispersion" begin
 
     @testset "Internals" begin
@@ -15,11 +16,11 @@ using DelayEmbeddings
         encoding = GaussianCDFEncoding(; σ, μ, c)
 
         # Encoded symbols should be in the set [1, 2, …, c].
-        symbols = Entropies.encode.(Ref(encoding), x)
-        @test all([s ∈ collect(1:c) for s in symbols])
+        symbols = encode.(Ref(encoding), x)
+        @test all(s -> s ∈ collect(1:c), symbols)
 
         # Dispersion patterns should have a normalized histogram that sums to 1.0.
-        dispersion_patterns = DelayEmbeddings.embed(symbols, m, τ)
+        dispersion_patterns = embed(symbols, m, τ)
         hist = Entropies.dispersion_histogram(dispersion_patterns, length(x), m, τ)
         @test sum(hist) ≈ 1.0
     end
