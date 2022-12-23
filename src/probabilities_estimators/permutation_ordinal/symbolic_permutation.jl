@@ -192,7 +192,7 @@ end
 # how the probabilities are counted.
 
 function probabilities(est::PermProbEst{m}, x::Vector{T}) where {m, T<:Real}
-    dataset::Dataset{m,T} = genembed(x, m, est.τ)
+    dataset::Dataset{m,T} = embed(x, m, est.τ)
     return probabilities(est, dataset)
 end
 

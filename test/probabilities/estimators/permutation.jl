@@ -1,48 +1,56 @@
 using Entropies, Test
+using Random
+using Entropies.DelayEmbeddings: embed
 
 @testset "API" begin
-    @test SymbolicPermutation() isa SymbolicPermutation
-    @test SymbolicPermutation(lt = Base.isless) isa SymbolicPermutation
-    @test SymbolicPermutation(lt = Entropies.isless_rand) isa SymbolicPermutation
-    @test total_outcomes(SymbolicPermutation(m = 3)) == factorial(3)
+    m = 3
+    # Since all these estimators initialize an encoding,
+    # many of the tests such as whether "is_less" is used
+    # are actually done in the ordinal pattern encoding test suite
+    for S in (SymbolicPermutation, SymbolicWeightedPermutation, SymbolicAmplitudeAwarePermutation)
+        @test S() isa ProbabilitiesEstimator
+        @test S(lt = Base.isless) isa ProbabilitiesEstimator
+        @test total_outcomes(S(m = 3)) == factorial(3)
+    end
 end
 
-@testset "Analytic" begin
+@testset "Analytic, symbolic" begin
     est = SymbolicPermutation(m = 3, τ = 1)
-    N = 500
-    x = Dataset(repeat([1.1 2.2 3.3], N))
-    y = Dataset(rand(N, 3))
+    N = 1000
+    x = Dataset(repeat([1.1 2.2 3.3], 10))
+    y = Dataset(rand(Random.MersenneTwister(123), N, 3))
 
     @testset "direct" begin
         p1 = probabilities(est, x)
         p2 = probabilities(est, y)
         @test sum(p1) ≈ 1.0
         @test sum(p2) ≈ 1.0
-        @test entropy(Renyi(q = 1), est, x) ≈ 0  # Regular order-1 entropy
-        @test entropy(Renyi(q = 2), est, y) >= 0 # Higher-order entropy
+        @test length(p1) == 1 # analytic
+        @test length(p2) == 6 # analytic
     end
 
     @testset "pre-allocated" begin
-        s = zeros(Int, N);
-        p1 = probabilities!(s, est, x)
+        s = zeros(Int, N)
         p2 = probabilities!(s, est, y)
-        @test sum(p1) ≈ 1.0
         @test sum(p2) ≈ 1.0
     end
 
 end
 
-@testset "Custom sorting" begin
+# TODO: would be nioce to have analytic tests for amplitude aware
+@testset "Uniform distr." begin
     m = 4
     τ = 1
-    τs = tuple([τ*i for i = 0:m-1]...)
-    ts = rand(1:3, (100, m))
-    D = Dataset(ts)
-
-    est_isless = SymbolicPermutation(; m, τ = 1, lt = Base.isless)
-    est_isless_rand = SymbolicPermutation(; m, τ = 1, lt = Entropies.isless_rand)
-    @test probabilities(est_isless, D) isa Probabilities
-    @test probabilities(est_isless_rand, D) isa Probabilities
+    x = rand(Random.MersenneTwister(1234), 100_000)
+    D = embed(x, m, τ)
+    @testset "$(S)" for S in (SymbolicPermutation,
+        SymbolicWeightedPermutation, SymbolicAmplitudeAwarePermutation)
+        est = S(m = m, τ = τ)
+        p1 = probabilities(est, x)
+        p2 = probabilities(est, D)
+        @test all(p1 .≈ p2)
+        @test all(p -> 0.03 < p < 0.05, p2)
+    end
 end
 
 @testset "outcomes" begin
@@ -50,20 +58,22 @@ end
     # [1, 2] => 3
     # [2, 1] => 2
     x = [1, 2, 1, 2, 1, 2]
-    # don't randomize in the case of equal values, so use Base.isless
-    est = SymbolicPermutation(m = 2, lt = Base.isless)
-    probs, πs = probabilities_and_outcomes(est, x)
-    @test πs == SVector{2, Int}.([[1, 2], [2, 1]])
-    @test probs == [3/5, 2/5]
-
-    est3 = SymbolicPermutation(m = 3)
-    @test outcome_space(est3) == [
-        [1, 2, 3],
-        [1, 3, 2],
-        [2, 1, 3],
-        [2, 3, 1],
-        [3, 1, 2],
-        [3, 2, 1],
-    ]
-    @test total_outcomes(est3) == factorial(3)
+    @testset "$(S)" for S in (SymbolicPermutation,
+        SymbolicWeightedPermutation, SymbolicAmplitudeAwarePermutation)
+        # don't randomize in the case of equal values, so use Base.isless
+        est = S(m = 2, lt = Base.isless)
+        probs, πs = probabilities_and_outcomes(est, x)
+        @test πs == SVector{2, Int}.([[1, 2], [2, 1]])
+        @test probs == [3/5, 2/5]
+        est3 = S(m = 3)
+        @test outcome_space(est3) == [
+            [1, 2, 3],
+            [1, 3, 2],
+            [2, 1, 3],
+            [2, 3, 1],
+            [3, 1, 2],
+            [3, 2, 1],
+        ]
+        @test total_outcomes(est3) == factorial(3)
+    end
 end
