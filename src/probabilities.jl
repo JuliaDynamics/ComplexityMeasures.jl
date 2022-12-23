@@ -12,8 +12,8 @@ export outcome_space
     Probabilities <: AbstractVector
     Probabilities(x) → p
 
-`Probabilities` is a simple wrapper around `AbstractVector` that ensures its values sum
-to 1, so that `p` can be interpreted as probability distribution.
+`Probabilities` is a simple wrapper around `AbstractVector{<:Real}` that ensures its values
+sum to 1, so that `p` can be interpreted as probability mass function.
 """
 struct Probabilities{T} <: AbstractVector{T}
     p::Vector{T}
