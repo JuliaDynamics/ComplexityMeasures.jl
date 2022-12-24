@@ -74,28 +74,25 @@ Stencils are passed in one of the following three ways:
     Schlemmer et al. (2018). Spatiotemporal Permutation Entropy as a Measure for
     Complexity of Cardiac Arrhythmia. https://doi.org/10.3389/fphy.2018.00039
 """
-struct SpatialSymbolicPermutation{D,P,V} <: SpatialProbEst{D, P}
+struct SpatialSymbolicPermutation{D,P,V,M,F} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
     valid::V
-    lt::Function
-    m::Int
+    encoding::OrdinalPatternEncoding{M,F}
 end
 
 function SpatialSymbolicPermutation(stencil, x::AbstractArray{T, D};
-        periodic::Bool = true, lt = isless_rand) where {T, D}
+        periodic::Bool = true, lt::F = isless_rand) where {T, D, F}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
     m = stencil_length(stencil)
-
-    SpatialSymbolicPermutation{D, periodic, typeof(valid)}(
-        stencil, copy(stencil), arraysize, valid, lt, m
+    encoding = OrdinalPatternEncoding{m}(lt)
+    return SpatialSymbolicPermutation{D,periodic,typeof(valid),m,F}(
+        stencil, copy(stencil), arraysize, valid, encoding
     )
 end
 
 function probabilities(est::SpatialSymbolicPermutation, x)
-    # TODO: This can be literally a call to `symbolize` and then
-    # calling probabilities on it. Should do once the `symbolize` refactoring is done.
     s = zeros(Int, length(est.valid))
     probabilities!(s, est, x)
 end
@@ -113,38 +110,42 @@ function probabilities_and_outcomes(est::SpatialSymbolicPermutation, x)
 end
 
 function probabilities_and_outcomes!(s, est::SpatialSymbolicPermutation, x)
-    m, lt = est.m, est.lt
-    encoding = OrdinalPatternEncoding(; m, lt)
-
     encodings_from_permutations!(s, est, x)
-    observed_outcomes = decode.(Ref(encoding), s)
+    observed_outcomes = decode.(Ref(est.encoding), s)
     return probabilities(s), observed_outcomes
 end
 
 # Pretty printing
-function Base.show(io::IO, est::SpatialSymbolicPermutation{D}) where {D}
-    print(io, "Spatial permutation estimator for $D-dimensional data. Stencil:")
+function Base.show(io::IO, est::SpatialSymbolicPermutation{D,P,V,M}) where {D,P,V,M}
+    print(io, "Spatial symbolic permutation probabilities estimator"*
+              "of order $(M) and for $D-dimensional data. Periodic: $(P). Stencil:")
     print(io, "\n")
     show(io, MIME"text/plain"(), est.stencil)
 end
 
-function outcome_space(est::SpatialSymbolicPermutation)
-    encoding = OrdinalPatternEncoding(; est.m, est.lt)
-    decode.(Ref(encoding), 1:factorial(est.m))
+outcome_space(est::SpatialSymbolicPermutation) = outcome_space(est.encoding)
+total_outcomes(est::SpatialSymbolicPermutation) = total_outcomes(est.encoding)
+
+function encodings_from_permutations!(πs, est::SpatialSymbolicPermutation, x::AbstractArray)
+    check_preallocated_length!(πs, est, x)
+    for (i, pixel) in enumerate(est.valid)
+        pixels = pixels_in_stencil(est, pixel)
+        selection = view(x, pixels)
+        πs[i] = encode(est.encoding, selection)
+    end
+    return πs
 end
 
-function total_outcomes(est::SpatialSymbolicPermutation)
-    return factorial(est.m)
-end
-
-function check_preallocated_length!(πs, est::SpatialSymbolicPermutation{D, periodic}, x::AbstractArray{T, N}) where {D, periodic, T, N}
+function check_preallocated_length!(
+        πs, est::SpatialSymbolicPermutation{D, periodic}, x::AbstractArray{T, N}
+    ) where {D, periodic, T, N}
     if periodic
         # If periodic boundary conditions, then each pixel has a well-defined neighborhood,
         # and there are as many encoded symbols as there are pixels.
         length(πs) == length(x) ||
             throw(
                 ArgumentError(
-                    """Need length(πs) == length(x), got `length(πs)=$(length(πs))`\
+                    """Need length(πs) == length(x), got `length(πs)=$(length(πs))`
                     and `length(x)==$(length(x))`."""
                 )
             )
@@ -154,24 +155,9 @@ function check_preallocated_length!(πs, est::SpatialSymbolicPermutation{D, peri
         length(πs) == length(est.valid) ||
         throw(
             ArgumentError(
-                """Need length(πs) == length(est.valid), got `length(πs)=$(length(πs))`\
+                """Need length(πs) == length(est.valid), got `length(πs)=$(length(πs))`
                 and `length(est.valid)==$(length(est.valid))`."""
             )
         )
     end
-end
-
-function encodings_from_permutations!(πs, est::SpatialSymbolicPermutation{D, periodic},
-        x::AbstractArray{T, N}) where {T, N, D, periodic}
-    m, lt = est.m, est.lt
-    check_preallocated_length!(πs, est, x)
-    encoding = OrdinalPatternEncoding(; m, lt)
-
-    perm = @MVector zeros(Int, m)
-    for (i, pixel) in enumerate(est.valid)
-        pixels = pixels_in_stencil(est, pixel)
-        sortperm!(perm, view(x, pixels)) # Find permutation for currently selected pixels.
-        πs[i] = encode(encoding, perm) # Encode based on the permutation.
-    end
-    return πs
 end
