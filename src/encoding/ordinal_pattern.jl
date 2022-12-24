@@ -7,8 +7,8 @@ export OrdinalPatternEncoding
     OrdinalPatternEncoding <: Encoding
     OrdinalPatternEncoding(m::Int, lt = Entropies.isless_rand)
 
-An encoding scheme that [`encode`](@ref)s `m`-dimensional permutation/ordinal patterns to
-integers and [`decode`](@ref)s these integers to permutation patterns based on the Lehmer
+An encoding scheme that [`encode`](@ref)s length-`m` vectors into
+their permutation/ordinal patterns and then into the integers based on the Lehmer
 code. It is used by [`SymbolicPermutation`](@ref) and similar estimators, see that for
 a description of the outcome space.
 
@@ -25,22 +25,22 @@ The decoding step is much slower due to missing optimizations (pull requests wel
 ```jldoctest
 julia> using Entropies
 
-julia> x = Dataset(rand(100, 3));
+julia> x = [4.0, 1.0, 9.0];
 
 julia> c = OrdinalPatternEncoding(3);
 
-julia> encode(c, x[1])
-1
+julia> encode(c, x)
+3
 
 julia> decode(c, 1)
 3-element SVector{3, Int64} with indices SOneTo(3):
- 1
  2
+ 1
  3
 ```
 
 [^Berger2019]:
-    Berger, Sebastian, et al. "Teaching Ordinal Patterns to a Computer: Efficient
+    Berger et al. "Teaching Ordinal Patterns to a Computer: Efficient
     Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
 """
 struct OrdinalPatternEncoding{M, F} <: Encoding
@@ -63,7 +63,7 @@ outcome_space(::OrdinalPatternEncoding{m}) where {m} = permutations(1:m) |> coll
 # our code. However we allow `AbstractVector` if a user wanna use `encode` directly
 function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector) where {m}
     if m != length(χ)
-        throw(ArgumentError("Permutation order and length of vector must match!"))
+        throw(ArgumentError("Permutation order and length of input must match!"))
     end
     perm = sortperm!(encoding.perm, χ; lt = encoding.lt)
     # Begin Lehmer code
@@ -136,13 +136,12 @@ function ndigits_in_factorial_base(n::Int)
     return k
 end
 
-
 function isless_rand(a, b)
-    if a == b
-        rand(Bool)
-    elseif a < b
+    if  a < b
         true
-    else
+    elseif a > b
         false
+    else
+        rand(Bool)
     end
 end
