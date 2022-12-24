@@ -31,6 +31,12 @@ julia> c = OrdinalPatternEncoding(3);
 
 julia> encode(c, x[1])
 1
+
+julia> decode(c, 1)
+3-element SVector{3, Int64} with indices SOneTo(3):
+ 1
+ 2
+ 3
 ```
 
 [^Berger2019]:
