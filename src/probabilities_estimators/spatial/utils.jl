@@ -1,11 +1,12 @@
-# This file contains functions that are common to all spatial symbolic estimators.
+# This file contains functions that are common to all spatial estimators that "scan"
+# some stencil of pixes of higher-dimensional arrays and map this stencil of pixels
+# into an integer (e.g., a permutation pattern)
 # --------------------------------------------------------------------------------
 
 # get stencil in the form of vectors of cartesian indices from either input type
 stencil_to_offsets(stencil::Vector{CartesianIndex{D}}) where D = stencil, D
 
 function stencil_to_offsets(stencil::NTuple{2, NTuple{D, T}}) where {D, T}
-    # get extent and lag from stencil
     extent, lag = stencil
     # generate a D-dimensional stencil
     # start by generating a list of iterators for each dimension

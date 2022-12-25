@@ -1,74 +1,72 @@
 using StaticArrays: MVector
-using StateSpaceSets: AbstractDataset
+using Combinatorics: permutations
 
 export OrdinalPatternEncoding
-#TODO: The docstring here, and probably the source code, needs a full re-write
-# based on new `encode` interface.
 
 """
     OrdinalPatternEncoding <: Encoding
-    OrdinalPatternEncoding(; m::Int, lt = est.lt)
+    OrdinalPatternEncoding(m::Int, lt = Entropies.isless_rand)
 
-An encoding scheme that [`encode`](@ref)s `m`-dimensional permutation/ordinal patterns to
-integers and [`decode`](@ref)s these integers to permutation patterns based on the Lehmer
-code.
-
-## Usage
-
-Used in [`outcomes`](@ref) with probabilities estimators such as
-[`SymbolicPermutation`](@ref) to map state vectors `xᵢ ∈ x` into their
-integer symbol representations `πᵢ`.
+An encoding scheme that [`encode`](@ref)s length-`m` vectors into
+their permutation/ordinal patterns and then into the integers based on the Lehmer
+code. It is used by [`SymbolicPermutation`](@ref) and similar estimators, see that for
+a description of the outcome space.
 
 ## Description
 
-The Lehmer code, as implemented here, is a bijection between the set of `factorial(n)`
-possible permutations for a length-`n` sequence, and the integers `1, 2, …, n`.
-
-- *Encoding* converts an `m`-dimensional permutation pattern `p` into its unique integer
-    symbol ``\\omega \\in \\{0, 1, \\ldots, m - 1 \\}``, using Algorithm 1 in Berger
-    et al. (2019)[^Berger2019].
-- *Decoding* converts an ``\\omega_i \\in \\Omega` ` to its original permutation pattern.
-
-`OrdinalPatternEncoding` is thus meant to be applied on a *permutation*, i.e.
-a vector of indices that would sort some vector in ascending order (in practice: the
-result of calling `sortperm(x)` for some input vector `x`).
+The Lehmer code, as implemented here, is a bijection between the set of `factorial(m)`
+possible permutations for a length-`m` sequence, and the integers `1, 2, …, factorial(m)`.
+The encoding step uses algorithm 1 in Berger et al. (2019)[^Berger2019], which is
+highly optimized.
+The decoding step is much slower due to missing optimizations (pull requests welcomed!).
 
 ## Example
 
 ```jldoctest
 julia> using Entropies
 
-julia> x = [1.2, 5.4, 2.2, 1.1]; encoding = OrdinalPatternEncoding(m = length(x));
+julia> x = [4.0, 1.0, 9.0];
 
-julia> xs = sortperm(x)
-4-element Vector{Int64}:
- 4
+julia> c = OrdinalPatternEncoding(3);
+
+julia> encode(c, x)
+3
+
+julia> decode(c, 1)
+3-element SVector{3, Int64} with indices SOneTo(3):
+ 2
  1
  3
- 2
-
-julia> s = encode(encoding, xs)
-20
-
-julia> decode(encoding, s)
-4-element SVector{4, Int64} with indices SOneTo(4):
- 4
- 1
- 3
- 2
 ```
 
 [^Berger2019]:
-    Berger, Sebastian, et al. "Teaching Ordinal Patterns to a Computer: Efficient
+    Berger et al. "Teaching Ordinal Patterns to a Computer: Efficient
     Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
 """
-Base.@kwdef struct OrdinalPatternEncoding{M <: Integer} <: Encoding
-    m::M = 3
-    lt::Function = isless_rand
+struct OrdinalPatternEncoding{M, F} <: Encoding
+    perm::MVector{M, Int}
+    lt::F
+end
+function OrdinalPatternEncoding{m}(lt::F) where {m,F}
+    OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
+end
+function OrdinalPatternEncoding(m = 3, lt::F = isless_rand) where {F}
+    return OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
 end
 
-function encode(encoding::OrdinalPatternEncoding, perm)
-    m = encoding.m
+# So that SymbolicPerm stuff fallback here
+total_outcomes(::OrdinalPatternEncoding{m}) where {m} = factorial(m)
+outcome_space(::OrdinalPatternEncoding{m}) where {m} = permutations(1:m) |> collect
+
+
+# Notice that `χ` is an element of a `Dataset`, so most definitely a static vector in
+# our code. However we allow `AbstractVector` if a user wanna use `encode` directly
+function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector) where {m}
+    if m != length(χ)
+        throw(ArgumentError("Permutation order and length of input must match!"))
+    end
+    perm = sortperm!(encoding.perm, χ; lt = encoding.lt)
+    # Begin Lehmer code
     n = 0
     for i = 1:m-1
         for j = i+1:m
@@ -77,18 +75,17 @@ function encode(encoding::OrdinalPatternEncoding, perm)
         n = (m-i)*n
     end
     # The Lehmer code actually results in 0 being an encoded symbol. Shift by 1, so that
-    # encodings are positive integers.
+    # encodings are the positive integers.
     return n + 1
 end
 
 # I couldn't find any efficient algorithm in the literature for converting
 # between factorial number system representations and Lehmer codes, so we'll just have to
 # use this naive approach for now. It is probably possible to do this in a faster way.
-function decode(encoding::OrdinalPatternEncoding, s::Int)
-    m = encoding.m
+function decode(::OrdinalPatternEncoding{m}, s::Int) where {m}
     # Convert integer to its factorial number representation. Each factorial number
     # corresponds to a unique permutation of the numbers `1, 2, ..., m`.
-    f = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 in `encode`
+    f::SVector{m, Int} = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 in `encode`
 
     # Reconstruct the permutation from the factorial representation
     xs = 1:m |> collect
@@ -139,13 +136,12 @@ function ndigits_in_factorial_base(n::Int)
     return k
 end
 
-
 function isless_rand(a, b)
-    if a == b
-        rand(Bool)
-    elseif a < b
+    if  a < b
         true
-    else
+    elseif a > b
         false
+    else
+        rand(Bool)
     end
 end

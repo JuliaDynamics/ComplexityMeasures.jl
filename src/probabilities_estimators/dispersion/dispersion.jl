@@ -16,43 +16,23 @@ categories for the Gaussian symbol mapping.
 ## Description
 
 Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. First, this time series
-is discretized a "Gaussian encoding", which uses the normal cumulative distribution
-function (CDF) to encode a timeseries ``x`` as integers like so:
+is encoded into a symbol timeseries ``S`` using the Gaussian encoding
+[`GaussianCDFEncoding`](@ref) with empirical mean `μ` and empirical standard deviation `σ`
+(both determined from ``X``), and `c` as given to `Dispersion`.
 
-- Each ``x_i`` is mapped to a new real number ``y_i \\in [0, 1]`` by using the normal
-    cumulative distribution function (CDF), ``x_i \\to y_i : y_i = \\dfrac{1}{ \\sigma
-    \\sqrt{2 \\pi}} \\int_{-\\infty}^{x_i} e^{(-(x_i - \\mu)^2)/(2 \\sigma^2)} dx``,
-    where ``\\mu`` and ``\\sigma`` are the empirical mean and standard deviation of ``X``.
-    Other choices of CDFs are also possible, but currently only Gaussian is implemented.
-- Next, each ``y_i`` is linearly mapped to an integer
-    ``z_i \\in [1, 2, \\ldots, c]`` using the map
-    ``y_i \\to z_i : z_i = \\text{floor}(y_i ./ (1 / c)) + 1`` (*note: this mapping differs
-    slightly from the linear mapping in the original paper*). This procedure subdivides the
-    interval ``[0, 1]`` into ``c``
-    different subintervals that form a covering of ``[0, 1]``, and assigns each ``y_i`` to one
-    of these subintervals. The original time series ``X`` is thus transformed to a symbol time
-    series ``S = \\{ s_i \\}_{i=1}^N``, where ``s_i \\in [1, 2, \\ldots, c]``.
-- Next, the symbol time series ``S`` is embedded into an
-    ``m``-dimensional time series, using an embedding lag of ``\\tau = 1``, which yields a
-    total of ``N - (m - 1)\\tau`` points, or "dispersion patterns". Because each ``z_i`` can
-    take on ``c`` different values, and each embedding point has ``m`` values, there
-    are ``c^m`` possible dispersion patterns. This number is used for normalization when
-    computing dispersion entropy.
+Then, ``S`` is embedded into an ``m``-dimensional time series, using an embedding lag of
+``\\tau``, which yields a total of ``N - (m - 1)\\tau`` delay vectors ``z_i``,
+or "dispersion patterns". Since each element of ``z_i`` can take on `c` different values,
+and each delay vector has `m` entries, there are `c^m` possible dispersion patterns.
+This number is used for normalization when computing dispersion entropy.
 
-### Computing dispersion probabilities and entropy
-
-A probability distribution ``P = \\{p_i \\}_{i=1}^{c^m}``, where
-``\\sum_i^{c^m} p_i = 1``, can then be estimated by counting and sum-normalising
-the distribution of dispersion patterns among the embedding vectors.
-Note that dispersion patterns that are not present are not counted. Therefore, you'll
-always get non-zero probabilities using the `Dispersion` probability estimator.
+The returned probabilities are simply the frequencies of the unique dispersion patterns
+present in ``S`` (i.e., the [`CountOccurences`](@ref) of ``S``).
 
 ## Outcome space
 
 The outcome space for `Dispersion` is the unique delay vectors whose elements are the
-the symbols (integers) encoded by the Gaussian CDF.
-Hence, the outcome space is all `m`-dimensional delay vectors whose elements
-are all possible values in `1:c`. There are `c ^ m` such vectors.
+the symbols (integers) encoded by the Gaussian CDF, i.e., the unique elements of ``S``.
 
 ## Data requirements and parameters
 
@@ -70,14 +50,23 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
     When ``c = 3``, values clustering far below mean are in one group, values clustered
     around the mean are in one group, and values clustering far above the mean are in a
     third group. Then the embedding vector ``[2, 2, 2, 2, 2]`` consists of values that are
-    relatively close together (close to the mean), so it represents a set of numbers that
+    close together (close to the mean), so it represents a set of numbers that
     are not very spread out (less dispersed). The embedding vector ``[1, 1, 2, 3, 3]``,
     however, represents numbers that are much more spread out (more dispersed), because the
     categories representing "outliers" both above and below the mean are represented,
     not only values close to the mean.
 
-[^Rostaghi2016]: Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.
-[^Li2018]: Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale dispersion entropy and wavelet threshold denoising. Entropy, 21(1), 11.
+For a version of this estimator that can be used on high-dimensional arrays, see
+[`SpatialDispersion`](@ref).
+
+[^Rostaghi2016]:
+    Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis.
+    IEEE Signal Processing Letters, 23(5), 610-614.
+
+[^Li2018]:
+    Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic
+    signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale
+    dispersion entropy and wavelet threshold denoising. Entropy, 21(1), 11.
 """
 Base.@kwdef struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
     encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`

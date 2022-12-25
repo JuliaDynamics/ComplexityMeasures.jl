@@ -1,4 +1,4 @@
-# [Probabilities](@id probabilities_estimators)
+# Probabilities
 
 ## Probabilities API
 
@@ -8,11 +8,20 @@ The probabilities API is defined by
 - [`probabilities`](@ref)
 - [`probabilities_and_outcomes`](@ref)
 
+and related functions that you will find in the following documentation blocks:
+
+### Probabilitities
+
 ```@docs
 ProbabilitiesEstimator
 probabilities
 probabilities!
 Probabilities
+```
+
+### Outcomes
+
+```@docs
 probabilities_and_outcomes
 outcomes
 outcome_space
@@ -20,31 +29,34 @@ total_outcomes
 missing_outcomes
 ```
 
-## Overview
+## [Overview of probabilities estimators](@id probabilities_estimators)
 
-Any of the following estimators can be used with [`probabilities`](@ref).
+Any of the following estimators can be used with [`probabilities`](@ref)
+(in the column "input data"  it is assumed that the `eltype` of the input is `<: Real`).
 
 | Estimator                                   | Principle                   | Input data          |
-| ------------------------------------------- | --------------------------- | ------------------- |
-| [`CountOccurrences`](@ref)                  | Frequencies                 | `Vector`, `Dataset` |
+|:--------------------------------------------|:----------------------------|:--------------------|
+| [`CountOccurrences`](@ref)                  | Count of unique elements    | `Any` |
 | [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |
 | [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |
 | [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |
-| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`            |
-| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`            |
-| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`            |
+| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`, `Dataset` |
+| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`, `Dataset` |
+| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`, `Dataset` |
+| [`SpatialSymbolicPermutation`](@ref)        | Ordinal patterns in space   | `Array` |
 | [`Dispersion`](@ref)                        | Dispersion patterns         | `Vector`            |
+| [`SpatialDispersion`](@ref)                 | Dispersion patterns in space  | `Array` |
 | [`Diversity`](@ref)                         | Cosine similarity           | `Vector`            |
 | [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |
-| [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |
+| [`PowerSpectrum`](@ref)                     | Fourier transform           | `Vector` |
 
-## Count occurrences (counting)
+## Count occurrences
 
 ```@docs
 CountOccurrences
 ```
 
-## Visitation frequency (histograms)
+## Histograms
 
 ```@docs
 ValueHistogram
@@ -52,23 +64,21 @@ RectangularBinning
 FixedRectangularBinning
 ```
 
-## Permutation (symbolic)
+## Symbolic permutations
 
 ```@docs
 SymbolicPermutation
 SymbolicWeightedPermutation
 SymbolicAmplitudeAwarePermutation
-SpatialSymbolicPermutation
 ```
 
-## Dispersion (symbolic)
+## Dispersion patterns
 
 ```@docs
 Dispersion
-SpatialDispersion
 ```
 
-## Transfer operator (binning)
+## Transfer operator
 
 ```@docs
 TransferOperator
@@ -99,4 +109,11 @@ PowerSpectrum
 
 ```@docs
 Diversity
+```
+
+## Spatial estimators
+
+```@docs
+SpatialSymbolicPermutation
+SpatialDispersion
 ```

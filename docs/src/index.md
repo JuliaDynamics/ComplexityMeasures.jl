@@ -8,7 +8,7 @@ Entropies
     You are reading the development version of the documentation of Entropies.jl,
     that will become version 2.0.
 
-## API & terminology
+## Terminology
 
 !!! note
     The documentation here follows (loosely) chapter 5 of
@@ -16,15 +16,14 @@ Entropies
     Datseris & Parlitz, Springer 2022.
 
 In the literature, the term "entropy" is used (and abused) in multiple contexts.
-The API and documentation of Entropies.jl aim to clarify some aspects of its usage, and
-to provide a simple way to obtain probabilities, entropies, or other complexity measures.
+The API and documentation of Entropies.jl aim to clarify some aspects of its usage, and to provide a simple way to obtain probabilities, entropies, or other complexity measures.
 
 ### Probabilities
 
 Entropies and other complexity measures are typically computed based on _probability distributions_.
-These are obtained from [Input data for Entropies.jl](@ref) in a plethora of different ways.
-The central API function that returns a probability distribution (in fact, just a vector of probabilities) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref) to specify how the probabilities are computed.
-All estimators available in Entropies.jl can be found in the [estimators page](@ref probabilities_estimators).
+These can be obtained from input data in a plethora of different ways.
+The central API function that returns a probability distribution (or more precisely a probability mass function) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref) to specify how the probabilities are computed.
+All available estimators can be found in the [estimators page](@ref probabilities_estimators).
 
 ### Entropies
 
@@ -40,24 +39,28 @@ Thus, any of the implemented [probabilities estimators](@ref probabilities_estim
 
     These names are commonplace, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
 
-    In addition to `ProbabilitiesEstimators`, we also provide [`EntropyEstimator`](@ref)s, 
-    which compute entropies via alternate means, without explicitly computing some 
+    In addition to `ProbabilitiesEstimators`, we also provide [`EntropyEstimator`](@ref)s,
+    which compute entropies via alternate means, without explicitly computing some
     probability distribution. Differential/continuous entropy, for example, is computed
-    using a dedicated [`EntropyEstimator`](@ref). For example, the [`Kraskov`](@ref) 
-    estimator computes Shannon differential entropy via a nearest neighbor algorithm, while 
-    the [`Zhu`](@ref) estimator computes Shannon differential entropy using order statistics.
+    using a dedicated [`EntropyEstimator`](@ref). For example, the [`Kraskov`](@ref)
+    estimator computes Shannon differential entropy via a nearest neighbor algorithm, while
+    the [`Correa`](@ref) estimator computes Shannon differential entropy using order statistics.
 
 ### Other complexity measures
 
-Other complexity measures, which strictly speaking don't compute entropies, and may or may
-not explicitly compute probability distributions, are found in
-[Complexity.jl](https://github.com/JuliaDynamics/Complexity.jl) package. This includes
-measures like sample entropy and approximate entropy.
+Other complexity measures, which strictly speaking don't compute entropies, and may or may not explicitly compute probability distributions, are found in
+[Complexity measures](@ref) page.
+This includes measures like sample entropy and approximate entropy.
 
 ## [Input data for Entropies.jl](@id input_data)
 
-The input data type typically depend on the probability estimator chosen. In general though, the standard DynamicalSystems.jl approach is taken and as such we have three types of input data:
+The input data type typically depend on the probability estimator chosen.
+In general though, the standard DynamicalSystems.jl approach is taken and as such we have three types of input data:
 
 - _Timeseries_, which are `AbstractVector{<:Real}`, used in e.g. with [`WaveletOverlap`](@ref).
 - _Multi-dimensional timeseries, or datasets, or state space sets_, which are [`Dataset`](@ref), used e.g. with [`NaiveKernel`](@ref).
 - _Spatial data_, which are higher dimensional standard `Array`s, used e.g. with  [`SpatialSymbolicPermutation`](@ref).
+
+```@docs
+Dataset
+```

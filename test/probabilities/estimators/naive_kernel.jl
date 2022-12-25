@@ -1,7 +1,8 @@
 using Entropies.DelayEmbeddings.Neighborhood: KDTree
 
-@test_throws ArgumentError NaiveKernel(0.1) isa NaiveKernel
+@test_throws ArgumentError NaiveKernel(rand(10), 0.1)
 @test_throws ArgumentError NaiveKernel(0.1, method = KDTree) isa NaiveKernel
+@test NaiveKernel(Dataset(rand(10,2)), 0.1; method = KDTree) isa ProbabilitiesEstimator
 
 N = 1000
 pts = Dataset([rand(2) for i = 1:N]);

@@ -2,10 +2,10 @@ cd(@__DIR__)
 using Pkg
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
 using Entropies
-using DelayEmbeddings
 using Documenter
 using DocumenterTools: Themes
 using CairoMakie
+using Entropies.DelayEmbeddings
 import Entropies.Wavelets
 
 # %% JuliaDynamics theme
@@ -35,6 +35,7 @@ ENV["JULIA_DEBUG"] = "Documenter"
 ENTROPIES_PAGES = [
     "index.md",
     "probabilities.md",
+    "encodings.md",
     "entropies.md",
     "complexity.md",
     "multiscale.md",
