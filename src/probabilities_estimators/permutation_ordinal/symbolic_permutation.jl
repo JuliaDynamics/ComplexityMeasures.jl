@@ -34,10 +34,11 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     by using [`CountOccurrences`](@ref). When giving the resulting probabilities to
     [`entropy`](@ref), the original permutation entropy is computed [^BandtPompe2002].
 - **Multivariate data**. If applied to a an `D`-dimensional `Dataset`,
-    then no embedding is constructed. For each vector ``\\bf{x}_i``of the dataset,
-    we directly map it to its permutation pattern
+    then no embedding is constructed, and we each vector ``\\bf{x}_i`` of the dataset
+    directly to its permutation pattern ``\\pi_{i}``, ``\\pi_{i}`` by comparing the
+    relative magnitudes of the elements of ``\\bf{x}_i``.
     Like above, probabilities are estimated as the frequencies of the permutation symbols.
-    ``\\pi_{i}`` by comparing the elements in the vector. In this case, `m` is ignored,
+    In this case, `m` is ignored,
     but `m` must still match the dimension of the dataset for optimization.
     The resulting probabilities can be used to compute multivariate permutation
     entropy[^He2016], although here we don't perform any further subdivision
@@ -78,7 +79,7 @@ information about within-state-vector amplitudes.
 !!! note "Handling equal values in ordinal patterns"
     In Bandt & Pompe (2002), equal values are ordered after their order of appearance, but
     this can lead to erroneous temporal correlations, especially for data with
-    low-amplitude resolution [^Zunino2017]. Here, by default, if two values are equal,
+    low amplitude resolution [^Zunino2017]. Here, by default, if two values are equal,
     then one of the is randomly assigned as "the largest", using
     `lt = Entropies.isless_rand`. To get the behaviour from Bandt and Pompe (2002), use
     `lt = Base.isless`).
@@ -122,8 +123,8 @@ of the same pattern.
     *But given the formula they give for the arithmetic mean, this is **not** the variance
     of the delay vector ``\\mathbf{x}_i``, because the indices are mixed:
     ``x_{j+(k-1)\\tau}`` in the weights formula, vs. ``x_{j+(k+1)\\tau}`` in the arithmetic
-    mean formula. Here delay embedding and computation of the patterns and their weights
-    are completely separated processes so this ensures that we compute the arithmetic mean
+    mean formula. Here, delay embedding and computation of the patterns and their weights
+    are completely separated processes, ensuring that we compute the arithmetic mean
     correctly for each vector of the input dataset (which may be a delay-embedded
     timeseries).
 

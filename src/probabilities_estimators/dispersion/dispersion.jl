@@ -17,8 +17,8 @@ categories for the Gaussian symbol mapping.
 
 Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. First, this time series
 is encoded into a symbol timeseries ``S`` using the Gaussian encoding
-[`GaussianCDFEncoding`](@ref) with `μ, σ` the mean and standard deviation of ``X`` and
-`c` as given to `Dispersion`.
+[`GaussianCDFEncoding`](@ref) with empirical mean `μ` and empirical standard deviation `σ`
+(both determined from ``X``), and `c` as given to `Dispersion`.
 
 Then, ``S`` is embedded into an ``m``-dimensional time series, using an embedding lag of
 ``\\tau``, which yields a total of ``N - (m - 1)\\tau`` delay vectors ``z_i``,
@@ -26,7 +26,7 @@ or "dispersion patterns". Since each element of ``z_i`` can take on `c` differen
 and each delay vector has `m` entries, there are `c^m` possible dispersion patterns.
 This number is used for normalization when computing dispersion entropy.
 
-The return probabilities are simply the frequencies of the unique dispersion patterns
+The returned probabilities are simply the frequencies of the unique dispersion patterns
 present in ``S`` (i.e., the [`CountOccurences`](@ref) of ``S``).
 
 ## Outcome space
@@ -50,7 +50,7 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
     When ``c = 3``, values clustering far below mean are in one group, values clustered
     around the mean are in one group, and values clustering far above the mean are in a
     third group. Then the embedding vector ``[2, 2, 2, 2, 2]`` consists of values that are
-    relatively close together (close to the mean), so it represents a set of numbers that
+    close together (close to the mean), so it represents a set of numbers that
     are not very spread out (less dispersed). The embedding vector ``[1, 1, 2, 3, 3]``,
     however, represents numbers that are much more spread out (more dispersed), because the
     categories representing "outliers" both above and below the mean are represented,
