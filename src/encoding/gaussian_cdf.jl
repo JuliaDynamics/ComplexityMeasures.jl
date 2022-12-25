@@ -25,11 +25,11 @@ x \\to y : y = \\dfrac{1}{ \\sigma
     \\sqrt{2 \\pi}} \\int_{-\\infty}^{x} e^{(-(x - \\mu)^2)/(2 \\sigma^2)} dx.
 ```
 
-Next, the interval `[0, 1]` is equidistantly binned and enumerated ``1, 2, \\ldots, c``.
+Next, the interval `[0, 1]` is equidistantly binned and enumerated ``1, 2, \\ldots, c``,
  and ``y`` is linearly mapped to one of these integers using the linear map
  ``y \\to z : z = \\text{floor}(y(c-1)) + 1``.
 
-Because of the ceiling operation, some information is lost, so when used with
+Because of the floor operation, some information is lost, so when used with
 [`decode`](@ref), each decoded `sᵢ` is mapped to a *subinterval* of `[0, 1]`.
 
 ## Examples
