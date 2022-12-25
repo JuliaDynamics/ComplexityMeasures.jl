@@ -76,7 +76,6 @@ SymbolicAmplitudeAwarePermutation
 
 ```@docs
 Dispersion
-SpatialDispersion
 ```
 
 ## Transfer operator
