@@ -64,29 +64,18 @@ const DiffEntropyEst = DifferentialEntropyEstimator
 """
     entropy([e::EntropyDefinition,] probs::Probabilities)
     entropy([e::EntropyDefinition,] est::ProbabilitiesEstimator, x)
-    entropy([e::EntropyDefinition,] est::DiffEntropyEst, x)
 
-Compute `h::Real`, which is
-a (generalized) entropy defined by `e`, in one of three ways:
+Compute the **discrete entropy** `h::Real` defined by `e`, in one of two ways:
 
 1. Directly from existing [`Probabilities`](@ref) `probs`.
 2. From input data `x`, by first estimating a probability distribution using the provided
    [`ProbabilitiesEstimator`](@ref), then computing entropy from that distribution.
    In fact, the second method is just a 2-lines-of-code wrapper that calls
    [`probabilities`](@ref) and gives the result to the first method.
-3. From input data `x`, by using a dedicated [`DiffEntropyEst`](@ref) that computes
-   entropy in a way that doesn't involve explicitly computing probabilities first.
-   Usually, this involves computing a *differential* entropy.
 
 The entropy definition (first argument) is optional. Explicitly provide `e` if you need to
 specify a logarithm base for the entropy. When `est` is a probability estimator,
-`Shannon(; base = 2)` is used by default. When `est` is a dedicated entropy estimator,
-the default entropy type is inferred from the estimator (e.g. [`Kraskov`](@ref)
-estimates `Shannon(; base = 2)` *differential* entropy).
-
-## Input data
-
-`x` is typically an `Array` or a `Dataset`, see [Input data for Entropies.jl](@ref).
+`Shannon(; base = 2)` is used by default.
 
 ## Maximum entropy and normalized entropy
 
@@ -96,8 +85,6 @@ chosen entropy type and probability estimator. Or, one can use [`entropy_normali
 to obtain the normalized form of the entropy (divided by the maximum).
 
 ## Examples
-
-### Discrete entropies
 
 ```julia
 x = [rand(Bool) for _ in 1:10000] # coin toss
@@ -130,6 +117,17 @@ entropy(probs::Probabilities) = entropy(Shannon(; base = 2), probs)
 ###########################################################################################
 # Dispatch for these functions is implemented in individual estimator files in
 # `entropies/estimators/`.
+"""
+    entropy([e::EntropyDefinition,] est::DifferentialEntropyEstimator, x)
+
+Approximate the **differential entropy** `h::Real` according to the definition `e` using
+the provided [`DifferentialEntropyEstimator`](@ref) and input data `x`.
+This method doesn't involve explicitly computing (discretized) probabilities first.
+
+The entropy definition argument is optional.
+The default entropy type is inferred from the estimator (e.g. [`Kraskov`](@ref)
+estimates the base-2 Shannon differential entropy.
+"""
 function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
     t = string(nameof(typeof(e)))
     throw(ArgumentError("$t entropy not implemented for $(typeof(est)) estimator"))
