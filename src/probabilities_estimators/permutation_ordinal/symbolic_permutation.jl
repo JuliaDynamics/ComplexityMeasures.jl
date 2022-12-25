@@ -75,6 +75,8 @@ p = probabilities!(πs_ts, est, x)
 See [`SymbolicWeightedPermutation`](@ref) and [`SymbolicAmplitudeAwarePermutation`](@ref)
 for estimators that not only consider ordinal (sorting) patterns, but also incorporate
 information about within-state-vector amplitudes.
+For a version of this estimator that can be used on high-dimensional arrays, see
+[`SpatialSymbolicPermutation`](@ref).
 
 !!! note "Handling equal values in ordinal patterns"
     In Bandt & Pompe (2002), equal values are ordered after their order of appearance, but

@@ -56,6 +56,9 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
     categories representing "outliers" both above and below the mean are represented,
     not only values close to the mean.
 
+For a version of this estimator that can be used on high-dimensional arrays, see
+[`SpatialDispersion`](@ref).
+
 [^Rostaghi2016]:
     Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis.
     IEEE Signal Processing Letters, 23(5), 610-614.
