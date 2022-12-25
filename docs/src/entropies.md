@@ -1,10 +1,8 @@
 # [Entropies](@id entropies)
 
-```@docs
-entropy
-```
+TODO: Guiding statements here.
 
-## Generalized entropies
+## Entropy definitions
 
 ```@docs
 EntropyDefinition
@@ -14,6 +12,12 @@ Tsallis
 Kaniadakis
 Curado
 StretchedExponential
+```
+
+## Discrete entropy
+
+```@docs
+entropy(::EntropyDefinition, ::ProbabilitiesEstimator, ::Any)
 ```
 
 ## Estimation (discrete)
@@ -42,7 +46,13 @@ Tables scroll sideways, so are best viewed on a large screen.
 | [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 | [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 
-## Estimation (continuous/differential)
+## Differential entropy
+
+```@docs
+entropy(::EntropyDefinition, ::DiffEntropyEst, x)
+```
+
+### Table of differential entropy estimators
 
 The following estimators are *differential* entropy estimators, and can also be used
 with [`entropy`](@ref). Differential) entropies are functions of *integrals*, and usually

@@ -17,8 +17,10 @@ of (generalized) entropies. Currently implemented entropy definitions are:
 - [`StretchedExponential`](@ref).
 
 These entropy types are given as inputs to [`entropy`](@ref) and [`entropy_normalized`].
-Notice that all documentation strings formulas are provided for the discrete version
+Notice that in all documentation strings formulas are provided for the discrete version
 of the entropy, for simplicity.
+
+See [`entropy`](@ref) for usage.
 
 ## Description
 
@@ -37,9 +39,10 @@ abstract type EntropyDefinition <: AbstractEntropy end
     DiffEntropyEst # alias
 
 The supertype of all differential entropy estimators.
+These estimators compute an entropy value in various ways that do not involve
+explicitly estimating a probability distribution.
 
-These estimators compute some [`EntropyDefinition`](@ref) in various ways that doesn't involve
-explicitly estimating a probability distribution. Currently implemented estimators are:
+Currently implemented estimators are:
 
 - [`KozachenkoLeonenko`](@ref)
 - [`Kraskov`](@ref)
@@ -50,17 +53,15 @@ explicitly estimating a probability distribution. Currently implemented estimato
 - [`Correa`](@ref)
 - [`AlizadehArghami`](@ref)
 
-For example, [`entropy`](@ref)`(Shannon(), Kraskov(), x)` computes the Shannon
-differential entropy of the input data `x` using the [`Kraskov`](@ref) `k`-th nearest
-neighbor estimator.
+See [`entropy`](@ref) for usage.
 """
 abstract type DifferentialEntropyEstimator end
 const DiffEntropyEst = DifferentialEntropyEstimator
 
 ###########################################################################################
-# API: entropy from probabilities
+# Discrete entropy
 ###########################################################################################
-# Notice that StatsBase.jl exports `entropy` and Wavelets.jl exports `EntropyDefinition`.
+# Notice that StatsBase.jl also exports `entropy`.
 """
     entropy([e::EntropyDefinition,] probs::Probabilities)
     entropy([e::EntropyDefinition,] est::ProbabilitiesEstimator, x)
@@ -101,12 +102,14 @@ function entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
     return entropy(e, ps)
 end
 
+# dispatch for `entropy(e, ps)` in the entropy definitions files
+
 # Convenience
-entropy(est::ProbabilitiesEstimator, x::Array_or_Dataset) = entropy(Shannon(; base = 2), est, x)
+entropy(est::ProbabilitiesEstimator, x) = entropy(Shannon(; base = 2), est, x)
 entropy(probs::Probabilities) = entropy(Shannon(; base = 2), probs)
 
 ###########################################################################################
-# API: entropy from entropy estimators
+# Differential entropy
 ###########################################################################################
 # Dispatch for these functions is implemented in individual estimator files in
 # `entropies/estimators/`.
@@ -120,6 +123,9 @@ This method doesn't involve explicitly computing (discretized) probabilities fir
 The entropy definition argument is optional.
 The default entropy type is inferred from the estimator (e.g. [`Kraskov`](@ref)
 estimates the base-2 Shannon differential entropy.
+Note that most estimators are not compatible with all versions of
+[`EntropyDefinition`](@ref). See [Table of differential entropy estimators](@ref)
+in the docs for a table view of the estimators and the compatibilities
 
 ## Examples
 Notice that a standard normal distribution has a base-e differential entropy
