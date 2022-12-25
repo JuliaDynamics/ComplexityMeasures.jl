@@ -27,7 +27,7 @@ All available estimators can be found in the [estimators page](@ref probabilitie
 
 ### Entropies
 
-Entropy is an established concept in statistics, information theory, and nonlinear dynamics.
+EntropyDefinition is an established concept in statistics, information theory, and nonlinear dynamics.
 However it is also an umbrella term that may mean several computationally different quantities.
 In Entropies.jl, we provide the generic function [`entropy`](@ref) that tries to both clarify the disparate "entropy concepts", while unifying them under a common interface that highlights the modular nature of the word "entropy".
 

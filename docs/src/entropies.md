@@ -7,7 +7,7 @@ entropy
 ## Generalized entropies
 
 ```@docs
-Entropy
+EntropyDefinition
 Shannon
 Renyi
 Tsallis

@@ -200,7 +200,7 @@ rectangular partition given by the `binning`.
 ## Example
 
 ```julia
-using DynamicalSystems, Plots, Entropy
+using DynamicalSystems, Plots, EntropyDefinition
 D = 4
 ds = Systems.lorenz96(D; F = 32.0)
 N, dt = 20000, 0.1

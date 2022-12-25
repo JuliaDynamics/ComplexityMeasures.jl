@@ -95,13 +95,6 @@ h = entropy(Shannon(), CountOccurrences(), x) # syntactically equivalent to abov
 h = entropy(SymbolicPermutation(;m=3), x) # gives about 2, again by definition
 h = entropy(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin toss
 ```
-
-### Differential/continuous entropies
-
-```julia
-# Normal distribution N(0, 1) has differential entropy 0.5*log(2π) + 0.5
-entropy(Shannon(; base = ℯ), Kraskov(k = 5), randn(100000))
-```
 """
 function entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
     ps = probabilities(est, x)
@@ -127,6 +120,18 @@ This method doesn't involve explicitly computing (discretized) probabilities fir
 The entropy definition argument is optional.
 The default entropy type is inferred from the estimator (e.g. [`Kraskov`](@ref)
 estimates the base-2 Shannon differential entropy.
+
+## Examples
+Notice that a standard normal distribution has a base-e differential entropy
+of `0.5*log(2π) + 0.5`.
+
+```julia
+def = Shannon(; base = ℯ)
+est = Kraskov(k = 5)
+h = entropy(def, est, randn(100000))
+h ≈ 0.5*log(2π) + 0.5 # true
+```
+
 """
 function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
     t = string(nameof(typeof(e)))

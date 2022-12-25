@@ -28,7 +28,7 @@ See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DiffEntropyEst`](@r
 
 [^Zhu2015]:
     Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to
-    transfer entropy estimation via the k-nearest-neighbors approach. Entropy, 17(6),
+    transfer entropy estimation via the k-nearest-neighbors approach. EntropyDefinition, 17(6),
     4173-4201.
 """
 Base.@kwdef struct Zhu <: DiffEntropyEst

@@ -1,7 +1,7 @@
 # Interface.
 testfile("interface.jl")
 
-# Entropy types.
+# EntropyDefinition types.
 testfile("entropy_types/renyi.jl")
 testfile("entropy_types/shannon.jl")
 testfile("entropy_types/tsallis.jl")

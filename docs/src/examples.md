@@ -129,7 +129,7 @@ are negatively biased for small sample sizes.
 
 This example reproduces an example from Bandt and Pompe (2002), where the permutation
 entropy is compared with the largest Lyapunov exponents from time series of the chaotic
-logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
+logistic map. EntropyDefinition estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example MAIN
