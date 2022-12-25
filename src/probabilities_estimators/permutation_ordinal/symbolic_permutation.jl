@@ -8,8 +8,8 @@ The supertype for probability estimators based on permutation patterns.
 
 Subtypes must implement fields:
 
-- `m::Int` The dimension of the permutation patterns.
-- `lt::Function` A function determining how ties are to be broken when constructing
+- `m::Int`: The dimension of the permutation patterns.
+- `lt::Function`: A function determining how ties are to be broken when constructing
     permutation patterns from embedding vectors.
 """
 abstract type PermutationProbabilitiesEstimator{m} <: ProbabilitiesEstimator end
@@ -67,7 +67,7 @@ using DelayEmbeddings, Entropies
 m, N = 2, 100
 est = SymbolicPermutation(; m, τ)
 x = Dataset(rand(N, m) # timeseries example
-πs_ts = zeros(Int, N) # length must match length
+πs_ts = zeros(Int, N) # length must match length of `x`
 p = probabilities!(πs_ts, est, x)
 ```
 
@@ -107,6 +107,7 @@ based on the weighted permutation entropy[^Fadlallah2013]. The outcome space and
 are the same as in [`SymbolicPermutation`](@ref).
 
 ## Description
+
 For each ordinal pattern extracted from each state (or delay) vector, a weight is attached
 to it which is the variance of the vector. Probabilities are then estimated by summing
 the weights corresponding to the same pattern, instead of just counting the occurrence
@@ -123,7 +124,8 @@ of the same pattern.
     ``x_{j+(k-1)\\tau}`` in the weights formula, vs. ``x_{j+(k+1)\\tau}`` in the arithmetic
     mean formula. Here delay embedding and computation of the patterns and their weights
     are completely separated processes so this ensures that we compute the arithmetic mean
-    correctly for each vector of the input dataset (which may be a delay embedded timeseries).
+    correctly for each vector of the input dataset (which may be a delay-embedded
+    timeseries).
 
 
 [^Fadlallah2013]: Fadlallah, et al. "Weighted-permutation entropy: A complexity
@@ -145,7 +147,7 @@ are the same as in [`SymbolicPermutation`](@ref).
 
 ## Description
 
-Similarly with [`SymbolicWeightedPermutation`](@ref), a weight ``w_i`` is attached to each
+Similarly to [`SymbolicWeightedPermutation`](@ref), a weight ``w_i`` is attached to each
 ordinal pattern extracted from each state (or delay) vector
 ``\\mathbf{x}_i = (x_1^i, x_2^i, \\ldots, x_m^i)`` as
 
@@ -255,12 +257,12 @@ permutation_weights(::SymbolicPermutation, ::Any) = nothing
 function permutation_weights(::SymbolicWeightedPermutation{m}, x::AbstractDataset) where {m}
     weights_from_variance.(vec(x), m)
 end
+
 function weights_from_variance(χ, m::Int)
     z = mean(χ)
     s = sum(e -> (e - z)^2, χ)
     return s/m
 end
-
 
 function permutation_weights(est::SymbolicAmplitudeAwarePermutation{m}, x::AbstractDataset) where {m}
     AAPE.(vec(x), est.A, m)

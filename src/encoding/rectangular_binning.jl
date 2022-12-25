@@ -43,8 +43,8 @@ const ValidFixedBinInputs = Union{Number, NTuple}
 
 Rectangular box partition of state space where the extent of the grid is explicitly
 specified by `ϵmin` and `emax`, and along each dimension, the grid is subdivided into `N`
-subintervals. Points falling outside the partition do not attribute to probabilities.
-This binning type leads to a well-defined outcome space without knowledge of input,
+subintervals. Points falling outside the partition do not contribute to probabilities.
+This binning type leads to a well-defined outcome space without knowledge of input data,
 see [`ValueHistogram`](@ref).
 
 `ϵmin`/`emax` must be `NTuple{D, <:Real}` for input of `D`-dimensional data.

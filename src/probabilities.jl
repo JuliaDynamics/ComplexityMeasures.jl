@@ -49,7 +49,7 @@ The supertype for all probabilities estimators.
 In Entropies.jl, probability distributions are estimated from data by defining a set of
 possible outcomes ``\\Omega = \\{\\omega_1, \\omega_2, \\ldots, \\omega_L \\}``, and
 assigning to each outcome ``\\omega_i`` a probability ``p(\\omega_i)``, such that
-``\\sum_{i=1}^N p(\\omega_i) = 1``. It is the role a [`ProbabilitiesEstimator`](@ref) to
+``\\sum_{i=1}^N p(\\omega_i) = 1``. It is the role of a [`ProbabilitiesEstimator`](@ref) to
 
 1. Define ``\\Omega``, the "outcome space", which is the set of all possible outcomes over
     which probabilities are estimated. The cardinality of this set can be obtained using
@@ -60,7 +60,8 @@ In practice, probability estimation is done by calling [`probabilities`](@ref) w
 input data and one of the following probabilities estimators. The result is a
 [`Probabilities`](@ref) `p` (`Vector`-like), where each element `p[i]` is the probability of
 the outcome `ω[i]`. Use [`probabilities_and_outcomes`](@ref) if you need
-both the probabilities and the outcomes and [`outcome_space`](@ref) to obtain ``\\Omega``.
+both the probabilities and the outcomes, and use [`outcome_space`](@ref) to obtain
+``\\Omega`` alone.
 The element type of ``\\Omega`` varies between estimators, but it is guranteed to be
 _hashable_. This allows for conveniently tracking the probability of a specific event
 across experimental realizations, by using the outcome as a dictionary key and the
@@ -69,7 +70,7 @@ and one has a vector of probabilities, one for each experimental realization).
 
 We have made the design decision that all probabilities estimators have a well defined
 outcome space when instantiated. For some estimators this means that the input data
-`x` must be provided both when instantiating the estimator, but also when computing
+`x` not only must be provided both when instantiating the estimator, but also when computing
 the probabilities.
 
 All currently implemented probability estimators are listed in a nice table in the
