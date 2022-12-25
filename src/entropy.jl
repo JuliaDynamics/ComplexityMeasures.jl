@@ -128,8 +128,8 @@ of `0.5*log(2π) + 0.5`.
 ```julia
 def = Shannon(; base = ℯ)
 est = Kraskov(k = 5)
-h = entropy(def, est, randn(100000))
-h ≈ 0.5*log(2π) + 0.5 # true
+h = entropy(def, est, randn(1_000_000))
+abs(h - 0.5*log(2π) - 0.5) # ≈ 0.001
 ```
 
 """
