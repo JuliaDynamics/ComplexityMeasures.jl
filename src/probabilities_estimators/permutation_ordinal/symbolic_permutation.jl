@@ -31,8 +31,8 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     vectors ``\\{ \\bf{x}_i \\}_{i=1}^{N-(m-1)\\tau}``. Then, for each ``\\bf{x}_i``,
     we find its permutation pattern ``\\pi_{i}``. Probabilities are then
     estimated as the frequencies of the encoded permutation symbols
-    by using [`CountOccurrences`](@ref). The resulting probabilities, when given to
-    [`entropy`](@ref), compute the original permutation entropy[^BandtPompe2002].
+    by using [`CountOccurrences`](@ref). When giving the resulting probabilities to
+    [`entropy`](@ref), the original permutation entropy is computed [^BandtPompe2002].
 - **Multivariate data**. If applied to a an `D`-dimensional `Dataset`,
     then no embedding is constructed. For each vector ``\\bf{x}_i``of the dataset,
     we directly map it to its permutation pattern
