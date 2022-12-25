@@ -2,12 +2,12 @@
 
 ```@docs
 entropy
-Entropy
 ```
 
 ## Generalized entropies
 
 ```@docs
+Entropy
 Shannon
 Renyi
 Tsallis

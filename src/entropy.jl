@@ -12,6 +12,7 @@ entropy types are:
 - [`Renyi`](@ref).
 - [`Tsallis`](@ref).
 - [`Shannon`](@ref), which is a subcase of the above two in the limit `q → 1`.
+- [`Kaniadakis`](@ref).
 - [`Curado`](@ref).
 - [`StretchedExponential`](@ref).
 
