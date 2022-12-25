@@ -3,7 +3,7 @@ using SpecialFunctions
 export StretchedExponential
 
 """
-    StretchedExponential <: Entropy
+    StretchedExponential <: EntropyDefinition
     StretchedExponential(; η = 2.0, base = 2)
 
 The stretched exponential, or Anteneodo-Plastino, entropy (Anteneodo &
@@ -23,7 +23,7 @@ function, and ``\\Gamma(\\cdot) = \\Gamma(\\cdot, 0)`` is the Gamma function. Re
     stretched exponential probability distributions. Journal of Physics A: Mathematical
     and General, 32(7), 1089.
 """
-Base.@kwdef struct StretchedExponential{Q, B} <: Entropy
+Base.@kwdef struct StretchedExponential{Q, B} <: EntropyDefinition
     η::Q = 2.0
     base::B = 2
 

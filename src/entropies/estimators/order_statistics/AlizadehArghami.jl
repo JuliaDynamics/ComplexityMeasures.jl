@@ -1,7 +1,7 @@
 export AlizadehArghami
 
 """
-    AlizadehArghami <: EntropyEstimator
+    AlizadehArghami <: DiffEntropyEst
     AlizadehArghami(; m::Int = 1)
 
 The `AlizadehArghami`estimator computes the [`Shannon`](@ref) differential
@@ -46,9 +46,9 @@ the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correcti
     Journal of the Iranian Statistical Society (JIRSS).
 
 See also: [`entropy`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
-[`Vasicek`](@ref), [`EntropyEstimator`](@ref).
+[`Vasicek`](@ref), [`DiffEntropyEst`](@ref).
 """
-@Base.kwdef struct AlizadehArghami{I<:Integer} <: EntropyEstimator
+@Base.kwdef struct AlizadehArghami{I<:Integer} <: DiffEntropyEst
     m::I = 1
 end
 

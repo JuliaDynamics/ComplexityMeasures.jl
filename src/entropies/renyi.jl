@@ -1,7 +1,7 @@
 export Renyi, Shannon
 
 """
-    Renyi <: Entropy
+    Renyi <: EntropyDefinition
     Renyi(q, base = 2)
     Renyi(; q = 1.0, base = 2)
 
@@ -32,7 +32,7 @@ uniform distribution with given alphabet length.
     Statistics and Probability_, pp 547 (1960)
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
-struct Renyi{Q, B} <: Entropy
+struct Renyi{Q, B} <: EntropyDefinition
     q::Q
     base::B
 end

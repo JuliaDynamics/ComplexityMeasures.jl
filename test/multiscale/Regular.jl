@@ -14,6 +14,6 @@ mrn = multiscale_normalized(Regular(), e, est, x; maxscale)
 @test length(mr) == 5
 @test length(mrn) == 5
 
-# `EntropyEstimator`s` should work for `multiscale`, but not `multiscale_normalized`
+# `DiffEntropyEst`s` should work for `multiscale`, but not `multiscale_normalized`
 @test multiscale(Regular(), e, Kraskov(), x) isa Vector{T} where T <: Real
 @test_throws ErrorException multiscale_normalized(Regular(), e, Kraskov(), x)

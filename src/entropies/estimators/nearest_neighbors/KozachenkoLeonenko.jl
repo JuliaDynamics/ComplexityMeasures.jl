@@ -1,7 +1,7 @@
 export KozachenkoLeonenko
 
 """
-    KozachenkoLeonenko <: EntropyEstimator
+    KozachenkoLeonenko <: DiffEntropyEst
     KozachenkoLeonenko(; k::Int = 1, w::Int = 1)
 
 The `KozachenkoLeonenko` estimator computes the [`Shannon`](@ref) differential
@@ -29,14 +29,14 @@ when searching for neighbours).
 In contrast to [`Kraskov`](@ref), this estimator uses only the *closest* neighbor.
 
 
-See also: [`entropy`](@ref), [`Kraskov`](@ref), [`EntropyEstimator`](@ref).
+See also: [`entropy`](@ref), [`Kraskov`](@ref), [`DiffEntropyEst`](@ref).
 
 [^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy
     estimator with applications in systems biology. Entropy, 18(1), 13.
 [^KozachenkoLeonenko1987]: Kozachenko, L. F., & Leonenko, N. N. (1987). Sample estimate of
     the entropy of a random vector. Problemy Peredachi Informatsii, 23(2), 9-16.
 """
-@Base.kwdef struct KozachenkoLeonenko <: EntropyEstimator
+@Base.kwdef struct KozachenkoLeonenko <: DiffEntropyEst
     w::Int = 1
 end
 

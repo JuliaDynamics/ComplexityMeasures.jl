@@ -1,13 +1,13 @@
-export Entropy, EntropyEstimator
+export EntropyDefinition, DiffEntropyEst
 export entropy, entropy_maximum, entropy_normalized
 
 abstract type AbstractEntropy end
 
 """
-    Entropy
+    EntropyDefinition
 
-`Entropy` is the supertype of all (generalized) entropies, and currently implemented
-entropy types are:
+`EntropyDefinition` is the supertype of all types that encapsulate definitions
+of (generalized) entropies. Currently implemented entropy definitions are:
 
 - [`Renyi`](@ref).
 - [`Tsallis`](@ref).
@@ -17,6 +17,8 @@ entropy types are:
 - [`StretchedExponential`](@ref).
 
 These entropy types are given as inputs to [`entropy`](@ref) and [`entropy_normalized`].
+Notice that all documentation strings formulas are provided for the discrete version
+of the entropy, for simplicity.
 
 ## Description
 
@@ -28,14 +30,15 @@ Amigó et al.[^Amigó2018] summary paper gives a nice overview.
     Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
     generalized entropies. [Entropy, 20(11), 813.](https://www.mdpi.com/1099-4300/20/11/813)
 """
-abstract type Entropy <: AbstractEntropy end
+abstract type EntropyDefinition <: AbstractEntropy end
 
 """
-    EntropyEstimator
+    DifferentialEntropyEstimator
+    DiffEntropyEst # alias
 
-The supertype of all entropy estimators.
+The supertype of all differential entropy estimators.
 
-These estimators compute some [`Entropy`](@ref) in various ways that doesn't involve
+These estimators compute some [`EntropyDefinition`](@ref) in various ways that doesn't involve
 explicitly estimating a probability distribution. Currently implemented estimators are:
 
 - [`KozachenkoLeonenko`](@ref)
@@ -51,16 +54,17 @@ For example, [`entropy`](@ref)`(Shannon(), Kraskov(), x)` computes the Shannon
 differential entropy of the input data `x` using the [`Kraskov`](@ref) `k`-th nearest
 neighbor estimator.
 """
-abstract type EntropyEstimator <: AbstractEntropy end
+abstract type DifferentialEntropyEstimator end
+const DiffEntropyEst = DifferentialEntropyEstimator
 
 ###########################################################################################
 # API: entropy from probabilities
 ###########################################################################################
-# Notice that StatsBase.jl exports `entropy` and Wavelets.jl exports `Entropy`.
+# Notice that StatsBase.jl exports `entropy` and Wavelets.jl exports `EntropyDefinition`.
 """
-    entropy([e::Entropy,] probs::Probabilities)
-    entropy([e::Entropy,] est::ProbabilitiesEstimator, x)
-    entropy([e::Entropy,] est::EntropyEstimator, x)
+    entropy([e::EntropyDefinition,] probs::Probabilities)
+    entropy([e::EntropyDefinition,] est::ProbabilitiesEstimator, x)
+    entropy([e::EntropyDefinition,] est::DiffEntropyEst, x)
 
 Compute `h::Real`, which is
 a (generalized) entropy defined by `e`, in one of three ways:
@@ -70,7 +74,7 @@ a (generalized) entropy defined by `e`, in one of three ways:
    [`ProbabilitiesEstimator`](@ref), then computing entropy from that distribution.
    In fact, the second method is just a 2-lines-of-code wrapper that calls
    [`probabilities`](@ref) and gives the result to the first method.
-3. From input data `x`, by using a dedicated [`EntropyEstimator`](@ref) that computes
+3. From input data `x`, by using a dedicated [`DiffEntropyEst`](@ref) that computes
    entropy in a way that doesn't involve explicitly computing probabilities first.
    Usually, this involves computing a *differential* entropy.
 
@@ -112,7 +116,7 @@ h = entropy(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin to
 entropy(Shannon(; base = ℯ), Kraskov(k = 5), randn(100000))
 ```
 """
-function entropy(e::Entropy, est::ProbabilitiesEstimator, x)
+function entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
     ps = probabilities(est, x)
     return entropy(e, ps)
 end
@@ -126,53 +130,53 @@ entropy(probs::Probabilities) = entropy(Shannon(; base = 2), probs)
 ###########################################################################################
 # Dispatch for these functions is implemented in individual estimator files in
 # `entropies/estimators/`.
-function entropy(e::Entropy, est::EntropyEstimator, x)
+function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
     t = string(nameof(typeof(e)))
     throw(ArgumentError("$t entropy not implemented for $(typeof(est)) estimator"))
 end
 
-entropy(est::EntropyEstimator, ::Probabilities) =
-    error("Entropy estimators like $(nameof(typeof(est))) are not called with probabilities.")
-entropy(e::Entropy, est::EntropyEstimator, ::Probabilities) =
-    error("Entropy estimators like $(nameof(typeof(est))) are not called with probabilities.")
-entropy(e::Entropy, est::EntropyEstimator, x::AbstractVector) =
+entropy(est::DiffEntropyEst, ::Probabilities) =
+    error("EntropyDefinition estimators like $(nameof(typeof(est))) are not called with probabilities.")
+entropy(e::EntropyDefinition, est::DiffEntropyEst, ::Probabilities) =
+    error("EntropyDefinition estimators like $(nameof(typeof(est))) are not called with probabilities.")
+entropy(e::EntropyDefinition, est::DiffEntropyEst, x::AbstractVector) =
     entropy(e, est, Dataset(x))
 # Always default to Shannon with base-2 logs. Individual estimators may override this.
-entropy(est::EntropyEstimator, x) = entropy(Shannon(; base = 2), est, x)
+entropy(est::DiffEntropyEst, x) = entropy(Shannon(; base = 2), est, x)
 
 
 ###########################################################################################
 # Normalize API
 ###########################################################################################
 """
-    entropy_maximum(e::Entropy, est::ProbabilitiesEstimator) → m::Real
+    entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator) → m::Real
 
 Return the maximum value `m` of the given entropy definition based on the given estimator.
 
-    entropy_maximum(e::Entropy, L::Int) → m::Real
+    entropy_maximum(e::EntropyDefinition, L::Int) → m::Real
 
 Alternatively, compute the maximum entropy from the number of total outcomes `L` directly.
 """
-function entropy_maximum(e::Entropy, est::ProbabilitiesEstimator)
+function entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator)
     L = total_outcomes(est)
     return entropy_maximum(e, L)
 end
-function entropy_maximum(e::Entropy, ::Int)
+function entropy_maximum(e::EntropyDefinition, ::Int)
     error("not implemented for entropy type $(nameof(typeof(e))).")
 end
 
 """
-    entropy_normalized([e::Entropy,] est::ProbabilitiesEstimator, x) → h̃ ∈ [0, 1]
+    entropy_normalized([e::EntropyDefinition,] est::ProbabilitiesEstimator, x) → h̃ ∈ [0, 1]
 
 Return h̃, the normalized entropy of `x`, i.e. the value of [`entropy`](@ref) divided
 by the maximum value for `e`, according to the given probabilities estimator.
 If `e` is not given, it defaults to `Shannon()`.
 
 Notice that unlike for [`entropy`](@ref), here there is no method
-`entropy_normalized(e::Entropy, probs::Probabilities)` because there is no way to know
+`entropy_normalized(e::EntropyDefinition, probs::Probabilities)` because there is no way to know
 the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs`.
 """
-function entropy_normalized(e::Entropy, est::ProbabilitiesEstimator, x)
+function entropy_normalized(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
     return entropy(e, est, x) / entropy_maximum(e, est)
 end
 function entropy_normalized(est::ProbabilitiesEstimator, x::Array_or_Dataset)

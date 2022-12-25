@@ -42,13 +42,13 @@ Tables scroll sideways, so are best viewed on a large screen.
 | [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 | [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
 
-### Estimation (continuous/differential)
+## Estimation (continuous/differential)
 
 The following estimators are *differential* entropy estimators, and can also be used
 with [`entropy`](@ref). Differential) entropies are functions of *integrals*, and usually
 rely on estimating some density functional.
 
-Each [`EntropyEstimator`](@ref)s uses a specialized technique to approximating relevant
+Each [`DiffEntropyEst`](@ref)s uses a specialized technique to approximating relevant
 densities/integrals, and is often tailored to one or a few types of generalized entropy.
 For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 
@@ -64,7 +64,7 @@ For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 | [`AlizadehArghami`](@ref)    | Order statistics  | `Vector`   |        ✅         |        x        |         x         |          x           |        x         |               x                |
 
 ```@docs
-EntropyEstimator
+DiffEntropyEst
 ```
 
 ```@docs

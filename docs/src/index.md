@@ -39,10 +39,10 @@ Thus, any of the implemented [probabilities estimators](@ref probabilities_estim
 
     These names are commonplace, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
 
-    In addition to `ProbabilitiesEstimators`, we also provide [`EntropyEstimator`](@ref)s,
+    In addition to `ProbabilitiesEstimators`, we also provide [`DiffEntropyEst`](@ref)s,
     which compute entropies via alternate means, without explicitly computing some
     probability distribution. Differential/continuous entropy, for example, is computed
-    using a dedicated [`EntropyEstimator`](@ref). For example, the [`Kraskov`](@ref)
+    using a dedicated [`DiffEntropyEst`](@ref). For example, the [`Kraskov`](@ref)
     estimator computes Shannon differential entropy via a nearest neighbor algorithm, while
     the [`Correa`](@ref) estimator computes Shannon differential entropy using order statistics.
 

@@ -67,7 +67,7 @@ function downsample(method::Regular, s::Int, x::AbstractVector{T}, args...; kwar
 end
 
 function multiscale(alg::Regular, e::Entropy,
-        est::Union{ProbabilitiesEstimator, EntropyEstimator},
+        est::Union{ProbabilitiesEstimator, DiffEntropyEst},
         x::AbstractVector;
         maxscale::Int = 8)
 

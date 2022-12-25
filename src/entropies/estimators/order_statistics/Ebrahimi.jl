@@ -1,7 +1,7 @@
 export Ebrahimi
 
 """
-    Ebrahimi <: EntropyEstimator
+    Ebrahimi <: DiffEntropyEst
     Ebrahimi(; m::Int = 1)
 
 The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
@@ -56,9 +56,9 @@ c_i =
     Statistics & Probability Letters, 20(3), 225-234.
 
 See also: [`entropy`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
-[`Vasicek`](@ref), [`EntropyEstimator`](@ref).
+[`Vasicek`](@ref), [`DiffEntropyEst`](@ref).
 """
-@Base.kwdef struct Ebrahimi{I<:Integer} <: EntropyEstimator
+@Base.kwdef struct Ebrahimi{I<:Integer} <: DiffEntropyEst
     m::I = 1
 end
 

@@ -1,7 +1,7 @@
 export Curado
 
 """
-    Curado <: Entropy
+    Curado <: EntropyDefinition
     Curado(; b = 1.0)
 
 The Curado entropy (Curado & Nobre, 2004)[^Curado2004], used with [`entropy`](@ref) to
@@ -16,7 +16,7 @@ with `b ∈ ℛ, b > 0`, where the terms outside the sum ensures that ``H_C(0) =
 [^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
     entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
 """
-Base.@kwdef struct Curado{B} <: Entropy
+Base.@kwdef struct Curado{B} <: EntropyDefinition
     b::B = 1.0
 
     function Curado(b::B) where B <: Real

@@ -1,12 +1,12 @@
 using DelayEmbeddings: minmaxima
 using SpecialFunctions: digamma
-using Entropies: Entropy, EntropyEstimator
+using Entropies: Entropy, DiffEntropyEst
 using Neighborhood: KDTree, Chebyshev, bulkisearch, Theiler, NeighborNumber
 
 export ZhuSingh
 
 """
-    ZhuSingh <: EntropyEstimator
+    ZhuSingh <: DiffEntropyEst
     ZhuSingh(k = 1, w = 0)
 
 The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
@@ -43,7 +43,7 @@ See also: [`entropy`](@ref).
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct ZhuSingh <: EntropyEstimator
+Base.@kwdef struct ZhuSingh <: DiffEntropyEst
     k::Int = 1
     w::Int = 0
 end

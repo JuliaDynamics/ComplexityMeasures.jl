@@ -1,7 +1,7 @@
 export Correa
 
 """
-    Correa <: EntropyEstimator
+    Correa <: DiffEntropyEst
     Correa(; m::Int = 1)
 
 The `Correa` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
@@ -54,9 +54,9 @@ where
     and Methods, 24(10), 2439-2449.
 
 See also: [`entropy`](@ref), [`AlizadehArghami`](@ref), [`Ebrahimi`](@ref),
-[`Vasicek`](@ref), [`EntropyEstimator`](@ref).
+[`Vasicek`](@ref), [`DiffEntropyEst`](@ref).
 """
-@Base.kwdef struct Correa{I<:Integer} <: EntropyEstimator
+@Base.kwdef struct Correa{I<:Integer} <: DiffEntropyEst
     m::I = 1
 end
 

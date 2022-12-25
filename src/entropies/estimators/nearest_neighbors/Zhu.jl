@@ -1,7 +1,7 @@
 export Zhu
 
 """
-    Zhu <: EntropyEstimator
+    Zhu <: DiffEntropyEst
     Zhu(k = 1, w = 0)
 
 The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] is an extension to
@@ -24,14 +24,14 @@ using `k` nearest neighbor searches. `w` is the Theiler window, which determines
 temporal neighbors are excluded during neighbor searches (defaults to `0`, meaning that
 only the point itself is excluded when searching for neighbours).
 
-See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`EntropyEstimator`](@ref).
+See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DiffEntropyEst`](@ref).
 
 [^Zhu2015]:
     Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to
     transfer entropy estimation via the k-nearest-neighbors approach. Entropy, 17(6),
     4173-4201.
 """
-Base.@kwdef struct Zhu <: EntropyEstimator
+Base.@kwdef struct Zhu <: DiffEntropyEst
     k::Int = 1
     w::Int = 0
 end

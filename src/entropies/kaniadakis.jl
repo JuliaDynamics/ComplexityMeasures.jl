@@ -1,7 +1,7 @@
 export Kaniadakis
 
 """
-    Kaniadakis <: Entropy
+    Kaniadakis <: EntropyDefinition
     Kaniadakis(; κ = 1.0, base = 2.0)
 
 The Kaniadakis entropy (Tsallis, 2009)[^Tsallis2009], used with [`entropy`](@ref) to
@@ -16,10 +16,10 @@ H_K(p) = -\\sum_{i=1}^N p_i\\log_\\kappa^K(p_i),
 where if ``\\kappa = 0``, regular logarithm to the given `base` is used, and `log(0) = 0`.
 
 [^Tsallis2009]:
-    Tsallis, C. (2009). Introduction to nonextensive statistical mechanics: approaching a 
+    Tsallis, C. (2009). Introduction to nonextensive statistical mechanics: approaching a
     complex world. Springer, 1(1), 2-1.
 """
-Base.@kwdef struct Kaniadakis{K <: Real, B <: Real} <: Entropy
+Base.@kwdef struct Kaniadakis{K <: Real, B <: Real} <: EntropyDefinition
     κ::K = 1.0
     base::B = 2.0
 end
