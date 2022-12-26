@@ -1,7 +1,7 @@
 export Tsallis
 
 """
-    Tsallis <: Entropy
+    Tsallis <: EntropyDefinition
     Tsallis(q; k = 1.0, base = 2)
     Tsallis(; q = 1.0, k = 1.0, base = 2)
 
@@ -27,7 +27,7 @@ value of the Tsallis entropy is ``k(L^{1 - q} - 1)/(1 - q)``.
     Tsallis, C. (1988). Possible generalization of Boltzmann-Gibbs statistics.
     Journal of statistical physics, 52(1), 479-487.
 """
-struct Tsallis{Q,K,B} <: Entropy
+struct Tsallis{Q,K,B} <: EntropyDefinition
     q::Q
     k::K
     base::B

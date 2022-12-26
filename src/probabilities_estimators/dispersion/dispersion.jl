@@ -66,7 +66,7 @@ For a version of this estimator that can be used on high-dimensional arrays, see
 [^Li2018]:
     Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic
     signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale
-    dispersion entropy and wavelet threshold denoising. Entropy, 21(1), 11.
+    dispersion entropy and wavelet threshold denoising. EntropyDefinition, 21(1), 11.
 """
 Base.@kwdef struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
     encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`

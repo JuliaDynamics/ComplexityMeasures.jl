@@ -22,7 +22,7 @@ conditions.
 
 In combination with [`entropy`](@ref) and [`entropy_normalized`](@ref), this probabilities
 estimator can be used to compute (normalized) generalized spatiotemporal dispersion
-[`Entropy`](@ref) of any type.
+[`EntropyDefinition`](@ref) of any type.
 
 ## Arguments
 

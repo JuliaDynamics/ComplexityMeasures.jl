@@ -1,11 +1,11 @@
 export Vasicek
 
 """
-    Vasicek <: EntropyEstimator
+    Vasicek <: DiffEntropyEst
     Vasicek(; m::Int = 1)
 
 The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) using the method from Vasicek (1976)[^Vasicek1976].
+(a multi-dimensional [`Dataset`](@ref)) using the method from Vasicek (1976)[^Vasicek1976].
 
 The `Vasicek` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic), of which
@@ -52,9 +52,9 @@ written for this package).
     Statistical Society: Series B (Methodological), 38(1), 54-59.
 
 See also: [`entropy`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
-[`Ebrahimi`](@ref), [`EntropyEstimator`](@ref).
+[`Ebrahimi`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
-@Base.kwdef struct Vasicek{I<:Integer} <: EntropyEstimator
+@Base.kwdef struct Vasicek{I<:Integer} <: DiffEntropyEst
     m::I = 1
 end
 

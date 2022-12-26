@@ -1,10 +1,8 @@
 # This file contains an API for multiscale (coarse-grained/downsampled) computations.
+# This API is not final nor agreed upon yet. Nothing is exported or documented
+# as part of public API. It must be considered as work in progress.
 
 using Statistics
-export multiscale
-export multiscale_normalized
-export downsample
-export MultiScaleAlgorithm
 
 """
     MultiScaleAlgorithm
@@ -36,8 +34,8 @@ function multiscale end
 function multiscale_normalized end
 
 """
-    multiscale(alg::MultiScaleAlgorithm, e::Entropy, est::EntropyEstimator, x; kwargs...)
-    multiscale(alg::MultiScaleAlgorithm, e::Entropy, est::ProbabilitiesEstimator, x; kwargs...)
+    multiscale(alg::MultiScaleAlgorithm, e::EntropyDefinition, est::DiffEntropyEst, x; kwargs...)
+    multiscale(alg::MultiScaleAlgorithm, e::EntropyDefinition, est::ProbabilitiesEstimator, x; kwargs...)
     multiscale(alg::MultiScaleAlgorithm, c::ComplexityMeasure, x::AbstractVector; kwargs...)
 
 Compute the multi-scale entropy `e` with estimator `est`, or the complexity measure `c`,
@@ -61,7 +59,7 @@ factor `1`, the original time series is considered.
 
 ## Arguments
 
-- `e::Entropy`. A valid [entropy type](@ref entropies), i.e. `Shannon()` or `Renyi()`.
+- `e::EntropyDefinition`. A valid [entropy type](@ref entropies), i.e. `Shannon()` or `Renyi()`.
 - `c::ComplexityMeasure`. A valid complexity measure, i.e. [`SampleEntropy`](@ref),
     or [`ApproximateEntropy`](@ref).
 - `alg::MultiScaleAlgorithm`. A valid [multiscale algorithm](@ref multiscale_algorithms),
@@ -70,7 +68,7 @@ factor `1`, the original time series is considered.
 - `x`. The input data. Usually a timeseries.
 - `est`. For discrete entropy, `est` is a [`ProbabilitiesEstimator`](@ref), which determines
     how probabilities are estimated for each sampled time series. Alternatively,for
-    continuous/differential entropy, `est` can be a [`EntropyEstimator`](@ref),
+    continuous/differential entropy, `est` can be a [`DiffEntropyEst`](@ref),
     which dictates the entropy estimation method for each downsampled time series.
 
 ## Keyword Arguments
@@ -83,27 +81,27 @@ factor `1`, the original time series is considered.
 [^Costa2002]: Costa, M., Goldberger, A. L., & Peng, C. K. (2002). Multiscale entropy
     analysis of complex physiologic time series. Physical review letters, 89(6), 068102.
 """
-function multiscale(alg::MultiScaleAlgorithm, e::Entropy,
-        est::Union{ProbabilitiesEstimator, EntropyEstimator}, x)
+function multiscale(alg::MultiScaleAlgorithm, e::EntropyDefinition,
+        est::Union{ProbabilitiesEstimator, DiffEntropyEst}, x)
     msg = "`multiscale` entropy not implemented for $e $est on data type $(typeof(x))"
     throw(ArgumentError(msg))
 end
 
 """
-    multiscale_normalized(alg::MultiScaleAlgorithm, e::Entropy,
+    multiscale_normalized(alg::MultiScaleAlgorithm, e::EntropyDefinition,
         est::ProbabilitiesEstimator, x)
 
 The same as [`multiscale`](@ref), but normalizes the entropy if [`entropy_maximum`](@ref)
 is implemented for `e`.
 
-Note: this doesn't work if `est` is an [`EntropyEstimator`](@ref).
+Note: this doesn't work if `est` is an [`DiffEntropyEst`](@ref).
 """
-function multiscale_normalized(alg::MultiScaleAlgorithm, e::Entropy, est, x)
+function multiscale_normalized(alg::MultiScaleAlgorithm, e::EntropyDefinition, est, x)
     msg = "`multiscale_normalized` not implemented for $e $(typeof(est)) on data type $(typeof(x))"
     throw(ArgumentError(msg))
 end
 
-multiscale_normalized(alg::MultiScaleAlgorithm, e::Entropy, est::EntropyEstimator, x) =
+multiscale_normalized(alg::MultiScaleAlgorithm, e::EntropyDefinition, est::DiffEntropyEst, x) =
     error("multiscale_normalized not defined for $(typeof(est))")
 
 max_scale_level(method::MultiScaleAlgorithm, x) = length(x) ÷ 2
@@ -118,3 +116,4 @@ end
 
 include("multiscale/regular.jl")
 include("multiscale/composite.jl")
+include("multiscale/multiscale.jl")

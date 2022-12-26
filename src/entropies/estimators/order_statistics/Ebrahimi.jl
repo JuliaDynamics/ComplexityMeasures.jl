@@ -1,11 +1,11 @@
 export Ebrahimi
 
 """
-    Ebrahimi <: EntropyEstimator
+    Ebrahimi <: DiffEntropyEst
     Ebrahimi(; m::Int = 1)
 
 The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) using the method from Ebrahimi (1994)[^Ebrahimi1994].
+(a multi-dimensional [`Dataset`](@ref)) using the method from Ebrahimi (1994)[^Ebrahimi1994].
 
 The `Ebrahimi` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
@@ -56,9 +56,9 @@ c_i =
     Statistics & Probability Letters, 20(3), 225-234.
 
 See also: [`entropy`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
-[`Vasicek`](@ref), [`EntropyEstimator`](@ref).
+[`Vasicek`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
-@Base.kwdef struct Ebrahimi{I<:Integer} <: EntropyEstimator
+@Base.kwdef struct Ebrahimi{I<:Integer} <: DiffEntropyEst
     m::I = 1
 end
 

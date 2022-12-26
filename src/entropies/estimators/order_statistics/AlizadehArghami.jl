@@ -1,11 +1,11 @@
 export AlizadehArghami
 
 """
-    AlizadehArghami <: EntropyEstimator
+    AlizadehArghami <: DiffEntropyEst
     AlizadehArghami(; m::Int = 1)
 
 The `AlizadehArghami`estimator computes the [`Shannon`](@ref) differential
-[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) using the
+[`entropy`](@ref) of `x` (a multi-dimensional [`Dataset`](@ref)) using the
 method from Alizadeh & Arghami (2010)[^Alizadeh2010].
 
 The `AlizadehArghami` estimator belongs to a class of differential entropy estimators based
@@ -46,9 +46,9 @@ the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correcti
     Journal of the Iranian Statistical Society (JIRSS).
 
 See also: [`entropy`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
-[`Vasicek`](@ref), [`EntropyEstimator`](@ref).
+[`Vasicek`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
-@Base.kwdef struct AlizadehArghami{I<:Integer} <: EntropyEstimator
+@Base.kwdef struct AlizadehArghami{I<:Integer} <: DiffEntropyEst
     m::I = 1
 end
 

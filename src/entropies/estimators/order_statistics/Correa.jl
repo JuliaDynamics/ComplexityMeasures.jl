@@ -1,11 +1,11 @@
 export Correa
 
 """
-    Correa <: EntropyEstimator
+    Correa <: DiffEntropyEst
     Correa(; m::Int = 1)
 
 The `Correa` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) using the method from Correa (1995)[^Correa1995].
+(a multi-dimensional [`Dataset`](@ref)) using the method from Correa (1995)[^Correa1995].
 
 The `Correa` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
@@ -54,9 +54,9 @@ where
     and Methods, 24(10), 2439-2449.
 
 See also: [`entropy`](@ref), [`AlizadehArghami`](@ref), [`Ebrahimi`](@ref),
-[`Vasicek`](@ref), [`EntropyEstimator`](@ref).
+[`Vasicek`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
-@Base.kwdef struct Correa{I<:Integer} <: EntropyEstimator
+@Base.kwdef struct Correa{I<:Integer} <: DiffEntropyEst
     m::I = 1
 end
 

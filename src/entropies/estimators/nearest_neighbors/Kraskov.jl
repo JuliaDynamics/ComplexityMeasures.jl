@@ -1,11 +1,11 @@
 export Kraskov
 
 """
-    Kraskov <: EntropyEstimator
+    Kraskov <: DiffEntropyEst
     Kraskov(; k::Int = 1, w::Int = 1)
 
 The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) using the `k`-th nearest neighbor
+(a multi-dimensional [`Dataset`](@ref)) using the `k`-th nearest neighbor
 searches method from [^Kraskov2004].
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
@@ -23,13 +23,13 @@ density function``f : \\mathbb{R}^d \\to \\mathbb{R}``. `Kraskov` estimates the
 H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))].
 ```
 
-See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`EntropyEstimator`](@ref).
+See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialEntropyEstimator`](@ref).
 
 [^Kraskov2004]:
     Kraskov, A., Stögbauer, H., & Grassberger, P. (2004).
     Estimating mutual information. Physical review E, 69(6), 066138.
 """
-Base.@kwdef struct Kraskov <: EntropyEstimator
+Base.@kwdef struct Kraskov <: DiffEntropyEst
     k::Int = 1
     w::Int = 1
 end

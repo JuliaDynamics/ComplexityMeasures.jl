@@ -6,8 +6,6 @@ Here, we draw some random points from a 2D normal distribution. Then, we use ker
 
 ```@example MAIN
 using Entropies
-using StateSpaceSets
-using DynamicalSystemsBase
 using CairoMakie
 using Distributions: MvNormal
 
@@ -129,7 +127,7 @@ are negatively biased for small sample sizes.
 
 This example reproduces an example from Bandt and Pompe (2002), where the permutation
 entropy is compared with the largest Lyapunov exponents from time series of the chaotic
-logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
+logistic map. EntropyDefinition estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example MAIN
@@ -360,8 +358,8 @@ for N in (N1, N2)
     local w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
 
     for q in (x, y, z, w)
-        h = entropy(PowerSpectrum(), q)
-        n = entropy_normalized(PowerSpectrum(), q)
+        h = entropy(PowerSpectrum(q), q)
+        n = entropy_normalized(PowerSpectrum(q), q)
         println("entropy: $(h), normalized: $(n).")
     end
 end
@@ -372,7 +370,7 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 
 ## Spatiotemporal permutation entropy
 
-Usage of a [``SpatialSymbolicPermutation`](@ref) estimator is straightforward.
+Usage of a [`SpatialSymbolicPermutation`](@ref) estimator is straightforward.
 Here we get the spatial permutation entropy of a 2D array (e.g., an image):
 
 ```@example MAIN
@@ -535,7 +533,7 @@ est = MissingDispersionPatterns(Dispersion(m = 3, c = 7))
 sys = Systems.logistic(0.6; r = 4.0)
 Ls = collect(100:100:1000)
 nL = length(Ls)
-nreps = 50
+nreps = 30 # should be higher for real applications
 method = WLS(IAAFT(), rescale = true)
 
 r_det, r_noise = zeros(length(Ls)), zeros(length(Ls))
@@ -739,27 +737,5 @@ lines!(a1, rs, hs_U, label = "Uniform noise, U(0, 1)")
 lines!(a1, rs, hs_N, label = "Gaussian noise, N(0, 1)")
 lines!(a1, rs, hs_periodic, label = "Periodic signal")
 axislegend()
-fig
-```
-
-## Complexity: multiscale
-
-```@example
-using Entropies
-using CairoMakie
-
-N, a = 2000, 20
-t = LinRange(0, 2*a*π, N)
-
-x = repeat([-5:5 |> collect; 4:-1:-4 |> collect], N ÷ 20);
-y = sin.(t .+ cos.(t/0.5)) .+ 0.2 .* x
-maxscale = 10
-hs = multiscale_normalized(Regular(), SampleEntropy(y), y; maxscale)
-
-fig = Figure()
-ax1 = Axis(fig[1,1]; ylabel = "y")
-lines!(ax1, t, y; color = Cycled(1));
-ax2 = Axis(fig[2, 1]; ylabel = "Sample entropy (h)", xlabel = "Scale")
-scatterlines!(ax2, 1:maxscale |> collect, hs; color = Cycled(1));
 fig
 ```

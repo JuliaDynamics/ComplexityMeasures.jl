@@ -1,9 +1,9 @@
-using SpecialFunctions
+using SpecialFunctions: gamma, gamma_inc
 
 export StretchedExponential
 
 """
-    StretchedExponential <: Entropy
+    StretchedExponential <: EntropyDefinition
     StretchedExponential(; η = 2.0, base = 2)
 
 The stretched exponential, or Anteneodo-Plastino, entropy (Anteneodo &
@@ -19,11 +19,14 @@ where ``\\eta \\geq 0``, ``\\Gamma(\\cdot, \\cdot)`` is the upper incomplete Gam
 function, and ``\\Gamma(\\cdot) = \\Gamma(\\cdot, 0)`` is the Gamma function. Reduces to
 [Shannon](@ref) entropy for `η = 1.0`.
 
+The maximum entropy for `StrechedExponential` is a rather complicated expression involving
+incomplete Gamma functions (see source code).
+
 [^Anteneodo1999]: Anteneodo, C., & Plastino, A. R. (1999). Maximum entropy approach to
     stretched exponential probability distributions. Journal of Physics A: Mathematical
     and General, 32(7), 1089.
 """
-Base.@kwdef struct StretchedExponential{Q, B} <: Entropy
+Base.@kwdef struct StretchedExponential{Q, B} <: EntropyDefinition
     η::Q = 2.0
     base::B = 2
 

@@ -91,8 +91,8 @@ function downsample(method::Composite, s::Int, x::AbstractVector{T}, args...;
     end
 end
 
-function multiscale(alg::Composite, e::Entropy,
-        est::Union{ProbabilitiesEstimator, EntropyEstimator},
+function multiscale(alg::Composite, e::EntropyDefinition,
+        est::Union{ProbabilitiesEstimator, DiffEntropyEst},
         x::AbstractVector;
         maxscale::Int = 8)
 
@@ -105,7 +105,7 @@ function multiscale(alg::Composite, e::Entropy,
     return hs
 end
 
-function multiscale_normalized(alg::Composite, e::Entropy, est::ProbabilitiesEstimator,
+function multiscale_normalized(alg::Composite, e::EntropyDefinition, est::ProbabilitiesEstimator,
         x::AbstractVector;
         maxscale::Int = 8)
 

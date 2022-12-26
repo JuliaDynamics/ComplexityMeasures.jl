@@ -41,9 +41,9 @@ y = Dataset([[3, 1], [-5, 1], [3, -2]]);
 # Check if the estimator converge to true values for some distributions with
 # analytically derivable entropy.
 # -------------------------------------------------------------------------------------
-# Entropy to log with base b of a uniform distribution on [0, 1] = ln(1 - 0)/(ln(b)) = 0
+# EntropyDefinition to log with base b of a uniform distribution on [0, 1] = ln(1 - 0)/(ln(b)) = 0
 U = 0.00
-# Entropy with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
+# EntropyDefinition with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
 N = round(0.5*log(2π) + 0.5, digits = 2)
 N_base3 = round((0.5*log(2π) + 0.5) / log(3, ℯ), digits = 2) # custom base
 

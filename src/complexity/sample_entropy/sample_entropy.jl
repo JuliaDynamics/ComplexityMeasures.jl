@@ -4,7 +4,7 @@ using Neighborhood.NearestNeighbors: Chebyshev, KDTree
 using Neighborhood: inrangecount
 
 export SampleEntropy
-export sample_entropy
+export entropy_sample
 
 """
     SampleEntropy([x]; r = 0.2std(x), kwargs...)
@@ -21,7 +21,6 @@ The keyword argument `r` is mandatory if an input timeseries `x` is not provided
     standard deviation of the data.
 - `m::Int = 1`: The embedding dimension.
 - `τ::Int = `: The embedding lag.
-- `metric`: The metric used to compute distances.
 
 ## Description
 
@@ -42,8 +41,8 @@ A(r, m, N) = \\sum_{i = 1}^{N-m\\tau} \\sum_{j = 1, j \\neq i}^{N-m\\tau} \\thet
 ```
 
 where ``\\theta(\\cdot)`` returns 1 if the argument is true and 0 otherwise,
-and ``d(x, y)`` computes the distance between ``x`` and ``y`` according to `metric`
-(default is Chebyshev), and  ``{\\bf x}_i^{m}`` and ``{\\bf x}_i^{m+1}`` are `m`-dimensional and
+and ``d(x, y)`` computes the Chebyshev distance between ``x`` and ``y``,
+and  ``{\\bf x}_i^{m}`` and ``{\\bf x}_i^{m+1}`` are `m`-dimensional and
 `m+1`-dimensional embedding vectors, where `k`-dimensional embedding vectors are constructed
 from the input timeseries ``x(t)`` as
 
@@ -62,48 +61,43 @@ If computing the normalized measure, then the resulting sample entropy is on `[0
     The original algorithm fixes `τ = 1`. All formulas here are modified to account for
     any `τ`.
 
-See also: [`sample_entropy`](@ref).
+See also: [`entropy_sample`](@ref).
 
 [^Richman2000]: Richman, J. S., & Moorman, J. R. (2000). Physiological time-series
     analysis using approximate entropy and sample entropy. American Journal of
     Physiology-Heart and Circulatory Physiology, 278(6), H2039-H2049.
 """
-Base.@kwdef struct SampleEntropy{R, M} <: ComplexityMeasure
+Base.@kwdef struct SampleEntropy{R} <: ComplexityMeasure
     m::Int = 2
     τ::Int = 1
-    metric::M = Chebyshev()
     r::R
 
-    function SampleEntropy(m::Int, τ::Int, metric::M, r::R) where {R, M}
+    function SampleEntropy(m::Int, τ::Int, r::R) where {R}
         m >= 1 || throw(ArgumentError("m must be >= 1. Got m=$(m)."))
         r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
-        new{R, M}(m, τ, metric, r)
+        new{R}(m, τ, r)
     end
-
-    function SampleEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1,
-            metric = Chebyshev()) where T
+    function SampleEntropy(x::AbstractVector; m::Int = 2, τ::Int = 1)
         r = 0.2 * Statistics.std(x)
-        SampleEntropy(m, τ, metric, r)
+        SampleEntropy(m, τ, r)
     end
 end
 
 # See comment in https://github.com/JuliaDynamics/Entropies.jl/pull/71 for why
 # inrangecount is used and not NeighborHood.bulkisearch.
 """
-    sample_entropy_probs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * Statistics.std(x),
-        metric = Chebyshev()
+    sample_entropy_probs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * Statistics.std(x))
 
-Compute the probabilities required for [`sample_entropy`](@ref). `k` is the embedding
+Compute the probabilities required for [`entropy_sample`](@ref). `k` is the embedding
 dimension, `τ` is the embedding lag, and `m` is a normalization constant (so that we
 consider the same number of points for both the `m`-dimensional and the `m+1`-dimensional
 embeddings), and `r` is the radius.
 """
-function sample_entropy_probs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * Statistics.std(x),
-        metric = Chebyshev())
+function sample_entropy_probs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * Statistics.std(x))
 
     N = length(x)
     pts = genembed(x, 0:τ:(k - 1)*τ)
-    tree = KDTree(pts, metric)
+    tree = KDTree(pts, Chebyshev())
 
     # Pᵐ := The probability that two sequences will match for k points.
     # We only consider the first N-m*τ vectors, regardless of embedding dimension. This
@@ -121,10 +115,10 @@ function scale(x, min_range, max_range, min_target, max_target)
 end
 
 function complexity(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
-    (; m, τ, metric, r) = c
+    (; m, τ, r) = c
 
-    A = sample_entropy_probs(x; m = m, τ = τ, r = r, metric = metric, k = m + 1)
-    B = sample_entropy_probs(x; m = m, τ = τ, r = r, metric = metric, k = m)
+    A = sample_entropy_probs(x; m = m, τ = τ, r = r, k = m + 1)
+    B = sample_entropy_probs(x; m = m, τ = τ, r = r, k = m)
 
     if A == 0.0 || B == 0.0
         return NaN
@@ -134,7 +128,7 @@ function complexity(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
 end
 
 function complexity_normalized(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
-    (; m, τ, metric, r) = c
+    (; m, τ, r) = c
 
     sampen = complexity(c, x)
     if isnan(sampen) || isinf(sampen)
@@ -156,7 +150,7 @@ function complexity_normalized(c::SampleEntropy, x::AbstractVector{T}) where T <
 end
 
 """
-    sample_entropy(x; r, m = 2, τ = 1, metric = Chebyshev(), normalize = true)
+    entropy_sample(x; r, m = 2, τ = 1, normalize = true)
 
 Convenience syntax for estimating the (normalized) sample entropy (Richman & Moorman, 2000)
 of timeseries `x`.
@@ -165,8 +159,8 @@ This is just a wrapper for `complexity(SampleEntropy(; r, m, τ, base), x)`.
 
 See also: [`SampleEntropy`](@ref), [`complexity`](@ref), [`complexity_normalized`](@ref)).
 """
-function sample_entropy(x, r; m = 2, τ = 1, metric = Chebyshev(), normalize = true)
-    c = SampleEntropy(x; r, m, τ, metric)
+function entropy_sample(x, r; m = 2, τ = 1, normalize = true)
+    c = SampleEntropy(x; r, m, τ)
     if normalize
         complexity_normalized(c, x)
     else
