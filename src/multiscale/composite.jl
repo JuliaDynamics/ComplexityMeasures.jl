@@ -42,7 +42,7 @@ function, for example [`entropy`](@ref) or [`complexity`](@ref).
 See also: [`Regular`](@ref).
 
 [^Wu2013]: Wu, S. D., Wu, C. W., Lin, S. G., Wang, C. C., & Lee, K. Y. (2013). Time series
-    analysis using composite multiscale entropy. EntropyDefinition, 15(3), 1069-1084.
+    analysis using composite multiscale entropy. Entropy, 15(3), 1069-1084.
 """
 Base.@kwdef struct Composite <: MultiScaleAlgorithm
     f::Function = Statistics.mean

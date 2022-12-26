@@ -41,7 +41,7 @@ julia> decode(c, 1)
 
 [^Berger2019]:
     Berger et al. "Teaching Ordinal Patterns to a Computer: Efficient
-    Encoding Algorithms Based on the Lehmer Code." EntropyDefinition 21.10 (2019): 1023.
+    Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
 """
 struct OrdinalPatternEncoding{M, F} <: Encoding
     perm::MVector{M, Int}

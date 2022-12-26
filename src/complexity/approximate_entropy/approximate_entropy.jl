@@ -7,6 +7,7 @@ export ApproximateEntropy
 export approx_entropy
 
 """
+    ApproximateEntropy <: ComplexityMeasure
     ApproximateEntropy([x]; r = 0.2std(x), kwargs...)
 
 An estimator for the approximate entropy (ApEn; Pincus, 1991)[^Pincus1991] complexity
@@ -22,7 +23,6 @@ The keyword argument `r` is mandatory if an input timeseries `x` is not provided
 - `τ::Int = 1`: The embedding lag.
 - `base::Real = MathConstants.e`: The base to use for the logarithm. Pincus (1991) uses the
     natural logarithm.
-- `metric`: The metric used to compute distances.
 
 ## Description
 
@@ -72,19 +72,18 @@ constructed from the input timeseries ``x(t)`` as
 Base.@kwdef struct ApproximateEntropy{I, M, B, R} <: ComplexityMeasure
     m::I = 2
     τ::I = 1
-    metric::M = Chebyshev()
     base::B = MathConstants.e
     r::R
 
-    function ApproximateEntropy(m::I, τ::I, metric::M, base::B, r::R) where {I, R, M, B}
+    function ApproximateEntropy(m::I, τ::I, base::B, r::R) where {I, R, B}
         m >= 1 || throw(ArgumentError("m must be >= 1. Got m=$(m)."))
         r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
-        new{I, M, B, R}(m, τ, metric, base, r)
+        new{I, M, B, R}(m, τ, base, r)
     end
     function ApproximateEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1,
-            metric = Chebyshev(), base = MathConstants.e) where T
+            base = MathConstants.e) where T
         r = 0.2 * Statistics.std(x)
-        ApproximateEntropy(m, τ, metric, base, r)
+        ApproximateEntropy(m, τ, base, r)
     end
 end
 
