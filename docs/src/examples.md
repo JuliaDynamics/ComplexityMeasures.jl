@@ -6,8 +6,6 @@ Here, we draw some random points from a 2D normal distribution. Then, we use ker
 
 ```@example MAIN
 using Entropies
-using StateSpaceSets
-using DynamicalSystemsBase
 using CairoMakie
 using Distributions: MvNormal
 

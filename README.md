@@ -13,4 +13,4 @@ or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 
 To install it, run `import Pkg; Pkg.add("Entropies")`.
 
-All further information is provided in the documentation.
+All further information is provided in the documentation, which you can either find [online](https://juliadynamics.github.io/Entropies.jl/dev/) or build locally by running the `docs/make.jl` file.

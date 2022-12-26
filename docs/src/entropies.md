@@ -55,7 +55,7 @@ For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 | [`AlizadehArghami`](@ref)    | Order statistics  | `Vector`   |        ✓          |        x        |         x         |          x           |        x         |               x                |
 
 ```@docs
-DiffEntropyEst
+DifferentialEntropyEstimator
 ```
 
 ```@docs

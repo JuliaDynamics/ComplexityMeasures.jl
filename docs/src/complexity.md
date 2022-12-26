@@ -1,5 +1,6 @@
 # Complexity measures
 
+## Complexiy measures API
 ```@docs
 complexity
 complexity_normalized
