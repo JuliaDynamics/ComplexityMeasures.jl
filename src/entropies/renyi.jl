@@ -23,13 +23,13 @@ like e.g. the information entropy
 also known as Hartley entropy), or the correlation entropy
 (``q = 2``, also known as collision entropy).
 
-If the probability estimator has known alphabet length ``L``, then the maximum
-value of the Rényi entropy is ``\\log_{base}(L)``, which is the entropy of the
-uniform distribution with given alphabet length.
+The maximum value of the Rényi entropy is ``\\log_{base}(L)``, which is the entropy of the
+uniform distribution with ``L`` the [`total_outcomes`](@ref).
 
 [^Rényi1960]:
     A. Rényi, _Proceedings of the fourth Berkeley Symposium on Mathematics,
     Statistics and Probability_, pp 547 (1960)
+
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
 struct Renyi{Q, B} <: EntropyDefinition
@@ -65,7 +65,7 @@ The Shannon[^Shannon1948] entropy, used with [`entropy`](@ref) to compute:
 ```math
 H(p) = - \\sum_i p[i] \\log(p[i])
 ```
-with the ``log`` at the given `base`.
+with the ``\\log`` at the given `base`.
 
 `Shannon(base)` is syntactically equivalent to `Renyi(; base)`.
 

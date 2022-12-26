@@ -28,7 +28,7 @@ Mathematically speaking, generalized entropies are just nonnegative functions of
 probability distributions that verify certain (entropy-type-dependent) axioms.
 Amigó et al.[^Amigó2018] summary paper gives a nice overview.
 
-[Amigó2018]:
+[^Amigó2018]:
     Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
     generalized entropies. [Entropy, 20(11), 813.](https://www.mdpi.com/1099-4300/20/11/813)
 """
@@ -66,7 +66,7 @@ const DiffEntropyEst = DifferentialEntropyEstimator
     entropy([e::EntropyDefinition,] probs::Probabilities)
     entropy([e::EntropyDefinition,] est::ProbabilitiesEstimator, x)
 
-Compute the **discrete entropy** `h::Real` defined by `e`, in one of two ways:
+Compute the **discrete entropy** `h::Real ∈ [0, ∞)` defined by `e`, in one of two ways:
 
 1. Directly from existing [`Probabilities`](@ref) `probs`.
 2. From input data `x`, by first estimating a probability distribution using the provided
@@ -122,10 +122,10 @@ This method doesn't involve explicitly computing (discretized) probabilities fir
 
 The entropy definition argument is optional.
 The default entropy type is inferred from the estimator (e.g. [`Kraskov`](@ref)
-estimates the base-2 Shannon differential entropy.
-Note that most estimators are not compatible with all versions of
-[`EntropyDefinition`](@ref). See [Table of differential entropy estimators](@ref)
-in the docs for a table view of the estimators and the compatibilities
+estimates the base-2 Shannon differential entropy).
+The estimators are not compatible with all versions of [`EntropyDefinition`](@ref).
+See [Table of differential entropy estimators](@ref)
+in the docs for a table view of the estimators and the compatibilities.
 
 ## Examples
 Notice that a standard normal distribution has a base-e differential entropy
@@ -177,8 +177,8 @@ end
 """
     entropy_normalized([e::EntropyDefinition,] est::ProbabilitiesEstimator, x) → h̃ ∈ [0, 1]
 
-Return h̃, the normalized entropy of `x`, i.e. the value of [`entropy`](@ref) divided
-by the maximum value for `e`, according to the given probabilities estimator.
+Return h̃, the normalized discrete entropy of `x`, i.e. the value of [`entropy`](@ref)
+divided by the maximum value for `e`, according to the given probabilities estimator.
 If `e` is not given, it defaults to `Shannon()`.
 
 Notice that unlike for [`entropy`](@ref), here there is no method
