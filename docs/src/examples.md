@@ -358,8 +358,8 @@ for N in (N1, N2)
     local w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
 
     for q in (x, y, z, w)
-        h = entropy(PowerSpectrum(), q)
-        n = entropy_normalized(PowerSpectrum(), q)
+        h = entropy(PowerSpectrum(q), q)
+        n = entropy_normalized(PowerSpectrum(q), q)
         println("entropy: $(h), normalized: $(n).")
     end
 end
@@ -370,7 +370,7 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 
 ## Spatiotemporal permutation entropy
 
-Usage of a [``SpatialSymbolicPermutation`](@ref) estimator is straightforward.
+Usage of a [`SpatialSymbolicPermutation`](@ref) estimator is straightforward.
 Here we get the spatial permutation entropy of a 2D array (e.g., an image):
 
 ```@example MAIN
