@@ -70,8 +70,8 @@ and one has a vector of probabilities, one for each experimental realization).
 
 We have made the design decision that all probabilities estimators have a well defined
 outcome space when instantiated. For some estimators this means that the input data
-`x` not only must be provided both when instantiating the estimator, but also when computing
-the probabilities.
+`x` must be provided both when instantiating the estimator and when calling
+functions such as [`probabilities`](@ref)
 
 All currently implemented probability estimators are listed in a nice table in the
 [probabilities estimators](@ref probabilities_estimators) section of the online documentation.

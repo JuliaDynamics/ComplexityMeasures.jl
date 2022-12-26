@@ -26,6 +26,8 @@ StretchedExponential
 
 ```@docs
 entropy(::EntropyDefinition, ::ProbabilitiesEstimator, ::Any)
+entropy_maximum
+entropy_normalized
 ```
 
 ## Differential entropy

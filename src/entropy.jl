@@ -1,7 +1,5 @@
-export EntropyDefinition, DiffEntropyEst
+export EntropyDefinition, DiffEntropyEst, DifferentialEntropyEstimator
 export entropy, entropy_maximum, entropy_normalized
-
-abstract type AbstractEntropy end
 
 """
     EntropyDefinition
@@ -32,7 +30,7 @@ Amigó et al.[^Amigó2018] summary paper gives a nice overview.
     Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
     generalized entropies. [Entropy, 20(11), 813.](https://www.mdpi.com/1099-4300/20/11/813)
 """
-abstract type EntropyDefinition <: AbstractEntropy end
+abstract type EntropyDefinition end
 
 """
     DifferentialEntropyEstimator
@@ -158,13 +156,13 @@ entropy(est::DiffEntropyEst, x) = entropy(Shannon(; base = 2), est, x)
 # Normalize API
 ###########################################################################################
 """
-    entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator) → m::Real
+    entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator)
 
-Return the maximum value `m` of the given entropy definition based on the given estimator.
+Return the maximum value of a discrete entropy the given probabilities estimator.
 
-    entropy_maximum(e::EntropyDefinition, L::Int) → m::Real
+    entropy_maximum(e::EntropyDefinition, L::Int)
 
-Alternatively, compute the maximum entropy from the number of total outcomes `L` directly.
+Same as above, but computed thdirectly from the number of total outcomes `L`.
 """
 function entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator)
     L = total_outcomes(est)
@@ -175,9 +173,9 @@ function entropy_maximum(e::EntropyDefinition, ::Int)
 end
 
 """
-    entropy_normalized([e::EntropyDefinition,] est::ProbabilitiesEstimator, x) → h̃ ∈ [0, 1]
+    entropy_normalized([e::EntropyDefinition,] est::ProbabilitiesEstimator, x) → h̃
 
-Return h̃, the normalized discrete entropy of `x`, i.e. the value of [`entropy`](@ref)
+Return `h̃ ∈ [0, 1]`, the normalized discrete entropy of `x`, i.e. the value of [`entropy`](@ref)
 divided by the maximum value for `e`, according to the given probabilities estimator.
 If `e` is not given, it defaults to `Shannon()`.
 
