@@ -40,6 +40,13 @@ est = SpatialSymbolicPermutation((extent, lag), x; periodic = false)
 stencil = [1 1; 1 1];
 est = SpatialSymbolicPermutation(stencil, x; periodic = false)
 @test entropy(Renyi(base = 2), est, x) == 1.5
+# when the stencil is square, it is also easy to get an analytical set of outcomes.
+# 1 2 1    count column major order and get vectors, starting in top left corner,
+# 8 3 4    [1, 8, 2, 3], [8, 6, 3, 7], [2, 3, 1, 4], [3, 7, 4, 5], which give permutations
+# 6 7 5    [1, 3, 4, 2], [3, 2, 4, 1], [3, 1, 2, 4], [1, 3, 4, 2]
+ps, outs = probabilities_and_outcomes(est, x)
+@test sort(outs) ==
+    sort(SVector{4, Int}.([[1, 3, 4, 2], [3, 2, 4, 1], [3, 1, 2, 4], [1, 3, 4, 2]]))
 
 # Also test that it works for arbitrarily high-dimensional arrays
 stencil = CartesianIndex.([(0,0,0), (0,1,0), (0,0,1), (1,0,0)])
