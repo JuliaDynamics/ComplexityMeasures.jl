@@ -69,7 +69,7 @@ constructed from the input timeseries ``x(t)`` as
 [^Pincus1991]: Pincus, S. M. (1991). Approximate entropy as a measure of system complexity.
     Proceedings of the National Academy of Sciences, 88(6), 2297-2301.
 """
-Base.@kwdef struct ApproximateEntropy{I, M, B, R} <: ComplexityMeasure
+Base.@kwdef struct ApproximateEntropy{I, B, R} <: ComplexityMeasure
     m::I = 2
     τ::I = 1
     base::B = MathConstants.e
@@ -78,7 +78,7 @@ Base.@kwdef struct ApproximateEntropy{I, M, B, R} <: ComplexityMeasure
     function ApproximateEntropy(m::I, τ::I, base::B, r::R) where {I, R, B}
         m >= 1 || throw(ArgumentError("m must be >= 1. Got m=$(m)."))
         r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
-        new{I, M, B, R}(m, τ, base, r)
+        new{I, B, R}(m, τ, base, r)
     end
     function ApproximateEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1,
             base = MathConstants.e) where T

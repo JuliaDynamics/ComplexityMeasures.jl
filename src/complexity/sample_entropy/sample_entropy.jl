@@ -67,7 +67,7 @@ See also: [`entropy_sample`](@ref).
     analysis using approximate entropy and sample entropy. American Journal of
     Physiology-Heart and Circulatory Physiology, 278(6), H2039-H2049.
 """
-Base.@kwdef struct SampleEntropy{R, M} <: ComplexityMeasure
+Base.@kwdef struct SampleEntropy{R} <: ComplexityMeasure
     m::Int = 2
     τ::Int = 1
     r::R
@@ -75,7 +75,7 @@ Base.@kwdef struct SampleEntropy{R, M} <: ComplexityMeasure
     function SampleEntropy(m::Int, τ::Int, r::R) where {R}
         m >= 1 || throw(ArgumentError("m must be >= 1. Got m=$(m)."))
         r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
-        new{R, M}(m, τ, r)
+        new{R}(m, τ, r)
     end
     function SampleEntropy(x::AbstractVector; m::Int = 2, τ::Int = 1)
         r = 0.2 * Statistics.std(x)
