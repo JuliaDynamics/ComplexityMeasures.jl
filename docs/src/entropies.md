@@ -20,32 +20,6 @@ StretchedExponential
 entropy(::EntropyDefinition, ::ProbabilitiesEstimator, ::Any)
 ```
 
-## Estimation (discrete)
-
-Discrete entropies are just simple functions (sums, actually) of
-probability mass functions [(pmf)](https://en.wikipedia.org/wiki/Probability_mass_function),
-which you can estimate using [`ProbabilitiesEstimator`](@ref)s.
-
-Any [`ProbabilitiesEstimator`](@ref) may therefore be used as a naive plug-in estimator
-for discrete [`entropy`](@ref). No bias correction is currently applied to any of the
-discrete estimators.
-
-Tables scroll sideways, so are best viewed on a large screen.
-
-| Estimator                                   | Principle                   | Input data          | [`Shannon`](@ref) | [`Renyi`](@ref) | [`Tsallis`](@ref) | [`Kaniadakis`](@ref) | [`StretchedExponential`](@ref) | [`Curado`](@ref) |
-| ------------------------------------------- | --------------------------- | ------------------- | :---------------: | :-------------: | :---------------: | :------------------: | :----------------------------: | :--------------: |
-| [`CountOccurrences`](@ref)                  | Frequencies                 | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`Dispersion`](@ref)                        | Dispersion patterns         | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`Diversity`](@ref)                         | Cosine similarity           | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`WaveletOverlap`](@ref)                    | Wavelet transform           | `Vector`            |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-| [`PowerSpectrum`](@ref)                     | Fourier spectra             | `Vector`, `Dataset` |        ✅         |       ✅        |        ✅         |          ✅          |               ✅               |        ✅        |
-
 ## Differential entropy
 
 ```@docs
