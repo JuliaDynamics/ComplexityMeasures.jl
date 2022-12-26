@@ -1,13 +1,12 @@
-"""
-A Julia package that provides estimators for probabilities and entropies for nonlinear
-dynamics, nonlinear timeseries analysis, and complex systems. It can be used as a
-standalone package, or as part of several projects in the JuliaDynamics organization,
-such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/)
-or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
-
-To install it, run `import Pkg; Pkg.add("Entropies")`.
-"""
 module Entropies
+
+# Use the README as the module docs
+@doc let
+  path = joinpath(dirname(@__DIR__), "README.md")
+  include_dependency(path)
+  read(path, String)
+end Entropies
+
 
 using StateSpaceSets
 export Dataset, SVector
