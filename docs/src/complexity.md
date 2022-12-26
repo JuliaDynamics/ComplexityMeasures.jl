@@ -28,7 +28,6 @@ MissingDispersionPatterns
 
 ```@docs
 ReverseDispersion
-distance_to_whitenoise
 ```
 
 ## Convenience

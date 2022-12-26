@@ -2,7 +2,6 @@ using Entropies: Dispersion, Encoding, Probabilities, GaussianCDFEncoding
 import Entropies: total_outcomes
 
 export ReverseDispersion
-export distance_to_whitenoise
 
 """
     ReverseDispersion <: ComplexityMeasure
