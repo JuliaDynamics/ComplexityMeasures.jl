@@ -1,9 +1,3 @@
-import Entropies: MultiScaleAlgorithm, Regular, Composite
-import Entropies: multiscale, multiscale_normalized
-
-export MultiScaleAlgorithm, Regular, Composite
-export multiscale, multiscale_normalized
-
 function multiscale(alg::MultiScaleAlgorithm, e::ComplexityMeasure, x::AbstractVector;
         maxscale::Int = 8)
 

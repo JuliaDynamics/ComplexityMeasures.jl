@@ -6,8 +6,7 @@ export distance_to_whitenoise
 
 """
     ReverseDispersion <: ComplexityMeasure
-    ReverseDispersion(; c = 3, m = 2, τ = 1, check_unique = true,
-    )
+    ReverseDispersion(; c = 3, m = 2, τ = 1, check_unique = true)
 
 Estimator for the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019].
 
