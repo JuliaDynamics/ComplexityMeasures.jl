@@ -90,7 +90,7 @@ x = [rand(Bool) for _ in 1:10000] # coin toss
 ps = probabilities(x) # gives about [0.5, 0.5] by definition
 h = entropy(ps) # gives 1, about 1 bit by definition
 h = entropy(Shannon(), ps) # syntactically equivalent to above
-h = entropy(Shannon(), CountOccurrences(), x) # syntactically equivalent to above
+h = entropy(Shannon(), CountOccurrences(x), x) # syntactically equivalent to above
 h = entropy(SymbolicPermutation(;m=3), x) # gives about 2, again by definition
 h = entropy(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin toss
 ```
