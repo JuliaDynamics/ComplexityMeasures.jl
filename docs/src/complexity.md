@@ -29,12 +29,3 @@ MissingDispersionPatterns
 ```@docs
 ReverseDispersion
 ```
-
-## Convenience
-
-We provide a few convenience functions for widely used "entropy-like" complexity measures. Other arbitrary specialized convenience functions can easily be defined in a couple lines of code.
-
-```@docs
-approx_entropy
-sample_entropy
-```

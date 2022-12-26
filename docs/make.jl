@@ -39,6 +39,7 @@ ENTROPIES_PAGES = [
     "encodings.md",
     "entropies.md",
     "complexity.md",
+    "convenience.md",
     "examples.md",
     "devdocs.md",
 ]
