@@ -1,10 +1,8 @@
 # This file contains an API for multiscale (coarse-grained/downsampled) computations.
+# This API is not final nor agreed upon yet. Nothing is exported or documented
+# as part of public API. It must be considered as work in progress.
 
 using Statistics
-export multiscale
-export multiscale_normalized
-export downsample
-export MultiScaleAlgorithm
 
 """
     MultiScaleAlgorithm
