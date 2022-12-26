@@ -41,7 +41,7 @@ entropy(::EntropyDefinition, ::DifferentialEntropyEstimator, ::Any)
 The following estimators are *differential* entropy estimators, and can also be used
 with [`entropy`](@ref).
 
-Each [`DifferentialEntropyEstimator`](@ref)s uses a specialized technique to approximating relevant
+Each [`DifferentialEntropyEstimator`](@ref)s uses a specialized technique to approximate relevant
 densities/integrals, and is often tailored to one or a few types of generalized entropy.
 For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 

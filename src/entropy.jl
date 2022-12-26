@@ -24,7 +24,7 @@ See [`entropy`](@ref) for usage.
 
 Mathematically speaking, generalized entropies are just nonnegative functions of
 probability distributions that verify certain (entropy-type-dependent) axioms.
-Amigó et al.[^Amigó2018] summary paper gives a nice overview.
+Amigó et al.'s[^Amigó2018] summary paper gives a nice overview.
 
 [^Amigó2018]:
     Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
