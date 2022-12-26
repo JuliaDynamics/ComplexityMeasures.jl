@@ -13,9 +13,9 @@ ea = entropy(Shannon(; base = 2), Kraskov(k = 5), rand(npts))
 ea_n = entropy(Shannon(; base = ℯ), Kraskov(k = 5), randn(npts))
 ea_n3 = entropy(Shannon(; base = 3), Kraskov(k = 5), randn(npts))
 
-@test round(ea, digits = 2) == U
-@test round(ea_n, digits = 2) == N
-@test round(ea_n3, digits = 2) == N_base3
+@test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
+@test N * 0.98 ≤ ea_n ≤ N * 1.02
+@test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
 
 x = rand(1000)
 @test_throws ArgumentError entropy(Renyi(q = 2), Kraskov(), x)
