@@ -5,7 +5,7 @@ export Correa
     Correa(; m::Int = 1)
 
 The `Correa` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) using the method from Correa (1995)[^Correa1995].
+(a multi-dimensional [`Dataset`](@ref)) using the method from Correa (1995)[^Correa1995].
 
 The `Correa` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for

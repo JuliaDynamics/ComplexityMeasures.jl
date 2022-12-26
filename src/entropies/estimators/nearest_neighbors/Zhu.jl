@@ -6,7 +6,7 @@ export Zhu
 
 The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] is an extension to
 [`KozachenkoLeonenko`](@ref), and computes the [`Shannon`](@ref)
-differential [`entropy`](@ref) of `x` (a multi-dimensional `Dataset`).
+differential [`entropy`](@ref) of `x` (a multi-dimensional [`Dataset`](@ref)).
 
 ## Description
 

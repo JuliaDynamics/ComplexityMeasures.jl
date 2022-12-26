@@ -5,7 +5,7 @@ export Vasicek
     Vasicek(; m::Int = 1)
 
 The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) using the method from Vasicek (1976)[^Vasicek1976].
+(a multi-dimensional [`Dataset`](@ref)) using the method from Vasicek (1976)[^Vasicek1976].
 
 The `Vasicek` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic), of which

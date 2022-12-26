@@ -5,7 +5,7 @@ export Ebrahimi
     Ebrahimi(; m::Int = 1)
 
 The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) using the method from Ebrahimi (1994)[^Ebrahimi1994].
+(a multi-dimensional [`Dataset`](@ref)) using the method from Ebrahimi (1994)[^Ebrahimi1994].
 
 The `Ebrahimi` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for

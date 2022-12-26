@@ -5,7 +5,7 @@ export Kraskov
     Kraskov(; k::Int = 1, w::Int = 1)
 
 The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional `Dataset`) using the `k`-th nearest neighbor
+(a multi-dimensional [`Dataset`](@ref)) using the `k`-th nearest neighbor
 searches method from [^Kraskov2004].
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded

@@ -14,9 +14,9 @@ of (generalized) entropies. Currently implemented entropy definitions are:
 - [`Curado`](@ref).
 - [`StretchedExponential`](@ref).
 
-These entropy types are given as inputs to [`entropy`](@ref) and [`entropy_normalized`].
-Notice that in all documentation strings formulas are provided for the discrete version
-of the entropy, for simplicity.
+These entropy types are given as inputs to [`entropy`](@ref) and
+[`entropy_normalized`](@ref). Notice that in all documentation strings formulas are
+provided for the discrete version of the entropy, for simplicity.
 
 See [`entropy`](@ref) for usage.
 

@@ -5,7 +5,7 @@ export AlizadehArghami
     AlizadehArghami(; m::Int = 1)
 
 The `AlizadehArghami`estimator computes the [`Shannon`](@ref) differential
-[`entropy`](@ref) of `x` (a multi-dimensional `Dataset`) using the
+[`entropy`](@ref) of `x` (a multi-dimensional [`Dataset`](@ref)) using the
 method from Alizadeh & Arghami (2010)[^Alizadeh2010].
 
 The `AlizadehArghami` estimator belongs to a class of differential entropy estimators based
