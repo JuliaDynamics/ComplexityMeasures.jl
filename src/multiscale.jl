@@ -114,6 +114,6 @@ function verify_scale_level(method, s::Int, x)
 end
 
 
-include("multiscale/multiscale.jl")
 include("multiscale/regular.jl")
 include("multiscale/composite.jl")
+include("multiscale/multiscale.jl")
