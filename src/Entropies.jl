@@ -7,8 +7,8 @@ module Entropies
   read(path, String)
 end Entropies
 
-using StateSpaceSets
-export Dataset, SVector
+using Reexport
+@reexport using StateSpaceSets
 using DelayEmbeddings: embed
 
 const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
