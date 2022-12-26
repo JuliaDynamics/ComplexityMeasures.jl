@@ -533,7 +533,7 @@ est = MissingDispersionPatterns(Dispersion(m = 3, c = 7))
 sys = Systems.logistic(0.6; r = 4.0)
 Ls = collect(100:100:1000)
 nL = length(Ls)
-nreps = 50
+nreps = 30 # should be higher for real applications
 method = WLS(IAAFT(), rescale = true)
 
 r_det, r_noise = zeros(length(Ls)), zeros(length(Ls))
