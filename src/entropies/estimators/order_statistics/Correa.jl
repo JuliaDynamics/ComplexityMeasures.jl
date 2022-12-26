@@ -54,7 +54,7 @@ where
     and Methods, 24(10), 2439-2449.
 
 See also: [`entropy`](@ref), [`AlizadehArghami`](@ref), [`Ebrahimi`](@ref),
-[`Vasicek`](@ref), [`DiffEntropyEst`](@ref).
+[`Vasicek`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
 @Base.kwdef struct Correa{I<:Integer} <: DiffEntropyEst
     m::I = 1

@@ -32,12 +32,13 @@ This estimator is an extension to the entropy estimator in Singh et al. (2003).
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
 when searching for neighbours).
 
-See also: [`entropy`](@ref).
+See also: [`entropy`](@ref), [`DifferentialEntropyEstimator`](@ref).
 
 [^Zhu2015]:
     Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to
     transfer entropy estimation via the k-nearest-neighbors approach. EntropyDefinition, 17(6),
     4173-4201.
+
 [^Singh2003]:
     Singh, H., Misra, N., Hnizdo, V., Fedorowicz, A., & Demchuk, E. (2003). Nearest
     neighbor estimates of entropy. American journal of mathematical and management

@@ -33,7 +33,7 @@ entropy_normalized
 ## Differential entropy
 
 ```@docs
-entropy(::EntropyDefinition, ::DiffEntropyEst, x)
+entropy(::EntropyDefinition, ::DifferentialEntropyEstimator, ::Any)
 ```
 
 ### Table of differential entropy estimators
@@ -41,7 +41,7 @@ entropy(::EntropyDefinition, ::DiffEntropyEst, x)
 The following estimators are *differential* entropy estimators, and can also be used
 with [`entropy`](@ref).
 
-Each [`DiffEntropyEst`](@ref)s uses a specialized technique to approximating relevant
+Each [`DifferentialEntropyEstimator`](@ref)s uses a specialized technique to approximating relevant
 densities/integrals, and is often tailored to one or a few types of generalized entropy.
 For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 

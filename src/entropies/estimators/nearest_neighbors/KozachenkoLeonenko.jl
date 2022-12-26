@@ -29,7 +29,7 @@ when searching for neighbours).
 In contrast to [`Kraskov`](@ref), this estimator uses only the *closest* neighbor.
 
 
-See also: [`entropy`](@ref), [`Kraskov`](@ref), [`DiffEntropyEst`](@ref).
+See also: [`entropy`](@ref), [`Kraskov`](@ref), [`DifferentialEntropyEstimator`](@ref).
 
 [^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy
     estimator with applications in systems biology. EntropyDefinition, 18(1), 13.

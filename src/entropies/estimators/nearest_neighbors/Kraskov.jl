@@ -23,7 +23,7 @@ density function``f : \\mathbb{R}^d \\to \\mathbb{R}``. `Kraskov` estimates the
 H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))].
 ```
 
-See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DiffEntropyEst`](@ref).
+See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialEntropyEstimator`](@ref).
 
 [^Kraskov2004]:
     Kraskov, A., Stögbauer, H., & Grassberger, P. (2004).

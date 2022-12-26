@@ -46,7 +46,7 @@ the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correcti
     Journal of the Iranian Statistical Society (JIRSS).
 
 See also: [`entropy`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
-[`Vasicek`](@ref), [`DiffEntropyEst`](@ref).
+[`Vasicek`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
 @Base.kwdef struct AlizadehArghami{I<:Integer} <: DiffEntropyEst
     m::I = 1

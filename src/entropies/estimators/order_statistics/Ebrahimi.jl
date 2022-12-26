@@ -56,7 +56,7 @@ c_i =
     Statistics & Probability Letters, 20(3), 225-234.
 
 See also: [`entropy`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
-[`Vasicek`](@ref), [`DiffEntropyEst`](@ref).
+[`Vasicek`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
 @Base.kwdef struct Ebrahimi{I<:Integer} <: DiffEntropyEst
     m::I = 1

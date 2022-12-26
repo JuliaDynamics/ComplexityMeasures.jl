@@ -24,7 +24,7 @@ using `k` nearest neighbor searches. `w` is the Theiler window, which determines
 temporal neighbors are excluded during neighbor searches (defaults to `0`, meaning that
 only the point itself is excluded when searching for neighbours).
 
-See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DiffEntropyEst`](@ref).
+See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialEntropyEstimator`](@ref).
 
 [^Zhu2015]:
     Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to

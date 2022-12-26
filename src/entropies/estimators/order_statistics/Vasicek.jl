@@ -52,7 +52,7 @@ written for this package).
     Statistical Society: Series B (Methodological), 38(1), 54-59.
 
 See also: [`entropy`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
-[`Ebrahimi`](@ref), [`DiffEntropyEst`](@ref).
+[`Ebrahimi`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
 @Base.kwdef struct Vasicek{I<:Integer} <: DiffEntropyEst
     m::I = 1
