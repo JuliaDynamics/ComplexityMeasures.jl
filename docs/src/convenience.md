@@ -6,6 +6,6 @@ We provide a few convenience functions for widely used names for entropy or "ent
 entropy_permutation
 entropy_wavelet
 entropy_dispersion
-approx_entropy
-sample_entropy
+entropy_approx
+entropy_sample
 ```

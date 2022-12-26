@@ -4,7 +4,7 @@ using Neighborhood.NearestNeighbors: Chebyshev, KDTree
 using Neighborhood: inrangecount
 
 export SampleEntropy
-export sample_entropy
+export entropy_sample
 
 """
     SampleEntropy([x]; r = 0.2std(x), kwargs...)
@@ -61,7 +61,7 @@ If computing the normalized measure, then the resulting sample entropy is on `[0
     The original algorithm fixes `τ = 1`. All formulas here are modified to account for
     any `τ`.
 
-See also: [`sample_entropy`](@ref).
+See also: [`entropy_sample`](@ref).
 
 [^Richman2000]: Richman, J. S., & Moorman, J. R. (2000). Physiological time-series
     analysis using approximate entropy and sample entropy. American Journal of
@@ -88,7 +88,7 @@ end
 """
     sample_entropy_probs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * Statistics.std(x))
 
-Compute the probabilities required for [`sample_entropy`](@ref). `k` is the embedding
+Compute the probabilities required for [`entropy_sample`](@ref). `k` is the embedding
 dimension, `τ` is the embedding lag, and `m` is a normalization constant (so that we
 consider the same number of points for both the `m`-dimensional and the `m+1`-dimensional
 embeddings), and `r` is the radius.
@@ -150,7 +150,7 @@ function complexity_normalized(c::SampleEntropy, x::AbstractVector{T}) where T <
 end
 
 """
-    sample_entropy(x; r, m = 2, τ = 1, normalize = true)
+    entropy_sample(x; r, m = 2, τ = 1, normalize = true)
 
 Convenience syntax for estimating the (normalized) sample entropy (Richman & Moorman, 2000)
 of timeseries `x`.
@@ -159,7 +159,7 @@ This is just a wrapper for `complexity(SampleEntropy(; r, m, τ, base), x)`.
 
 See also: [`SampleEntropy`](@ref), [`complexity`](@ref), [`complexity_normalized`](@ref)).
 """
-function sample_entropy(x, r; m = 2, τ = 1, normalize = true)
+function entropy_sample(x, r; m = 2, τ = 1, normalize = true)
     c = SampleEntropy(x; r, m, τ)
     if normalize
         complexity_normalized(c, x)

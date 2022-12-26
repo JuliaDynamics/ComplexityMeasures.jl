@@ -36,7 +36,7 @@ function calculate_hs(; nreps = 50, L = 1000)
         if !any([containsinf(tᵢ) for tᵢ in t])
             x = t[:, 1]
             hs[k] = complexity(ApproximateEntropy(r = 0.05, m = 2), x)
-            hs_conv[k] = approx_entropy(x, r = 0.05, m = 2)
+            hs_conv[k] = entropy_approx(x, r = 0.05, m = 2)
             k += 1
         end
     end
