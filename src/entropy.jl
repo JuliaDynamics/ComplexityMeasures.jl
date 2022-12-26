@@ -126,11 +126,12 @@ See [Table of differential entropy estimators](@ref)
 in the docs for a table view of the estimators and the compatibilities.
 
 ## Examples
-Notice that a standard normal distribution has a base-e differential entropy
-of `0.5*log(2π) + 0.5`.
+
+A standard normal distribution has a base-e differential entropy of `0.5*log(2π) + 0.5`
+nats.
 
 ```julia
-def = Shannon(; base = ℯ)
+def = Shannon(; base = ℯ) # Base `ℯ` for nats.
 est = Kraskov(k = 5)
 h = entropy(def, est, randn(1_000_000))
 abs(h - 0.5*log(2π) - 0.5) # ≈ 0.001
