@@ -1,6 +1,5 @@
 # This file defines and exports some convenience definition of quantities
-# for commonly used names in the literature. Solely to bridge the
-# gap between calling things that aren't entropies "entropies".
+# for commonly used names in the literature.
 export entropy_permutation, entropy_wavelet, entropy_dispersion
 export entropy_sample, entropy_approx
 
