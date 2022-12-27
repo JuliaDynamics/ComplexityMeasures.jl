@@ -138,7 +138,7 @@ function probabilities! end
 Return a container containing all _possible_ outcomes of `est`.
 For some estimators the concrete outcome space is known without knowledge of input `x`,
 in which case the function dispatches to `outcome_space(est)`.
-In general it is recommended to use the 2-argument version.
+In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
 outcome_space(est::ProbabilitiesEstimator, x) = outcome_space(est)
 function outcome_space(est::ProbabilitiesEstimator)
@@ -154,7 +154,7 @@ end
 Return the length (cardinality) of the outcome space ``\\Omega`` of `est`.
 For some estimators the concrete outcome space is known without knowledge of input `x`,
 in which case the function dispatches to `total_outcomes(est)`.
-In general it is recommended to use the 2-argument version.
+In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
 total_outcomes(est::ProbabilitiesEstimator, x) = length(outcome_space(est, x))
 
