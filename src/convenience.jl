@@ -59,7 +59,7 @@ function entropy_dispersion(x; base = 2, kwargs...)
 end
 
 """
-    entropy_sample(x; r, m = 2, τ = 1, normalize = true)
+    entropy_sample(x; r = 0.2std(x), m = 2, τ = 1, normalize = true)
 
 Convenience syntax for estimating the (normalized) sample entropy (Richman & Moorman, 2000)
 of timeseries `x`.
@@ -68,8 +68,8 @@ This is just a wrapper for `complexity(SampleEntropy(; r, m, τ, base), x)`.
 
 See also: [`SampleEntropy`](@ref), [`complexity`](@ref), [`complexity_normalized`](@ref)).
 """
-function entropy_sample(x, r; m = 2, τ = 1, normalize = true)
-    c = SampleEntropy(x; r, m, τ)
+function entropy_sample(x; normalize = true, kwargs...)
+    c = SampleEntropy(x; kwargs...)
     if normalize
         complexity_normalized(c, x)
     else
@@ -85,8 +85,7 @@ Convenience syntax for computing the approximate entropy (Pincus, 1991) for time
 This is just a wrapper for `complexity(ApproximateEntropy(; m, τ, r, base), x)` (see
 also [`ApproximateEntropy`](@ref)).
 """
-function entropy_approx(x; m = 2, τ = 1, r = 0.2 * Statistics.std(x),
-         base = MathConstants.e)
-    c = ApproximateEntropy(; m, τ, r, base)
+function entropy_approx(x; kwargs...)
+    c = ApproximateEntropy(x; kwargs...)
     return complexity(c, x)
 end
