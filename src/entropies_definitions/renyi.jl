@@ -58,7 +58,7 @@ end
 entropy_maximum(e::Renyi, L::Int) = log_with_base(e.base)(L)
 
 """
-    Shannon(; base = 2)
+    Shannon(base = 2)
 
 The Shannon[^Shannon1948] entropy, used with [`entropy`](@ref) to compute:
 
@@ -71,4 +71,4 @@ with the ``\\log`` at the given `base`.
 
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
-Shannon(; base = 2) = Renyi(; base)
+Shannon(base = 2) = Renyi(; base)
