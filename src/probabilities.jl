@@ -156,7 +156,8 @@ For some estimators the concrete outcome space is known without knowledge of inp
 in which case the function dispatches to `total_outcomes(est)`.
 In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
-total_outcomes(est::ProbabilitiesEstimator, x) = length(outcome_space(est, x))
+total_outcomes(est::ProbabilitiesEstimator, x) = total_outcomes(est)
+total_outcomes(est::ProbabilitiesEstimator) = length(outcome_space(est))
 
 """
     missing_outcomes(est::ProbabilitiesEstimator, x) → n_missing::Int
