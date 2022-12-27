@@ -3,5 +3,4 @@
     testfile("measures/missing_dispersion.jl")
     testfile("measures/entropy_approx.jl")
     testfile("measures/entropy_sample.jl")
-    testfile("multiscale.jl")
 end

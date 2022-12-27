@@ -79,9 +79,8 @@ Base.@kwdef struct ApproximateEntropy{I, B, R} <: ComplexityMeasure
         r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
         new{I, B, R}(m, τ, base, r)
     end
-    function ApproximateEntropy(x::AbstractVector{T}; m::Int = 2, τ::Int = 1,
-            base = MathConstants.e) where T
-        r = 0.2 * Statistics.std(x)
+    function ApproximateEntropy(x::AbstractVector; m::Int = 2, τ::Int = 1,
+            base = MathConstants.e, r = 0.2 * Statistics.std(x))
         ApproximateEntropy(m, τ, base, r)
     end
 end

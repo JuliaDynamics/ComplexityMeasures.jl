@@ -7,7 +7,7 @@ using Test
     @test entropy_permutation(x) == entropy(SymbolicPermutation(), x)
     @test entropy_wavelet(x) == entropy(WaveletOverlap(x), x)
     @test entropy_dispersion(x) == entropy(Dispersion(), x)
-    @test entropy_sample(x) == complexity(SampleEntropy(x), x)
+    @test entropy_sample(x) == complexity_normalized(SampleEntropy(x), x)
     @test entropy_approx(x) == complexity(ApproximateEntropy(x), x)
 
 end
