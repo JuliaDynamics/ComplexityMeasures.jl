@@ -2,7 +2,7 @@ export ValueHistogram, VisitationFrequency
 # Binnings are defined in the encoding folder!
 
 """
-    ValueHistogram(x, b::RectangularBinning) <: ProbabilitiesEstimator
+    ValueHistogram(b::RectangularBinning, x) <: ProbabilitiesEstimator
     ValueHistogram(b::FixedRectangularBinning) <: ProbabilitiesEstimator
 
 A probability estimator based on binning the values of the data as dictated by
@@ -22,7 +22,7 @@ datasets and with small box sizes `ε` without memory overflow and with maximum 
 For performance reasons,
 the probabilities returned never contain 0s and are arbitrarily ordered.
 
-    ValueHistogram(x, ϵ::Union{Real,Vector})
+    ValueHistogram(ϵ::Union{Real,Vector}, x)
 
 A convenience method that accepts same input as [`RectangularBinning`](@ref)
 and initializes this binning directly.
@@ -39,8 +39,8 @@ See also: [`RectangularBinning`](@ref).
 struct ValueHistogram{H<:HistogramEncoding} <: ProbabilitiesEstimator
     encoding::H
 end
-ValueHistogram(x, ϵ::Union{Real,Vector}) = ValueHistogram(x, RectangularBinning(ϵ))
-function ValueHistogram(x, b::RectangularBinning)
+ValueHistogram(ϵ::Union{Real,Vector}, x) = ValueHistogram(RectangularBinning(ϵ), x)
+function ValueHistogram(b::RectangularBinning, x)
     encoding = RectangularBinEncoding(b, x)
     return ValueHistogram(encoding)
 end

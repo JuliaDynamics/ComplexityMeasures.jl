@@ -14,4 +14,5 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("utils/fasthist.jl")
     # testfile("utils/encoding.jl")
     testfile("convenience.jl")
+    testfile("deprecations.jl")
 end

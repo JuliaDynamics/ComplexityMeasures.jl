@@ -3,19 +3,13 @@ using Test
 
 @testset "Common literature names" begin
     x = randn(1000)
-    σ = 0.2
 
-    @testset "Permutation entropy" begin
-        @test entropy_permutation(x) == entropy(SymbolicPermutation(), x)
-    end
+    @test entropy_permutation(x) == entropy(SymbolicPermutation(), x)
+    @test entropy_wavelet(x) == entropy(WaveletOverlap(x), x)
+    @test entropy_dispersion(x) == entropy(Dispersion(), x)
+    @test entropy_sample(x) == complexity_normalized(SampleEntropy(x), x)
+    @test entropy_approx(x) == complexity(ApproximateEntropy(x), x)
 
-    @testset "Wavelet entropy" begin
-        @test entropy_wavelet(x) == entropy(WaveletOverlap(x), x)
-    end
-
-    @testset "Dispersion entropy" begin
-        @test entropy_dispersion(x) == entropy(Dispersion(), x)
-    end
 end
 
 @testset "probabilities(x)" begin

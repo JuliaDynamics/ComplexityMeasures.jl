@@ -10,7 +10,7 @@ N_base3 = round((0.5*log(2π) + 0.5) / log(3, ℯ), digits = 2) # custom base
 N_base2 = round((0.5*log(2π) + 0.5) / log(2, ℯ), digits = 2) # custom base
 
 npts = 1000000
-ea = entropy(Shannon(; base = 2), Vasicek(m = 100), rand(npts))
+ea = entropy(Shannon(), Vasicek(m = 100), rand(npts))
 ea_n = entropy(Shannon(; base = ℯ), Vasicek(m = 100), randn(npts))
 ea_n3 = entropy(Shannon(; base = 3), Vasicek(m = 100), randn(npts))
 
@@ -23,4 +23,4 @@ x = rand(1000)
 
 # Default is Shannon base-2 differential entropy
 est = Vasicek()
-@test entropy(est, x) == entropy(Shannon(; base = 2), est, x)
+@test entropy(est, x) == entropy(Shannon(), est, x)

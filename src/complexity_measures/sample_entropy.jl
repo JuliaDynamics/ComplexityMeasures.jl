@@ -148,22 +148,3 @@ function complexity_normalized(c::SampleEntropy, x::AbstractVector{T}) where T <
         return scale(sampen, lowerbound, upperbound, 0.0, 1.0)
     end
 end
-
-"""
-    entropy_sample(x; r, m = 2, τ = 1, normalize = true)
-
-Convenience syntax for estimating the (normalized) sample entropy (Richman & Moorman, 2000)
-of timeseries `x`.
-
-This is just a wrapper for `complexity(SampleEntropy(; r, m, τ, base), x)`.
-
-See also: [`SampleEntropy`](@ref), [`complexity`](@ref), [`complexity_normalized`](@ref)).
-"""
-function entropy_sample(x, r; m = 2, τ = 1, normalize = true)
-    c = SampleEntropy(x; r, m, τ)
-    if normalize
-        complexity_normalized(c, x)
-    else
-        complexity(c, x)
-    end
-end

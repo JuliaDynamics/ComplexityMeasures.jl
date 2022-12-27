@@ -20,14 +20,15 @@ include("entropy.jl")
 include("encodings.jl")
 include("complexity.jl")
 include("multiscale.jl")
-
-# Library implementations (files include other files)
-include("encoding/all_encodings.jl") # other structs depend on these
-include("probabilities_estimators/probabilities_estimators.jl")
-include("entropies/entropies.jl")
-include("complexity/complexity_measures.jl")
+include("convenience.jl")
 include("deprecations.jl")
 
+# Library implementations (files include other files)
+include("encoding_implementations/encoding_implementations.jl")
+include("probabilities_estimators/probabilities_estimators.jl")
+include("entropies_definitions/entropies_definitions.jl")
+include("entropies_estimators/entropies_estimators.jl")
+include("complexity_measures/complexity_measures.jl")
 
 # Update messages:
 using Scratch
