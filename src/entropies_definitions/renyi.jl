@@ -32,12 +32,11 @@ uniform distribution with ``L`` the [`total_outcomes`](@ref).
 
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
-struct Renyi{Q, B} <: EntropyDefinition
-    q::Q
-    base::B
+Base.@kwdef struct Renyi{Q, B} <: EntropyDefinition
+    q::Q = 1.0
+    base::B  = 2.0
 end
 Renyi(q) = Renyi(q, 2)
-Renyi(; q = 1.0, base = 2) = Renyi(q, base)
 
 function entropy(e::Renyi, probs::Probabilities)
     q, base = e.q, e.base
