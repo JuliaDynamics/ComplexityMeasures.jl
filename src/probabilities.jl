@@ -68,10 +68,10 @@ across experimental realizations, by using the outcome as a dictionary key and t
 probability as the value for that key (or, alternatively, the key remains the outcome
 and one has a vector of probabilities, one for each experimental realization).
 
-We have made the design decision that all probabilities estimators have a well defined
-outcome space when instantiated. For some estimators this means that the input data
-`x` must be provided both when instantiating the estimator and when calling
-functions such as [`probabilities`](@ref)
+Some estimators can deduce ``\\Omega`` without knowledge of the input, such as
+[`SymbolicPermutation`](@ref). For others, knowledge of input is necessary for concretely
+specifying ``\\Omega``, such as [`ValueHistogram`](@ref) with [`RectangularBinning`](@ref).
+This only matters for the functions [`outcome_space`](@ref) and [`total_outcomes`](@ref).
 
 All currently implemented probability estimators are listed in a nice table in the
 [probabilities estimators](@ref probabilities_estimators) section of the online documentation.
