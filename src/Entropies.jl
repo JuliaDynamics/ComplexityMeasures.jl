@@ -27,6 +27,7 @@ include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies_definitions/entropies_definitions.jl")
 include("entropies_estimators/entropies_estimators.jl")
 include("complexity/complexity_measures.jl")
+include("convenience.jl")
 include("deprecations.jl")
 
 # Update messages:

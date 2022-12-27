@@ -4,7 +4,6 @@ using Distances
 using Statistics
 
 export ApproximateEntropy
-export entropy_approx
 
 """
     ApproximateEntropy <: ComplexityMeasure
@@ -142,18 +141,4 @@ function compute_ϕ(x::AbstractVector{T}; r = 0.2 * Statistics.std(x), k::Int = 
     ϕ = sum(log(base, inrangecount(tree, pᵢ, r) / f) for pᵢ in pts)
 
     return ϕ / f
-end
-
-"""
-    entropy_approx(x; m = 2, τ = 1, r = 0.2 * Statistics.std(x), base = MathConstants.e)
-
-Convenience syntax for computing the approximate entropy (Pincus, 1991) for timeseries `x`.
-
-This is just a wrapper for `complexity(ApproximateEntropy(; m, τ, r, base), x)` (see
-also [`ApproximateEntropy`](@ref)).
-"""
-function entropy_approx(x; m = 2, τ = 1, r = 0.2 * Statistics.std(x),
-         base = MathConstants.e)
-    c = ApproximateEntropy(; m, τ, r, base)
-    return complexity(c, x)
 end
