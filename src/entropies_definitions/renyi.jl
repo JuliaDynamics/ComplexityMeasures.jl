@@ -71,3 +71,4 @@ with the ``\\log`` at the given `base`.
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
 Shannon(base = 2) = Renyi(; base)
+Shannon(; base = 2) = Renyi(; base)
