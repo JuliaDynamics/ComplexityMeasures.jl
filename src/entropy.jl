@@ -74,7 +74,7 @@ Compute the **discrete entropy** `h::Real ∈ [0, ∞)` defined by `e`, in one o
 
 The entropy definition (first argument) is optional. Explicitly provide `e` if you need to
 specify a logarithm base for the entropy. When `est` is a probability estimator,
-`Shannon(; base = 2)` is used by default.
+`Shannon()` is used by default.
 
 ## Maximum entropy and normalized entropy
 
@@ -103,8 +103,8 @@ end
 # dispatch for `entropy(e, ps)` in the entropy definitions files
 
 # Convenience
-entropy(est::ProbabilitiesEstimator, x) = entropy(Shannon(; base = 2), est, x)
-entropy(probs::Probabilities) = entropy(Shannon(; base = 2), probs)
+entropy(est::ProbabilitiesEstimator, x) = entropy(Shannon(), est, x)
+entropy(probs::Probabilities) = entropy(Shannon(), probs)
 
 ###########################################################################################
 # Differential entropy
@@ -150,7 +150,7 @@ entropy(e::EntropyDefinition, est::DiffEntropyEst, ::Probabilities) =
 entropy(e::EntropyDefinition, est::DiffEntropyEst, x::AbstractVector) =
     entropy(e, est, Dataset(x))
 # Always default to Shannon with base-2 logs. Individual estimators may override this.
-entropy(est::DiffEntropyEst, x) = entropy(Shannon(; base = 2), est, x)
+entropy(est::DiffEntropyEst, x) = entropy(Shannon(), est, x)
 
 
 ###########################################################################################

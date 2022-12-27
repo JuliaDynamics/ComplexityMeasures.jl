@@ -48,7 +48,7 @@ N = round(0.5*log(2π) + 0.5, digits = 2)
 N_base3 = round((0.5*log(2π) + 0.5) / log(3, ℯ), digits = 2) # custom base
 
 npts = 1000000
-ea = entropy(Shannon(; base = 2), Zhu(k = 5), rand(npts))
+ea = entropy(Shannon(), Zhu(k = 5), rand(npts))
 ea_n = entropy(Shannon(; base = ℯ), Zhu(k = 5), randn(npts))
 ea_n3 = entropy(Shannon(; base = 3), Zhu(k = 5), randn(npts))
 
@@ -61,4 +61,4 @@ x = rand(1000)
 
 # Default is Shannon base-2 differential entropy
 est = ZhuSingh()
-@test entropy(est, x) == entropy(Shannon(; base = 2), est, x)
+@test entropy(est, x) == entropy(Shannon(), est, x)

@@ -10,7 +10,7 @@ The API for Entropies.jl has been completely overhauled. Major changes are:
 - Convenience functions for common entropies, such as permutation entropy and dispersion entropy.
 - No more deprecation warnings for using the old keyword `α` for Renyi entropy.
 - The `base` of the entropy is now a field of the `EntropyDefinition` type, not the estimator.
-    You'll now have to do `entropy(Shannon(; base = 2), est, x)`.
+    You'll now have to do `entropy(Shannon(), est, x)`.
 - An entirely new section of entropy-like complexity measures, such as the reverse dispersion entropy.
 - Many new estimators, such as `SpatialPermutation` and `PowerSpectrum`.
 - Check the online documentation for a comprehensive overview of the changes.
