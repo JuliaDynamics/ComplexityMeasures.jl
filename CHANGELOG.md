@@ -4,19 +4,25 @@ Changelog is kept with respect to version 0.11 of Entropies.jl.
 
 ## 2.0
 
-The API for Entropies.jl has been completely overhauled. Major changes are:
+The API for Entropies.jl has been completely overhauled,
+but along with the overhaul comes a massive amount of new features.
+We believe it is best to learn all of this by visiting the online documentation.
 
-- Common generic interfaces `entropy`, `entropy_normalized` and `maximum` (maximum entropy) that dispatches on different types of entropies (e.g `Renyi()` `Shannon()`, `Tsallis()`).
-- Convenience functions for common entropies, such as permutation entropy and dispersion entropy.
-- No more deprecation warnings for using the old keyword `α` for Renyi entropy.
+We tried our best to keep pre-2.0 functions working and throw deprecation warnings.
+If we missed code that should be working, let us know by opening an issue.
+
+### Major changes
+
+- Common generic interface function `entropy`, `entropy_normalized` and `maximum` (maximum entropy) that dispatches on different definitions of entropies (e.g `Renyi()` `Shannon()`, `Tsallis()`) and estimated probabilities.
+- Convenience functions for common entropies, such as permutation entropy and dispersion entropy still exist.
+- New interface `DifferentialEntropyEstimator` that is also used in `entropy`.
 - The `base` of the entropy is now a field of the `EntropyDefinition` type, not the estimator.
-    You'll now have to do `entropy(Shannon(), est, x)`.
 - An entirely new section of entropy-like complexity measures, such as the reverse dispersion entropy.
 - Many new estimators, such as `SpatialPermutation` and `PowerSpectrum`.
 - Check the online documentation for a comprehensive overview of the changes.
 
-### Bug fixes
-
+### Minor changes
+- No more deprecation warnings for using the old keyword `α` for Renyi entropy.
 - The `KozachenkoLeonenko` estimator now correctly fixes its neighbor search to the
     *closest* neighbor only, and its constructor does no longer accept `k` as an input. It also uses correct scaling factor and adapts to dimension.
 - Using a logarithm `base` different from `MathConstants.e` now yields correct results
