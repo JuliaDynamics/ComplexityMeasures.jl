@@ -21,7 +21,7 @@ for the weighted/amplitude-aware versions.
 """
 function entropy_permutation(x; base = 2, kwargs...)
     est = SymbolicPermutation(; kwargs...)
-    entropy(Shannon(; base), est, x)
+    entropy(Shannon(base), est, x)
 end
 
 """
@@ -38,7 +38,7 @@ See [`WaveletOverlap`](@ref) for more info.
 """
 function entropy_wavelet(x; wavelet = Wavelets.WT.Daubechies{12}(), base = 2)
     est = WaveletOverlap(x, wavelet)
-    entropy(Shannon(; base), est, x)
+    entropy(Shannon(base), est, x)
 end
 
 """
@@ -55,7 +55,7 @@ See [`Dispersion`](@ref) for more info.
 """
 function entropy_dispersion(x; base = 2, kwargs...)
     est = Dispersion(kwargs...)
-    entropy(Shannon(; base), est, x)
+    entropy(Shannon(base), est, x)
 end
 
 """
