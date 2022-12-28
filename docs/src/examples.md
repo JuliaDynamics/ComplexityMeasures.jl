@@ -344,7 +344,7 @@ fig
 
 ## Discrete entropy: normalized entropy for comparing different signals
 
-When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the [Wavelet entropy example](@ref) (where we use the spectral entropy instead of the wavelet entropy):
+When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the Wavelet entropy example where we use the spectral entropy instead of the wavelet entropy:
 
 ```@example MAIN
 using DynamicalSystemsBase
