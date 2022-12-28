@@ -28,7 +28,7 @@ the [Shannon](@ref) differential entropy
 H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
 ```
 
-[^Gao2005]:
+[^Gao2015]:
     Gao, S., Ver Steeg, G., & Galstyan, A. (2015, February). Efficient estimation of
     mutual information for strongly dependent variables. In Artificial intelligence and
         statistics (pp. 277-286). PMLR.
@@ -67,7 +67,7 @@ Keyword arguments are the same as for [`GaoNaive`](@ref).
 `GaoNaiveCorrected` is identical to the [`GaoNaive`](@ref) estimator,
 except it adds correction terms that ensures the estimator is asymptotically unbiased.
 
-[^Gao2005]:
+[^Gao2015]:
     Gao, S., Ver Steeg, G., & Galstyan, A. (2015, February). Efficient estimation of
     mutual information for strongly dependent variables. In Artificial intelligence and
         statistics (pp. 277-286). PMLR.
