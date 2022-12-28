@@ -13,7 +13,7 @@ using Distributions: MvNormal
 N = 500
 D = Dataset(sort([rand(𝒩) for i = 1:N]))
 x, y = columns(D)
-p = probabilities(NaiveKernel(D, 1.5), D)
+p = probabilities(NaiveKernel(1.5), D)
 fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
     markersize=8, axis=(type = Axis3,)
 )
@@ -358,8 +358,8 @@ for N in (N1, N2)
     local w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
 
     for q in (x, y, z, w)
-        h = entropy(PowerSpectrum(q), q)
-        n = entropy_normalized(PowerSpectrum(q), q)
+        h = entropy(PowerSpectrum(), q)
+        n = entropy_normalized(PowerSpectrum(), q)
         println("entropy: $(h), normalized: $(n).")
     end
 end
