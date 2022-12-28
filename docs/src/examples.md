@@ -58,6 +58,7 @@ knn_estimators = [
     ZhuSingh(; k = 3, w),
     GaoNaive(; k = 3, w),
     GaoNaiveCorrected(; k = 3, w),
+    Goria(; k = 3, w)
 ]
 
 # Test each estimator `nreps` times over time series of varying length.
@@ -92,9 +93,9 @@ end
 # -------------
 # Plot results
 # -------------
-fig = Figure(resolution = (700, 10 * 200))
+fig = Figure(resolution = (700, 11 * 200))
 labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh", "GaoNaive", 
-    "GaoNaiveCorrected"]
+    "GaoNaiveCorrected", "Goria"]
 labels_os = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
 
 for (i, e) in enumerate(knn_estimators)
