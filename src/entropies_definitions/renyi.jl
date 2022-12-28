@@ -1,4 +1,4 @@
-export Renyi, Shannon
+export Renyi
 
 """
     Renyi <: EntropyDefinition
