@@ -29,7 +29,7 @@ Input `x` is needed for a well-defined [`outcome_space`](@ref).
     by Short-Time Training in the Delayed-Match-to-Sample Task_,
     [Front. Hum. Neurosci.](https://doi.org/10.3389/fnhum.2017.00437)
 """
-struct PowerSpectrum end <: ProbabilitiesEstimator
+struct PowerSpectrum <: ProbabilitiesEstimator end
 
 function probabilities_and_outcomes(est::PowerSpectrum, x)
     probs = probabilities(est, x)

@@ -8,10 +8,11 @@ a univariate time series or multivariate dataset. This is the same as giving no
 estimator to [`probabilities`](@ref).
 
 ## Outcome space
+
 The outcome space is the unique sorted values of the input.
 Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-struct CountOccurrences end <: ProbabilitiesEstimator
+struct CountOccurrences <: ProbabilitiesEstimator end
 
 function probabilities_and_outcomes(::CountOccurrences, x)
     z = copy(x)
