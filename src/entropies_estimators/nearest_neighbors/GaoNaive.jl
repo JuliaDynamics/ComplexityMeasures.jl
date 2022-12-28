@@ -56,16 +56,9 @@ end
     GaoNaiveCorrected <: DifferentialEntropyEstimator
     GaoNaiveCorrected(; k = 1, w = 0)
 
-The `GaoNaiveCorrected` estimator (Gao et al., 2015), computes the [`Shannon`](@ref)
-differential [`entropy`](@ref), using a `k`-th nearest-neighbor approach based on
-Singh et al. (2003)[^Singh2003].
-
-Keyword arguments are the same as for [`GaoNaive`](@ref).
-
-## Description
-
-`GaoNaiveCorrected` is identical to the [`GaoNaive`](@ref) estimator,
-except it adds correction terms that ensures the estimator is asymptotically unbiased.
+`GaoNaiveCorrected`, which computes the [`Shannon`](@ref) differential [`entropy`](@ref),
+is identical to the [`GaoNaive`](@ref) estimator, except it adds correction terms that
+ensures the estimator is asymptotically unbiased.
 
 [^Gao2015]:
     Gao, S., Ver Steeg, G., & Galstyan, A. (2015, February). Efficient estimation of
