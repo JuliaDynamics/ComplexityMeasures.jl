@@ -16,3 +16,12 @@ with the ``\\log`` at the given `base`.
 Base.@kwdef struct Shannon{B} <: EntropyDefinition
     base::B = 2
 end
+
+function entropy(e::Shannon, probs::Probabilities)
+    base = e.base
+    non0_probs = Iterators.filter(!iszero, probs.p)
+    logf = log_with_base(base)
+    return -sum(x*logf(x) for x in non0_probs)
+end
+
+entropy_maximum(e::Shannon, L::Int) = log_with_base(e.base)(L)
