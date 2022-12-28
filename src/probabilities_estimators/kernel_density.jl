@@ -52,8 +52,8 @@ end
 
 function probabilities_and_outcomes(est::NaiveKernel, x::AbstractDataset)
     theiler = Theiler(est.w)
-    ss = searchstructure(est.method, x.data, est.metric)
-    idxs = bulkisearch(ss, x.data, WithinRange(est.ϵ), theiler)
+    ss = searchstructure(est.method, vec(x), est.metric)
+    idxs = bulkisearch(ss, vec(x), WithinRange(est.ϵ), theiler)
     p = Float64.(length.(idxs))
     return Probabilities(p), eachindex(x)
 end

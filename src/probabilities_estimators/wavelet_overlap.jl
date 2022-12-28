@@ -2,7 +2,7 @@ export WaveletOverlap
 import Wavelets
 
 """
-    WaveletOverlap(x [,wavelet]) <: ProbabilitiesEstimator
+    WaveletOverlap([wavelet]) <: ProbabilitiesEstimator
 
 Apply the maximal overlap discrete wavelet transform (MODWT) to a
 signal, then compute probabilities as the (normalized) energies at different
@@ -26,11 +26,10 @@ As such, this estimator only works for timeseries input.
     Rosso et al. (2001). Wavelet entropy: a new tool for analysis of short duration
     brain electrical signals. Journal of neuroscience methods, 105(1), 65-75.
 """
-struct WaveletOverlap{X, W<:Wavelets.WT.OrthoWaveletClass} <: ProbabilitiesEstimator
-    x::X
+struct WaveletOverlap{W<:Wavelets.WT.OrthoWaveletClass} <: ProbabilitiesEstimator
     wl::W
 end
-WaveletOverlap(x) = WaveletOverlap(x, Wavelets.WT.Daubechies{12}())
+WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
 
 function probabilities_and_outcomes(est::WaveletOverlap, x)
     x isa AbstractVector{<:Real} || error("`WaveletOverlap` only works for timeseries input!")
@@ -38,8 +37,8 @@ function probabilities_and_outcomes(est::WaveletOverlap, x)
     return p, 1:length(p)
 end
 
-function outcome_space(est::WaveletOverlap)
-    nscales = Wavelets.WT.maxmodwttransformlevels(est.x)
+function outcome_space(::WaveletOverlap, x)
+    nscales = Wavelets.WT.maxmodwttransformlevels(x)
     return 1:nscales
 end
 
