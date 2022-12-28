@@ -133,7 +133,7 @@ function probabilities! end
 # Outcome space
 ###########################################################################################
 """
-    outcome_space(est::ProbabilitiesEstimator, [x]) → Ω
+    outcome_space(est::ProbabilitiesEstimator, x) → Ω
 
 Return a container containing all _possible_ outcomes of `est`.
 
@@ -150,7 +150,7 @@ end
 outcome_space(est::ProbabilitiesEstimator, x) = outcome_space(est)
 
 """
-    total_outcomes(est::ProbabilitiesEstimator, [x])
+    total_outcomes(est::ProbabilitiesEstimator, x)
 
 Return the length (cardinality) of the outcome space ``\\Omega`` of `est`.
 
