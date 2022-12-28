@@ -49,10 +49,7 @@ Base.@kwdef struct ZhuSingh <: DiffEntropyEst
     w::Int = 0
 end
 
-function entropy(e::Renyi, est::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
-    e.q == 1 || throw(ArgumentError(
-        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
-    ))
+function entropy(e::Shannon, est::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())

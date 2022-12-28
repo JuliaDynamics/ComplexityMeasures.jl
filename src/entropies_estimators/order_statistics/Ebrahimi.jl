@@ -72,10 +72,7 @@ function ebrahimi_scaling_factor(i, m, n)
     end
 end
 
-function entropy(e::Renyi, est::Ebrahimi, x::AbstractVector{T}) where T
-    e.q == 1 || throw(ArgumentError(
-        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
-    ))
+function entropy(e::Shannon, est::Ebrahimi, x::AbstractVector{T}) where T
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))

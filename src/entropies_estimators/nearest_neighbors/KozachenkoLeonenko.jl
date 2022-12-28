@@ -40,10 +40,7 @@ See also: [`entropy`](@ref), [`Kraskov`](@ref), [`DifferentialEntropyEstimator`]
     w::Int = 1
 end
 
-function entropy(e::Renyi, est::KozachenkoLeonenko, x::AbstractDataset{D, T}) where {D, T}
-    e.q == 1 || throw(ArgumentError(
-        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
-    ))
+function entropy(e::Shannon, est::KozachenkoLeonenko, x::AbstractDataset{D, T}) where {D, T}
     (; w) = est
 
     N = length(x)
