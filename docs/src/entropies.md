@@ -47,14 +47,16 @@ For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 
 | Estimator                    | Principle         | Input data | [`Shannon`](@ref) | [`Renyi`](@ref) | [`Tsallis`](@ref) | [`Kaniadakis`](@ref) | [`Curado`](@ref) | [`StretchedExponential`](@ref) |
 | :--------------------------- | :---------------- | :--------- | :---------------: | :-------------: | :---------------: | :------------------: | :--------------: | :----------------------------: |
-| [`KozachenkoLeonenko`](@ref) | Nearest neighbors | `Dataset`  |        ✓          |        x        |         x         |          x           |        x         |               x                |
-| [`Kraskov`](@ref)            | Nearest neighbors | `Dataset`  |        ✓          |        x        |         x         |          x           |        x         |               x                |
-| [`Zhu`](@ref)                | Nearest neighbors | `Dataset`  |        ✓          |        x        |         x         |          x           |        x         |               x                |
-| [`ZhuSingh`](@ref)           | Nearest neighbors | `Dataset`  |        ✓          |        x        |         x         |          x           |        x         |               x                |
-| [`Vasicek`](@ref)            | Order statistics  | `Vector`   |        ✓          |        x        |         x         |          x           |        x         |               x                |
-| [`Ebrahimi`](@ref)           | Order statistics  | `Vector`   |        ✓          |        x        |         x         |          x           |        x         |               x                |
-| [`Correa`](@ref)             | Order statistics  | `Vector`   |        ✓          |        x        |         x         |          x           |        x         |               x                |
-| [`AlizadehArghami`](@ref)    | Order statistics  | `Vector`   |        ✓          |        x        |         x         |          x           |        x         |               x                |
+| [`KozachenkoLeonenko`](@ref) | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`Kraskov`](@ref)            | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`Zhu`](@ref)                | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`ZhuSingh`](@ref)           | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`GaoNaive`](@ref)           | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`GaoNaiveCorrected`](@ref)  | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`Vasicek`](@ref)            | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`Ebrahimi`](@ref)           | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`Correa`](@ref)             | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`AlizadehArghami`](@ref)    | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
 
 ```@docs
 DifferentialEntropyEstimator
@@ -65,6 +67,8 @@ Kraskov
 KozachenkoLeonenko
 Zhu
 ZhuSingh
+GaoNaive
+GaoNaiveCorrected
 Vasicek
 AlizadehArghami
 Ebrahimi
