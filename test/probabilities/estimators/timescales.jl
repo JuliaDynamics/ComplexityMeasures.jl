@@ -21,7 +21,7 @@ using Entropies, Test
         x = sin.(t)
         y = @. sin(t) + sin(sqrt(3)*t)
         z = randn(N)
-        est = PowerSpectrum(N)
+        est = PowerSpectrum()
         ents = [entropy(Renyi(), est, w) for w in (x,y,z)]
         @test ents[1] < ents[2] < ents[3]
         # Test event stuff (analytically, using sine wave)

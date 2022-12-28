@@ -133,30 +133,32 @@ function probabilities! end
 # Outcome space
 ###########################################################################################
 """
-    outcome_space(est::ProbabilitiesEstimator, x) → Ω
+    outcome_space(est::ProbabilitiesEstimator, [x]) → Ω
 
 Return a container containing all _possible_ outcomes of `est`.
+
 For some estimators the concrete outcome space is known without knowledge of input `x`,
 in which case the function dispatches to `outcome_space(est)`.
 In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
-outcome_space(est::ProbabilitiesEstimator, x) = outcome_space(est)
 function outcome_space(est::ProbabilitiesEstimator)
     error("""
     `outcome_space(est)` not implemented for estimator $(typeof(est)).
     Try calling `outcome_space(est, x)`, and if you get the same error, open an issue.
     """)
 end
+outcome_space(est::ProbabilitiesEstimator, x) = outcome_space(est)
 
 """
-    total_outcomes(est::ProbabilitiesEstimator, x)
+    total_outcomes(est::ProbabilitiesEstimator, [x])
 
 Return the length (cardinality) of the outcome space ``\\Omega`` of `est`.
+
 For some estimators the concrete outcome space is known without knowledge of input `x`,
 in which case the function dispatches to `total_outcomes(est)`.
 In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
-total_outcomes(est::ProbabilitiesEstimator, x) = total_outcomes(est)
+total_outcomes(est::ProbabilitiesEstimator, x) = length(outcome_space(est, x))
 total_outcomes(est::ProbabilitiesEstimator) = length(outcome_space(est))
 
 """

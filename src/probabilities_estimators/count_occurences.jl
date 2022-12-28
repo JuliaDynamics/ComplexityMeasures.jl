@@ -22,7 +22,6 @@ function probabilities_and_outcomes(::CountOccurrences, x)
 end
 
 outcome_space(::CountOccurrences, x) = sort!(unique(x))
-
 probabilities(::CountOccurrences, x) = probabilities(x)
 function probabilities(x)
     # Fast histograms code is in the `histograms` folder

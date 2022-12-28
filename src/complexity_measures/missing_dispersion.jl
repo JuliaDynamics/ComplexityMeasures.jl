@@ -60,5 +60,5 @@ function complexity(c::MissingDispersionPatterns, x::AbstractVector{T}) where T
 end
 
 function complexity_normalized(c::MissingDispersionPatterns, x::AbstractVector{T}) where T
-    return missing_outcomes(c.est, x) / total_outcomes(c.est)
+    return missing_outcomes(c.est, x) / total_outcomes(c.est, x)
 end

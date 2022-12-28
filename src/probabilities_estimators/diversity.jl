@@ -48,7 +48,7 @@ end
 
 function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
     ds, rbc = similarities_and_binning(est, x)
-    return probabilities_and_outcomes(ValueHistogram(rbc), ds)
+    return probabilities_and_outcomes(ValueHistogram(rbc.binning), ds)
 end
 
 outcome_space(est::Diversity) = outcome_space(binning_for_diversity(est))

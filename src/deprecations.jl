@@ -5,7 +5,7 @@ function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})
     `probabilities(x::Vector_or_Dataset, ε::Real)`
     is deprecated, use `probabilities(ValueHistogram(ε), x)`.
     """
-    probabilities(ValueHistogram(ε, x), x)
+    probabilities(ValueHistogram(ε), x)
 end
 
 function probabilities(x, est::ProbabilitiesEstimator)
@@ -38,9 +38,9 @@ end
 function genentropy(x::Array_or_Dataset, ε::Real; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(x::Array_or_Dataset, ε::Real; q, base)` is deprecated.
-    Use instead: `entropy(Renyi(q, base), ValueHistogram(ε, x), x)`.
+    Use instead: `entropy(Renyi(q, base), ValueHistogram(ε), x)`.
     """
-    return entropy(Renyi(q, base), ValueHistogram(ε, x), x)
+    return entropy(Renyi(q, base), ValueHistogram(ε), x)
 end
 
 function genentropy(x::Array_or_Dataset, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
