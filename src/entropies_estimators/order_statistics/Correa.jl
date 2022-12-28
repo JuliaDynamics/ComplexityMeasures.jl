@@ -60,10 +60,7 @@ See also: [`entropy`](@ref), [`AlizadehArghami`](@ref), [`Ebrahimi`](@ref),
     m::I = 1
 end
 
-function entropy(e::Renyi, est::Correa, x::AbstractVector{T}) where T
-    e.q == 1 || throw(ArgumentError(
-        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
-    ))
+function entropy(e::Shannon, est::Correa, x::AbstractVector{T}) where T
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))

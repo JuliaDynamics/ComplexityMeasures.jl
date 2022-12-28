@@ -160,6 +160,15 @@ function RectangularBinEncoding(b::RectangularBinning, x; n_eps = 2)
 end
 
 # fixed grid
+function RectangularBinEncoding(b::FixedRectangularBinning{D}, x; n_eps = 2) where {D}
+    if D != dimension(x)
+        throw(ArgumentError("""
+        The dimensionality of the `FixedRectangularBinning` and input `x` do not match.
+        Got $(D) and $(dimension(x))."""))
+    end
+    return RectangularBinEncoding(b; n_eps)
+end
+
 function RectangularBinEncoding(b::FixedRectangularBinning{D, T}; n_eps = 2) where {D,T}
     # This function always returns static vectors and is type stable
     ϵmin, ϵmax = b.ϵmin, b.ϵmax

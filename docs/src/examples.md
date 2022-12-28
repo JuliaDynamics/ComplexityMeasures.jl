@@ -13,7 +13,7 @@ using Distributions: MvNormal
 N = 500
 D = Dataset(sort([rand(𝒩) for i = 1:N]))
 x, y = columns(D)
-p = probabilities(NaiveKernel(D, 1.5), D)
+p = probabilities(NaiveKernel(1.5), D)
 fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
     markersize=8, axis=(type = Axis3,)
 )
@@ -344,7 +344,7 @@ fig
 
 ## Discrete entropy: normalized entropy for comparing different signals
 
-When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the [Wavelet entropy example](@ref) (where we use the spectral entropy instead of the wavelet entropy):
+When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the Wavelet entropy example where we use the spectral entropy instead of the wavelet entropy:
 
 ```@example MAIN
 using DynamicalSystemsBase
@@ -358,8 +358,8 @@ for N in (N1, N2)
     local w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
 
     for q in (x, y, z, w)
-        h = entropy(PowerSpectrum(q), q)
-        n = entropy_normalized(PowerSpectrum(q), q)
+        h = entropy(PowerSpectrum(), q)
+        n = entropy_normalized(PowerSpectrum(), q)
         println("entropy: $(h), normalized: $(n).")
     end
 end
@@ -404,7 +404,7 @@ Let's see how the normalized permutation and dispersion entropies increase for a
 
 ```@example MAIN
 using Entropies
-using Distributions
+using Distributions: Uniform
 using CairoMakie
 using Statistics
 using TestImages, ImageTransformations, CoordinateTransformations, Rotations
@@ -469,7 +469,7 @@ using Entropies
 using DynamicalSystemsBase
 using Random
 using CairoMakie
-using Distributions
+using Distributions: Normal
 
 n = 1000
 ts = 1:n

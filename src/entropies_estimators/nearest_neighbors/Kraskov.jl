@@ -34,10 +34,7 @@ Base.@kwdef struct Kraskov <: DiffEntropyEst
     w::Int = 1
 end
 
-function entropy(e::Renyi, est::Kraskov, x::AbstractDataset{D, T}) where {D, T}
-    e.q == 1 || throw(ArgumentError(
-        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
-    ))
+function entropy(e::Shannon, est::Kraskov, x::AbstractDataset{D, T}) where {D, T}
     (; k, w) = est
     N = length(x)
     ρs = maximum_neighbor_distances(x, w, k)

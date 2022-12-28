@@ -68,10 +68,10 @@ across experimental realizations, by using the outcome as a dictionary key and t
 probability as the value for that key (or, alternatively, the key remains the outcome
 and one has a vector of probabilities, one for each experimental realization).
 
-We have made the design decision that all probabilities estimators have a well defined
-outcome space when instantiated. For some estimators this means that the input data
-`x` must be provided both when instantiating the estimator and when calling
-functions such as [`probabilities`](@ref)
+Some estimators can deduce ``\\Omega`` without knowledge of the input, such as
+[`SymbolicPermutation`](@ref). For others, knowledge of input is necessary for concretely
+specifying ``\\Omega``, such as [`ValueHistogram`](@ref) with [`RectangularBinning`](@ref).
+This only matters for the functions [`outcome_space`](@ref) and [`total_outcomes`](@ref).
 
 All currently implemented probability estimators are listed in a nice table in the
 [probabilities estimators](@ref probabilities_estimators) section of the online documentation.
@@ -133,19 +133,32 @@ function probabilities! end
 # Outcome space
 ###########################################################################################
 """
-    outcome_space(est::ProbabilitiesEstimator) → Ω
+    outcome_space(est::ProbabilitiesEstimator, x) → Ω
 
-Return a container containing all _possible_ outcomes of `est`.
+Return a container containing all _possible_ outcomes of `est` for input `x`.
+
+For some estimators the concrete outcome space is known without knowledge of input `x`,
+in which case the function dispatches to `outcome_space(est)`.
+In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
 function outcome_space(est::ProbabilitiesEstimator)
-    error("`outcome_space` not implemented for estimator $(typeof(est)).")
+    error("""
+    `outcome_space(est)` not implemented for estimator $(typeof(est)).
+    Try calling `outcome_space(est, x)`, and if you get the same error, open an issue.
+    """)
 end
+outcome_space(est::ProbabilitiesEstimator, x) = outcome_space(est)
 
 """
-    total_outcomes(est::ProbabilitiesEstimator)
+    total_outcomes(est::ProbabilitiesEstimator, x)
 
 Return the length (cardinality) of the outcome space ``\\Omega`` of `est`.
+
+For some estimators the concrete outcome space is known without knowledge of input `x`,
+in which case the function dispatches to `total_outcomes(est)`.
+In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
+total_outcomes(est::ProbabilitiesEstimator, x) = length(outcome_space(est, x))
 total_outcomes(est::ProbabilitiesEstimator) = length(outcome_space(est))
 
 """
@@ -158,7 +171,7 @@ See also: [`MissingDispersionPatterns`](@ref).
 """
 function missing_outcomes(est::ProbabilitiesEstimator, x::Array_or_Dataset)
     probs = probabilities(est, x)
-    L = total_outcomes(est)
+    L = total_outcomes(est, x)
     O = count(!iszero, probs)
     return L - O
 end

@@ -52,14 +52,10 @@ See also: [`entropy`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
     m::I = 1
 end
 
-function entropy(e::Renyi, est::AlizadehArghami, x::AbstractVector{T}) where T
-    e.q == 1 || throw(ArgumentError(
-        "Renyi entropy with q = $(e.q) not implemented for $(typeof(est)) estimator"
-    ))
-
+function entropy(e::Shannon, est::AlizadehArghami, x::AbstractVector{T}) where T
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
-    h = entropy(Renyi(base = ℯ, q = e.q), Vasicek(; m), x) + (2 / n)*(m * log(2))
+    h = entropy(Shannon(base = ℯ), Vasicek(; m), x) + (2 / n)*(m * log(2))
     return h / log(e.base, ℯ)
 end

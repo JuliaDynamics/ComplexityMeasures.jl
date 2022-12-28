@@ -1,4 +1,4 @@
-export Renyi, Shannon
+export Renyi
 
 """
     Renyi <: EntropyDefinition
@@ -55,20 +55,3 @@ function entropy(e::Renyi, probs::Probabilities)
 end
 
 entropy_maximum(e::Renyi, L::Int) = log_with_base(e.base)(L)
-
-"""
-    Shannon(base = 2)
-
-The Shannon[^Shannon1948] entropy, used with [`entropy`](@ref) to compute:
-
-```math
-H(p) = - \\sum_i p[i] \\log(p[i])
-```
-with the ``\\log`` at the given `base`.
-
-`Shannon(base)` is syntactically equivalent to `Renyi(; base)`.
-
-[^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
-"""
-Shannon(base = 2) = Renyi(; base)
-Shannon(; base = 2) = Renyi(; base)

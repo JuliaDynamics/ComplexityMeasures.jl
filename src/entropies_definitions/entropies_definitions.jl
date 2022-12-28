@@ -1,3 +1,4 @@
+include("shannon.jl")
 include("renyi.jl")
 include("tsallis.jl")
 include("curado.jl")

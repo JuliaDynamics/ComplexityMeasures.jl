@@ -9,7 +9,7 @@ export
     transfermatrix
 
 """
-    TransferOperator <: <ProbabilitiesEstimator
+    TransferOperator <: ProbabilitiesEstimator
     TransferOperator(b::RectangularBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by

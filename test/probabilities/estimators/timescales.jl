@@ -8,11 +8,11 @@ using Entropies, Test
 
     @testset "WaveletOverlap" begin
         wl = Entropies.Wavelets.WT.Daubechies{4}()
-        est = WaveletOverlap(x, wl)
+        est = WaveletOverlap(wl)
         ps = probabilities(est, x)
         @test length(ps) == 8
         @test ps isa Probabilities
-        @test entropy(Renyi( q = 1, base = 2), WaveletOverlap(x), x) isa Real
+        @test entropy(Renyi(q = 1, base = 2), WaveletOverlap(), x) isa Real
     end
 
     @testset "Fourier Spectrum" begin
@@ -21,7 +21,7 @@ using Entropies, Test
         x = sin.(t)
         y = @. sin(t) + sin(sqrt(3)*t)
         z = randn(N)
-        est = PowerSpectrum(N)
+        est = PowerSpectrum()
         ents = [entropy(Renyi(), est, w) for w in (x,y,z)]
         @test ents[1] < ents[2] < ents[3]
         # Test event stuff (analytically, using sine wave)

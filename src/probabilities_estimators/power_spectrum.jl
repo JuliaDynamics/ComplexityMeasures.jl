@@ -2,7 +2,7 @@ export PowerSpectrum
 import FFTW
 
 """
-    PowerSpectrum(x_or_length(x)) <: ProbabilitiesEstimator
+    PowerSpectrum() <: ProbabilitiesEstimator
 
 Calculate the power spectrum of a timeseries (amplitude square of its Fourier transform),
 and return the spectrum normalized to sum = 1 as probabilities.
@@ -17,8 +17,7 @@ in spectral space depends on the length of the input.
 
 The outcome space `Ω` for `PowerSpectrum` is the set of frequencies in Fourier space. They
 should be multiplied with the sampling rate of the signal, which is assumed to be `1`.
-The length of the input is therefore required for this estimator to have a well-defined
-outcome space.
+Input `x` is needed for a well-defined [`outcome_space`](@ref).
 
 [^Llanos2016]:
     Llanos et al., _Power spectral entropy as an information-theoretic correlate of manner
@@ -30,18 +29,15 @@ outcome space.
     by Short-Time Training in the Delayed-Match-to-Sample Task_,
     [Front. Hum. Neurosci.](https://doi.org/10.3389/fnhum.2017.00437)
 """
-struct PowerSpectrum <: ProbabilitiesEstimator
-    length::Int
-end
-PowerSpectrum(x::AbstractVector) = PowerSpectrum(length(x))
+struct PowerSpectrum <: ProbabilitiesEstimator end
 
 function probabilities_and_outcomes(est::PowerSpectrum, x)
     probs = probabilities(est, x)
-    events = FFTW.rfftfreq(est.length)
+    events = FFTW.rfftfreq(length(x))
     return probs, events
 end
 
-outcome_space(est::PowerSpectrum) = FFTW.rfftfreq(est.length)
+outcome_space(::PowerSpectrum, x) = FFTW.rfftfreq(length(x))
 
 function probabilities(::PowerSpectrum, x)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
@@ -49,8 +45,8 @@ function probabilities(::PowerSpectrum, x)
     return Probabilities(abs2.(f))
 end
 
-function total_outcomes(est::PowerSpectrum)
-    n = est.length
+function total_outcomes(::PowerSpectrum, x)
+    n = length(x)
     # From the docstring of `AbstractFFTs.rfftfreq`:
     iseven(n) ? length(0:(n÷2)) : length(0:((n-1)÷2))
 end
