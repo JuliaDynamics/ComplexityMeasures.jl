@@ -19,6 +19,7 @@ P_i( X, \\epsilon) \\approx \\dfrac{1}{N} \\sum_{s} B(||X_i - X_j|| < \\epsilon)
 where ``B`` gives 1 if the argument is `true`. Probabilities are then normalized.
 
 ## Keyword arguments
+
 - `method = KDTree`: the search structure supported by Neighborhood.jl.
   Specifically, use `KDTree` to use a tree-based neighbor search, or `BruteForce` for
   the direct distances between all points. KDTrees heavily outperform direct distances
@@ -28,6 +29,7 @@ where ``B`` gives 1 if the argument is `true`. Probabilities are then normalized
 - `metric = Euclidean()`: the distance metric.
 
 ## Outcome space
+
 The outcome space `Ω` for `NaiveKernel` are the indices of the input data, `eachindex(x)`.
 Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 The reason to not return the data points themselves is because duplicate data points may

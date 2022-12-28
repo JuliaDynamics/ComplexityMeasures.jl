@@ -54,7 +54,7 @@ estimator can be used to compute (normalized) generalized spatiotemporal dispers
 The outcome space for `SpatialDispersion` is the unique delay vectors whose elements are the
 the symbols (integers) encoded by the Gaussian CDF. Hence, the outcome space is all
 `m`-dimensional delay vectors whose elements are all possible values in `1:c`.
-There are `c ^ m` such vectors.
+There are `c^m` such vectors.
 
 ## Description
 
