@@ -13,9 +13,11 @@ ea = entropy(Shannon(), GaoNaive(k = 5), rand(npts))
 ea_n = entropy(Shannon(; base = ℯ), GaoNaive(k = 5), randn(npts))
 ea_n3 = entropy(Shannon(; base = 3), GaoNaive(k = 5), randn(npts))
 
-@test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
-@test N * 0.98 ≤ ea_n ≤ N * 1.02
-@test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
+# It is not expected that this estimator will be precise, so increase
+# allowed error bounds compared to other estimators.
+@test U - max(0.1, U*0.2) ≤ ea ≤ U + max(0.1, U*0.2)
+@test N * 0.8 ≤ ea_n ≤ N * 1.02
+@test N_base3 * 0.8 ≤ ea_n3 ≤ N_base3 * 1.02
 
 x = rand(1000)
 @test_throws ArgumentError entropy(Renyi(q = 2), GaoNaive(), x)
