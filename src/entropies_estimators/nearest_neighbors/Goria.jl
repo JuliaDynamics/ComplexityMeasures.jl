@@ -7,7 +7,7 @@ export Goria
 
 """
     Goria <: DifferentialEntropyEstimator
-    Goria(k = 1, w = 0)
+    Goria(; k = 1, w = 0)
 
 The `Goria` estimator computes the [`Shannon`](@ref) differential
 [`entropy`](@ref) of `x` (a multi-dimensional [`Dataset`](@ref)).
