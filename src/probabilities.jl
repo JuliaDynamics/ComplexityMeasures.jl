@@ -135,7 +135,7 @@ function probabilities! end
 """
     outcome_space(est::ProbabilitiesEstimator, x) → Ω
 
-Return a container containing all _possible_ outcomes of `est`.
+Return a container containing all _possible_ outcomes of `est` for input `x`.
 
 For some estimators the concrete outcome space is known without knowledge of input `x`,
 in which case the function dispatches to `outcome_space(est)`.

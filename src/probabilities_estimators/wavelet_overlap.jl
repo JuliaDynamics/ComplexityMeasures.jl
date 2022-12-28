@@ -20,7 +20,9 @@ The outcome space for `WaveletOverlap` are the integers `1, 2, …, N` enumerati
 wavelet scales. To obtain a better understanding of what these mean, we
 prepared a notebook you can [view online](
 https://github.com/kahaaga/waveletentropy_example/blob/main/wavelet_entropy_example.ipynb).
-As such, this estimator only works for timeseries input.
+As such, this estimator only works for timeseries input and
+input `x` is needed for a well-defined [`outcome_space`](@ref).
+
 
 [^Rosso2001]:
     Rosso et al. (2001). Wavelet entropy: a new tool for analysis of short duration

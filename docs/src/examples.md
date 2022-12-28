@@ -404,7 +404,7 @@ Let's see how the normalized permutation and dispersion entropies increase for a
 
 ```@example MAIN
 using Entropies
-using Distributions
+using Distributions: Uniform
 using CairoMakie
 using Statistics
 using TestImages, ImageTransformations, CoordinateTransformations, Rotations
@@ -469,7 +469,7 @@ using Entropies
 using DynamicalSystemsBase
 using Random
 using CairoMakie
-using Distributions
+using Distributions: Normal
 
 n = 1000
 ts = 1:n
