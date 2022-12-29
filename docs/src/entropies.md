@@ -54,6 +54,7 @@ For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 | [`GaoNaive`](@ref)           | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
 | [`GaoNaiveCorrected`](@ref)  | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
 | [`Goria`](@ref)              | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
+| [`Lord`](@ref)               | Nearest neighbors | `Dataset`  |        ✓         |        x        |         x         |          x           |        x         |               x                |
 | [`Vasicek`](@ref)            | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
 | [`Ebrahimi`](@ref)           | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
 | [`Correa`](@ref)             | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
@@ -71,6 +72,7 @@ ZhuSingh
 GaoNaive
 GaoNaiveCorrected
 Goria
+Lord
 Vasicek
 AlizadehArghami
 Ebrahimi
