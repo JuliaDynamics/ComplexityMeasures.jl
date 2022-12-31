@@ -1,11 +1,11 @@
-# Entropies.jl
+# ComplexityMeasures.jl
 
 ```@docs
 Entropies
 ```
 
 !!! info
-    You are reading the development version of the documentation of Entropies.jl,
+    You are reading the development version of the documentation of ComplexityMeasures.jl,
     that will become version 2.0.
 
 ## Terminology
@@ -16,7 +16,7 @@ Entropies
     Datseris & Parlitz, Springer 2022.
 
 In the literature, the term "entropy" is used (and abused) in multiple contexts.
-The API and documentation of Entropies.jl aim to clarify some aspects of its usage, and to provide a simple way to obtain probabilities, entropies, or other complexity measures.
+The API and documentation of ComplexityMeasures.jl aim to clarify some aspects of its usage, and to provide a simple way to obtain probabilities, entropies, or other complexity measures.
 
 ### Probabilities
 
@@ -29,14 +29,14 @@ All available estimators can be found in the [estimators page](@ref probabilitie
 
 Entropy is an established concept in statistics, information theory, and nonlinear dynamics.
 However it is also an umbrella term that may mean several computationally, and sometimes even fundamentally, different quantities.
-In Entropies.jl, we provide the generic function [`entropy`](@ref) that tries to both clarify the disparate "entropy concepts", while unifying them under a common interface that highlights the modular nature of the word "entropy".
+In ComplexityMeasures.jl, we provide the generic function [`entropy`](@ref) that tries to both clarify the disparate "entropy concepts", while unifying them under a common interface that highlights the modular nature of the word "entropy".
 
 In the typical case, computing an entropy means computing a _discrete_ entropy, which boils down to two simple steps: first estimating a probability distribution, and then applying one of the so-called "generalized entropy" definitions to the distributions.
 
 A crucial thing to clarify is that in the nonlinear dynamics literature many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are the good old Shannon entropy ([`Shannon`](@ref)) but calculated with _new probabilities estimators_.
 So even if the naming ("wavelet entropy") sounds like a name for a new entropy, these approaches actually devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probabilities estimators are of course smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
 
-These names such as "permutation entropy" are commonplace, and so in Entropies.jl we provide convenience functions like [`entropy_permutation`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
+These names such as "permutation entropy" are commonplace, and so in ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
 
 What are _genuinely different entropies_ are different definitions of entropy. And there are a lot of them! E.g., [`Renyi`](@ref) or [`Tsallis`](@ref). These different definitions can be found in [`EntropyDefinition`](@ref).
 
@@ -53,7 +53,7 @@ Other complexity measures, which strictly speaking don't compute entropies, and 
 [Complexity measures](@ref) page.
 This includes measures like sample entropy and approximate entropy.
 
-## [Input data for Entropies.jl](@id input_data)
+## [Input data for ComplexityMeasures.jl](@id input_data)
 
 The input data type typically depend on the probability estimator chosen.
 In general though, the standard DynamicalSystems.jl approach is taken and as such we have three types of input data:

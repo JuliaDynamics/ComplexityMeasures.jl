@@ -55,7 +55,7 @@ makedocs(
         ],
         collapselevel = 3,
     ),
-    sitename = "Entropies.jl",
+    sitename = "ComplexityMeasures.jl",
     authors = "Kristian Agasøster Haaga, George Datseris",
     pages = ENTROPIES_PAGES,
     doctest = false,
@@ -64,7 +64,7 @@ makedocs(
 
 if CI
     deploydocs(
-        repo = "github.com/JuliaDynamics/Entropies.jl.git",
+        repo = "github.com/JuliaDynamics/ComplexityMeasures.jl.git",
         target = "build",
         push_preview = true
     )

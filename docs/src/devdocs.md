@@ -1,4 +1,4 @@
-# Entropies.jl Dev Docs
+# ComplexityMeasures.jl Dev Docs
 
 Good practices in developing a code base apply in every Pull Request. The [Good Scientific Code Workshop](https://github.com/JuliaDynamics/GoodScientificCodeWorkshop) is worth checking out for this.
 

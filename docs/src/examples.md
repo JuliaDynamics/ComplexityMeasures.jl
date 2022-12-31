@@ -1,4 +1,4 @@
-# Entropies.jl Examples
+# ComplexityMeasures.jl Examples
 
 ## Probabilities: kernel density
 
@@ -29,7 +29,7 @@ Here, we compare how the nearest neighbor differential entropy estimators
 ([`Kraskov`](@ref), [`KozachenkoLeonenko`](@ref), [`Zhu`](@ref) and [`ZhuSingh`](@ref))
 converge towards the true entropy value for increasing time series length.
 
-Entropies.jl also provides entropy estimators based on
+ComplexityMeasures.jl also provides entropy estimators based on
 [order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators
 are only defined for scalar-valued vectors, in this example, so we compute these
 estimates separately, and add these estimators ([`Vasicek`](@ref), [`Ebrahimi`](@ref),

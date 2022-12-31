@@ -46,7 +46,7 @@ Base.IteratorSize(::Probabilities) = Base.HasLength()
 
 The supertype for all probabilities estimators.
 
-In Entropies.jl, probability distributions are estimated from data by defining a set of
+In ComplexityMeasures.jl, probability distributions are estimated from data by defining a set of
 possible outcomes ``\\Omega = \\{\\omega_1, \\omega_2, \\ldots, \\omega_L \\}``, and
 assigning to each outcome ``\\omega_i`` a probability ``p(\\omega_i)``, such that
 ``\\sum_{i=1}^N p(\\omega_i) = 1``. It is the role of a [`ProbabilitiesEstimator`](@ref) to
@@ -86,7 +86,7 @@ abstract type ProbabilitiesEstimator end
 
 Compute a probability distribution over the set of possible outcomes defined by the
 probabilities estimator `est`, given input data `x`, which is typically an `Array` or
-a `Dataset`; see [Input data for Entropies.jl](@ref).
+a `Dataset`; see [Input data for ComplexityMeasures.jl](@ref).
 Configuration options are always given as arguments to the chosen estimator.
 
 To obtain the outcomes corresponding to these probabilities, use [`outcomes`](@ref).
