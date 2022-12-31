@@ -7,7 +7,7 @@ Good practices in developing a code base apply in every Pull Request. The [Good 
 ### Mandatory steps
 
 1. Decide on the outcome space and how the estimator will map probabilities to outcomes.
-2. Define your type and make it subtype `ProbabilitiesEstimator`.
+2. Define your type and make it subtype [`ProbabilitiesEstimator`](@ref).
 3. Add a docstring to your type following the style of the docstrings of other estimators.
 4. If suitable, the estimator may be able to operate based on [`Encoding`](@ref)s. If so, it is preferred to implement an `Encoding` subtype and extend the methods [`encode`](@ref) and [`decode`](@ref). This will allow your probabilities estimator to be used with a larger span of entropy and complexity methods without additional effort. Have a look at the file defining [`SymbolicPermutation`](@ref) for an idea of how this works.
 5. Implement dispatch for [`probabilities_and_outcomes`](@ref) and your probabilities estimator type.
