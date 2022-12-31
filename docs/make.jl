@@ -5,6 +5,7 @@ CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== 
 using Entropies
 using Documenter
 using DocumenterTools: Themes
+ENV["JULIA_DEBUG"] = "Documenter"
 using CairoMakie
 using Entropies.DelayEmbeddings
 import Entropies.Wavelets

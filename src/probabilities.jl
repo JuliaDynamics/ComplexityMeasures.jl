@@ -85,19 +85,22 @@ abstract type ProbabilitiesEstimator end
     probabilities(est::ProbabilitiesEstimator, x::Array_or_Dataset) → p::Probabilities
 
 Compute a probability distribution over the set of possible outcomes defined by the
-probabilities estimator `est`, given input data `x`.
-To obtain the outcomes use [`outcomes`](@ref).
-
-The returned probabilities `p` may or may not be ordered, and may or may not
-contain 0s; see the documentation of the individual estimators for more.
+probabilities estimator `est`, given input data `x`, which is typically an `Array` or
+a `Dataset`; see [Input data for Entropies.jl](@ref).
 Configuration options are always given as arguments to the chosen estimator.
-`x` is typically an `Array` or a `Dataset`; see [Input data for Entropies.jl](@ref).
+
+To obtain the outcomes corresponding to these probabilities, use [`outcomes`](@ref).
+
+Due to performance optimizations, whether the returned probablities
+contain `0`s as entries or not depends on the estimator.
+E.g., in [`ValueHistogram`](@ref) `0`s are skipped, while in
+[`SymbolicPermutation`](@ref) `0` are not, because we get them for free.
 
     probabilities(x::Array_or_Dataset) → p::Probabilities
 
 Estimate probabilities by directly counting the elements of `x`, assuming that
 `Ω = sort(unique(x))`, i.e. that the outcome space is the unique elements of `x`.
-This is mostly useful when `x` contains categorical or integer data.
+This is mostly useful when `x` contains categorical data.
 
 See also: [`Probabilities`](@ref), [`ProbabilitiesEstimator`](@ref).
 """
