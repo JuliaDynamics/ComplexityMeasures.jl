@@ -7,7 +7,7 @@
 [![Package Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/Entropies)](https://pkgs.genieframework.com?packages=Entropies)
 
 A Julia package that provides estimators for probabilities, entropies, and other
-complexity emasures, in the context of nonlinear dynamics, nonlinear timeseries
+complexity measures, in the context of nonlinear dynamics, nonlinear timeseries
 analysis, and complex systems. It can be used as a standalone package, or as part
 of several projects in the JuliaDynamics organization, such as
 [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/)
@@ -17,4 +17,4 @@ To install it, run `import Pkg; Pkg.add("ComplexityMeasures")`.
 
 All further information is provided in the documentation, which you can either find [online](https://juliadynamics.github.io/ComplexityMeasures.jl/dev/) or build locally by running the `docs/make.jl` file.
 
-_previously this package was called Entropies.jl_
+_Previously, this package was called Entropies.jl._
