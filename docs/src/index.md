@@ -33,15 +33,16 @@ In Entropies.jl, we provide the generic function [`entropy`](@ref) that tries to
 
 In the typical case, computing an entropy means computing a _discrete_ entropy, which boils down to two simple steps: first estimating a probability distribution, and then applying one of the so-called "generalized entropy" definitions to the distributions.
 
-A crucial thing to clarify is that in the nonlinear dynamics literature many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are new probabilities estimators. They simply devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probabilities estimators are smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
+A crucial thing to clarify is that in the nonlinear dynamics literature many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are the good old Shannon entropy ([`Shannon`](@ref)) but calculated with _new probabilities estimators_.
+So even if the naming ("wavelet entropy") sounds like a name for a new entropy, these approaches actually devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probabilities estimators are of course smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
 
-These names are commonplace, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
+These names such as "permutation entropy" are commonplace, and so in Entropies.jl we provide convenience functions like [`entropy_permutation`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
 
 What are _genuinely different entropies_ are different definitions of entropy. And there are a lot of them! E.g., [`Renyi`](@ref) or [`Tsallis`](@ref). These different definitions can be found in [`EntropyDefinition`](@ref).
 
-In addition to `ProbabilitiesEstimators`, we also provide [`DifferentialEntropyEstimator`](@ref)s,
-which compute entropies via alternate means, without explicitly computing some
-probability distribution. For example, the [`Correa`](@ref) estimator computes Shannon differential entropy using order statistics.
+In addition to the above, we also provide [`DifferentialEntropyEstimator`](@ref)s.
+These compute entropies via alternate means, without explicitly computing some
+probability distribution. For example, the [`Correa`](@ref) estimator computes the Shannon differential entropy using order statistics.
 Differential entropies are functions of _integrals_, and usually
 rely on estimating some density functional.
 
