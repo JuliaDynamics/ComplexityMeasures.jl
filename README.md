@@ -15,6 +15,6 @@ or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 
 To install it, run `import Pkg; Pkg.add("ComplexityMeasures")`.
 
-_previously this package was called Entropies.jl_
-
 All further information is provided in the documentation, which you can either find [online](https://juliadynamics.github.io/ComplexityMeasures.jl/dev/) or build locally by running the `docs/make.jl` file.
+
+_previously this package was called Entropies.jl_

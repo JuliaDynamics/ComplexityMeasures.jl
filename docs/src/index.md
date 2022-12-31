@@ -4,16 +4,14 @@
 ComplexityMeasures
 ```
 
-!!! info
-    You are reading the development version of the documentation of ComplexityMeasures.jl,
-    that will become version 2.0.
-
-## Terminology
+## Content and terminology
 
 !!! note
     The documentation here follows (loosely) chapter 5 of
     [Nonlinear Dynamics](https://link.springer.com/book/10.1007/978-3-030-91032-7),
     Datseris & Parlitz, Springer 2022.
+
+Before exploring the features of ComplexityMeasures.jl, it is useful to read through this terminology section to have an idea of the content, but also what the content means how it is called within the context of this package!
 
 In the literature, the term "entropy" is used (and abused) in multiple contexts.
 The API and documentation of ComplexityMeasures.jl aim to clarify some aspects of its usage, and to provide a simple way to obtain probabilities, entropies, or other complexity measures.
@@ -25,7 +23,7 @@ These can be obtained from input data in a plethora of different ways.
 The central API function that returns a probability distribution (or more precisely a probability mass function) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref) to specify how the probabilities are computed.
 All available estimators can be found in the [estimators page](@ref probabilities_estimators).
 
-### ComplexityMeasures
+### Entropies
 
 Entropy is an established concept in statistics, information theory, and nonlinear dynamics.
 However it is also an umbrella term that may mean several computationally, and sometimes even fundamentally, different quantities.

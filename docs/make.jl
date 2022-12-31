@@ -1,8 +1,6 @@
 cd(@__DIR__)
-using Pkg
-Pkg.activate(@__DIR__)
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
-using ComplexityMeasures
+using ComplexityMeasures # comes from global environment in CI
 using Documenter
 using DocumenterTools: Themes
 ENV["JULIA_DEBUG"] = "Documenter"
