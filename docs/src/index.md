@@ -1,7 +1,7 @@
 # ComplexityMeasures.jl
 
 ```@docs
-Entropies
+ComplexityMeasures
 ```
 
 !!! info
@@ -20,12 +20,12 @@ The API and documentation of ComplexityMeasures.jl aim to clarify some aspects o
 
 ### Probabilities
 
-Entropies and other complexity measures are typically computed based on _probability distributions_.
+ComplexityMeasures and other complexity measures are typically computed based on _probability distributions_.
 These can be obtained from input data in a plethora of different ways.
 The central API function that returns a probability distribution (or more precisely a probability mass function) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref) to specify how the probabilities are computed.
 All available estimators can be found in the [estimators page](@ref probabilities_estimators).
 
-### Entropies
+### ComplexityMeasures
 
 Entropy is an established concept in statistics, information theory, and nonlinear dynamics.
 However it is also an umbrella term that may mean several computationally, and sometimes even fundamentally, different quantities.

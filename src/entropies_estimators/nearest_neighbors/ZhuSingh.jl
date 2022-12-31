@@ -1,6 +1,6 @@
 using DelayEmbeddings: minmaxima
 using SpecialFunctions: digamma
-using Entropies: EntropyDefinition, DiffEntropyEst
+using ComplexityMeasures: EntropyDefinition, DiffEntropyEst
 using Neighborhood: KDTree, Chebyshev, bulkisearch, Theiler, NeighborNumber
 
 export ZhuSingh

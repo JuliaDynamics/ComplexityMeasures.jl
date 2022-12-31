@@ -1,4 +1,4 @@
-using Entropies, Test
+using ComplexityMeasures, Test
 
 # Interface tests
 x = rand(1000)

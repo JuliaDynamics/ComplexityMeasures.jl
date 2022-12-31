@@ -1,11 +1,11 @@
-module Entropies
+module ComplexityMeasures
 
 # Use the README as the module docs
 @doc let
   path = joinpath(dirname(@__DIR__), "README.md")
   include_dependency(path)
   read(path, String)
-end Entropies
+end ComplexityMeasures
 
 using Reexport
 @reexport using StateSpaceSets
@@ -36,7 +36,7 @@ display_update = true
 version_number = "2.0.0"
 update_name = "update_v$(version_number)"
 update_message = """
-\nUpdate message: Entropies v$(version_number)\n
+\nUpdate message: ComplexityMeasures v$(version_number)\n
 - An overall overhaul of the documentation and API of ComplexityMeasures.jl has been performed.
 - A huge amount of new content has been added, which is best seen by visiting the
   the online documentation. Some examples are Tsallis entropy and spatial permutation

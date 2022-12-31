@@ -1,4 +1,4 @@
-name = "Entropies"
+name = "ComplexityMeasures"
 uuid = "ed8fcbec-b94c-44b6-89df-898894ad9591"
 authors = "Kristian Agasøster Haaga <kahaaga@gmail.com>, George Datseries <datseris.george@gmail.com>"
 repo = "https://github.com/juliadynamics/ComplexityMeasures.jl.git"

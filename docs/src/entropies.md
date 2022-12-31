@@ -1,6 +1,6 @@
-# [Entropies](@id entropies)
+# [ComplexityMeasures](@id entropies)
 
-## Entropies API
+## ComplexityMeasures API
 
 The entropies API is defined by
 

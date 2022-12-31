@@ -2,13 +2,13 @@ cd(@__DIR__)
 using Pkg
 Pkg.activate(@__DIR__)
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
-using Entropies
+using ComplexityMeasures
 using Documenter
 using DocumenterTools: Themes
 ENV["JULIA_DEBUG"] = "Documenter"
 using CairoMakie
-using Entropies.DelayEmbeddings
-import Entropies.Wavelets
+using ComplexityMeasures.DelayEmbeddings
+import ComplexityMeasures.Wavelets
 
 # %% JuliaDynamics theme
 # It includes themeing for the HTML build
@@ -47,7 +47,7 @@ ENTROPIES_PAGES = [
 include("style.jl")
 
 makedocs(
-    modules = [Entropies, StateSpaceSets],
+    modules = [ComplexityMeasures, StateSpaceSets],
     format = Documenter.HTML(
         prettyurls = CI,
         assets = [

@@ -354,7 +354,7 @@ Details on the estimation procedure is found the [`TransferOperator`](@ref) docs
 ## Example
 
 ```julia
-using DynamicalSystems, Plots, Entropies
+using DynamicalSystems, Plots, ComplexityMeasures
 D = 4
 ds = Systems.lorenz96(D; F = 32.0)
 N, dt = 20000, 0.1
