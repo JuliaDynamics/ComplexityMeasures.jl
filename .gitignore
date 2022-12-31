@@ -3,3 +3,4 @@ Manifest.toml
 *.scss
 *.css
 .DS_Store
+*vscode
