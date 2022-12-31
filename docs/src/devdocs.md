@@ -22,6 +22,11 @@ You may extend any of the following functions if there are potential performance
 2. [`outcomes`](@ref). By default calls `probabilities_and_outcomes` and returns the second value.
 3. [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref). This is the function that most typically has performance benefits if implemented explicitly, so most existing estimators extend it by default.
 
+### Tests
+
+You also need to add tests for **all** functions that you **explicitly** extended.
+Non-extended functions do not need to be tested.
+
 ## Adding a new `DifferentialEntropyEstimator`
 
 ### Mandatory steps
@@ -33,6 +38,14 @@ You may extend any of the following functions if there are potential performance
 3. Implement dispatch for [`entropy`](@ref) with the relevant [`EntropyDefinition`](@ref).
     If your estimator works for multiple entropies, implement one method for
     [`entropy`](@ref) for each of them.
+
+### Tests
+
+You need to add tests verifying that your estimator actually convergences, within
+some reasonable tolerance (that you define), to the true entropy of data from
+some known distribution. Have a look in the tests for existing estimators for
+inspiration (you can just copy-paste one of the existing tests, or make them
+more elaborate if you want to).
 
 ## Adding a new `EntropyDefinition`
 
