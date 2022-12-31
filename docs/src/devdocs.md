@@ -22,6 +22,38 @@ You may extend any of the following functions if there are potential performance
 2. [`outcomes`](@ref). By default calls `probabilities_and_outcomes` and returns the second value.
 3. [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref). This is the function that most typically has performance benefits if implemented explicitly, so most existing estimators extend it by default.
 
+## Adding a new `DifferentialEntropyEstimator`
+
+### Mandatory steps
+
+1. Define your type and make it subtype [`DifferentialEntropyEstimator`](@ref).
+2. Add a docstring to your type following the style of the docstrings of other estimators.
+    This docstring should contain the formula(s)/integral(s) which it estimates, and a
+    reference to relevant [`EntropyDefinition`](@ref)(s).
+3. Implement dispatch for [`entropy`](@ref) with the relevant [`EntropyDefinition`](@ref).
+    If your estimator works for multiple entropies, implement one method for
+    [`entropy`](@ref) for each of them.
+
+## Adding a new `EntropyDefinition`
+
+### Mandatory steps
+
+1. Define your entropy definition type and make it subtype [`EntropyDefinition`](@ref).
+2. Implement dispatch for [`entropy`](@ref).
+3. Add a docstring to your type following the style of the docstrings of other entropy
+    definitions, and should include the mathematical definition of the entropy.
+4. Add your entropy definition type to the list of definitions in the
+    `docs/src/entropies.md` documentation page.
+5. Add a reference to your entropy definition in the docstring for
+    [`EntropyDefinition`](@ref).
+
+### Optional steps
+
+1. If the maximum value of your entropy type is analytically computable for a probability
+    distribution with a known number of elements, implementing dispatch for
+    [`entropy_maximum`](@ref) automatically enables [`entropy_normalized`](@ref) for your
+    type.
+
 ### Tests
 
 You also need to add tests for **all** functions that you **explicitly** extended.
