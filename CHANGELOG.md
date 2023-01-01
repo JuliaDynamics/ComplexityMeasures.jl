@@ -2,6 +2,10 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 2.1
+
+- Added `Gao` estimator for differential Shannon entropy.
+
 ## 2.0
 
 The API for Entropies.jl has been completely overhauled, and the package has been renamed to ComplexityMeasures.jl.
