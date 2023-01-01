@@ -43,8 +43,8 @@ and has been renamed to ComplexityMeasures.jl.
 
 Along with the overhaul comes a massive amount of new features, an entirely new API,
 extendable and educative code, dedicated documentation pages, and more!
-At the moment we estimate we have X amount of functions that estimate quantities
-useful in nonlinear dynamics and complex systems.
+At the moment we estimate we offer at least 90 unique quantities characterizing
+complexity in the context of nonlinear dynamics and complex systems.
 We believe it is best to learn all of this by visiting the online documentation!
 
 We tried our best to keep pre-2.0 functions working and throw deprecation warnings.
