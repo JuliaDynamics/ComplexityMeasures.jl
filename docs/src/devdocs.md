@@ -52,7 +52,7 @@ more elaborate if you want to).
 ### Mandatory steps
 
 1. Define your entropy definition type and make it subtype [`EntropyDefinition`](@ref).
-2. Implement dispatch for [`entropy`](@ref).
+2. Implement dispatch for [`entropy`](@ref)`(def::YourType, p::Probabilities)`
 3. Add a docstring to your type following the style of the docstrings of other entropy
     definitions, and should include the mathematical definition of the entropy.
 4. Add your entropy definition type to the list of definitions in the
