@@ -180,8 +180,8 @@ Return `h̃ ∈ [0, 1]`, the normalized discrete entropy of `x`, i.e. the value 
 divided by the maximum value for `e`, according to the given probabilities estimator.
 If `e` is not given, it defaults to `Shannon()`.
 
-Notice that unlike for [`entropy`](@ref), here there is no method
-`entropy_normalized(e::EntropyDefinition, probs::Probabilities)` because there is no way to know
+Notice that there is no method
+`entropy_normalized(e::EntropyDefinition, probs::Probabilities)`, because there is no way to know
 the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs`.
 """
 function entropy_normalized(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
