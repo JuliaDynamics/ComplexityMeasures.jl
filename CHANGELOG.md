@@ -5,6 +5,7 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 ## 2.1
 
 - Added `Gao` estimator for differential Shannon entropy.
+- Added `Lord` estimator for differential Shannon entropy.
 
 ## 2.0
 
