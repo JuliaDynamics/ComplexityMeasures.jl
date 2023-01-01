@@ -56,10 +56,10 @@ knn_estimators = [
     KozachenkoLeonenko(; w),
     Zhu(; k = 3, w),
     ZhuSingh(; k = 3, w),
-    Lord(; k = 20, w) # more neighbors for accurate ellipsoid estimation
     Gao(; k = 3, w, corrected = false),
     Gao(; k = 3, w, corrected = true),
-    Goria(; k = 3, w)
+    Goria(; k = 3, w),
+    Lord(; k = 20, w) # more neighbors for accurate ellipsoid estimation
 ]
 
 # Test each estimator `nreps` times over time series of varying length.
@@ -96,7 +96,7 @@ end
 # -------------
 fig = Figure(resolution = (700, 11 * 200))
 labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh", "Gao (not corrected)", 
-    "Gao (corrected)", "Goria"]
+    "Gao (corrected)", "Goria", "Lord"]
 labels_os = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
 
 for (i, e) in enumerate(knn_estimators)
