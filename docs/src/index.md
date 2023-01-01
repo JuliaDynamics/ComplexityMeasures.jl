@@ -38,7 +38,7 @@ function [`entropy`](@ref) that tries to both clarify disparate entropy concepts
 unifying them under a common interface that highlights the modular nature of the word
 "entropy". In summary, there are only two main types of entropy.
 
-- *Discrete* entropies are functions of probabilities. Computing a discrete entropy boils
+- *Discrete* entropies are functions of probabilities (specifically, probability mass functions). Computing a discrete entropy boils
     down to two simple steps: first estimating a probability distribution, then plugging
     the estimated probabilities into one of the so-called "generalized entropy" definitions.
     Internally, this is literally just a few lines of code where we first apply some
