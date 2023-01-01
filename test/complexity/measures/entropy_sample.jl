@@ -1,4 +1,4 @@
-using Entropies
+using ComplexityMeasures
 @test_throws UndefKeywordError SampleEntropy()
 
 # Analytical examples seem to be lacking in the literature. As a next-best-test,

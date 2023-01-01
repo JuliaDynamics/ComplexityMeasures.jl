@@ -1,6 +1,6 @@
-using Entropies, Test
+using ComplexityMeasures, Test
 using Random
-using Entropies.DelayEmbeddings: embed
+using ComplexityMeasures.DelayEmbeddings: embed
 
 @testset "API" begin
     m = 3

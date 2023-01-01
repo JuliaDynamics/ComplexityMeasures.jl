@@ -1,7 +1,7 @@
 using StateSpaceSets: Dataset
 using DelayEmbeddings: genembed
 using StaticArrays: SVector
-using Entropies: encode_motif, decode_motif
+using ComplexityMeasures: encode_motif, decode_motif
 
 @testset "Ordinal patterns" begin
     scheme = OrdinalPatternEncoding(m = 5, τ = 1)
@@ -14,8 +14,8 @@ using Entropies: encode_motif, decode_motif
     D = genembed(z, [0, -1, -2])
     scheme = OrdinalPatternEncoding(m = 5, τ = 2)
 
-    @test Entropies.outcomes(z, scheme) isa Vector{<:Int}
-    @test Entropies.outcomes(D, scheme) isa Vector{<:Int}
+    @test ComplexityMeasures.outcomes(z, scheme) isa Vector{<:Int}
+    @test ComplexityMeasures.outcomes(D, scheme) isa Vector{<:Int}
 
 
     # With pre-allocation
@@ -26,13 +26,13 @@ using Entropies: encode_motif, decode_motif
 
     # if symbolization has occurred, s must have been filled with integers in
     # the range 0:(m!-1)
-    @test all(Entropies.outcomes!(s, x, scheme) .>= 0)
-    @test all(0 .<= Entropies.outcomes!(s, x, scheme) .< factorial(scheme.m))
+    @test all(ComplexityMeasures.outcomes!(s, x, scheme) .>= 0)
+    @test all(0 .<= ComplexityMeasures.outcomes!(s, x, scheme) .< factorial(scheme.m))
 
     m = 4
     D = Dataset(rand(N, m))
     s = fill(-1, length(D))
-    @test all(0 .<= Entropies.outcomes!(s, D, scheme) .< factorial(m))
+    @test all(0 .<= ComplexityMeasures.outcomes!(s, D, scheme) .< factorial(m))
 
     # This is not part of the public API, but this is crucial to test directly to
     # ensure its correctness. It makes no sense to test it though "end-product" code,
@@ -69,7 +69,7 @@ end
     s = GaussianCDFEncoding(c = c)
 
     # Symbols should be in the set [1, 2, …, c].
-    symbols = Entropies.outcomes(x, s)
+    symbols = ComplexityMeasures.outcomes(x, s)
     @test all([s ∈ collect(1:c) for s in symbols])
 
     # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper.
@@ -83,7 +83,7 @@ end
     # because permutations are partially random, we sort many times and check that
     # we get *a* (not *the one*) correct answer every time
     for i = 1:50
-        s = sortperm([1, 2, 3, 2], lt = Entropies.isless_rand)
+        s = sortperm([1, 2, 3, 2], lt = ComplexityMeasures.isless_rand)
         @test s == [1, 2, 4, 3] || s == [1, 4, 2, 3]
     end
 end

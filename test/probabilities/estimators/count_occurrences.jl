@@ -1,6 +1,6 @@
 # Analytic tests: Booleans have two possible states
 # counting enough of them should give each with equal probability
-using Entropies
+using ComplexityMeasures
 using Random, Test
 rng = Random.MersenneTwister(1234)
 x = [rand(rng, Bool) for _ in 1:10000]

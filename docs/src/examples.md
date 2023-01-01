@@ -1,11 +1,11 @@
-# Entropies.jl Examples
+# ComplexityMeasures.jl Examples
 
 ## Probabilities: kernel density
 
 Here, we draw some random points from a 2D normal distribution. Then, we use kernel density estimation to associate a probability to each point `p`, measured by how many points are within radius `1.5` of `p`. Plotting the actual points, along with their associated probabilities estimated by the KDE procedure, we get the following surface plot.
 
 ```@example MAIN
-using Entropies
+using ComplexityMeasures
 using CairoMakie
 using Distributions: MvNormal
 
@@ -29,7 +29,7 @@ Here, we compare how the nearest neighbor differential entropy estimators
 ([`Kraskov`](@ref), [`KozachenkoLeonenko`](@ref), [`Zhu`](@ref) and [`ZhuSingh`](@ref))
 converge towards the true entropy value for increasing time series length.
 
-Entropies.jl also provides entropy estimators based on
+ComplexityMeasures.jl also provides entropy estimators based on
 [order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators
 are only defined for scalar-valued vectors, in this example, so we compute these
 estimates separately, and add these estimators ([`Vasicek`](@ref), [`Ebrahimi`](@ref),
@@ -39,7 +39,7 @@ Input data are from a normal 1D distribution ``\mathcal{N}(0, 1)``, for which th
 entropy is `0.5*log(2π) + 0.5` nats when using natural logarithms.
 
 ```@example MAIN
-using Entropies
+using ComplexityMeasures
 using DynamicalSystemsBase, CairoMakie, Statistics
 nreps = 30
 Ns = [100:100:500; 1000:1000:5000]
@@ -56,10 +56,10 @@ knn_estimators = [
     KozachenkoLeonenko(; w),
     Zhu(; k = 3, w),
     ZhuSingh(; k = 3, w),
-    GaoNaive(; k = 3, w),
-    GaoNaiveCorrected(; k = 3, w),
-    Goria(; k = 3, w),
     Lord(; k = 20, w) # more neighbors for accurate ellipsoid estimation
+    Gao(; k = 3, w, corrected = false),
+    Gao(; k = 3, w, corrected = true),
+    Goria(; k = 3, w)
 ]
 
 # Test each estimator `nreps` times over time series of varying length.
@@ -94,9 +94,9 @@ end
 # -------------
 # Plot results
 # -------------
-fig = Figure(resolution = (700, 12 * 200))
-labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh", "GaoNaive", 
-    "GaoNaiveCorrected", "Goria", "Lord"]
+fig = Figure(resolution = (700, 11 * 200))
+labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh", "Gao (not corrected)", 
+    "Gao (corrected)", "Goria"]
 labels_os = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
 
 for (i, e) in enumerate(knn_estimators)
@@ -136,7 +136,8 @@ logistic map. EntropyDefinition estimates using [`SymbolicWeightedPermutation`](
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example MAIN
-using DynamicalSystemsBase, CairoMakie, ChaosTools
+using DynamicalSystemsBase, CairoMakie
+using ChaosTools: lyapunov
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4
@@ -217,7 +218,7 @@ how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a 
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
 ```@example MAIN
-using Entropies, CairoMakie
+using ComplexityMeasures, CairoMakie
 bs = [1.0, 1.5, 2.0, 3.0, 4.0, 10.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
 hs = [[entropy(Curado(; b = b), p) for p in ps] for b in bs]
@@ -241,7 +242,7 @@ a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
 ```@example MAIN
-using Entropies
+using ComplexityMeasures
 using CairoMakie
 
 probs = [Probabilities([p, 1-p]) for p in 0.0:0.01:1.0]
@@ -269,7 +270,7 @@ of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
 ```@example MAIN
-using Entropies, SpecialFunctions, CairoMakie
+using ComplexityMeasures, SpecialFunctions, CairoMakie
 ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
 
@@ -300,7 +301,7 @@ consisting of 70 data points, stepping the window 10 time steps at a time.
 This example is adapted from Li et al. (2021)[^Li2019].
 
 ```@example MAIN
-using Entropies
+using ComplexityMeasures
 using DynamicalSystemsBase
 using Random
 using CairoMakie
@@ -379,7 +380,7 @@ Usage of a [`SpatialSymbolicPermutation`](@ref) estimator is straightforward.
 Here we get the spatial permutation entropy of a 2D array (e.g., an image):
 
 ```@example MAIN
-using Entropies
+using ComplexityMeasures
 x = rand(50, 50) # some image
 stencil = [1 1; 0 1] # or one of the other ways of specifying stencils
 est = SpatialSymbolicPermutation(stencil, x)
@@ -408,7 +409,7 @@ entropy(Renyi(q = 2), est, x)
 Let's see how the normalized permutation and dispersion entropies increase for an image that gets progressively more noise added to it.
 
 ```@example MAIN
-using Entropies
+using ComplexityMeasures
 using Distributions: Uniform
 using CairoMakie
 using Statistics
@@ -469,8 +470,8 @@ exactly the same as in the original paper, because their examples are based on r
 generated numbers and do not provide code that specify random number seeds.
 
 ```@example MAIN
-using Entropies
-using Entropies
+using ComplexityMeasures
+using ComplexityMeasures
 using DynamicalSystemsBase
 using Random
 using CairoMakie
@@ -529,7 +530,7 @@ fig
 ## Complexity: missing dispersion patterns
 
 ```@example MAIN
-using Entropies
+using ComplexityMeasures
 using CairoMakie
 using DynamicalSystemsBase
 using TimeseriesSurrogates
@@ -612,7 +613,7 @@ Finally, we summarize our results in box plots and compare the values to those
 obtained by Pincus (1991).
 
 ```@example MAIN
-using Entropies
+using ComplexityMeasures
 using DynamicalSystemsBase
 using DelayEmbeddings
 using CairoMakie
@@ -687,7 +688,7 @@ Completely regular signals should have sample entropy approaching zero, while
 less regular signals should have higher sample entropy.
 
 ```@example MAIN
-using Entropies
+using ComplexityMeasures
 using DynamicalSystemsBase
 using CairoMakie
 N, a = 2000, 10
@@ -715,7 +716,7 @@ Next, we compare the sample entropy obtained for different values of the radius 
 uniform noise, normally distributed noise, and a periodic signal.
 
 ```@example
-using Entropies
+using ComplexityMeasures
 using CairoMakie
 using Statistics
 using Distributions: Normal

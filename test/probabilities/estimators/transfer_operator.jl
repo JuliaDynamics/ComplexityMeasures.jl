@@ -20,8 +20,8 @@ binnings = [
 # each bin exactly.
 
 @testset "Binning test $i" for i in eachindex(binnings)
-    to = Entropies.transferoperator(D, binnings[i])
-    @test to isa Entropies.TransferOperatorApproximationRectangular
+    to = ComplexityMeasures.transferoperator(D, binnings[i])
+    @test to isa ComplexityMeasures.TransferOperatorApproximationRectangular
 
     iv = invariantmeasure(to)
     @test iv isa InvariantMeasure

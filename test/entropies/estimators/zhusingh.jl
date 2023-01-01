@@ -7,25 +7,25 @@ using StaticArrays: @SVector
 # the issue is probability related to these functions.
 nns = Dataset([[-1, -1], [0, -2], [3, 2.0]])
 x = @SVector [0.0, 0.0]
-dists = Entropies.maxdists(x, nns)
-vol = Entropies.volume_minimal_rect(dists)
-ξ = Entropies.n_borderpoints(x, nns, dists)
+dists = ComplexityMeasures.maxdists(x, nns)
+vol = ComplexityMeasures.volume_minimal_rect(dists)
+ξ = ComplexityMeasures.n_borderpoints(x, nns, dists)
 @test vol == 24.0
 @test ξ == 2.0
 
 nns = Dataset([[3, 1], [3, -2], [-5, 1.0]])
 x = @SVector [0.0, 0.0]
-dists = Entropies.maxdists(x, nns)
-vol = Entropies.volume_minimal_rect(dists)
-ξ = Entropies.n_borderpoints(x, nns, dists)
+dists = ComplexityMeasures.maxdists(x, nns)
+vol = ComplexityMeasures.volume_minimal_rect(dists)
+ξ = ComplexityMeasures.n_borderpoints(x, nns, dists)
 @test vol == 40.0
 @test ξ == 2.0
 
 nns = Dataset([[-3, 1], [3, 1], [5, -2.0]])
 x = @SVector [0.0, 0.0]
-dists = Entropies.maxdists(x, nns)
-vol = Entropies.volume_minimal_rect(dists)
-ξ = Entropies.n_borderpoints(x, nns, dists)
+dists = ComplexityMeasures.maxdists(x, nns)
+vol = ComplexityMeasures.volume_minimal_rect(dists)
+ξ = ComplexityMeasures.n_borderpoints(x, nns, dists)
 @test vol == 40.0
 @test ξ == 1.0
 using DelayEmbeddings: Dataset
@@ -34,8 +34,8 @@ using DelayEmbeddings: Dataset
 # It's not feasible to construct an end-product test due to the neighbor searches.
 x = Dataset([[-1, -2], [0, -2], [3, 2]]);
 y = Dataset([[3, 1], [-5, 1], [3, -2]]);
-@test Entropies.volume_minimal_rect([0, 0], x) == 24
-@test Entropies.volume_minimal_rect([0, 0], y) == 40
+@test ComplexityMeasures.volume_minimal_rect([0, 0], x) == 24
+@test ComplexityMeasures.volume_minimal_rect([0, 0], y) == 40
 
 # -------------------------------------------------------------------------------------
 # Check if the estimator converge to true values for some distributions with

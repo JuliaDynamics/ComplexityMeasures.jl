@@ -1,4 +1,4 @@
-using Entropies
+using ComplexityMeasures
 using StaticArrays
 
 # Create an analytical test from scratch.

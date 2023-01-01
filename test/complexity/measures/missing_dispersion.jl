@@ -1,4 +1,4 @@
-using Entropies
+using ComplexityMeasures
 using Random
 rng = MersenneTwister(1234)
 # Analytical test from Zhou et al., (2022).

@@ -20,7 +20,7 @@ const PermProbEst = PermutationProbabilitiesEstimator
 ###########################################################################################
 """
     SymbolicPermutation <: ProbabilitiesEstimator
-    SymbolicPermutation(; m = 3, τ = 1, lt::Function = Entropies.isless_rand)
+    SymbolicPermutation(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
 A probabilities estimator based on ordinal permutation patterns.
 
@@ -64,7 +64,7 @@ The length of the pre-allocated symbol vector must match the length of the datas
 For example
 
 ```julia
-using DelayEmbeddings, Entropies
+using DelayEmbeddings, ComplexityMeasures
 m, N = 2, 100
 est = SymbolicPermutation(; m, τ)
 x = Dataset(rand(N, m) # timeseries example
@@ -83,7 +83,7 @@ For a version of this estimator that can be used on high-dimensional arrays, see
     this can lead to erroneous temporal correlations, especially for data with
     low amplitude resolution [^Zunino2017]. Here, by default, if two values are equal,
     then one of the is randomly assigned as "the largest", using
-    `lt = Entropies.isless_rand`. To get the behaviour from Bandt and Pompe (2002), use
+    `lt = ComplexityMeasures.isless_rand`. To get the behaviour from Bandt and Pompe (2002), use
     `lt = Base.isless`).
 
 [^BandtPompe2002]: Bandt, Christoph, and Bernd Pompe. "Permutation entropy: a natural
@@ -103,7 +103,7 @@ end
 
 """
     SymbolicWeightedPermutation <: ProbabilitiesEstimator
-    SymbolicWeightedPermutation(; τ = 1, m = 3, lt::Function = Entropies.isless_rand)
+    SymbolicWeightedPermutation(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
 
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
 based on the weighted permutation entropy[^Fadlallah2013]. The outcome space and keywords
@@ -142,7 +142,7 @@ end
 
 """
     SymbolicAmplitudeAwarePermutation <: ProbabilitiesEstimator
-    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = Entropies.isless_rand)
+    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
 
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
 based on the amplitude-aware permutation entropy[^Azami2016]. The outcome space and keywords

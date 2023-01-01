@@ -1,4 +1,4 @@
-using Entropies.DelayEmbeddings.Neighborhood: KDTree
+using ComplexityMeasures.DelayEmbeddings.Neighborhood: KDTree
 
 @test NaiveKernel(0.1; method = KDTree) isa ProbabilitiesEstimator
 

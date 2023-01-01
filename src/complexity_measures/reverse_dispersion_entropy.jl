@@ -1,5 +1,5 @@
-using Entropies: Dispersion, Encoding, Probabilities, GaussianCDFEncoding
-import Entropies: total_outcomes
+using ComplexityMeasures: Dispersion, Encoding, Probabilities, GaussianCDFEncoding
+import ComplexityMeasures: total_outcomes
 
 export ReverseDispersion
 
