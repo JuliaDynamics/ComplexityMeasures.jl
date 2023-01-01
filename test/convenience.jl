@@ -1,4 +1,4 @@
-using Entropies
+using ComplexityMeasures
 using Test
 
 @testset "Common literature names" begin

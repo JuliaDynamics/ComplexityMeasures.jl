@@ -23,7 +23,7 @@ multiscale_normalized
 
 A non-exhaustive list of literature methods, and the syntax to compute them, are listed
 below. Please open an issue or make a pull-request to
-[Entropies.jl](https://github.com/JuliaDynamics/Entropies.jl) if you find a literature
+[ComplexityMeasures.jl](https://github.com/JuliaDynamics/ComplexityMeasures.jl) if you find a literature
 method missing from this list, or if you publish a paper based on some new multiscale
 combination.
 

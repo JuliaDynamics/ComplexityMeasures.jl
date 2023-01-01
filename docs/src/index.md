@@ -1,50 +1,80 @@
-# Entropies.jl
+# ComplexityMeasures.jl
 
 ```@docs
-Entropies
+ComplexityMeasures
 ```
 
-!!! info
-    You are reading the development version of the documentation of Entropies.jl,
-    that will become version 2.0.
-
-## Terminology
+## Content and terminology
 
 !!! note
     The documentation here follows (loosely) chapter 5 of
     [Nonlinear Dynamics](https://link.springer.com/book/10.1007/978-3-030-91032-7),
     Datseris & Parlitz, Springer 2022.
 
-In the literature, the term "entropy" is used (and abused) in multiple contexts.
-The API and documentation of Entropies.jl aim to clarify some aspects of its usage, and to provide a simple way to obtain probabilities, entropies, or other complexity measures.
+Before exploring the features of ComplexityMeasures.jl, it is useful to read through this terminology section. Here, we briefly review important complexity-related concepts and names from the scientific literature, and outline how we've structured ComplexityMeasures.jl around these concepts.
+
+In these scientific literature, words like *probabilities*, *entropies*, and other *complexity measures* are used (and abused) in multiple contexts, and are often used interchangeably to describe similar concepts. The API and documentation of ComplexityMeasures.jl aim to clarify the meaning and usage of these words, and to provide simple ways to obtain probabilities, entropies, or other complexity measures
+from input data.
 
 ### Probabilities
 
-Entropies and other complexity measures are typically computed based on _probability distributions_.
-These can be obtained from input data in a plethora of different ways.
-The central API function that returns a probability distribution (or more precisely a probability mass function) is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref) to specify how the probabilities are computed.
+Entropies and other complexity measures are typically computed based on *probability
+distributions* (or more precisely
+[*probability mass functions*](https://en.wikipedia.org/wiki/Probability_mass_function)),
+which we simply refer to as "probabilities".
+Probabilities can be obtained from input data in a plethora of different ways.
+The central API function that returns a probability distribution
+is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref)
+to specify how the probabilities are computed.
 All available estimators can be found in the [estimators page](@ref probabilities_estimators).
 
 ### Entropies
 
 Entropy is an established concept in statistics, information theory, and nonlinear dynamics.
-However it is also an umbrella term that may mean several computationally, and sometimes even fundamentally, different quantities.
-In Entropies.jl, we provide the generic function [`entropy`](@ref) that tries to both clarify the disparate "entropy concepts", while unifying them under a common interface that highlights the modular nature of the word "entropy".
+However, it is also an umbrella term that may mean several computationally, and sometimes
+even fundamentally, different quantities.
+In ComplexityMeasures.jl, we provide the generic
+function [`entropy`](@ref) that tries to both clarify disparate entropy concepts, while
+unifying them under a common interface that highlights the modular nature of the word
+"entropy". In summary, there are only two main types of entropy.
 
-In the typical case, computing an entropy means computing a _discrete_ entropy, which boils down to two simple steps: first estimating a probability distribution, and then applying one of the so-called "generalized entropy" definitions to the distributions.
+- *Discrete* entropies are functions of probabilities (specifically, probability mass functions). Computing a discrete entropy boils
+    down to two simple steps: first estimating a probability distribution, then plugging
+    the estimated probabilities into one of the so-called "generalized entropy" definitions.
+    Internally, this is literally just a few lines of code where we first apply some
+    [`ProbabilitiesEstimator`](@ref) to the input data, and feed the resulting
+    [`probabilities`](@ref) to [`entropy`](@ref) with some [`EntropyDefinition`](@ref).
+- *Differential/continuous* entropies are functions of
+    [probability density functions](https://en.wikipedia.org/wiki/Probability_density_function),
+    which are *integrals*. Computing differential entropies therefore rely on estimating
+    some density functional. For this task, we provide [`DifferentialEntropyEstimator`](@ref)s,
+    which compute entropies via alternate means, without explicitly computing some
+    probability distribution. For example, the [`Correa`](@ref) estimator computes the
+    Shannon differential entropy using order statistics.
 
-A crucial thing to clarify is that in the nonlinear dynamics literature many quantities that are named as entropies (e.g., permutation entropy [`entropy_permutation`](@ref), wavelet entropy [`entropy_wavelet`](@ref), etc.), are _not really new entropies_. They are new probabilities estimators. They simply devise a new way to calculate probabilities from data, and then plug those probabilities into formal entropy formulas such as the Shannon entropy. The probabilities estimators are smartly created so that they elegantly highlight important aspects of the data relevant to complexity.
+Crucially, many quantities in the nonlinear dynamics literature that are named as
+entropies, such as "permutation entropy" ([`entropy_permutation`](@ref)) and
+"wavelet entropy" ([`entropy_wavelet`](@ref)), are *not really new entropies*.
+They are the good old discrete Shannon entropy ([`Shannon`](@ref)), but calculated with
+*new probabilities estimators*.
 
-These names are commonplace, and so in Entropies.jl we provide convenience functions like [`entropy_wavelet`](@ref). However, it should be noted that these functions really aren't anything more than 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate [`ProbabilitiesEstimator`](@ref).
+Even though the names of these methods (e.g. "wavelet entropy") sound like names for new
+entropies, they are *method* names. What these methods actually do is to devise novel
+ways of calculating probabilities from data, and then plug those probabilities into formal
+discrete entropy formulas such as
+the Shannon entropy. These probabilities estimators are of course smartly created so that
+they elegantly highlight important complexity-related aspects of the data.
 
-What are _genuinely different entropies_ are different definitions of entropy. And there are a lot of them! E.g., [`Renyi`](@ref) or [`Tsallis`](@ref). These different definitions can be found in [`EntropyDefinition`](@ref).
+Names for methods such as "permutation entropy" are commonplace, so in
+ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref).
+However, we emphasise that these functions really aren't anything more than
+2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate
+[`ProbabilitiesEstimator`](@ref).
 
-In addition to `ProbabilitiesEstimators`, we also provide [`DifferentialEntropyEstimator`](@ref)s,
-which compute entropies via alternate means, without explicitly computing some
-probability distribution. For example, the [`Correa`](@ref) estimator computes Shannon differential entropy using order statistics.
-Differential entropies are functions of _integrals_, and usually
-rely on estimating some density functional.
-
+What are *genuinely different entropies* are different definitions of entropy. And there
+are a lot of them! Examples are [`Shannon`](@ref) (the classic), [`Renyi`](@ref) or
+[`Tsallis`](@ref) entropy. These different definitions can be found in
+[`EntropyDefinition`](@ref).
 
 ### Other complexity measures
 
@@ -52,14 +82,14 @@ Other complexity measures, which strictly speaking don't compute entropies, and 
 [Complexity measures](@ref) page.
 This includes measures like sample entropy and approximate entropy.
 
-## [Input data for Entropies.jl](@id input_data)
+## [Input data for ComplexityMeasures.jl](@id input_data)
 
 The input data type typically depend on the probability estimator chosen.
 In general though, the standard DynamicalSystems.jl approach is taken and as such we have three types of input data:
 
-- _Timeseries_, which are `AbstractVector{<:Real}`, used in e.g. with [`WaveletOverlap`](@ref).
-- _Multi-variate timeseries, or datasets, or state space sets_, which are [`Dataset`](@ref), used e.g. with [`NaiveKernel`](@ref).
-- _Spatial data_, which are higher dimensional standard `Array`s, used e.g. with  [`SpatialSymbolicPermutation`](@ref).
+- *Timeseries*, which are `AbstractVector{<:Real}`, used in e.g. with [`WaveletOverlap`](@ref).
+- *Multi-variate timeseries, or datasets, or state space sets*, which are [`Dataset`](@ref)s, used e.g. with [`NaiveKernel`](@ref).
+- *Spatial data*, which are higher dimensional standard `Array`s, used e.g. with  [`SpatialSymbolicPermutation`](@ref).
 
 ```@docs
 Dataset

@@ -1,7 +1,7 @@
-using Entropies
+using ComplexityMeasures
 using Test
 using Statistics: mean, std
-using Entropies.DelayEmbeddings: embed
+using ComplexityMeasures.DelayEmbeddings: embed
 
 @testset "Dispersion" begin
 
@@ -21,7 +21,7 @@ using Entropies.DelayEmbeddings: embed
 
         # Dispersion patterns should have a normalized histogram that sums to 1.0.
         dispersion_patterns = embed(symbols, m, τ)
-        hist = Entropies.dispersion_histogram(dispersion_patterns, length(x), m, τ)
+        hist = ComplexityMeasures.dispersion_histogram(dispersion_patterns, length(x), m, τ)
         @test sum(hist) ≈ 1.0
     end
 
