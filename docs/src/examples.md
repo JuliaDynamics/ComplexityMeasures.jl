@@ -132,7 +132,8 @@ logistic map. EntropyDefinition estimates using [`SymbolicWeightedPermutation`](
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
 
 ```@example MAIN
-using DynamicalSystemsBase, CairoMakie, ChaosTools
+using DynamicalSystemsBase, CairoMakie
+uainf ChaosTools: lyapunov
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4
