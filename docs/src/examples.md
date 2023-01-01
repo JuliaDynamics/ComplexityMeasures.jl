@@ -56,8 +56,8 @@ knn_estimators = [
     KozachenkoLeonenko(; w),
     Zhu(; k = 3, w),
     ZhuSingh(; k = 3, w),
-    GaoNaive(; k = 3, w),
-    GaoNaiveCorrected(; k = 3, w),
+    Gao(; k = 3, w, corrected = false),
+    Gao(; k = 3, w, corrected = true),
     Goria(; k = 3, w)
 ]
 
@@ -94,8 +94,8 @@ end
 # Plot results
 # -------------
 fig = Figure(resolution = (700, 11 * 200))
-labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh", "GaoNaive", 
-    "GaoNaiveCorrected", "Goria"]
+labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh", "Gao (not corrected)", 
+    "Gao (corrected)", "Goria"]
 labels_os = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
 
 for (i, e) in enumerate(knn_estimators)
