@@ -57,7 +57,6 @@ Base.@kwdef struct Lord <: DifferentialEntropyEstimator
     w::Int = 0
 end
 
-import Entropies: entropy
 function entropy(e::Shannon, est::Lord, x::AbstractDataset{D}) where {D}
     (; k, w) = est
     N = length(x)
