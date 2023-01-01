@@ -32,7 +32,7 @@ include("complexity_measures/complexity_measures.jl")
 
 # Update messages:
 using Scratch
-display_update = true
+display_update = false
 version_number = "2.0"
 update_name = "update_v$(version_number)"
 update_message = """
