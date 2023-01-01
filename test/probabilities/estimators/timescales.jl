@@ -1,4 +1,4 @@
-using Entropies, Test
+using ComplexityMeasures, Test
 
 @testset "Timescales" begin
     N = 200
@@ -7,7 +7,7 @@ using Entropies, Test
     x = sin.(t .+  cos.(t/0.1)) .- 0.1;
 
     @testset "WaveletOverlap" begin
-        wl = Entropies.Wavelets.WT.Daubechies{4}()
+        wl = ComplexityMeasures.Wavelets.WT.Daubechies{4}()
         est = WaveletOverlap(wl)
         ps = probabilities(est, x)
         @test length(ps) == 8

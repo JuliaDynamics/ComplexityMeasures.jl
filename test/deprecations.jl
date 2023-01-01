@@ -1,4 +1,4 @@
-using Entropies, Test
+using ComplexityMeasures, Test
 
 x = randn(1000)
 

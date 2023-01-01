@@ -5,7 +5,7 @@ export OrdinalPatternEncoding
 
 """
     OrdinalPatternEncoding <: Encoding
-    OrdinalPatternEncoding(m::Int, lt = Entropies.isless_rand)
+    OrdinalPatternEncoding(m::Int, lt = ComplexityMeasures.isless_rand)
 
 An encoding scheme that [`encode`](@ref)s length-`m` vectors into
 their permutation/ordinal patterns and then into the integers based on the Lehmer
@@ -23,7 +23,7 @@ The decoding step is much slower due to missing optimizations (pull requests wel
 ## Example
 
 ```jldoctest
-julia> using Entropies
+julia> using ComplexityMeasures
 
 julia> x = [4.0, 1.0, 9.0];
 

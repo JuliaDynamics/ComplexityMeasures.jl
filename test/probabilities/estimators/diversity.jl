@@ -1,4 +1,4 @@
-using Entropies, Test
+using ComplexityMeasures, Test
 
 # Analytical example from Wang et al. (2020)
 x = [1, 2, 13, 7, 9, 5, 4]

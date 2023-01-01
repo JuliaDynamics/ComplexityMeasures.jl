@@ -1,4 +1,4 @@
-using Entropies
+using ComplexityMeasures
 using DynamicalSystemsBase
 using Statistics
 

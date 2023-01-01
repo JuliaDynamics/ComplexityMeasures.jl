@@ -1,6 +1,6 @@
 using DelayEmbeddings
-using Entropies: Dispersion
-using Entropies: total_outcomes, missing_outcomes
+using ComplexityMeasures: Dispersion
+using ComplexityMeasures: total_outcomes, missing_outcomes
 
 export MissingDispersionPatterns
 

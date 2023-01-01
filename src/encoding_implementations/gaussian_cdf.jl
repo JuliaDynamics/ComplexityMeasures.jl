@@ -35,7 +35,7 @@ Because of the floor operation, some information is lost, so when used with
 ## Examples
 
 ```jldoctest
-julia> using Entropies, Statistics
+julia> using ComplexityMeasures, Statistics
 
 julia> x = [0.1, 0.4, 0.7, -2.1, 8.0];
 

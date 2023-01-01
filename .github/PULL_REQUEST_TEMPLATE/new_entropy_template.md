@@ -8,7 +8,7 @@ that are estimated first), or an indirect estimator (computes entropy without es
 ## Checklist for development (optional)
 
 Before finishing your PR, please have a look at the
-project [devdocs](https://juliadynamics.github.io/Entropies.jl/dev/devdocs/).
+project [devdocs](https://juliadynamics.github.io/ComplexityMeasures.jl/dev/devdocs/).
 
 Ticking the boxes below will help us provide good feedback and speed up the review process.
 Partial PRs are welcome too, and we're happy to help if you're stuck on something.
