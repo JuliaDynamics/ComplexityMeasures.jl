@@ -160,7 +160,7 @@ end
 
 # If all input vectors are `SVector`s, then this is zero-allocating.
 """
-    center_neighborhood!(c, C, xᵢ, neighbors)
+    center_neighborhood!(C, c, xᵢ, neighbors)
 
 Center the point `xᵢ`, as well as each of its neighboring points `nⱼ ∈ neighbors`,
 to the (precomputed) centroid `c` of the points `{xᵢ, n₁, n₂, …, nₖ}`, and store the
