@@ -164,7 +164,7 @@ end
 
 Center the point `xᵢ`, as well as each of its neighboring points `nⱼ ∈ neighbors`,
 to the (precomputed) centroid `c` of the points `{xᵢ, n₁, n₂, …, nₖ}`, and store the
-centered vectors in the pre-allocated vector `C`.
+centered vectors in the pre-allocated vector of vectors `C`.
 """
 function center_neighborhood!(C, c, xᵢ::SVector{D}, neighbors) where {D}
     C[1] = xᵢ - c
