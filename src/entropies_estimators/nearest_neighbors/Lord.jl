@@ -5,6 +5,23 @@ using LinearAlgebra: svd
 
 export Lord
 
+
+############################################################################################
+# Some benchmarking.
+# This is for a 10000x2 dataset with k = 30 neighbors.
+############################################################################################
+#    1. (135.538 ms (380046 allocations: 55.42 MiB) # total)
+#    2.  24.038 ms (50040 allocations: 7.82 MiB) # neighbor searches
+#    3. 25.484 ms (60040 allocations: 13.00 MiB) # finding the neighbors neighborsᵢ
+#    4. 123.084 ms (230040 allocations: 52.07 MiB) # svd, can't optimize this
+#    5. 135.538 ms (380046 allocations: 55.42 MiB) # everything after svd
+#
+# This is pretty optimized now, but there is still room for significant improvements
+# in the svd step. However, there isn't a non-allocating `svd` in base Julia, or in
+# StaticArrays at the moment, so we'd have to implement this ourselves.
+# It is not even clear if a nonallocating version would be faster.
+############################################################################################
+
 """
     Lord <: DifferentialEntropyEstimator
     Lord(; k = 10, w = 0)
@@ -73,7 +90,8 @@ function entropy(e::Shannon, est::Lord, x::AbstractDataset{D}) where {D}
     # C contains neighborhood-centroid-centered vectors, where
     # `C[1]` := the centered query point
     # `C[1 + j]` := the centered `j`-th neighbor of the query point.
-    C = MVector{k + 1, MVector{D}}(@SVector zeros(D) for i = 1:k+1)
+    C = [@SVector zeros(D) for i = 1:k+1]
+
     # Centered neighbors need to be ordered row-wise in a matrix. We re-fill this matrix
     # for every query point `xᵢ`
     A = @MMatrix zeros(k+1, D)
@@ -86,13 +104,13 @@ function entropy(e::Shannon, est::Lord, x::AbstractDataset{D}) where {D}
     for (i, xᵢ) in enumerate(x)
         neighborsᵢ = @views x[knn_idxs[i]]
         # Center neighborhood points around mean of the neighborhood.
-        c = centroid(xᵢ, neighborsᵢ, C)
+        c = centroid(xᵢ, neighborsᵢ, k)
         center_neighborhood!(C, c, xᵢ, neighborsᵢ) # put centered vectors in `C`
         fill_A!(A, C, D)
 
         # SVD. The columns of Vt are the semi-axes of the ellipsoid, while Σ gives the
         # magnitudes of the axes.
-        U, Σ, Vt = svd(A)
+        U, Σ, Vt = svd(A) # it is actually about 10% faster for small matrices to use MMatrix here instead of SMatrix.
         σ₁ = Σ[1]
         ϵᵢ = last(ds[i])
 
@@ -100,14 +118,10 @@ function entropy(e::Shannon, est::Lord, x::AbstractDataset{D}) where {D}
         rs .= ϵᵢ .* (Σ ./ σ₁)
         # Create matrix ellipse representation, centered at origin (fill Λ)
         hyperellipsoid_matrix!(Λ, Vt, rs)
-        # Take the point `xᵢ` as the origin for the neighborhood, so we can check directly
-        # whether points are inside the ellipse. This happens for a point `x`
-        # whenever `xᵀΛx <= 1`.
-        nns_centered = (pt - xᵢ for pt in neighborsᵢ)
-        kᵢ = count([transpose(p) * Λ * p <= 1.0 for p in nns_centered])
         # In the paper the point itself is always counted inside the ellipsoid,
         # so that there is always one point present. Here we instead set the local density
         # to zero (by just skipping the computation) if that is the case.
+        kᵢ = center_neighbors_and_count(neighborsᵢ, xᵢ, Λ)
         if kᵢ > 0
             h += log(kᵢ * γ / (f * ϵᵢ^D * prod(Σ ./ σ₁)) )
         end
@@ -118,12 +132,33 @@ function entropy(e::Shannon, est::Lord, x::AbstractDataset{D}) where {D}
 end
 entropy(est::Lord, args...) = entropy(Shannon(), est, args...)
 
+# This is zero-allocating.
 function fill_A!(A, C, D)
     for (j, m) in enumerate(C)
-        A[j, :] .= SVector{D}(m)
+        A[j, :] = m
     end
 end
 
+# Take the point `xᵢ` as the origin for the neighborhood, so we can check directly
+# whether points are inside the ellipse. This happens for a point `x`
+# whenever `xᵀΛx <= 1`.
+function center_neighbors_and_count(neighborsᵢ, xᵢ, Λ)
+    nns_centered = (pt - xᵢ for pt in neighborsᵢ)
+    kᵢ = count(transpose(p) * Λ * p <= 1.0 for p in nns_centered)
+    return kᵢ
+end
+
+# If all input vectors are `SVector`s, then this is zero-allocating.
+function centroid(xᵢ::SVector{D}, neighbors, k::Int) where D
+    centroid = SVector{D}(xᵢ)
+    for nᵢ in neighbors
+        centroid += nᵢ
+    end
+    centroid /= k + 1
+    return centroid
+end
+
+# If all input vectors are `SVector`s, then this is zero-allocating.
 """
     center_neighborhood!(c, C, xᵢ, neighbors)
 
@@ -131,20 +166,12 @@ Center the point `xᵢ`, as well as each of its neighboring points `nⱼ ∈ nei
 to the (precomputed) centroid `c` of the points `{xᵢ, n₁, n₂, …, nₖ}`, and store the
 centered vectors in the pre-allocated vector `C`.
 """
-function center_neighborhood!(C::MVector{K, V}, c, xᵢ,
-        neighbors::AbstractDataset{D}) where {V, K, D}
-    rezero!(C)
-    C[1] .= xᵢ .- c
+function center_neighborhood!(C, c, xᵢ::SVector{D}, neighbors) where {D}
+    C[1] = xᵢ - c
     for (i, nᵢ) in enumerate(neighbors)
-        C[1 + i] .= nᵢ .- c
+        C[1 + i] = nᵢ - c
     end
     return C
-end
-
-function rezero!(C)
-    for mᵢ in C
-        mᵢ .= 0.0
-    end
 end
 
 function hyperellipsoid_matrix!(Λ, directions, extents)
@@ -154,14 +181,4 @@ function hyperellipsoid_matrix!(Λ, directions, extents)
         Λ .+= (vᵢ * transpose(vᵢ)) ./ extents[i]^2
     end
     return Λ
-end
-
-function centroid(xᵢ, neighbors::AbstractDataset{D}, C) where D
-    L = length(C) + 1
-    centroid = MVector{D}(xᵢ)
-    for nᵢ in neighbors
-        centroid .+= nᵢ
-    end
-    centroid ./= L
-    return SVector{D}(centroid)
 end
