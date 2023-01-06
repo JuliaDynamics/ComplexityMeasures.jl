@@ -2,10 +2,10 @@ export KozachenkoLeonenko
 
 """
     KozachenkoLeonenko <: DiffEntropyEst
-    KozachenkoLeonenko(; k::Int = 1, w::Int = 1)
+    KozachenkoLeonenko(; w::Int = 0, base = 2)
 
 The `KozachenkoLeonenko` estimator computes the [`Shannon`](@ref) differential
-[`entropy`](@ref) of `x` (a multi-dimensional [`Dataset`](@ref)).
+[`entropy`](@ref) of a multi-dimensional [`Dataset`](@ref) in the given `base`.
 
 ## Description
 
@@ -36,11 +36,12 @@ See also: [`entropy`](@ref), [`Kraskov`](@ref), [`DifferentialEntropyEstimator`]
 [^KozachenkoLeonenko1987]: Kozachenko, L. F., & Leonenko, N. N. (1987). Sample estimate of
     the entropy of a random vector. Problemy Peredachi Informatsii, 23(2), 9-16.
 """
-@Base.kwdef struct KozachenkoLeonenko <: DiffEntropyEst
-    w::Int = 1
+@Base.kwdef struct KozachenkoLeonenko{B} <: DiffEntropyEst
+    w::Int = 0
+    base::B = 2
 end
 
-function entropy(e::Shannon, est::KozachenkoLeonenko, x::AbstractDataset{D, T}) where {D, T}
+function entropy(est::KozachenkoLeonenko, x::AbstractDataset{D}) where {D}
     (; w) = est
 
     N = length(x)
@@ -50,5 +51,5 @@ function entropy(e::Shannon, est::KozachenkoLeonenko, x::AbstractDataset{D, T}) 
         log(MathConstants.e, ball_volume(D)) +
         MathConstants.eulergamma +
         log(MathConstants.e, N - 1)
-    return h / log(e.base, MathConstants.e) # Convert to target unit
+    return h / log(est.base, MathConstants.e) # Convert to target unit
 end

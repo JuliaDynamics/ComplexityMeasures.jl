@@ -4,8 +4,8 @@ export Kraskov
     Kraskov <: DiffEntropyEst
     Kraskov(; k::Int = 1, w::Int = 1, base = 2)
 
-The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional [`Dataset`](@ref)) using the `k`-th nearest neighbor
+The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of
+a multi-dimensional [`Dataset`](@ref) using the `k`-th nearest neighbor
 searches method from [^Kraskov2004] at the given `base`.
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
