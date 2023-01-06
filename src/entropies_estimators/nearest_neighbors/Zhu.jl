@@ -2,11 +2,11 @@ export Zhu
 
 """
     Zhu <: DiffEntropyEst
-    Zhu(k = 1, w = 0)
+    Zhu(; k = 1, w = 0, base = 2)
 
 The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] is an extension to
 [`KozachenkoLeonenko`](@ref), and computes the [`Shannon`](@ref)
-differential [`entropy`](@ref) of `x` (a multi-dimensional [`Dataset`](@ref)).
+differential [`entropy`](@ref) of a multi-dimensional [`Dataset`](@ref) in the given `base`.
 
 ## Description
 
@@ -31,24 +31,24 @@ See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialEntropy
     transfer entropy estimation via the k-nearest-neighbors approach. EntropyDefinition, 17(6),
     4173-4201.
 """
-Base.@kwdef struct Zhu <: DiffEntropyEst
+Base.@kwdef struct Zhu{B} <: DiffEntropyEst
     k::Int = 1
     w::Int = 0
+    base::B = 2
 end
 
-function entropy(e::Shannon, est::Zhu, x::AbstractDataset{D, T}) where {D, T}
+function entropy(est::Zhu, x::AbstractDataset{D, T}) where {D, T}
     (; k, w) = est
-
     N = length(x)
     tree = KDTree(x, Euclidean())
     nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
     h = digamma(N) + mean_logvolumes(x, nn_idxs, N) - digamma(k) + (D - 1) / k
-    return h / log(e.base, MathConstants.e)
+    return h / log(est.base, MathConstants.e)
 end
 
 function mean_logvolumes(x, nn_idxs, N::Int)
     v = 0.0
-    for (i, (xᵢ, nn_idxsᵢ)) in enumerate(zip(x, nn_idxs))
+    for (xᵢ, nn_idxsᵢ) in zip(x, nn_idxs)
         nnsᵢ = @views x[nn_idxsᵢ] # the actual coordinates of the points
         v += log(MathConstants.e, volume_minimal_rect(xᵢ, nnsᵢ))
     end
@@ -75,5 +75,5 @@ i.e. `dists[k] = max{xᵢ[k], xⱼ[k]}` for `j = 1, 2, ..., length(x)`.
 """
 function maxdists(xᵢ, nns)
     mini, maxi = minmaxima(nns)
-    dists = max.(maxi .- xᵢ, xᵢ .- mini)
+    return max.(maxi .- xᵢ, xᵢ .- mini)
 end
