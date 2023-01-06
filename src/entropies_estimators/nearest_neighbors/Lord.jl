@@ -69,7 +69,7 @@ makes `Lord` a well-suited entropy estimator for a wide range of systems.
     of entropy and mutual information. Chaos: An Interdisciplinary Journal of Nonlinear
     Science, 28(3), 033114.
 """
-Base.@kwdef struct Lord{B} <: DifferentialEntropyEstimator
+Base.@kwdef struct Lord{B} <: NNDiffEntropyEst
     k::Int = 10
     w::Int = 0
     base::B = 2

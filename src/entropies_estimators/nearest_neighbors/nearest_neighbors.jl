@@ -13,6 +13,11 @@ end
 "Volume of a unit ball in R^d."
 ball_volume(d::Int) = π^(d/2)/gamma((d/2)+1)
 
+abstract type NNDiffEntropyEst <: DiffEntropyEst end
+
+# convenience for Nearest-Neighbors based estimators who use datasets
+entropy(est::NNDiffEntropyEst, x::AbstractVector) = entropy(est, Dataset(x))
+
 include("KozachenkoLeonenko.jl")
 include("Kraskov.jl")
 include("Zhu.jl")

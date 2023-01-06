@@ -31,7 +31,7 @@ See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialEntropy
     transfer entropy estimation via the k-nearest-neighbors approach. EntropyDefinition, 17(6),
     4173-4201.
 """
-Base.@kwdef struct Zhu{B} <: DiffEntropyEst
+Base.@kwdef struct Zhu{B} <: NNDiffEntropyEst
     k::Int = 1
     w::Int = 0
     base::B = 2

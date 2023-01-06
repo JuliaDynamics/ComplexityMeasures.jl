@@ -29,7 +29,7 @@ See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialEntropy
     Kraskov, A., Stögbauer, H., & Grassberger, P. (2004).
     Estimating mutual information. Physical review E, 69(6), 066138.
 """
-Base.@kwdef struct Kraskov{B} <: DiffEntropyEst
+Base.@kwdef struct Kraskov{B} <: NNDiffEntropyEst
     k::Int = 1
     w::Int = 1
     base::B = 2

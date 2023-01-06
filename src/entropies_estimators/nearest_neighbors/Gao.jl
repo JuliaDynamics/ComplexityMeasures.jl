@@ -41,7 +41,7 @@ H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct Gao{B} <: DifferentialEntropyEstimator
+Base.@kwdef struct Gao{B} <: NNDiffEntropyEst
     k::Int = 1
     w::Int = 0
     base::B = 2

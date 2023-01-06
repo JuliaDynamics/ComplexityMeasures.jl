@@ -45,7 +45,7 @@ is the digamma function.
     class of random vector entropy estimators and its applications in testing statistical
     hypotheses. Journal of Nonparametric Statistics, 17(3), 277-297.
 """
-Base.@kwdef struct Goria{B} <: DifferentialEntropyEstimator
+Base.@kwdef struct Goria{B} <: NNDiffEntropyEst
     k::Int = 1
     w::Int = 0
     base::B = 2

@@ -45,7 +45,7 @@ See also: [`entropy`](@ref), [`DifferentialEntropyEstimator`](@ref).
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct ZhuSingh{B} <: DiffEntropyEst
+Base.@kwdef struct ZhuSingh{B} <: NNDiffEntropyEst
     k::Int = 1
     w::Int = 0
     base::B = 2

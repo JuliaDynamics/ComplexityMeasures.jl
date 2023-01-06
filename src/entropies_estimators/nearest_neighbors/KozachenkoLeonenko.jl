@@ -36,7 +36,7 @@ See also: [`entropy`](@ref), [`Kraskov`](@ref), [`DifferentialEntropyEstimator`]
 [^KozachenkoLeonenko1987]: Kozachenko, L. F., & Leonenko, N. N. (1987). Sample estimate of
     the entropy of a random vector. Problemy Peredachi Informatsii, 23(2), 9-16.
 """
-@Base.kwdef struct KozachenkoLeonenko{B} <: DiffEntropyEst
+@Base.kwdef struct KozachenkoLeonenko{B} <: NNDiffEntropyEst
     w::Int = 0
     base::B = 2
 end
