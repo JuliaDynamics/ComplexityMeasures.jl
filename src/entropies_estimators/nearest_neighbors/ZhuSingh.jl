@@ -7,10 +7,11 @@ export ZhuSingh
 
 """
     ZhuSingh <: DiffEntropyEst
-    ZhuSingh(k = 1, w = 0)
+    ZhuSingh(; k = 1, w = 0, base = 2)
 
 The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
-differential [`entropy`](@ref) of `x` (a multi-dimensional [`Dataset`](@ref)).
+differential [`entropy`](@ref) of a multi-dimensional [`Dataset`](@ref)
+in the given `base`.
 
 ## Description
 
@@ -44,19 +45,20 @@ See also: [`entropy`](@ref), [`DifferentialEntropyEstimator`](@ref).
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct ZhuSingh <: DiffEntropyEst
+Base.@kwdef struct ZhuSingh{B} <: DiffEntropyEst
     k::Int = 1
     w::Int = 0
+    base::B = 2
 end
 
-function entropy(e::Shannon, est::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
+function entropy(est::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())
     nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
     mean_logvol, mean_digammaξ = mean_logvolumes_and_digamma(x, nn_idxs, N, k)
     h = digamma(N) + mean_logvol - mean_digammaξ
-    return h / log(e.base, MathConstants.e)
+    return h / log(est.base, MathConstants.e)
 end
 
 function mean_logvolumes_and_digamma(x, nn_idxs, N::Int, k::Int)
