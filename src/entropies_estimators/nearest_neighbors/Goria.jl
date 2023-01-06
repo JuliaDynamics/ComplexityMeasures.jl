@@ -7,10 +7,10 @@ export Goria
 
 """
     Goria <: DifferentialEntropyEstimator
-    Goria(; k = 1, w = 0)
+    Goria(; k = 1, w = 0, base = 2)
 
 The `Goria` estimator computes the [`Shannon`](@ref) differential
-[`entropy`](@ref) of `x` (a multi-dimensional [`Dataset`](@ref)).
+[`entropy`](@ref) of a multi-dimensional [`Dataset`](@ref) in the given `base`.
 
 ## Description
 
@@ -45,12 +45,13 @@ is the digamma function.
     class of random vector entropy estimators and its applications in testing statistical
     hypotheses. Journal of Nonparametric Statistics, 17(3), 277-297.
 """
-Base.@kwdef struct Goria <: DifferentialEntropyEstimator
+Base.@kwdef struct Goria{B} <: DifferentialEntropyEstimator
     k::Int = 1
     w::Int = 0
+    base::B = 2
 end
 
-function entropy(e::Shannon, est::Goria, x::AbstractDataset{D}) where D
+function entropy(est::Goria, x::AbstractDataset{D}) where D
     (; k, w) = est
     N = length(x)
 
@@ -61,6 +62,6 @@ function entropy(e::Shannon, est::Goria, x::AbstractDataset{D}) where D
           log(c1(D)) -
           digamma(k)
 
-    return h / log(e.base, ℯ)
+    return h / log(est.base, ℯ)
 end
 c1(D::Int) = (2π^(D/2)) / (D* gamma(D/2))
