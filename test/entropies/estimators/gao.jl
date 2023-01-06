@@ -1,3 +1,4 @@
+using ComplexityMeasures, Test
 # -------------------------------------------------------------------------------------
 # Check if the estimator converge to true values for some distributions with
 # analytically derivable entropy.
@@ -11,9 +12,9 @@ N_base3 = round((0.5*log(2π) + 0.5) / log(3, ℯ), digits = 2) # custom base
 # Without correction
 # ------------------------------------------------------------------------------------
 npts = 1000000
-ea = entropy(Shannon(), Gao(k = 5, corrected = false), rand(npts))
-ea_n = entropy(Shannon(; base = ℯ), Gao(k = 5, corrected = false), randn(npts))
-ea_n3 = entropy(Shannon(; base = 3), Gao(k = 5, corrected = false), randn(npts))
+ea = entropy(Gao(k = 5, corrected = false), rand(npts))
+ea_n = entropy(Gao(k = 5, corrected = false, base = ℯ), randn(npts))
+ea_n3 = entropy(Gao(k = 5, corrected = false, base = 3), randn(npts))
 
 # It is not expected that this estimator will be precise, so increase
 # allowed error bounds compared to other estimators.

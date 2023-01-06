@@ -2,7 +2,7 @@ export Vasicek
 
 """
     Vasicek <: DiffEntropyEst
-    Vasicek(; m::Int = 1)
+    Vasicek(; m::Int = 1, base = 2)
 
 The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref)
 (in the given `base`) of
@@ -60,7 +60,7 @@ See also: [`entropy`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
     base::B = 2
 end
 
-function entropy(est::Vasicek, x::AbstractVector{<:Real})
+function entropy(est::Vasicek, x::AbstractVector{T}) where {T<:Real}
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
