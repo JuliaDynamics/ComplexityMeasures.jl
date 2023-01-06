@@ -125,7 +125,7 @@ The overwhelming majority of entropy estimators estimate the Shannon entropy.
 If some estimator can estimate different _definitions_ of entropy (e.g., [`Tsallis`](@ref)),
 this is provided as an argument to the estimator itself.
 
-See the  [Table of differential entropy estimators](@ref)
+See the [Table of differential entropy estimators](@ref)
 in the docs for a table view of all differential entropy estimators.
 
 ## Examples
@@ -140,16 +140,27 @@ abs(h - 0.5*log(2π) - 0.5) # ≈ 0.001
 ```
 """
 function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
+    entropy_definition_compatibility(e, est)
+    return entropy(est, x)
+end
+entropy(est::DiffEntropyEst, ::Probabilities) = error("""
+    EntropyDefinition estimators like $(nameof(typeof(est)))
+    are not called with probabilities.
+""")
+
+"""
+    entropy_definition_compatibility(e::EntropyDefinition, est::DiffEntropyEst)
+Return `true` if the given `est` can estimate the given definition of `e`,
+otherwise throw an `ArgumentError`.
+"""
+entropy_definition_compatibility(::Shannon, est::DiffEntropyEst) = true
+function entropy_definition_compatibility(e::EntropyDefinition, est::DiffEntropyEst)
     t = string(nameof(typeof(e)))
     throw(ArgumentError("$t entropy not implemented for $(typeof(est)) estimator"))
 end
 
-entropy(est::DiffEntropyEst, ::Probabilities) =
-    error("EntropyDefinition estimators like $(nameof(typeof(est))) are not called with probabilities.")
-
 # TODO: Why is this dispatch here?
-entropy(e::EntropyDefinition, est::DiffEntropyEst, x::AbstractVector) =
-    entropy(e, est, Dataset(x))
+entropy(est::DiffEntropyEst, x::AbstractVector) = entropy(est, Dataset(x))
 
 
 ###########################################################################################
