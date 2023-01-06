@@ -115,18 +115,18 @@ entropy(probs::Probabilities) = entropy(Shannon(), probs)
 # Dispatch for these functions is implemented in individual estimator files in
 # `entropies/estimators/`.
 """
-    entropy([e::EntropyDefinition,] est::DifferentialEntropyEstimator, x)
+    entropy(est::DifferentialEntropyEstimator, x)
 
-Approximate the **differential entropy** `h::Real` according to the definition `e` using
-the provided [`DifferentialEntropyEstimator`](@ref) and input data `x`.
+Approximate the **differential entropy** `h::Real` using the provided
+[`DifferentialEntropyEstimator`](@ref) and input data `x`.
 This method doesn't involve explicitly computing (discretized) probabilities first.
 
-The entropy definition argument is optional.
-The default entropy type is inferred from the estimator (e.g. [`Kraskov`](@ref)
-estimates the base-2 Shannon differential entropy).
-The estimators are not compatible with all versions of [`EntropyDefinition`](@ref).
-See [Table of differential entropy estimators](@ref)
-in the docs for a table view of the estimators and the compatibilities.
+The overwhelming majority of entropy estimators estimate the Shannon entropy.
+If some estimator can estimate different _definitions_ of entropy (e.g., [`Tsallis`](@ref)),
+this is provided as an argument to the estimator itself.
+
+See the  [Table of differential entropy estimators](@ref)
+in the docs for a table view of all differential entropy estimators.
 
 ## Examples
 
@@ -134,12 +134,10 @@ A standard normal distribution has a base-e differential entropy of `0.5*log(2π
 nats.
 
 ```julia
-def = Shannon(; base = ℯ) # Base `ℯ` for nats.
-est = Kraskov(k = 5)
-h = entropy(def, est, randn(1_000_000))
+est = Kraskov(k = 5, base = ℯ) # Base `ℯ` for nats.
+h = entropy(est, randn(1_000_000))
 abs(h - 0.5*log(2π) - 0.5) # ≈ 0.001
 ```
-
 """
 function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
     t = string(nameof(typeof(e)))
@@ -148,12 +146,10 @@ end
 
 entropy(est::DiffEntropyEst, ::Probabilities) =
     error("EntropyDefinition estimators like $(nameof(typeof(est))) are not called with probabilities.")
-entropy(e::EntropyDefinition, est::DiffEntropyEst, ::Probabilities) =
-    error("EntropyDefinition estimators like $(nameof(typeof(est))) are not called with probabilities.")
+
+# TODO: Why is this dispatch here?
 entropy(e::EntropyDefinition, est::DiffEntropyEst, x::AbstractVector) =
     entropy(e, est, Dataset(x))
-# Always default to Shannon with base-2 logs. Individual estimators may override this.
-entropy(est::DiffEntropyEst, x) = entropy(Shannon(), est, x)
 
 
 ###########################################################################################
