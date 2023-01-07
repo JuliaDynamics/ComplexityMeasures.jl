@@ -6,6 +6,7 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 
 - Added `Gao` estimator for differential Shannon entropy.
 - Added `Lord` estimator for differential Shannon entropy.
+- `Probabilities` now wraps `AbstractArray{T, N}` instead of `AbstractVector{T}`, so that it can also represent multidimensional probability mass functions. For vectors, it behaves as before.
 
 ## 2.0
 

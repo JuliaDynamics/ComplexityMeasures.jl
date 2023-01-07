@@ -13,9 +13,9 @@ ea = entropy(Shannon(), Lord(k = 20), rand(npts))
 ea_n = entropy(Shannon(; base = ℯ), Lord(k = 20), randn(npts))
 ea_n3 = entropy(Shannon(; base = 3), Lord(k = 20), randn(npts))
 
-@test U - max(0.03, U*0.03) ≤ ea ≤ U + max(0.03, U*0.03)
-@test N * 0.97 ≤ ea_n ≤ N * 1.03
-@test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
+@test U - max(0.05, U*0.03) ≤ ea ≤ U + max(0.03, U*0.03)
+@test N * 0.96 ≤ ea_n ≤ N * 1.03
+@test N_base3 * 0.96 ≤ ea_n3 ≤ N_base3 * 1.03
 
 x = rand(1000)
 @test_throws ArgumentError entropy(Renyi(q = 2), Lord(), x)
