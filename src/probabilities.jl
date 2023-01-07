@@ -98,7 +98,7 @@ contain `0`s as entries or not depends on the estimator.
 E.g., in [`ValueHistogram`](@ref) `0`s are skipped, while in
 [`SymbolicPermutation`](@ref) `0` are not, because we get them for free.
 
-    probabilities(x::Array_or_Dataset) → p::Probabilities
+    probabilities(x::Vector_or_Dataset) → p::Probabilities
 
 Estimate probabilities by directly counting the elements of `x`, assuming that
 `Ω = sort(unique(x))`, i.e. that the outcome space is the unique elements of `x`.
