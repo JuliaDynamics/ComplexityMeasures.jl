@@ -4,9 +4,10 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 
 ## 2.2
 
-- Added the `isperm` keyword to `encode(::OrdinalPatternEncoding, x; isperm = false)`.
-    If `isperm == true`, then it is assumed that the input already is a permutation.
-    If `isperm == false`, then we first call `sortperm(x)` before encoding.
+- Corrected documentation for `SymbolicPermutation`, `SymbolicAmplitudeAwarePermutation`,
+    and `SymbolicWeightedPermutation`, indicating that the outcome space is the set of
+    `factorial(m)` *permutations* of the integers `1:m`, not the rank orderings,
+    as was stated before.
 
 ## 2.1
 

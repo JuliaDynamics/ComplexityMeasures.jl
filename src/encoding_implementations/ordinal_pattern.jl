@@ -42,14 +42,16 @@ julia> decode(c, i)
  3
 ```
 
-If the input to `encode` is already a permutation pattern, then specify
-the keyword `isperm = true`. Failure to do so will destroy the one-to-one mapping between
-encoded integers and decoded permutation patterns.
+If you want to encode something that is already a permutation pattern, then you
+can use the non-exported `permutation_to_integer` function. Using [`encode`](@ref)
+directly will do a double-call to `sortperm`, which destroys the
+one-to-one mapping between encoded integers and decoded permutation patterns.
 
 ```julia
+using ComplexityMeasures
 p = sortperm([4.0, 1.0, 9.0])
-c = OrdinalPatternEncoding(length(p));
-encode(c, p, isperm = true)
+c = ComplexityMeasures.OrdinalPatternEncoding(length(p));
+ComplexityMeasures.permutation_to_integer(c, p)
 ```
 
 [^Berger2019]:
@@ -73,18 +75,18 @@ outcome_space(::OrdinalPatternEncoding{m}) where {m} = permutations(1:m) |> coll
 
 # Notice that `χ` is an element of a `Dataset`, so most definitely a static vector in
 # our code. However we allow `AbstractVector` if a user wanna use `encode` directly.
-# If `x` is already a permutation, then `isperm` must be set to true.
-function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector;
-        isperm = false) where {m}
+function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector) where {m}
     if m != length(χ)
         throw(ArgumentError("Permutation order and length of input must match!"))
     end
-    if isperm
-        perm = χ
-    else
-        perm = sortperm!(encoding.perm, χ)
-    end
-    # Begin Lehmer code
+    perm = sortperm!(encoding.perm, χ)
+    return permutation_to_integer(perm)
+end
+
+# The algorithm from Berger (2019). Use this directly if encoding *permutations* instead
+# of input vectors that are to be permuted.
+function permutation_to_integer(perm)
+    m = length(perm)
     n = 0
     for i = 1:m-1
         for j = i+1:m
@@ -94,18 +96,6 @@ function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector;
     end
     # The Lehmer code actually results in 0 being an encoded symbol. Shift by 1, so that
     # encodings are the positive integers.
-    return n + 1
-end
-
-function encode_pattern(perm)
-    m = length(perm)
-    n = 0
-    for i = 1:m-1
-        for j = i+1:m
-            n += perm[i] > perm[j] ? 1 : 0
-        end
-        n = (m-i)*n
-    end
     return n + 1
 end
 
