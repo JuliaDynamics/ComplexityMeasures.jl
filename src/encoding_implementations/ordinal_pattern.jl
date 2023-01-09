@@ -42,18 +42,6 @@ julia> decode(c, i)
  3
 ```
 
-If you want to encode something that is already a permutation pattern, then you
-can use the non-exported `permutation_to_integer` function. Using [`encode`](@ref)
-directly will do a double-call to `sortperm`, which destroys the
-one-to-one mapping between encoded integers and decoded permutation patterns.
-
-```julia
-using ComplexityMeasures
-p = sortperm([4.0, 1.0, 9.0])
-c = ComplexityMeasures.OrdinalPatternEncoding(length(p));
-ComplexityMeasures.permutation_to_integer(c, p)
-```
-
 [^Berger2019]:
     Berger et al. "Teaching Ordinal Patterns to a Computer: Efficient
     Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
