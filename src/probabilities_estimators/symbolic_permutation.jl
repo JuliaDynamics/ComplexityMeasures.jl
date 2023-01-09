@@ -50,11 +50,13 @@ to represent ordinal patterns as integers for efficient computations.
 ## Outcome space
 
 The outcome space `Ω` for `SymbolicPermutation` is the set of length-`m` ordinal
-patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`,
-ordered lexicographically. There are `factorial(m)` such patterns.
+patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`.
+There are `factorial(m)` such patterns.
 
-For example, the outcome `[3, 1, 2]` corresponds to the ordinal pattern of having
-first the largest value, then the lowest value, and then the value in between.
+For example, the outcome `[2, 3, 1]` corresponds to the ordinal pattern of having
+the smallest value in the second position, the next smallest value in the second
+position, and the largest value in the first position (see also
+[`OrdinalPatternEncoding`(@ref)).
 
 ## In-place symbolization
 
