@@ -4,35 +4,8 @@ using StaticArrays: SVector
 using ComplexityMeasures: encode_motif, decode_motif
 
 @testset "Ordinal patterns" begin
-    scheme = OrdinalPatternEncoding(m = 5, τ = 1)
-    N = 100
-    x = Dataset(repeat([1.1 2.2 3.3], N))
-    y = Dataset(rand(N, 5))
-    z = rand(N)
-
-    # Without pre-allocation
-    D = genembed(z, [0, -1, -2])
-    scheme = OrdinalPatternEncoding(m = 5, τ = 2)
-
-    @test ComplexityMeasures.outcomes(z, scheme) isa Vector{<:Int}
-    @test ComplexityMeasures.outcomes(D, scheme) isa Vector{<:Int}
-
-
-    # With pre-allocation
-    N = 100
-    x = rand(N)
-    scheme = OrdinalPatternEncoding(m = 5, τ = 2)
-    s = fill(-1, N-(scheme.m-1)*scheme.τ)
-
-    # if symbolization has occurred, s must have been filled with integers in
-    # the range 0:(m!-1)
-    @test all(ComplexityMeasures.outcomes!(s, x, scheme) .>= 0)
-    @test all(0 .<= ComplexityMeasures.outcomes!(s, x, scheme) .< factorial(scheme.m))
-
-    m = 4
-    D = Dataset(rand(N, m))
-    s = fill(-1, length(D))
-    @test all(0 .<= ComplexityMeasures.outcomes!(s, D, scheme) .< factorial(m))
+    o = OrdinalPatternEncoding(5)
+    @test o isa OrdinalPatternEncoding{5}
 
     # This is not part of the public API, but this is crucial to test directly to
     # ensure its correctness. It makes no sense to test it though "end-product" code,
@@ -41,20 +14,40 @@ using ComplexityMeasures: encode_motif, decode_motif
     @testset "Encoding/decoding" begin
         m = 4
         # All possible permutations for length-4 vectors.
+        # Table 1 in Berger et al. These permutations should, in the given order,
+        # map onto integers 0, 1, ..., factorial(4) - 1.
         πs = [
-            [1, 2, 3, 4], [1, 2, 4, 3], [1, 3, 2, 4], [1, 3, 4, 2], [1, 4, 2, 3],
-            [1, 4, 3, 2], [2, 1, 3, 4], [2, 1, 4, 3], [2, 3, 1, 4], [2, 3, 4, 1],
-            [2, 4, 1, 3], [2, 4, 3, 1], [3, 1, 2, 4], [3, 1, 4, 2], [3, 2, 1, 4],
-            [3, 2, 4, 1], [3, 4, 1, 2], [3, 4, 2, 1], [4, 1, 2, 3], [4, 1, 3, 2],
-            [4, 2, 1, 3], [4, 2, 3, 1], [4, 3, 1, 2], [4, 3, 2, 1]
+            [1, 2, 3, 4], # 0
+            [1, 2, 4, 3], # 1
+            [1, 3, 2, 4], # 2
+            [1, 3, 4, 2], # 3
+            [1, 4, 2, 3], # 4
+            [1, 4, 3, 2], # 5
+            [2, 1, 3, 4], # 6
+            [2, 1, 4, 3], # 7
+            [2, 3, 1, 4], # 8
+            [2, 3, 4, 1], # 9
+            [2, 4, 1, 3], # 10
+            [2, 4, 3, 1], # 11
+            [3, 1, 2, 4], # 12
+            [3, 1, 4, 2], # and so on...
+            [3, 2, 1, 4],
+            [3, 2, 4, 1],
+            [3, 4, 1, 2],
+            [3, 4, 2, 1],
+            [4, 1, 2, 3],
+            [4, 1, 3, 2],
+            [4, 2, 1, 3],
+            [4, 2, 3, 1],
+            [4, 3, 1, 2],
+            [4, 3, 2, 1],
         ]
-        encoded_πs = encode_motif.(πs, m)
-        @test encoded_πs == 0:(factorial(m) - 1) |> collect
-        @test all(isa.(encoded_πs, Int))
+        encoder = OrdinalPatternEncoding(m)
+        encoded_πs = encode.(Ref(encoder), πs, isperm = true)
+        @test all(encoded_πs .== 1:factorial(m))
 
         # Decoded permutations (`SVector{m, Int}`s)
-        decoded_πs = decode_motif.(encoded_πs, m)
-        @test all(length.(decoded_πs) .== m)
+        decoded_πs = decode.(Ref(encoder), encoded_πs)
         @test all(decoded_πs .== πs)
     end
 end
