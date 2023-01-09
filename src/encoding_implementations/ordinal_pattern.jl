@@ -12,8 +12,8 @@ their permutation/ordinal patterns and then into the integers based on the Lehme
 code. It is used by [`SymbolicPermutation`](@ref) and similar estimators, see that for
 a description of the outcome space.
 
-The ordinal/permutation pattern of a vector `x` is simply `sortperm(x)`, which gives the
-indices that would sort `x` in ascending order.
+The ordinal/permutation pattern of a vector `χ` is simply `sortperm(χ)`, which gives the
+indices that would sort `χ` in ascending order.
 
 ## Description
 
@@ -28,11 +28,11 @@ The decoding step is much slower due to missing optimizations (pull requests wel
 ```jldoctest
 julia> using ComplexityMeasures
 
-julia> x = [4.0, 1.0, 9.0];
+julia> χ = [4.0, 1.0, 9.0];
 
 julia> c = OrdinalPatternEncoding(3);
 
-julia> i = encode(c, x)
+julia> i = encode(c, χ)
 3
 
 julia> decode(c, i)
