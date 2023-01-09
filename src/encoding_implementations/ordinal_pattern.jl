@@ -12,6 +12,9 @@ their permutation/ordinal patterns and then into the integers based on the Lehme
 code. It is used by [`SymbolicPermutation`](@ref) and similar estimators, see that for
 a description of the outcome space.
 
+The ordinal/permutation pattern of a vector `x` is simply `sortperm(x)`, which gives the
+indices that would sort `x` in ascending order.
+
 ## Description
 
 The Lehmer code, as implemented here, is a bijection between the set of `factorial(m)`
@@ -29,14 +32,24 @@ julia> x = [4.0, 1.0, 9.0];
 
 julia> c = OrdinalPatternEncoding(3);
 
-julia> encode(c, x)
+julia> i = encode(c, x)
 3
 
-julia> decode(c, 1)
+julia> decode(c, i)
 3-element SVector{3, Int64} with indices SOneTo(3):
  2
  1
  3
+```
+
+If the input to `encode` is already a permutation pattern, then specify
+the keyword `isperm = true`. Failure to do so will destroy the one-to-one mapping between
+encoded integers and decoded permutation patterns.
+
+```julia
+p = sortperm([4.0, 1.0, 9.0])
+c = OrdinalPatternEncoding(length(p));
+encode(c, p, isperm = true)
 ```
 
 [^Berger2019]:
@@ -58,14 +71,19 @@ end
 total_outcomes(::OrdinalPatternEncoding{m}) where {m} = factorial(m)
 outcome_space(::OrdinalPatternEncoding{m}) where {m} = permutations(1:m) |> collect
 
-
 # Notice that `χ` is an element of a `Dataset`, so most definitely a static vector in
-# our code. However we allow `AbstractVector` if a user wanna use `encode` directly
-function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector) where {m}
+# our code. However we allow `AbstractVector` if a user wanna use `encode` directly.
+# If `x` is already a permutation, then `isperm` must be set to true.
+function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector;
+        isperm = false) where {m}
     if m != length(χ)
         throw(ArgumentError("Permutation order and length of input must match!"))
     end
-    perm = sortperm!(encoding.perm, χ; lt = encoding.lt)
+    if isperm
+        perm = χ
+    else
+        perm = sortperm!(encoding.perm, χ)
+    end
     # Begin Lehmer code
     n = 0
     for i = 1:m-1
@@ -79,13 +97,25 @@ function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector) where {
     return n + 1
 end
 
+function encode_pattern(perm)
+    m = length(perm)
+    n = 0
+    for i = 1:m-1
+        for j = i+1:m
+            n += perm[i] > perm[j] ? 1 : 0
+        end
+        n = (m-i)*n
+    end
+    return n + 1
+end
+
 # I couldn't find any efficient algorithm in the literature for converting
 # between factorial number system representations and Lehmer codes, so we'll just have to
 # use this naive approach for now. It is probably possible to do this in a faster way.
 function decode(::OrdinalPatternEncoding{m}, s::Int) where {m}
     # Convert integer to its factorial number representation. Each factorial number
     # corresponds to a unique permutation of the numbers `1, 2, ..., m`.
-    f::SVector{m, Int} = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 in `encode`
+    f::SVector{m, Int} = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 above
 
     # Reconstruct the permutation from the factorial representation
     xs = 1:m |> collect
