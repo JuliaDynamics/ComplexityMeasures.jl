@@ -2,6 +2,12 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 2.2
+
+- Added the `isperm` keyword to `encode(::OrdinalPatternEncoding, x; isperm = false)`.
+    If `isperm == true`, then it is assumed that the input already is a permutation.
+    If `isperm == false`, then we first call `sortperm(x)` before encoding.
+
 ## 2.1
 
 - Added `Gao` estimator for differential Shannon entropy.
