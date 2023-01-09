@@ -1,7 +1,7 @@
 using StateSpaceSets: Dataset
 using DelayEmbeddings: genembed
 using StaticArrays: SVector
-using ComplexityMeasures: encode_motif, decode_motif
+using ComplexityMeasures: encode, decode
 
 @testset "Ordinal patterns" begin
     o = OrdinalPatternEncoding(5)
