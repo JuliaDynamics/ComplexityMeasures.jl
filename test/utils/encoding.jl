@@ -2,6 +2,7 @@ using StateSpaceSets: Dataset
 using DelayEmbeddings: genembed
 using StaticArrays: SVector
 using ComplexityMeasures: encode, decode
+using Statistics: mean, std
 
 @testset "Ordinal patterns" begin
     o = OrdinalPatternEncoding(5)
@@ -53,7 +54,7 @@ using ComplexityMeasures: encode, decode
 end
 
 @testset "Gaussian symbolization" begin
-     # Li et al. (2018) recommends using at least 1000 data points when estimating
+    # Li et al. (2018) recommends using at least 1000 data points when estimating
     # dispersion entropy.
     x = rand(1000)
     c = 4
@@ -67,8 +68,10 @@ end
 
     # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper.
     y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
-    scheme = GaussianCDFEncoding(3)
-    s = outcomes(y, scheme)
+    μ = mean(y)
+    σ = std(y)
+    encoding = GaussianCDFEncoding( c = 3; μ, σ)
+    s = encode.(Ref(scheme), y)
     @test s == [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
 end
 
@@ -224,9 +227,9 @@ end
     #    (4, 2, 1) -> (3, 2, 1)
     #    (2, 1, 0) -> (3, 2, 1),
     # so there are three occurring patterns and m! - 3 = 3*2*1 - 3 = 3 missing patterns
-    @test missing_outcomes(x, SymbolicPermutation(; m, τ)) == 3
+    @test missing_outcomes(SymbolicPermutation(; m, τ), x) == 3
 
     m, τ = 2, 1
     y = [1, 2, 1, 2] # only two patterns, none missing
-    @test missing_outcomes(x, SymbolicPermutation(; m, τ)) == 0
+    @test missing_outcomes(SymbolicPermutation(; m, τ), x) == 0
 end
