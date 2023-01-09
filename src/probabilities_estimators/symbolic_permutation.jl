@@ -34,12 +34,11 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     by using [`CountOccurrences`](@ref). When giving the resulting probabilities to
     [`entropy`](@ref), the original permutation entropy is computed [^BandtPompe2002].
 - **Multivariate data**. If applied to a an `D`-dimensional `Dataset`,
-    then no embedding is constructed, and we each vector ``\\bf{x}_i`` of the dataset
-    directly to its permutation pattern ``\\pi_{i}``, ``\\pi_{i}`` by comparing the
+    then no embedding is constructed, `m` must be equal to `D` and `τ` is ignored.
+    Each vector ``\\bf{x}_i`` of the dataset is mapped
+    directly to its permutation pattern ``\\pi_{i}`` by comparing the
     relative magnitudes of the elements of ``\\bf{x}_i``.
     Like above, probabilities are estimated as the frequencies of the permutation symbols.
-    In this case, `m` is ignored,
-    but `m` must still match the dimension of the dataset for optimization.
     The resulting probabilities can be used to compute multivariate permutation
     entropy[^He2016], although here we don't perform any further subdivision
     of the permutation patterns (as in Figure 3 of[^He2016]).
@@ -47,35 +46,10 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
 Internally, [`SymbolicPermutation`](@ref) uses the [`OrdinalPatternEncoding`](@ref)
 to represent ordinal patterns as integers for efficient computations.
 
-## Outcome space
-
-The outcome space `Ω` for `SymbolicPermutation` is the set of length-`m` ordinal
-patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`,
-ordered lexicographically. There are `factorial(m)` such patterns.
-
-For example, the outcome `[3, 1, 2]` corresponds to the ordinal pattern of having
-first the largest value, then the lowest value, and then the value in between.
-
-## In-place symbolization
-
-`SymbolicPermutation` also implements the in-place [`probabilities!`](@ref)
-for `Dataset` input (or embedded vector input).
-The length of the pre-allocated symbol vector must match the length of the dataset.
-For example
-
-```julia
-using DelayEmbeddings, ComplexityMeasures
-m, N = 2, 100
-est = SymbolicPermutation(; m, τ)
-x = Dataset(rand(N, m) # timeseries example
-πs_ts = zeros(Int, N) # length must match length of `x`
-p = probabilities!(πs_ts, est, x)
-```
-
 See [`SymbolicWeightedPermutation`](@ref) and [`SymbolicAmplitudeAwarePermutation`](@ref)
 for estimators that not only consider ordinal (sorting) patterns, but also incorporate
 information about within-state-vector amplitudes.
-For a version of this estimator that can be used on high-dimensional arrays, see
+For a version of this estimator that can be used on spatial data, see
 [`SpatialSymbolicPermutation`](@ref).
 
 !!! note "Handling equal values in ordinal patterns"
@@ -83,8 +57,35 @@ For a version of this estimator that can be used on high-dimensional arrays, see
     this can lead to erroneous temporal correlations, especially for data with
     low amplitude resolution [^Zunino2017]. Here, by default, if two values are equal,
     then one of the is randomly assigned as "the largest", using
-    `lt = ComplexityMeasures.isless_rand`. To get the behaviour from Bandt and Pompe (2002), use
-    `lt = Base.isless`).
+    `lt = ComplexityMeasures.isless_rand`.
+    To get the behaviour from Bandt and Pompe (2002), use `lt = Base.isless`.
+
+## Outcome space
+
+The outcome space `Ω` for `SymbolicPermutation` is the set of length-`m` ordinal
+patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`.
+There are `factorial(m)` such patterns.
+
+For example, the outcome `[2, 3, 1]` corresponds to the ordinal pattern of having
+the smallest value in the second position, the next smallest value in the third
+position, and the next smallest, i.e. the largest value in the first position.
+See also [`OrdinalPatternEncoding`(@ref).
+
+## In-place symbolization
+
+`SymbolicPermutation` also implements the in-place [`probabilities!`](@ref)
+for `Dataset` input (or embedded vector input) for reducing allocations in looping scenarios.
+The length of the pre-allocated symbol vector must be the length of the dataset.
+For example
+
+```julia
+using ComplexityMeasures
+m, N = 2, 100
+est = SymbolicPermutation(; m, τ)
+x = Dataset(rand(N, m)) # some input dataset
+πs_ts = zeros(Int, N) # length must match length of `x`
+p = probabilities!(πs_ts, est, x)
+```
 
 [^BandtPompe2002]: Bandt, Christoph, and Bernd Pompe. "Permutation entropy: a natural
     complexity measure for timeseries." Physical review letters 88.17 (2002): 174102.
