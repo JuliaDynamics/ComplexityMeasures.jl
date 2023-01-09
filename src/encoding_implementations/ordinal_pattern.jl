@@ -42,6 +42,9 @@ julia> decode(c, i)
  3
 ```
 
+If you want to encode something that is already a permutation pattern, then you
+can use the non-exported `permutation_to_integer` function.
+
 [^Berger2019]:
     Berger et al. "Teaching Ordinal Patterns to a Computer: Efficient
     Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
