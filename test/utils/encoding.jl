@@ -57,13 +57,15 @@ end
     # Li et al. (2018) recommends using at least 1000 data points when estimating
     # dispersion entropy.
     x = rand(1000)
+    μ = mean(x)
+    σ = std(x)
     c = 4
     m = 4
     τ = 1
-    s = GaussianCDFEncoding(c = c)
+    s = GaussianCDFEncoding(c = c; μ, σ)
 
     # Symbols should be in the set [1, 2, …, c].
-    symbols = ComplexityMeasures.outcomes(x, s)
+    symbols = encode.(Ref(s), x)
     @test all([s ∈ collect(1:c) for s in symbols])
 
     # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper.
@@ -71,7 +73,7 @@ end
     μ = mean(y)
     σ = std(y)
     encoding = GaussianCDFEncoding( c = 3; μ, σ)
-    s = encode.(Ref(scheme), y)
+    s = encode.(Ref(encoding), y)
     @test s == [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
 end
 
