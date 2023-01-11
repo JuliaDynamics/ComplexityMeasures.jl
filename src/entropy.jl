@@ -52,7 +52,7 @@ abstract type EntropyDefinition end
 Supertype of all discrete entropy estimators.
 
 Currently only the [`MaximumLikelihood`](@ref) estimator is provided,
-which does not need to be used as using an [`EntropyDefinition`](@ref) directly in
+which does not need to be used, as using an [`EntropyDefinition`](@ref) directly in
 [`entropy`](@ref) is possible. But in the future, more advanced estimators will
 be added ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/237)).
 """
@@ -194,7 +194,7 @@ entropy(est::DiffEntropyEst, ::Probabilities) = error("""
 """
     entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator)
 
-Return the maximum value of a discrete entropy the given probabilities estimator.
+Return the maximum value of a discrete entropy with the given probabilities estimator.
 
     entropy_maximum(e::EntropyDefinition, L::Int)
 
@@ -207,13 +207,17 @@ end
 function entropy_maximum(e::EntropyDefinition, ::Int)
     error("not implemented for entropy type $(nameof(typeof(e))).")
 end
+entropy_maximum(e::MaximumLikelihood,  x) = entropy_maximum(e.definition, x)
 
 """
-    entropy_normalized([e::EntropyDefinition,] est::ProbabilitiesEstimator, x) → h̃
+    entropy_normalized([e::DiscreteEntropyEstimator,] est::ProbabilitiesEstimator, x) → h̃
 
 Return `h̃ ∈ [0, 1]`, the normalized discrete entropy of `x`, i.e. the value of [`entropy`](@ref)
 divided by the maximum value for `e`, according to the given probabilities estimator.
+
 If `e` is not given, it defaults to `Shannon()`.
+Like in [`entropy`](@ref), instead of a discrete entropy estimator, an entropy definition
+can be given as first argument.
 
 Notice that there is no method
 `entropy_normalized(e::EntropyDefinition, probs::Probabilities)`, because there is no way to know
@@ -225,6 +229,7 @@ end
 function entropy_normalized(est::ProbabilitiesEstimator, x::Array_or_Dataset)
     return entropy_normalized(Shannon(), est, x)
 end
+entropy_normalized(e::MaximumLikelihood, est, x) = entropy_normalized(e.definition, est, x)
 
 ###########################################################################################
 # Utils
