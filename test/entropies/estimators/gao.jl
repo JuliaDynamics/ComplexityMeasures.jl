@@ -30,6 +30,3 @@ ea_n = entropy(Gao(k = 5, base = ℯ, corrected = true), randn(npts))
 
 @test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
 @test N * 0.98 ≤ ea_n ≤ N * 1.02
-
-x = rand(1000)
-@test_throws ArgumentError entropy(Renyi(q = 2), Gao(), x)

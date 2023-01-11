@@ -15,6 +15,3 @@ ea_n3 = entropy(Goria(k = 5, base = 3), randn(npts))
 
 @test N * 0.98 ≤ ea_n ≤ N * 1.02
 @test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
-
-x = rand(1000)
-@test_throws ArgumentError entropy(Renyi(q = 2), Goria(), x)

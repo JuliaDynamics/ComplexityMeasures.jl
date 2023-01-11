@@ -18,9 +18,8 @@ from input data.
 
 ### Probabilities
 
-Entropies and other complexity measures are typically computed based on *probability
-distributions* (or more precisely
-[*probability mass functions*](https://en.wikipedia.org/wiki/Probability_mass_function)),
+Entropies and other complexity measures are typically computed based on _probability
+distributions_,
 which we simply refer to as "probabilities".
 Probabilities can be obtained from input data in a plethora of different ways.
 The central API function that returns a probability distribution

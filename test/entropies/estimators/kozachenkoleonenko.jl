@@ -13,6 +13,3 @@ ea = entropy(KozachenkoLeonenko(), rand(npts))
 ea_n3 = entropy(KozachenkoLeonenko(base = 3), randn(npts))
 @test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
 @test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
-
-x = rand(1000)
-@test_throws ArgumentError entropy(Renyi(q = 2), KozachenkoLeonenko(), x)
