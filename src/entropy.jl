@@ -5,7 +5,10 @@ export entropy, entropy_maximum, entropy_normalized
     EntropyDefinition
 
 `EntropyDefinition` is the supertype of all types that encapsulate definitions
-of (generalized) entropies. Currently implemented entropy definitions are:
+of (generalized) entropies. These also serve as estimators of discrete entropies,
+see description below.
+
+Currently implemented entropy definitions are:
 
 - [`Renyi`](@ref).
 - [`Tsallis`](@ref).
@@ -14,17 +17,24 @@ of (generalized) entropies. Currently implemented entropy definitions are:
 - [`Curado`](@ref).
 - [`StretchedExponential`](@ref).
 
-These entropy types are given as inputs to [`entropy`](@ref) and
-[`entropy_normalized`](@ref). Notice that in all documentation strings formulas are
-provided for the discrete version of the entropy, for simplicity.
-
-See [`entropy`](@ref) for usage.
+These types can be given as inputs to [`entropy`](@ref) or [`entropy_normalized`](@ref).
 
 ## Description
 
 Mathematically speaking, generalized entropies are just nonnegative functions of
 probability distributions that verify certain (entropy-type-dependent) axioms.
 Amigó et al.'s[^Amigó2018] summary paper gives a nice overview.
+
+However, for a software implementation computing entropies **in practice**,
+definitions is not really what matters; **estimators matter**.
+Because in the practical sense, one needs to estimate a definition from finite data,
+and different ways of estimating a quantity come with their own pros and cons.
+
+That is why the type [`DiscreteEntropyEstimator`](@ref) exists,
+which is what is actually given to [`entropy`](@ref).
+Some ways to estimate a discrete entropy only apply to a specific entropy definition.
+For estimators that can be applied to various entropy definitions,
+this is specified by providing an instance of `EntropyDefinition` to the estimator.
 
 [^Amigó2018]:
     Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
