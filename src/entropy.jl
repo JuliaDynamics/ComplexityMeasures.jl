@@ -42,6 +42,89 @@ this is specified by providing an instance of `EntropyDefinition` to the estimat
 """
 abstract type EntropyDefinition end
 
+###########################################################################################
+# Discrete entropy
+###########################################################################################
+"""
+    DiscreteEntropyEstimator
+    DiscEntropyEst # alias
+
+Supertype of all discrete entropy estimators.
+
+Currently only the [`MaximumLikelihood`](@ref) estimator is provided,
+which does not need to be used as using an [`EntropyDefinition`](@ref) directly in
+[`entropy`](@ref) is possible. But in the future, more advanced estimators will
+be added ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/237)).
+"""
+abstract type DiscreteEntropyEstimator end
+const DiscEntropyEst = DiscreteEntropyEstimator
+
+# Dummy estimator that doesn't actually change anything from the definitions
+"""
+    MaximumLikelihood(e::EntropyDefinition) <: DiscreteEntropyEstimator
+
+Also called empirical/naive/plug-in/maximum-likelihood, it calculates
+the entropy exactly as defined in the given [`EntropyDefinition`](@ref)
+directly from a probability mass function.
+"""
+struct MaximumLikelihood{E<:EntropyDefinition} <: DiscreteEntropyEstimator
+    definition::E
+end
+
+# Notice that StatsBase.jl also exports `entropy`!
+"""
+    entropy([e::EntropyDefinition,] probs::Probabilities)
+    entropy([e::EntropyDefinition,] est::ProbabilitiesEstimator, x)
+    entropy([e::DiscreteEntropyEstimator,] est::ProbabilitiesEstimator, x)
+
+Compute the **discrete entropy** `h::Real ∈ [0, ∞)` defined by `e`, in one of three ways:
+
+1. Directly from existing [`Probabilities`](@ref) `probs`.
+2. From input data `x`, by first estimating a probability distribution using the provided
+   [`ProbabilitiesEstimator`](@ref), then computing the entropy from that distribution.
+   The estimator in this case is assumed to be [`MaximumLikelihood`](@ref).
+3. Like in 2. but by explicitly providing an estimator for the discrete entropy.
+
+If `e` is not provided, [`Shannon()`](@ref) is used by default.
+Dispatches 1. and 2. are convenience wrappers that
+just call dispatch 3. with [`MaximumLikelihood`](@ref).
+
+## Maximum entropy and normalized entropy
+
+All discrete entropies `e` have a well defined maximum value for a given probability estimator.
+To obtain this value one only needs to call the [`entropy_maximum`](@ref) function with the
+chosen entropy type and probability estimator. Or, one can use [`entropy_normalized`](@ref)
+to obtain the normalized form of the entropy (divided by the maximum).
+
+## Examples
+
+```julia
+x = [rand(Bool) for _ in 1:10000] # coin toss
+ps = probabilities(x) # gives about [0.5, 0.5] by definition
+h = entropy(ps) # gives 1, about 1 bit by definition
+h = entropy(Shannon(), ps) # syntactically equivalent to above
+h = entropy(Shannon(), CountOccurrences(x), x) # syntactically equivalent to above
+h = entropy(SymbolicPermutation(;m=3), x) # gives about 2, again by definition
+h = entropy(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin toss
+```
+"""
+function entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
+    ps = probabilities(est, x)
+    return entropy(e, ps)
+end
+
+# dispatch for `entropy(e::EntropyDefinition, ps::Probabilities)`
+# is in the individual entropy definitions files
+
+# Convenience
+entropy(est::ProbabilitiesEstimator, x) = entropy(Shannon(), est, x)
+entropy(probs::Probabilities) = entropy(Shannon(), probs)
+entropy(e::MaximumLikelihood, est::ProbabilitiesEstimator, x) = entropy(e.definition, est, x)
+entropy(e::MaximumLikelihood, ps::Probabilities) = entropy(e.definition, ps)
+
+###########################################################################################
+# Differential entropy
+###########################################################################################
 """
     DifferentialEntropyEstimator
     DiffEntropyEst # alias
@@ -69,59 +152,6 @@ See [`entropy`](@ref) for usage.
 abstract type DifferentialEntropyEstimator end
 const DiffEntropyEst = DifferentialEntropyEstimator
 
-###########################################################################################
-# Discrete entropy
-###########################################################################################
-# Notice that StatsBase.jl also exports `entropy`.
-"""
-    entropy([e::EntropyDefinition,] probs::Probabilities)
-    entropy([e::EntropyDefinition,] est::ProbabilitiesEstimator, x)
-
-Compute the **discrete entropy** `h::Real ∈ [0, ∞)` defined by `e`, in one of two ways:
-
-1. Directly from existing [`Probabilities`](@ref) `probs`.
-2. From input data `x`, by first estimating a probability distribution using the provided
-   [`ProbabilitiesEstimator`](@ref), then computing entropy from that distribution.
-   In fact, the second method is just a 2-lines-of-code wrapper that calls
-   [`probabilities`](@ref) and gives the result to the first method.
-
-The entropy definition (first argument) is optional. Explicitly provide `e` if you need to
-specify a logarithm base for the entropy. When `est` is a probability estimator,
-`Shannon()` is used by default.
-
-## Maximum entropy and normalized entropy
-
-All discrete entropies `e` have a well defined maximum value for a given probability estimator.
-To obtain this value one only needs to call the [`entropy_maximum`](@ref) function with the
-chosen entropy type and probability estimator. Or, one can use [`entropy_normalized`](@ref)
-to obtain the normalized form of the entropy (divided by the maximum).
-
-## Examples
-
-```julia
-x = [rand(Bool) for _ in 1:10000] # coin toss
-ps = probabilities(x) # gives about [0.5, 0.5] by definition
-h = entropy(ps) # gives 1, about 1 bit by definition
-h = entropy(Shannon(), ps) # syntactically equivalent to above
-h = entropy(Shannon(), CountOccurrences(x), x) # syntactically equivalent to above
-h = entropy(SymbolicPermutation(;m=3), x) # gives about 2, again by definition
-h = entropy(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin toss
-```
-"""
-function entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
-    ps = probabilities(est, x)
-    return entropy(e, ps)
-end
-
-# dispatch for `entropy(e, ps)` in the entropy definitions files
-
-# Convenience
-entropy(est::ProbabilitiesEstimator, x) = entropy(Shannon(), est, x)
-entropy(probs::Probabilities) = entropy(Shannon(), probs)
-
-###########################################################################################
-# Differential entropy
-###########################################################################################
 # Dispatch for these functions is implemented in individual estimator files in
 # `entropies/estimators/`.
 """
