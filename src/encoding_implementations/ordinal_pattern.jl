@@ -12,6 +12,9 @@ their permutation/ordinal patterns and then into the integers based on the Lehme
 code. It is used by [`SymbolicPermutation`](@ref) and similar estimators, see that for
 a description of the outcome space.
 
+The ordinal/permutation pattern of a vector `χ` is simply `sortperm(χ)`, which gives the
+indices that would sort `χ` in ascending order.
+
 ## Description
 
 The Lehmer code, as implemented here, is a bijection between the set of `factorial(m)`
@@ -25,19 +28,22 @@ The decoding step is much slower due to missing optimizations (pull requests wel
 ```jldoctest
 julia> using ComplexityMeasures
 
-julia> x = [4.0, 1.0, 9.0];
+julia> χ = [4.0, 1.0, 9.0];
 
 julia> c = OrdinalPatternEncoding(3);
 
-julia> encode(c, x)
+julia> i = encode(c, χ)
 3
 
-julia> decode(c, 1)
+julia> decode(c, i)
 3-element SVector{3, Int64} with indices SOneTo(3):
  2
  1
  3
 ```
+
+If you want to encode something that is already a permutation pattern, then you
+can use the non-exported `permutation_to_integer` function.
 
 [^Berger2019]:
     Berger et al. "Teaching Ordinal Patterns to a Computer: Efficient
@@ -58,15 +64,20 @@ end
 total_outcomes(::OrdinalPatternEncoding{m}) where {m} = factorial(m)
 outcome_space(::OrdinalPatternEncoding{m}) where {m} = permutations(1:m) |> collect
 
-
 # Notice that `χ` is an element of a `Dataset`, so most definitely a static vector in
-# our code. However we allow `AbstractVector` if a user wanna use `encode` directly
+# our code. However we allow `AbstractVector` if a user wanna use `encode` directly.
 function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector) where {m}
     if m != length(χ)
         throw(ArgumentError("Permutation order and length of input must match!"))
     end
-    perm = sortperm!(encoding.perm, χ; lt = encoding.lt)
-    # Begin Lehmer code
+    perm = sortperm!(encoding.perm, χ)
+    return permutation_to_integer(perm)
+end
+
+# The algorithm from Berger (2019). Use this directly if encoding *permutations* instead
+# of input vectors that are to be permuted.
+function permutation_to_integer(perm)
+    m = length(perm)
     n = 0
     for i = 1:m-1
         for j = i+1:m
@@ -85,7 +96,7 @@ end
 function decode(::OrdinalPatternEncoding{m}, s::Int) where {m}
     # Convert integer to its factorial number representation. Each factorial number
     # corresponds to a unique permutation of the numbers `1, 2, ..., m`.
-    f::SVector{m, Int} = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 in `encode`
+    f::SVector{m, Int} = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 above
 
     # Reconstruct the permutation from the factorial representation
     xs = 1:m |> collect

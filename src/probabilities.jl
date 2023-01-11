@@ -9,34 +9,36 @@ export outcome_space
 # Types
 ###########################################################################################
 """
-    Probabilities <: AbstractVector
+    Probabilities <: AbstractArray
     Probabilities(x) → p
 
-`Probabilities` is a simple wrapper around `x::AbstractVector{<:Real}` that ensures its
-values sum to 1, so that `p` can be interpreted as probability mass function.
+`Probabilities` is a simple wrapper around `x::AbstractArray{<:Real, N}` that ensures its
+values sum to 1, so that `p` can be interpreted as `N`-dimensional probability mass
+function. In most use cases, `p` will be a vector.
 """
-struct Probabilities{T} <: AbstractVector{T}
-    p::Vector{T}
-    function Probabilities(x::AbstractVector{T}, normed = false) where T <: Real
+struct Probabilities{T, N} <: AbstractArray{T, N}
+    p::Array{T, N}
+    function Probabilities(x::AbstractArray{T, N}, normed = false) where {T <: Real, N}
         if !normed # `normed` is an internal argument that skips checking the sum.
-            s = sum(x)
+            s = sum(x, dims = 1:N)
             if s ≠ 1
                 x = x ./ s
             end
         end
-        return new{T}(x)
+        return new{T, N}(x)
     end
 end
-function Probabilities(x::AbstractVector{<:Integer})
+function Probabilities(x::AbstractArray{<:Integer, N}) where N
     s = sum(x)
     return Probabilities(x ./ s, true)
 end
 
-# extend base Vector interface:
+# extend base Array interface:
 for f in (:length, :size, :eachindex, :eltype, :parent,
     :lastindex, :firstindex, :vec, :getindex, :iterate)
     @eval Base.$(f)(d::Probabilities, args...) = $(f)(d.p, args...)
 end
+
 Base.IteratorSize(::Probabilities) = Base.HasLength()
 # Special extension due to the rules of the API
 @inline Base.sum(::Probabilities{T}) where T = one(T)
@@ -96,7 +98,7 @@ contain `0`s as entries or not depends on the estimator.
 E.g., in [`ValueHistogram`](@ref) `0`s are skipped, while in
 [`SymbolicPermutation`](@ref) `0` are not, because we get them for free.
 
-    probabilities(x::Array_or_Dataset) → p::Probabilities
+    probabilities(x::Vector_or_Dataset) → p::Probabilities
 
 Estimate probabilities by directly counting the elements of `x`, assuming that
 `Ω = sort(unique(x))`, i.e. that the outcome space is the unique elements of `x`.

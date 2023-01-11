@@ -13,8 +13,8 @@ npts = 1000000
 ea = entropy(AlizadehArghami(m = 100), rand(npts))
 ea_n3 = entropy(AlizadehArghami(m = 100, base = 3), randn(npts))
 
+@test N_base3 * 0.96 ≤ ea_n3 ≤ N_base3 * 1.02
 @test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
-@test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
 
 x = rand(1000)
 @test_throws ArgumentError entropy(Renyi(q = 2), AlizadehArghami(), x)

@@ -12,7 +12,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
 
     # Various
     testfile("utils/fasthist.jl")
-    # testfile("utils/encoding.jl")
+    testfile("utils/encoding.jl")
     testfile("convenience.jl")
     testfile("deprecations.jl")
 end

@@ -2,10 +2,18 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 2.2
+
+- Corrected documentation for `SymbolicPermutation`, `SymbolicAmplitudeAwarePermutation`,
+    and `SymbolicWeightedPermutation`, indicating that the outcome space is the set of
+    `factorial(m)` *permutations* of the integers `1:m`, not the rank orderings,
+    as was stated before.
+
 ## 2.1
 
 - Added `Gao` estimator for differential Shannon entropy.
 - Added `Lord` estimator for differential Shannon entropy.
+- `Probabilities` now wraps `AbstractArray{T, N}` instead of `AbstractVector{T}`, so that it can also represent multidimensional probability mass functions. For vectors, it behaves as before.
 
 ## 2.0
 
