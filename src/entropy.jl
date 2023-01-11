@@ -74,27 +74,26 @@ end
 
 # Notice that StatsBase.jl also exports `entropy`!
 """
-    entropy([e::EntropyDefinition,] probs::Probabilities)
-    entropy([e::EntropyDefinition,] est::ProbabilitiesEstimator, x)
-    entropy(e::DiscreteEntropyEstimator, est::ProbabilitiesEstimator, x)
+    entropy([e::DiscreteEntropyEstimator,] probs::Probabilities)
+    entropy([e::DiscreteEntropyEstimator,] est::ProbabilitiesEstimator, x)
 
-Compute the **discrete entropy** `h::Real ∈ [0, ∞)` defined by `e`, in one of three ways:
+Compute the **discrete entropy** `h::Real ∈ [0, ∞)`,
+using the estimator `e`, in one of two ways:
 
 1. Directly from existing [`Probabilities`](@ref) `probs`.
-2. From input data `x`, by first estimating a probability distribution using the provided
-   [`ProbabilitiesEstimator`](@ref), then computing the entropy from that distribution.
-   The estimator in this case is assumed to be [`MLEntropy`](@ref).
-3. Like in 2. but by explicitly providing an estimator for the discrete entropy.
+2. From input data `x`, by first estimating a probability mass function using the provided
+   [`ProbabilitiesEstimator`](@ref), and then computing the entropy from that mass fuction
+   using the provided estimator.
 
+Instead of providing a [`DiscreteEntropyEstimator`](@ref), an [`EntropyDefinition`](@ref)
+can be given directly, in which case [`MLEntropy`](@ref) is used as the estimator.
 If `e` is not provided, [`Shannon()`](@ref) is used by default.
-Dispatches 1. and 2. are convenience wrappers that
-end up calling dispatch 3. with [`MLEntropy`](@ref).
 
 ## Maximum entropy and normalized entropy
 
-All discrete entropies `e` have a well defined maximum value for a given probability estimator.
-To obtain this value one only needs to call the [`entropy_maximum`](@ref) function with the
-chosen entropy type and probability estimator. Or, one can use [`entropy_normalized`](@ref)
+All discrete entropies have a well defined maximum value for a given probability estimator.
+To obtain this value one only needs to call the [`entropy_maximum`](@ref).
+Or, one can use [`entropy_normalized`](@ref)
 to obtain the normalized form of the entropy (divided by the maximum).
 
 ## Examples
