@@ -4,7 +4,7 @@
 ComplexityMeasures
 ```
 
-## Content and terminology
+## [Content and terminology](@id terminology)
 
 !!! note
     The documentation here follows (loosely) chapter 5 of

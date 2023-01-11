@@ -95,7 +95,7 @@ end
 # Plot results
 # -------------
 fig = Figure(resolution = (700, 11 * 200))
-labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh", "Gao (not corrected)", 
+labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh", "Gao (not corrected)",
     "Gao (corrected)", "Goria", "Lord"]
 labels_os = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
 
@@ -354,7 +354,7 @@ When comparing different signals or signals that have different length, it is be
 
 ```@example MAIN
 using DynamicalSystemsBase
-N1, N2, a = 101, 100001, 10
+N1, N2, a = 101, 10001, 10
 
 for N in (N1, N2)
     local t = LinRange(0, 2*a*π, N)

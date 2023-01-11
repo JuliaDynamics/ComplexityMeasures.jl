@@ -22,5 +22,5 @@ end
     @test entropy_maximum(s, e2, x) == 1
     # Normalized
     @test entropy_normalized(s, e1, x) > 0
-    @test entropy_normalized(s, e2, x) ≈ 1 atol = 1e-3
+    @test entropy_normalized(s, e2, x) ≈ 1 atol=1e-3
 end

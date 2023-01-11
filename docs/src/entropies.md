@@ -9,7 +9,7 @@ The entropies API is defined by
 - [`DiscreteEntropyEstimator`](@ref)
 - [`DifferentialEntropyEstimator`](@ref)
 
-Please be sure you have read the [Terminology](@ref) section before going through the API here, to have a good idea of the different "flavors" of entropies and how they all come together over the common interface of the [`entropy`](@ref) function.
+Please be sure you have read the [Terminology](@ref terminology) section before going through the API here, to have a good idea of the different "flavors" of entropies and how they all come together over the common interface of the [`entropy`](@ref) function.
 
 ## Entropy definitions
 
@@ -41,10 +41,10 @@ MLEntropy
 ## Differential entropy
 
 ```@docs
-entropy(::EntropyDefinition, ::DifferentialEntropyEstimator, ::Any)
+entropy(::DifferentialEntropyEstimator, ::Any)
 ```
 
-### Table of differential entropy estimators
+### [Table of differential entropy estimators](@id table_diff_ent_est)
 
 The following estimators are *differential* entropy estimators, and can also be used
 with [`entropy`](@ref).

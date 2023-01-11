@@ -1,4 +1,5 @@
-export EntropyDefinition, DiscEntropyEst, DiscreteEntropyEstimator
+export EntropyDefinition
+export MLEntropy, DiscEntropyEst, DiscreteEntropyEstimator
 export DiffEntropyEst, DifferentialEntropyEstimator
 export entropy, entropy_maximum, entropy_normalized
 
@@ -83,11 +84,11 @@ using the estimator `e`, in one of two ways:
 1. Directly from existing [`Probabilities`](@ref) `probs`.
 2. From input data `x`, by first estimating a probability mass function using the provided
    [`ProbabilitiesEstimator`](@ref), and then computing the entropy from that mass fuction
-   using the provided estimator.
+   using the provided [`DiscreteEntropyEstimator`](@ref).
 
 Instead of providing a [`DiscreteEntropyEstimator`](@ref), an [`EntropyDefinition`](@ref)
 can be given directly, in which case [`MLEntropy`](@ref) is used as the estimator.
-If `e` is not provided, [`Shannon()`](@ref) is used by default.
+If `e` is not provided, [`Shannon`](@ref)`()` is used by default.
 
 ## Maximum entropy and normalized entropy
 
@@ -132,19 +133,8 @@ The supertype of all differential entropy estimators.
 These estimators compute an entropy value in various ways that do not involve
 explicitly estimating a probability distribution.
 
-Currently implemented estimators are:
-
-- [`KozachenkoLeonenko`](@ref)
-- [`Kraskov`](@ref)
-- [`Zhu`](@ref)
-- [`ZhuSingh`](@ref)
-- [`Goria`](@ref)
-- [`Gao`](@ref)
-- [`Lord`](@ref)
-- [`Vasicek`](@ref)
-- [`Ebrahimi`](@ref)
-- [`Correa`](@ref)
-- [`AlizadehArghami`](@ref)
+See the [table of differential entropy estimators](@ref table_diff_ent_est)
+in the docs for all differential entropy estimators.
 
 See [`entropy`](@ref) for usage.
 """
@@ -164,8 +154,8 @@ The overwhelming majority of entropy estimators estimate the Shannon entropy.
 If some estimator can estimate different _definitions_ of entropy (e.g., [`Tsallis`](@ref)),
 this is provided as an argument to the estimator itself.
 
-See the [Table of differential entropy estimators](@ref)
-in the docs for a table view of all differential entropy estimators.
+See the [table of differential entropy estimators](@ref table_diff_ent_est)
+in the docs for all differential entropy estimators.
 
 ## Examples
 
@@ -178,7 +168,7 @@ h = entropy(est, randn(1_000_000))
 abs(h - 0.5*log(2π) - 0.5) # ≈ 0.001
 ```
 """
-function entropy(::DiffEntropyEst, ::Array_or_Dataset) end
+function entropy(::DiffEntropyEst, ::Any) end
 
 entropy(est::DiffEntropyEst, ::Probabilities) = error("""
     EntropyDefinition estimators like $(nameof(typeof(est)))
