@@ -1,4 +1,5 @@
-export EntropyDefinition, DiffEntropyEst, DifferentialEntropyEstimator
+export EntropyDefinition, DiscEntropyEst, DiscreteEntropyEstimator
+export DiffEntropyEst, DifferentialEntropyEstimator
 export entropy, entropy_maximum, entropy_normalized
 
 """
@@ -155,7 +156,7 @@ const DiffEntropyEst = DifferentialEntropyEstimator
 # Dispatch for these functions is implemented in individual estimator files in
 # `entropies/estimators/`.
 """
-    entropy(est::DifferentialEntropyEstimator, x)
+    entropy(est::DifferentialEntropyEstimator, x) → h
 
 Approximate the **differential entropy** `h::Real` using the provided
 [`DifferentialEntropyEstimator`](@ref) and input data `x`.
@@ -179,10 +180,8 @@ h = entropy(est, randn(1_000_000))
 abs(h - 0.5*log(2π) - 0.5) # ≈ 0.001
 ```
 """
-function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
-    entropy_definition_compatibility(e, est)
-    return entropy(est, x)
-end
+function entropy(::DiffEntropyEst, ::Array_or_Dataset) end
+
 entropy(est::DiffEntropyEst, ::Probabilities) = error("""
     EntropyDefinition estimators like $(nameof(typeof(est)))
     are not called with probabilities.
