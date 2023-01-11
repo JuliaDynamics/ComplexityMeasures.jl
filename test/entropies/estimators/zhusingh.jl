@@ -1,5 +1,5 @@
 using ComplexityMeasures
-using Test, Distributions, LinearAlgebra
+using Test, LinearAlgebra
 
 # Test internals in addition to end-product, because designing an exact end-product
 # test is  a mess due to the neighbor searches. If these top-level tests fail, then

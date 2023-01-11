@@ -58,5 +58,5 @@ function entropy(est::AlizadehArghami, x::AbstractVector{<:Real})
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
     h = entropy(Vasicek(; m, base = MathConstants.e), x) + (2 / n)*(m * log(2))
-    return h / log(est.base, ℯ)
+    return h / log(est.base, MathConstants.e)
 end

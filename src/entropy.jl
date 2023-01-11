@@ -119,8 +119,7 @@ end
 # Convenience
 entropy(est::ProbabilitiesEstimator, x) = entropy(Shannon(), est, x)
 entropy(probs::Probabilities) = entropy(Shannon(), probs)
-entropy(e::MLEntropy, est::ProbabilitiesEstimator, x) = entropy(e.definition, est, x)
-entropy(e::MLEntropy, ps::Probabilities) = entropy(e.definition, ps)
+entropy(e::MLEntropy, args...) = entropy(e.definition, args...)
 
 ###########################################################################################
 # Differential entropy
