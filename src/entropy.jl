@@ -189,14 +189,21 @@ entropy(est::DiffEntropyEst, ::Probabilities) = error("""
 # Normalize API
 ###########################################################################################
 """
-    entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator)
+    entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
 
-Return the maximum value of a discrete entropy with the given probabilities estimator.
+Return the maximum value of a discrete entropy with the given probabilities estimator
+and input data `x`. Like in [`outcome_space`](@ref), for some estimators
+the concrete outcome space is known without knowledge of input `x`,
+in which case the function dispatches to `entropy_maximum(e, est)`.
 
     entropy_maximum(e::EntropyDefinition, L::Int)
 
-Same as above, but computed thdirectly from the number of total outcomes `L`.
+Same as above, but computed directly from the number of total outcomes `L`.
 """
+function entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
+    L = total_outcomes(est, x)
+    return entropy_maximum(e, L)
+end
 function entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator)
     L = total_outcomes(est)
     return entropy_maximum(e, L)
@@ -204,7 +211,7 @@ end
 function entropy_maximum(e::EntropyDefinition, ::Int)
     error("not implemented for entropy type $(nameof(typeof(e))).")
 end
-entropy_maximum(e::MLEntropy,  x) = entropy_maximum(e.definition, x)
+entropy_maximum(e::MLEntropy, args...) = entropy_maximum(e.definition, args...)
 
 """
     entropy_normalized([e::DiscreteEntropyEstimator,] est::ProbabilitiesEstimator, x) → h̃
@@ -212,16 +219,16 @@ entropy_maximum(e::MLEntropy,  x) = entropy_maximum(e.definition, x)
 Return `h̃ ∈ [0, 1]`, the normalized discrete entropy of `x`, i.e. the value of [`entropy`](@ref)
 divided by the maximum value for `e`, according to the given probabilities estimator.
 
-If `e` is not given, it defaults to `Shannon()`.
-Like in [`entropy`](@ref), instead of a discrete entropy estimator, an entropy definition
-can be given as first argument.
+Instead of a discrete entropy estimator, an [`EntropyDefinition`](@ref)
+can be given as first argument. If `e` is not given, it defaults to `Shannon()`.
 
 Notice that there is no method
-`entropy_normalized(e::EntropyDefinition, probs::Probabilities)`, because there is no way to know
+`entropy_normalized(e::DiscreteEntropyEstimator, probs::Probabilities)`,
+because there is no way to know
 the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs`.
 """
 function entropy_normalized(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
-    return entropy(e, est, x) / entropy_maximum(e, est)
+    return entropy(e, est, x) / entropy_maximum(e, est, x)
 end
 function entropy_normalized(est::ProbabilitiesEstimator, x::Array_or_Dataset)
     return entropy_normalized(Shannon(), est, x)

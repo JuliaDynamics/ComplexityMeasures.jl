@@ -147,10 +147,10 @@ in which case the function dispatches to `outcome_space(est)`.
 In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
 function outcome_space(est::ProbabilitiesEstimator)
-    error("""
+    error(ErrorException("""
     `outcome_space(est)` not implemented for estimator $(typeof(est)).
     Try calling `outcome_space(est, x)`, and if you get the same error, open an issue.
-    """)
+    """))
 end
 outcome_space(est::ProbabilitiesEstimator, x) = outcome_space(est)
 
