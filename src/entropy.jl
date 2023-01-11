@@ -26,7 +26,7 @@ Mathematically speaking, generalized entropies are just nonnegative functions of
 probability distributions that verify certain (entropy-type-dependent) axioms.
 Amigó et al.'s[^Amigó2018] summary paper gives a nice overview.
 
-However, for a software implementation computing entropies **in practice**,
+However, for a software implementation computing entropies _in practice_,
 definitions is not really what matters; **estimators matter**.
 Because in the practical sense, one needs to estimate a definition from finite data,
 and different ways of estimating a quantity come with their own pros and cons.
@@ -52,7 +52,7 @@ abstract type EntropyDefinition end
 
 Supertype of all discrete entropy estimators.
 
-Currently only the [`MaximumLikelihood`](@ref) estimator is provided,
+Currently only the [`MLEntropy`](@ref) estimator is provided,
 which does not need to be used, as using an [`EntropyDefinition`](@ref) directly in
 [`entropy`](@ref) is possible. But in the future, more advanced estimators will
 be added ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/237)).
@@ -62,13 +62,13 @@ const DiscEntropyEst = DiscreteEntropyEstimator
 
 # Dummy estimator that doesn't actually change anything from the definitions
 """
-    MaximumLikelihood(e::EntropyDefinition) <: DiscreteEntropyEstimator
+    MLEntropy(e::EntropyDefinition) <: DiscreteEntropyEstimator
 
-Also called empirical/naive/plug-in/maximum-likelihood, it calculates
-the entropy exactly as defined in the given [`EntropyDefinition`](@ref)
-directly from a probability mass function.
+Standing for "maximum likelihood entropy", and also called empirical/naive/plug-in,
+this estimator calculates the entropy exactly as defined in the given
+[`EntropyDefinition`](@ref) directly from a probability mass function.
 """
-struct MaximumLikelihood{E<:EntropyDefinition} <: DiscreteEntropyEstimator
+struct MLEntropy{E<:EntropyDefinition} <: DiscreteEntropyEstimator
     definition::E
 end
 
@@ -76,19 +76,19 @@ end
 """
     entropy([e::EntropyDefinition,] probs::Probabilities)
     entropy([e::EntropyDefinition,] est::ProbabilitiesEstimator, x)
-    entropy([e::DiscreteEntropyEstimator,] est::ProbabilitiesEstimator, x)
+    entropy(e::DiscreteEntropyEstimator, est::ProbabilitiesEstimator, x)
 
 Compute the **discrete entropy** `h::Real ∈ [0, ∞)` defined by `e`, in one of three ways:
 
 1. Directly from existing [`Probabilities`](@ref) `probs`.
 2. From input data `x`, by first estimating a probability distribution using the provided
    [`ProbabilitiesEstimator`](@ref), then computing the entropy from that distribution.
-   The estimator in this case is assumed to be [`MaximumLikelihood`](@ref).
+   The estimator in this case is assumed to be [`MLEntropy`](@ref).
 3. Like in 2. but by explicitly providing an estimator for the discrete entropy.
 
 If `e` is not provided, [`Shannon()`](@ref) is used by default.
 Dispatches 1. and 2. are convenience wrappers that
-just call dispatch 3. with [`MaximumLikelihood`](@ref).
+end up calling dispatch 3. with [`MLEntropy`](@ref).
 
 ## Maximum entropy and normalized entropy
 
@@ -120,8 +120,8 @@ end
 # Convenience
 entropy(est::ProbabilitiesEstimator, x) = entropy(Shannon(), est, x)
 entropy(probs::Probabilities) = entropy(Shannon(), probs)
-entropy(e::MaximumLikelihood, est::ProbabilitiesEstimator, x) = entropy(e.definition, est, x)
-entropy(e::MaximumLikelihood, ps::Probabilities) = entropy(e.definition, ps)
+entropy(e::MLEntropy, est::ProbabilitiesEstimator, x) = entropy(e.definition, est, x)
+entropy(e::MLEntropy, ps::Probabilities) = entropy(e.definition, ps)
 
 ###########################################################################################
 # Differential entropy
@@ -206,7 +206,7 @@ end
 function entropy_maximum(e::EntropyDefinition, ::Int)
     error("not implemented for entropy type $(nameof(typeof(e))).")
 end
-entropy_maximum(e::MaximumLikelihood,  x) = entropy_maximum(e.definition, x)
+entropy_maximum(e::MLEntropy,  x) = entropy_maximum(e.definition, x)
 
 """
     entropy_normalized([e::DiscreteEntropyEstimator,] est::ProbabilitiesEstimator, x) → h̃
@@ -228,7 +228,7 @@ end
 function entropy_normalized(est::ProbabilitiesEstimator, x::Array_or_Dataset)
     return entropy_normalized(Shannon(), est, x)
 end
-entropy_normalized(e::MaximumLikelihood, est, x) = entropy_normalized(e.definition, est, x)
+entropy_normalized(e::MLEntropy, est, x) = entropy_normalized(e.definition, est, x)
 
 ###########################################################################################
 # Utils
