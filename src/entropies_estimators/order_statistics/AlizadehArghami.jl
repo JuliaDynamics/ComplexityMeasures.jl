@@ -2,10 +2,10 @@ export AlizadehArghami
 
 """
     AlizadehArghami <: DiffEntropyEst
-    AlizadehArghami(; m::Int = 1)
+    AlizadehArghami(; m::Int = 1, base = 2)
 
 The `AlizadehArghami`estimator computes the [`Shannon`](@ref) differential
-[`entropy`](@ref) of `x` (a multi-dimensional [`Dataset`](@ref)) using the
+[`entropy`](@ref) (in the given `base`) of a timeseries using the
 method from Alizadeh & Arghami (2010)[^Alizadeh2010].
 
 The `AlizadehArghami` estimator belongs to a class of differential entropy estimators based
@@ -48,14 +48,15 @@ the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correcti
 See also: [`entropy`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
 [`Vasicek`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
-@Base.kwdef struct AlizadehArghami{I<:Integer} <: DiffEntropyEst
+@Base.kwdef struct AlizadehArghami{I<:Integer, B} <: DiffEntropyEst
     m::I = 1
+    base::B = 2
 end
 
-function entropy(e::Shannon, est::AlizadehArghami, x::AbstractVector{T}) where T
+function entropy(est::AlizadehArghami, x::AbstractVector{<:Real})
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
-    h = entropy(Shannon(base = ℯ), Vasicek(; m), x) + (2 / n)*(m * log(2))
-    return h / log(e.base, ℯ)
+    h = entropy(Vasicek(; m, base = MathConstants.e), x) + (2 / n)*(m * log(2))
+    return h / log(est.base, MathConstants.e)
 end

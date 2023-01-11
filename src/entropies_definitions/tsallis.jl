@@ -20,8 +20,8 @@ with `k` standing for the Boltzmann constant. It is defined as
 S_q(p) = \\frac{k}{q - 1}\\left(1 - \\sum_{i} p[i]^q\\right)
 ```
 
-If the probability estimator has known alphabet length ``L``, then the maximum
-value of the Tsallis entropy is ``k(L^{1 - q} - 1)/(1 - q)``.
+The maximum value of the Tsallis entropy is ````k(L^{1 - q} - 1)/(1 - q)``,
+with ``L`` the [`total_outcomes`](@ref).
 
 [^Tsallis1988]:
     Tsallis, C. (1988). Possible generalization of Boltzmann-Gibbs statistics.

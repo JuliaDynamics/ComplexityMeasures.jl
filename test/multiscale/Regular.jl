@@ -7,8 +7,8 @@ e = Shannon()
 
 # Generic tests is all we need here. The tests that make sure that the entropies are
 # computed for the correctly sampled timeseries are in `/test/multiscale/downsampling.jl`
-mr = ComplexityMeasures.multiscale(Regular(), e, est, x; maxscale)
-mrn = ComplexityMeasures.multiscale_normalized(Regular(), e, est, x; maxscale)
+mr = ComplexityMeasures.multiscale(Regular(), est, x; maxscale)
+mrn = ComplexityMeasures.multiscale_normalized(Regular(), est, x; maxscale)
 @test mr isa Vector{T} where T <: Real
 @test mrn isa Vector{T} where T <: Real
 @test length(mr) == 5

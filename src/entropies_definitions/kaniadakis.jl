@@ -8,12 +8,13 @@ The Kaniadakis entropy (Tsallis, 2009)[^Tsallis2009], used with [`entropy`](@ref
 compute
 
 ```math
-H_K(p) = -\\sum_{i=1}^N p_i\\log_\\kappa^K(p_i),
+H_K(p) = -\\sum_{i=1}^N p_i f_\\kappa(p_i),
 ```
 ```math
-\\log_\\kappa = \\dfrac{x^\\kappa - x^{-\\kappa}}{2\\kappa},
+f_\\kappa (x) = \\dfrac{x^\\kappa - x^{-\\kappa}}{2\\kappa},
 ```
-where if ``\\kappa = 0``, regular logarithm to the given `base` is used, and `log(0) = 0`.
+where if ``\\kappa = 0``, regular logarithm to the given `base` is used, and
+0 probabilities are skipped.
 
 [^Tsallis2009]:
     Tsallis, C. (2009). Introduction to nonextensive statistical mechanics: approaching a

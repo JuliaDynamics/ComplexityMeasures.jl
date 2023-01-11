@@ -1,5 +1,14 @@
-@deprecate TimeScaleMODWT WaveletOverlap
+# from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
+function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
+    if e isa Shannon
+        return entropy(est, x)
+    else
+        error("only shannon entropy supports this deprecated interface")
+    end
+end
 
+# From before 2.0:
+@deprecate TimeScaleMODWT WaveletOverlap
 function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})
     @warn """
     `probabilities(x::Vector_or_Dataset, ε::Real)`

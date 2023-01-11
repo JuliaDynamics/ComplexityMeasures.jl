@@ -68,7 +68,7 @@ end
     RectangularBinEncoding(binning::RectangularBinning, x; n_eps = 2)
     RectangularBinEncoding(binning::FixedRectangularBinning; n_eps = 2)
 
-Struct used in [`outcomes`](@ref) to map points of `x` into their respective bins.
+An encoding scheme that [`encode`](@ref)s points `χ ∈ x` into their histogram bins.
 It finds the minima along each dimension, and computes appropriate
 edge lengths for each dimension of `x` given a rectangular binning.
 
@@ -76,8 +76,9 @@ The second signature does not need `x` because (1) the binning is fixed, and the
 size of `x` doesn't matter, and (2) because the binning contains the dimensionality
 information as `ϵmin/max` is already an `NTuple`.
 
-Due to roundoff error when computing bin edges, a small tolerance `n_eps * eps()`
-is added to bin widths to ensure the correct number of bins is produced.
+Due to roundoff error when computing bin edges, the computed bin widths
+are increased to their `nextfloat` `n_eps` times
+to ensure the correct number of bins is produced.
 
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
 """

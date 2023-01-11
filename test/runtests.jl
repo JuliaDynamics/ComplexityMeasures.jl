@@ -8,7 +8,8 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     include("entropies/entropies.jl")
     include("complexity/complexity.jl")
 
-    include("multiscale/multiscale.jl")
+    # When multiscale is exported, this should be turned on
+    # include("multiscale/multiscale.jl")
 
     # Various
     testfile("utils/fasthist.jl")

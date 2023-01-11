@@ -2,11 +2,11 @@ export Kraskov
 
 """
     Kraskov <: DiffEntropyEst
-    Kraskov(; k::Int = 1, w::Int = 1)
+    Kraskov(; k::Int = 1, w::Int = 1, base = 2)
 
-The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional [`Dataset`](@ref)) using the `k`-th nearest neighbor
-searches method from [^Kraskov2004].
+The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of
+a multi-dimensional [`Dataset`](@ref) using the `k`-th nearest neighbor
+searches method from [^Kraskov2004] at the given `base`.
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
@@ -29,12 +29,13 @@ See also: [`entropy`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialEntropy
     Kraskov, A., Stögbauer, H., & Grassberger, P. (2004).
     Estimating mutual information. Physical review E, 69(6), 066138.
 """
-Base.@kwdef struct Kraskov <: DiffEntropyEst
+Base.@kwdef struct Kraskov{B} <: NNDiffEntropyEst
     k::Int = 1
     w::Int = 1
+    base::B = 2
 end
 
-function entropy(e::Shannon, est::Kraskov, x::AbstractDataset{D, T}) where {D, T}
+function entropy(est::Kraskov, x::AbstractDataset{D}) where {D}
     (; k, w) = est
     N = length(x)
     ρs = maximum_neighbor_distances(x, w, k)
@@ -42,5 +43,5 @@ function entropy(e::Shannon, est::Kraskov, x::AbstractDataset{D, T}) where {D, T
     h = -digamma(k) + digamma(N) +
         log(MathConstants.e, ball_volume(D)) +
         D/N*sum(log.(MathConstants.e, ρs))
-    return h / log(e.base, MathConstants.e) # Convert to target unit
+    return h / log(est.base, MathConstants.e) # Convert to target unit
 end

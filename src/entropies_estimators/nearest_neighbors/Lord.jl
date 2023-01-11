@@ -24,7 +24,7 @@ export Lord
 
 """
     Lord <: DifferentialEntropyEstimator
-    Lord(; k = 10, w = 0)
+    Lord(; k = 10, w = 0, base = 2)
 
 `Lord` estimates the [`Shannon`](@ref) differential [`entropy`](@ref) using a nearest
 neighbor approach with a local nonuniformity correction (LNC).
@@ -69,12 +69,13 @@ makes `Lord` a well-suited entropy estimator for a wide range of systems.
     of entropy and mutual information. Chaos: An Interdisciplinary Journal of Nonlinear
     Science, 28(3), 033114.
 """
-Base.@kwdef struct Lord <: DifferentialEntropyEstimator
+Base.@kwdef struct Lord{B} <: NNDiffEntropyEst
     k::Int = 10
     w::Int = 0
+    base::B = 2
 end
 
-function entropy(e::Shannon, est::Lord, x::AbstractDataset{D}) where {D}
+function entropy(est::Lord, x::AbstractDataset{D}) where {D}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())
@@ -106,7 +107,7 @@ function entropy(e::Shannon, est::Lord, x::AbstractDataset{D}) where {D}
         # Center neighborhood points around mean of the neighborhood.
         c = centroid(xᵢ, neighborsᵢ, k)
         center_neighborhood!(C, c, xᵢ, neighborsᵢ) # put centered vectors in `C`
-        fill_A!(A, C, D)
+        fill_A!(A, C)
 
         # SVD. The columns of Vt are the semi-axes of the ellipsoid, while Σ gives the
         # magnitudes of the axes.
@@ -128,13 +129,12 @@ function entropy(e::Shannon, est::Lord, x::AbstractDataset{D}) where {D}
     end
     h = - h / N
 
-    return h / log(e.base, ℯ)
+    return h / log(est.base, ℯ)
 end
-entropy(est::Lord, args...) = entropy(Shannon(), est, args...)
 
 # This is zero-allocating.
-function fill_A!(A, C, D)
-    for (j, m) in enumerate(C)
+function fill_A!(A, C)
+    @inbounds for (j, m) in enumerate(C)
         A[j, :] = m
     end
 end

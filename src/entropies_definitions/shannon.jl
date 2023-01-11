@@ -11,6 +11,9 @@ H(p) = - \\sum_i p[i] \\log(p[i])
 ```
 with the ``\\log`` at the given `base`.
 
+The maximum value of the Shannon entropy is ``\\log_{base}(L)``, which is the entropy of the
+uniform distribution with ``L`` the [`total_outcomes`](@ref).
+
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
 Base.@kwdef struct Shannon{B} <: EntropyDefinition
@@ -19,7 +22,7 @@ end
 
 function entropy(e::Shannon, probs::Probabilities)
     base = e.base
-    non0_probs = Iterators.filter(!iszero, probs.p)
+    non0_probs = Iterators.filter(!iszero, vec(probs))
     logf = log_with_base(base)
     return -sum(x*logf(x) for x in non0_probs)
 end

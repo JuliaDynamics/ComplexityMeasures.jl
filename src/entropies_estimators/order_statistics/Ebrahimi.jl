@@ -2,10 +2,10 @@ export Ebrahimi
 
 """
     Ebrahimi <: DiffEntropyEst
-    Ebrahimi(; m::Int = 1)
+    Ebrahimi(; m::Int = 1, base = 2)
 
-The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) of `x`
-(a multi-dimensional [`Dataset`](@ref)) using the method from Ebrahimi (1994)[^Ebrahimi1994].
+The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`entropy`](@ref) (in the given
+`base`) of a timeseries using the method from Ebrahimi (1994)[^Ebrahimi1994].
 
 The `Ebrahimi` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
@@ -58,8 +58,9 @@ c_i =
 See also: [`entropy`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Vasicek`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
-@Base.kwdef struct Ebrahimi{I<:Integer} <: DiffEntropyEst
+@Base.kwdef struct Ebrahimi{I<:Integer, B} <: DiffEntropyEst
     m::I = 1
+    base::B = 2
 end
 
 function ebrahimi_scaling_factor(i, m, n)
@@ -72,7 +73,7 @@ function ebrahimi_scaling_factor(i, m, n)
     end
 end
 
-function entropy(e::Shannon, est::Ebrahimi, x::AbstractVector{T}) where T
+function entropy(est::Ebrahimi, x::AbstractVector{<:Real})
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
@@ -86,5 +87,5 @@ function entropy(e::Shannon, est::Ebrahimi, x::AbstractVector{T}) where T
         dprev = ith_order_statistic(ex, i - m, n)
         HVₘₙ += log(f * (dnext - dprev))
     end
-    return (HVₘₙ / n) / log(e.base, ℯ)
+    return (HVₘₙ / n) / log(est.base, ℯ)
 end

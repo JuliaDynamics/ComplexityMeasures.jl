@@ -2,10 +2,11 @@ export Vasicek
 
 """
     Vasicek <: DiffEntropyEst
-    Vasicek(; m::Int = 1)
+    Vasicek(; m::Int = 1, base = 2)
 
-The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional [`Dataset`](@ref)) using the method from Vasicek (1976)[^Vasicek1976].
+The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref)
+(in the given `base`) of
+a timeseries using the method from Vasicek (1976)[^Vasicek1976].
 
 The `Vasicek` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic), of which
@@ -54,11 +55,12 @@ written for this package).
 See also: [`entropy`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Ebrahimi`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
-@Base.kwdef struct Vasicek{I<:Integer} <: DiffEntropyEst
+@Base.kwdef struct Vasicek{I<:Integer, B} <: DiffEntropyEst
     m::I = 1
+    base::B = 2
 end
 
-function entropy(e::Shannon, est::Vasicek, x::AbstractVector{T}) where T
+function entropy(est::Vasicek, x::AbstractVector{T}) where {T<:Real}
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
@@ -71,5 +73,5 @@ function entropy(e::Shannon, est::Vasicek, x::AbstractVector{T}) where T
         dprev = ith_order_statistic(ex, i - m, n)
         HVₘₙ += log(f * (dnext - dprev))
     end
-    return (HVₘₙ / n) / log(e.base, ℯ)
+    return (HVₘₙ / n) / log(est.base, ℯ)
 end

@@ -7,7 +7,7 @@ export Gao
 
 """
     Gao <: DifferentialEntropyEstimator
-    Gao(; k = 1, w = 0, corrected = true)
+    Gao(; k = 1, w = 0, base = 2, corrected = true)
 
 The `Gao` estimator (Gao et al., 2015) computes the [`Shannon`](@ref)
 differential [`entropy`](@ref), using a `k`-th nearest-neighbor approach
@@ -41,13 +41,14 @@ H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct Gao <: DifferentialEntropyEstimator
+Base.@kwdef struct Gao{B} <: NNDiffEntropyEst
     k::Int = 1
     w::Int = 0
+    base::B = 2
     corrected::Bool = true
 end
 
-function entropy(e::Shannon, est::Gao, x::AbstractDataset{D}) where D
+function entropy(est::Gao, x::AbstractDataset{D}) where D
     (; k, w) = est
     N = length(x)
     f = (k  * gamma(D / 2 + 1)) / ( (N - 1) * π^(D / 2))
@@ -59,5 +60,5 @@ function entropy(e::Shannon, est::Gao, x::AbstractDataset{D}) where D
         correction = digamma(k) - log(k)
         h -= correction
     end
-    return h / log(e.base, ℯ) # convert to target unit *after* correction
+    return h / log(est.base, ℯ) # convert to target unit *after* correction
 end

@@ -2,10 +2,10 @@ export Correa
 
 """
     Correa <: DiffEntropyEst
-    Correa(; m::Int = 1)
+    Correa(; m::Int = 1, base = 2)
 
-The `Correa` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of `x`
-(a multi-dimensional [`Dataset`](@ref)) using the method from Correa (1995)[^Correa1995].
+The `Correa` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) (in
+the given `base) of a timeseries using the method from Correa (1995)[^Correa1995].
 
 The `Correa` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
@@ -56,11 +56,12 @@ where
 See also: [`entropy`](@ref), [`AlizadehArghami`](@ref), [`Ebrahimi`](@ref),
 [`Vasicek`](@ref), [`DifferentialEntropyEstimator`](@ref).
 """
-@Base.kwdef struct Correa{I<:Integer} <: DiffEntropyEst
+@Base.kwdef struct Correa{I<:Integer, B} <: DiffEntropyEst
     m::I = 1
+    base::B = 2
 end
 
-function entropy(e::Shannon, est::Correa, x::AbstractVector{T}) where T
+function entropy(est::Correa, x::AbstractVector{<:Real})
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
@@ -79,7 +80,7 @@ function entropy(e::Shannon, est::Correa, x::AbstractVector{T}) where T
         den *= n
         HCₘₙ += log(num / den)
     end
-    return (-HCₘₙ / n) / log(e.base, ℯ)
+    return (-HCₘₙ / n) / log(est.base, ℯ)
 end
 
 function local_scaled_mean(ex, i::Int, m::Int, n::Int = length(x))
