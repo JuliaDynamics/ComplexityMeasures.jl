@@ -6,6 +6,7 @@ The entropies API is defined by
 
 - [`EntropyDefinition`](@ref)
 - [`entropy`](@ref)
+- [`DiscreteEntropyEstimator`](@ref)
 - [`DifferentialEntropyEstimator`](@ref)
 
 Please be sure you have read the [Terminology](@ref) section before going through the API here, to have a good idea of the different "flavors" of entropies and how they all come together over the common interface of the [`entropy`](@ref) function.
@@ -28,6 +29,13 @@ StretchedExponential
 entropy(::EntropyDefinition, ::ProbabilitiesEstimator, ::Any)
 entropy_maximum
 entropy_normalized
+```
+
+### Discrete entropy estimators
+
+```@docs
+DiscreteEntropyEstimator
+MLEntropy
 ```
 
 ## Differential entropy

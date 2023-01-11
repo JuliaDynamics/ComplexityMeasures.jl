@@ -36,14 +36,16 @@ even fundamentally, different quantities.
 In ComplexityMeasures.jl, we provide the generic
 function [`entropy`](@ref) that tries to both clarify disparate entropy concepts, while
 unifying them under a common interface that highlights the modular nature of the word
-"entropy". In summary, there are only two main types of entropy.
+"entropy".
 
-- *Discrete* entropies are functions of probabilities (specifically, probability mass functions). Computing a discrete entropy boils
+On the highest level, there are two main types of entropy.
+
+- *Discrete* entropies are functions of [probability mass functions](https://en.wikipedia.org/wiki/Probability_mass_function). Computing a discrete entropy boils
     down to two simple steps: first estimating a probability distribution, then plugging
-    the estimated probabilities into one of the so-called "generalized entropy" definitions.
+    the estimated probabilities into an estimator of a so-called "generalized entropy" definition.
     Internally, this is literally just a few lines of code where we first apply some
     [`ProbabilitiesEstimator`](@ref) to the input data, and feed the resulting
-    [`probabilities`](@ref) to [`entropy`](@ref) with some [`EntropyDefinition`](@ref).
+    [`probabilities`](@ref) to [`entropy`](@ref) with some [`DiscreteEntropyEstimator`](@ref).
 - *Differential/continuous* entropies are functions of
     [probability density functions](https://en.wikipedia.org/wiki/Probability_density_function),
     which are *integrals*. Computing differential entropies therefore rely on estimating
@@ -59,7 +61,7 @@ They are the good old discrete Shannon entropy ([`Shannon`](@ref)), but calculat
 *new probabilities estimators*.
 
 Even though the names of these methods (e.g. "wavelet entropy") sound like names for new
-entropies, they are *method* names. What these methods actually do is to devise novel
+entropies, what they actually do is to devise novel
 ways of calculating probabilities from data, and then plug those probabilities into formal
 discrete entropy formulas such as
 the Shannon entropy. These probabilities estimators are of course smartly created so that
@@ -67,7 +69,7 @@ they elegantly highlight important complexity-related aspects of the data.
 
 Names for methods such as "permutation entropy" are commonplace, so in
 ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref).
-However, we emphasise that these functions really aren't anything more than
+However, we emphasize that these functions really aren't anything more than
 2-lines-of-code wrappers that call [`entropy`](@ref) with the appropriate
 [`ProbabilitiesEstimator`](@ref).
 
