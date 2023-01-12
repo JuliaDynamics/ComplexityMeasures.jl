@@ -5,7 +5,7 @@ using ComplexityMeasures: total_outcomes, missing_outcomes
 export MissingDispersionPatterns
 
 """
-    MissingDispersionPatterns <: ComplexityMeasure
+    MissingDispersionPatterns <: ComplexityEstimator
     MissingDispersionPatterns(est = Dispersion())
 
 An estimator for the number of missing dispersion patterns (``N_{MDP}``), a complexity
@@ -51,7 +51,7 @@ See also: [`Dispersion`](@ref), [`ReverseDispersion`](@ref), [`total_outcomes`](
 [^Zhou2022]: Zhou, Q., Shang, P., & Zhang, B. (2022). Using missing dispersion patterns
     to detect determinism and nonlinearity in time series data. Nonlinear Dynamics, 1-20.
 """
-Base.@kwdef struct MissingDispersionPatterns{D} <: ComplexityMeasure
+Base.@kwdef struct MissingDispersionPatterns{D} <: ComplexityEstimator
     est::D = Dispersion()
 end
 

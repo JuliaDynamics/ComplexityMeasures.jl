@@ -4,7 +4,7 @@ import ComplexityMeasures: total_outcomes
 export ReverseDispersion
 
 """
-    ReverseDispersion <: ComplexityMeasure
+    ReverseDispersion <: ComplexityEstimator
     ReverseDispersion(; c = 3, m = 2, τ = 1, check_unique = true)
 
 Estimator for the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019].
@@ -45,7 +45,7 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
 [^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
     complexity measure for sensor signal. Sensors, 19(23), 5203.
 """
-Base.@kwdef struct ReverseDispersion{S <: Encoding} <: ComplexityMeasure
+Base.@kwdef struct ReverseDispersion{S <: Encoding} <: ComplexityEstimator
     encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`
     c::Int = 3 # The number of categories to map encoded values to.
     m::Int = 2
