@@ -51,7 +51,7 @@ function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where 
     return probabilities_and_outcomes(ValueHistogram(rbc.binning), ds)
 end
 
-outcome_space(est::Diversity) = outcome_space(binning_for_diversity(est))
+outcome_space(est::Diversity) = outcome_space(encoding_for_diversity(est.nbins))
 total_outcomes(est::Diversity) = est.nbins
 
 function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T <: Real
@@ -62,12 +62,13 @@ function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T 
     @inbounds for i in 1:(length(Y)-1)
         ds[i] = cosine_similarity(Y[i], Y[i+1])
     end
-    # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval.
-    binning = binning_for_diversity(est)
-    rbc = RectangularBinEncoding(binning)
+    # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval
+    rbc = encoding_for_diversity(est.nbins)
     return ds, rbc
 end
 
 cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
 
-binning_for_diversity(est::Diversity) = FixedRectangularBinning(-1.0, 1.0, est.nbins)
+function encoding_for_diversity(nbins::Int)
+    RectangularBinEncoding(FixedRectangularBinning(-1.0, 1.0, nbins))
+end
