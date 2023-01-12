@@ -64,7 +64,7 @@ input data and one of the following probabilities estimators. The result is a
 the outcome `ω[i]`. Use [`probabilities_and_outcomes`](@ref) if you need
 both the probabilities and the outcomes, and use [`outcome_space`](@ref) to obtain
 ``\\Omega`` alone.
-The element type of ``\\Omega`` varies between estimators, but it is guranteed to be
+The element type of ``\\Omega`` varies between estimators, but it is guaranteed to be
 _hashable_. This allows for conveniently tracking the probability of a specific event
 across experimental realizations, by using the outcome as a dictionary key and the
 probability as the value for that key (or, alternatively, the key remains the outcome
