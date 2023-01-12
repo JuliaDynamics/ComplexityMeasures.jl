@@ -7,7 +7,7 @@ export SampleEntropy
 export entropy_sample
 
 """
-    SampleEntropy([x]; r = 0.2std(x), kwargs...)
+    SampleEntropy([x]; r = 0.2std(x), kwargs...) <: ComplexityEstimator
 
 An estimator for the sample entropy complexity measure (Richman & Moorman,
 2000)[^Richman2000], used with [`complexity`](@ref) and [`complexity_normalized`](@ref).

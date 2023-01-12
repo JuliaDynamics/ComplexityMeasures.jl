@@ -5,15 +5,18 @@ export complexity_normalized
 """
     ComplexityEstimator
 
-Supertype for (entropy-like) complexity measures.
+Supertype for estimators for various complexity measures that are not entropies
+in the strict mathematical sense.
+See [`complexity`](@ref) for all available estimators.
 """
 abstract type ComplexityEstimator end
 
 """
     complexity(c::ComplexityEstimator, x)
 
-Estimate the complexity measure `c` for [input data](@ref input_data) `x`, where `c` can
-be any of the following measures:
+Estimate a complexity measure according to `c`
+for [input data](@ref input_data) `x`, where `c` can
+be any of the following estimators:
 
 - [`ReverseDispersion`](@ref).
 - [`ApproximateEntropy`](@ref).
