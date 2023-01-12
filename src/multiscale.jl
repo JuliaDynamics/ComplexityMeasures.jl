@@ -36,7 +36,7 @@ function multiscale_normalized end
 """
     multiscale(alg::MultiScaleAlgorithm, e::EntropyDefinition, est::DiffEntropyEst, x; kwargs...)
     multiscale(alg::MultiScaleAlgorithm, e::EntropyDefinition, est::ProbabilitiesEstimator, x; kwargs...)
-    multiscale(alg::MultiScaleAlgorithm, c::ComplexityMeasure, x::AbstractVector; kwargs...)
+    multiscale(alg::MultiScaleAlgorithm, c::ComplexityEstimator, x::AbstractVector; kwargs...)
 
 Compute the multi-scale entropy `e` with estimator `est`, or the complexity measure `c`,
 for timeseries `x`.
@@ -60,7 +60,7 @@ factor `1`, the original time series is considered.
 ## Arguments
 
 - `e::EntropyDefinition`. A valid [entropy type](@ref entropies), i.e. `Shannon()` or `Renyi()`.
-- `c::ComplexityMeasure`. A valid complexity measure, i.e. [`SampleEntropy`](@ref),
+- `c::ComplexityEstimator`. A valid complexity measure, i.e. [`SampleEntropy`](@ref),
     or [`ApproximateEntropy`](@ref).
 - `alg::MultiScaleAlgorithm`. A valid [multiscale algorithm](@ref multiscale_algorithms),
     i.e. `Regular()` or `Composite()`, which determines how down-sampling/coarse-graining

@@ -26,7 +26,7 @@ A probabilities estimator based on ordinal permutation patterns.
 
 When passed to [`probabilities`](@ref) the output depends on the input data type:
 
-- **Univariate data**. If applied to a univariate timeseries (`Vector`), then the timeseries
+- **Univariate data**. If applied to a univariate timeseries (`AbstractVector`), then the timeseries
     is first embedded using embedding delay `τ` and dimension `m`, resulting in embedding
     vectors ``\\{ \\bf{x}_i \\}_{i=1}^{N-(m-1)\\tau}``. Then, for each ``\\bf{x}_i``,
     we find its permutation pattern ``\\pi_{i}``. Probabilities are then
@@ -197,7 +197,7 @@ end
 # types is whether they compute some additional weights that are affecting
 # how the probabilities are counted.
 
-function probabilities(est::PermProbEst{m}, x::Vector{T}) where {m, T<:Real}
+function probabilities(est::PermProbEst{m}, x::AbstractVector{T}) where {m, T<:Real}
     dataset::Dataset{m,T} = embed(x, m, est.τ)
     return probabilities(est, dataset)
 end
@@ -234,7 +234,7 @@ function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_Dataset) w
     # function that both maps to integers with `decode` but also keeps track of
     # the permutation pattern vectors. Anyways, I don't think `outcomes` is a function
     # that will be called often, so we can live with this as is.
-    if x isa Vector
+    if x isa AbstractVector
         dataset = embed(x, m, est.τ)
     else
         dataset = x

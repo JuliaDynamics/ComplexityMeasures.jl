@@ -5,7 +5,7 @@ using Random: Xoshiro
     x = rand(1000)
     @test_throws MethodError entropy(x, 0.1)
     est = AlizadehArghami() # the AlizadehArghami estimator only works for Shannon entropy
-    @test_throws MethodError entropy(Tsallis(), AlizadehArghami(), x)
+    @test_throws ErrorException entropy(Tsallis(), AlizadehArghami(), x)
 end
 
 @testset "normalization" begin

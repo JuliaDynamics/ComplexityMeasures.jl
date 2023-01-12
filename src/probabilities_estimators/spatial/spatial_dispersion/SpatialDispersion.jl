@@ -209,4 +209,11 @@ function total_outcomes(est::SpatialDispersion)::Int
     end
 end
 
-outcome_space(est::SpatialDispersion) = outcome_space(Dispersion(; c = est.c, m = est.m))
+
+function outcome_space(est::SpatialDispersion)
+    if est.skip_encoding
+        return outcome_space(Dispersion(; c = est.L, m = est.m))
+    else
+        return outcome_space(Dispersion(; c = est.c, m = est.m))
+    end
+end

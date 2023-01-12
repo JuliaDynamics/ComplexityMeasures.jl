@@ -6,7 +6,7 @@ using Statistics
 export ApproximateEntropy
 
 """
-    ApproximateEntropy <: ComplexityMeasure
+    ApproximateEntropy <: ComplexityEstimator
     ApproximateEntropy([x]; r = 0.2std(x), kwargs...)
 
 An estimator for the approximate entropy (ApEn; Pincus, 1991)[^Pincus1991] complexity
@@ -68,7 +68,7 @@ constructed from the input timeseries ``x(t)`` as
 [^Pincus1991]: Pincus, S. M. (1991). Approximate entropy as a measure of system complexity.
     Proceedings of the National Academy of Sciences, 88(6), 2297-2301.
 """
-Base.@kwdef struct ApproximateEntropy{I, B, R} <: ComplexityMeasure
+Base.@kwdef struct ApproximateEntropy{I, B, R} <: ComplexityEstimator
     m::I = 2
     τ::I = 1
     base::B = MathConstants.e

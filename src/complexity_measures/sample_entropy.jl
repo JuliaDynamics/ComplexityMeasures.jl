@@ -7,7 +7,7 @@ export SampleEntropy
 export entropy_sample
 
 """
-    SampleEntropy([x]; r = 0.2std(x), kwargs...)
+    SampleEntropy([x]; r = 0.2std(x), kwargs...) <: ComplexityEstimator
 
 An estimator for the sample entropy complexity measure (Richman & Moorman,
 2000)[^Richman2000], used with [`complexity`](@ref) and [`complexity_normalized`](@ref).
@@ -20,7 +20,7 @@ The keyword argument `r` is mandatory if an input timeseries `x` is not provided
     should be determined from the input data, for example as some proportion of the
     standard deviation of the data.
 - `m::Int = 1`: The embedding dimension.
-- `τ::Int = `: The embedding lag.
+- `τ::Int = 1`: The embedding lag.
 
 ## Description
 
@@ -67,7 +67,7 @@ See also: [`entropy_sample`](@ref).
     analysis using approximate entropy and sample entropy. American Journal of
     Physiology-Heart and Circulatory Physiology, 278(6), H2039-H2049.
 """
-Base.@kwdef struct SampleEntropy{R} <: ComplexityMeasure
+Base.@kwdef struct SampleEntropy{R} <: ComplexityEstimator
     m::Int = 2
     τ::Int = 1
     r::R

@@ -7,6 +7,8 @@ function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
     end
 end
 
+@deprecate ComplexityMeasure ComplexityEstimator
+
 # From before 2.0:
 @deprecate TimeScaleMODWT WaveletOverlap
 function probabilities(x::Vector_or_Dataset, ε::Union{Real, Vector{<:Real}})

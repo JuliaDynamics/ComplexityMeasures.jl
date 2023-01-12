@@ -23,8 +23,8 @@ end
     @testset "direct" begin
         p1 = probabilities(est, x)
         p2 = probabilities(est, y)
-        @test sum(p1) ≈ 1.0
-        @test sum(p2) ≈ 1.0
+        @test sum(vec(p1)) ≈ 1.0
+        @test sum(vec(p2)) ≈ 1.0
         @test length(p1) == 1 # analytic
         @test length(p2) == 6 # analytic
     end
@@ -35,9 +35,17 @@ end
         @test sum(p2) ≈ 1.0
     end
 
+    @testset "vector" begin
+        z = y[:, 1]
+        w = view(z, 1:length(z)-1)
+        p1 = probabilities(est, z)
+        p2 = probabilities(est, w)
+        @test sum(vec(p1)) ≈ sum(vec(p2)) ≈ 1
+    end
+
 end
 
-# TODO: would be nioce to have analytic tests for amplitude aware
+# TODO: would be nice to have analytic tests for amplitude aware
 @testset "Uniform distr." begin
     m = 4
     τ = 1
