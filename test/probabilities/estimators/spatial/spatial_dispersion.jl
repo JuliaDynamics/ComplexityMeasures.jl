@@ -1,5 +1,4 @@
 using ComplexityMeasures
-using StaticArrays
 
 # Create an analytical test from scratch.
 x = [
@@ -47,7 +46,8 @@ est = SpatialDispersion(stencil, x, c = 3, periodic = true)
 # The following data `y` has 2 classes. c = 2 ensures that this remains the case after
 # symbolization. We can also skip symbolization all together, but then we must specify
 # `L` as the total possible number of symbols the input data can take.
-y = rand(0:1, 100, 100);
+using Random: Xoshiro
+y = rand(Xoshiro(1234), 0:1, 100, 100);
 est_y = SpatialDispersion(stencil, y, c = 2)
 est_y_presymb = SpatialDispersion(stencil, y; skip_encoding =  true, L = 2)
 
