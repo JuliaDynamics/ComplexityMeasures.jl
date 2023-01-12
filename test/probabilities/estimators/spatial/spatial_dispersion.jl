@@ -51,8 +51,8 @@ y = rand(Xoshiro(1234), 0:1, 100, 100);
 est_y = SpatialDispersion(stencil, y, c = 2)
 est_y_presymb = SpatialDispersion(stencil, y; skip_encoding =  true, L = 2)
 
-@test 0.99 <= round(entropy_normalized(est_y, y), digits = 2) <= 1.0
-@test 0.99 <= round(entropy_normalized(est_y_presymb, y), digits = 2) <= 1.0
+@test 0.99 <= entropy_normalized(est_y, y) <= 1.0
+@test 0.99 <= entropy_normalized(est_y_presymb, y) <= 1.0
 
 @test outcome_space(est_y) == outcome_space(Dispersion(c = est_y.c, m = est_y.m))
 @test outcome_space(est_y_presymb) == outcome_space(Dispersion(c = 2, m = est_y.m))
