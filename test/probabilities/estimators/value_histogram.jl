@@ -12,9 +12,10 @@ using Random
     # The value 1 is always included, due to the call of `nextfloat` when making
     # ranges for the `FixedRectangularBinning`
     n = 10
-    ε = nextfloat(0.1)
+    ε = nextfloat(0.1) # when dividing 0-nextfloat(1) into 10, you get this width
 
     # All following binnings are equivalent
+    # (`nextfloat` is necessary in Fixed, due to the promise given in the regular)
     binnings = [
         RectangularBinning(n),
         RectangularBinning(n, true),
@@ -26,8 +27,13 @@ using Random
         FixedRectangularBinning(
             (range(0, nextfloat(1.0); step = ε), range(0, nextfloat(1.0); step = ε))
         ),
-
     ]
+    # all reduce to these ranges (due to demanding ALL data to be in
+    # the histogram, i.e., also the `SVector(1,1)`)
+    casted_ranges = (
+        0.0:0.10000000000000002:1.0000000000000002,
+        0.0:0.10000000000000002:1.0000000000000002
+    )
 
     for bin in binnings
         @testset "bin isa $(nameof(typeof(bin)))" begin
@@ -57,6 +63,8 @@ using Random
             # ensure 1 is included, and must also be in the last bin
             rbe = RectangularBinEncoding(bin, x)
             @test encode(rbe, SVector(1.0, 1.0)) == n^2
+
+            @test rbe.ranges == casted_ranges
         end
     end
 
