@@ -27,11 +27,12 @@ and initializes this binning directly.
 ## Outcomes
 
 The outcome space for `ValueHistogram` is the unique bins constructed
-from `b`. Each bin is identified by its left (lowest-value) corner.
+from `b`. Each bin is identified by its left (lowest-value) corner,
+because bins are always left-closed-right-open intervals `[a, b)`.
 The bins are in data units, not integer (cartesian indices units), and
 are returned as `SVector`s.
-For [`FixedRectangularBinning`](@ref) this is well-defined from the binning, but for
-[`RectangularBinning`](@ref) input `x` is needed for a well-defined [`outcome_space`](@ref).
+For [`FixedRectangularBinning`](@ref) the [`outcome_space`](@ref) is well-defined from the
+binning, but for [`RectangularBinning`](@ref) input `x` is needed as well.
 """
 struct ValueHistogram{B<:AbstractBinning} <: ProbabilitiesEstimator
     binning::B
@@ -63,3 +64,7 @@ function probabilities_and_outcomes(est::ValueHistogram, x)
 end
 
 outcome_space(est::ValueHistogram, x) = outcome_space(RectangularBinEncoding(est.binning, x))
+
+function outcome_space(est::ValueHistogram{<:FixedRectangularBinning})
+    return outcome_space(RectangularBinEncoding(est.binning))
+end

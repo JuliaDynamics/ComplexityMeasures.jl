@@ -50,8 +50,12 @@ if it is an integer, each dimension is subdivided into that many subintervals.
 Otherwise it is a real, and it is taken as the edge width for each dimension.
 
 Points falling outside the partition do not contribute to probabilities.
-This binning type leads to a well-defined outcome space without knowledge of input data,
-see [`ValueHistogram`](@ref).
+Since bins are always left-closed-right-open `[a, b)`, keep this in mind
+when specifying bin width directly. I.e., if `xmax = 1`,
+a data point with value `1` does not fall into any bins!
+
+`FixedRectangularBinning` leads to a well-defined outcome space without knowledge of input
+data, see [`ValueHistogram`](@ref).
 
 `ϵmin`/`emax` must be `NTuple{D, <:Real}` for input of `D`-dimensional data.
 
@@ -184,7 +188,7 @@ function RectangularBinEncoding(b::FixedRectangularBinning{D, T}; n_eps = 2) whe
     mini = SVector{D, T}(ϵmin)
     maxi = SVector{D, T}(ϵmax)
     if b.subdiv isa Real
-        edgelengths = one(SVector{D, T}) .* b.subdiv
+        edgelengths = ones(SVector{D, T}) .* b.subdiv
         histsize = ceil.(Int, (maxi .- mini) ./ edgelengths)
     elseif b.subdiv isa Int
         N = b.subdiv
