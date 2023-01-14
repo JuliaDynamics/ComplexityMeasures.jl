@@ -65,23 +65,25 @@ increase of the probability corresponding to the last bin (here `[0.9, 1)`)!
 
 `FixedRectangularBinning` leads to a well-defined outcome space without knowledge of input
 data, see [`ValueHistogram`](@ref).
-
-    FixedRectangularBinning(range::AbstractRange, D::Int = 1, precise = false)
-
-This is a convenience method where each dimension of the binning has the same range
-and the input data are `D` dimensional, which defaults to 1 (timeseries).
 """
 struct FixedRectangularBinning{R<:Tuple} <: AbstractBinning
     ranges::R
     precise::Bool
 end
+
 function FixedRectangularBinning(ranges::R, precise = false) where {R}
     if any(r -> !issorted(r), ranges)
         throw(ArgumentError("All input ranges must be sorted!"))
     end
     return FixedRectangularBinning{R}(ranges, precise)
 end
-# Convenience
+
+"""
+    FixedRectangularBinning(range::AbstractRange, D::Int = 1, precise = false)
+
+This is a convenience method where each dimension of the binning has the same range
+and the input data are `D` dimensional, which defaults to 1 (timeseries).
+"""
 function FixedRectangularBinning(r::AbstractRange, D::Int = 1, precise = false)
     FixedRectangularBinning(ntuple(x->r, D), precise)
 end
