@@ -481,5 +481,4 @@ function probabilities_and_outcomes(est::TransferOperator, x::Array_or_Dataset)
     return probs, outcomes
 end
 
-outcome_space(x, est::TransferOperator) = outcome_space(x, est.binning)
-total_outcomes(x, est::TransferOperator) = total_outcomes(x, est.binning)
+outcome_space(est::TransferOperator, x) = outcome_space(est.encoder, x)
