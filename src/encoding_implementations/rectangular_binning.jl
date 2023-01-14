@@ -148,7 +148,6 @@ end
 
 # Data-controlled grid: just cast into FixesRectangularBinning
 function RectangularBinEncoding(b::RectangularBinning, x)
-    # This function always returns static vectors and is type stable
     D = dimension(x)
     T = eltype(x)
     ϵ = b.ϵ
@@ -177,10 +176,10 @@ function encode(e::RectangularBinEncoding, point)
         cartidx = CartesianIndex(map(searchsortedlast, ranges, Tuple(point)))
     else
         # These are extracted at compile time and are `Tuple`s
-        edgelengths = map(step, ranges)
-        mini = map(minimum, range)
+        widths = map(step, ranges)
+        mini = map(minimum, ranges)
         # Map a data point to its bin edge (plus one because indexing starts from 1)
-        bin = floor.(Int, (point .- mini) ./ edgelengths) .+ 1
+        bin = floor.(Int, (point .- mini) ./ widths) .+ 1
         cartidx = CartesianIndex(bin)
     end
     # We have decided on the arbitrary convention that out of bound points
@@ -193,16 +192,18 @@ function encode(e::RectangularBinEncoding, point)
     end
 end
 
-function decode(e::RectangularBinEncoding{R}, bin::Int) where {R}
-    V = SVector{length(R), eltype(first(e.ranges))}
+function decode(e::RectangularBinEncoding, bin::Int)
     if checkbounds(Bool, e.ci, bin)
         @inbounds cartesian = e.ci[bin]
     else
         error("Cannot decode integer $(bin): out of bounds of underlying histogram.")
     end
-    (; mini, edgelengths) = e
+    ranges = e.ranges
+    V = SVector{length(ranges), eltype(float(first(ranges)))}
+    widths = map(step, ranges)
+    mini = map(minimum, ranges)
     # Remove one because we want lowest value corner, and we get indices starting from 1
-    return (V(Tuple(cartesian)) .- 1) .* edgelengths .+ mini
+    return (V(Tuple(cartesian)) .- 1) .* widths .+ mini
 end
 
 ##################################################################
@@ -211,9 +212,13 @@ end
 total_outcomes(e::RectangularBinEncoding) = prod(e.histsize)
 
 function outcome_space(e::RectangularBinEncoding)
-    # this is super simple :P could be optimized but its not a frequent operation
-    return [decode(e, i) for i in 1:total_outcomes(e)]
+    # This is super simple thanks to using ranges :)
+    # (and super performant)
+    reduced_ranges = map(r -> r[1:end-1], e.ranges)
+    return collect(Iterators.product(reduced_ranges...))
 end
+outcome_space(b::AbstractBinning, args...) =
+outcome_space(RectangularBinEncoding(b, args...))
 
 ##################################################################
 # low level histogram call
