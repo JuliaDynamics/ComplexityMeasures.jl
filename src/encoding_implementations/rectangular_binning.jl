@@ -39,27 +39,32 @@ const ValidFixedBinInputs = Union{Number, NTuple}
 
 """
     FixedRectangularBinning <: AbstractBinning
-    FixedRectangularBinning(ϵmin::NTuple, ϵmax::NTuple, N::Int)
+    FixedRectangularBinning(ϵmin::NTuple, ϵmax::NTuple, z::Union{Real, Int})
 
 Rectangular box partition of state space where the extent of the grid is explicitly
-specified by `ϵmin` and `emax`, and along each dimension, the grid is subdivided into `N`
-subintervals. Points falling outside the partition do not contribute to probabilities.
+specified by `ϵmin` and `emax`, and along each dimension.
+
+The third argument `subdiv` decides how the grid is subdivided:
+if it is an integer, the grid is subdivided into that many subintervals.
+Otherwise it is a real, and it is taken as the edge width.
+
+Points falling outside the partition do not contribute to probabilities.
 This binning type leads to a well-defined outcome space without knowledge of input data,
 see [`ValueHistogram`](@ref).
 
 `ϵmin`/`emax` must be `NTuple{D, <:Real}` for input of `D`-dimensional data.
 
-    FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N::Int, D::Int = 1)
+    FixedRectangularBinning(ϵmin::Real, ϵmax::Real, subdiv, D::Int = 1)
 
 This is a convenience method where each dimension of the binning has the same extent
 and the input data are `D` dimensional, which defaults to 1 (timeseries).
 """
-struct FixedRectangularBinning{D,T<:Real} <: AbstractBinning
+struct FixedRectangularBinning{D,T<:Real,S<:Union{<:Real,Int}} <: AbstractBinning
     ϵmin::NTuple{D,T}
     ϵmax::NTuple{D,T}
-    N::Int
+    subdiv::S
 end
-function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N::Int, D::Int = 1)
+function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N, D::Int = 1)
     FixedRectangularBinning(ntuple(x->ϵmin, D), ntuple(x->ϵmax, D), N)
 end
 
@@ -76,7 +81,9 @@ The second signature does not need `x` because (1) the binning is fixed, and the
 size of `x` doesn't matter, and (2) because the binning contains the dimensionality
 information as `ϵmin/max` is already an `NTuple`.
 
-Due to roundoff error when computing bin edges, the computed bin widths
+When specifying `n::Int` amount of bins instead of directly providing an
+edge with in the `binning`, to roundoff errors typically occur when computing bin edges.
+In this case, the computed bin widths
 are increased to their `nextfloat` `n_eps` times
 to ensure the correct number of bins is produced.
 
@@ -175,9 +182,15 @@ function RectangularBinEncoding(b::FixedRectangularBinning{D, T}; n_eps = 2) whe
     ϵmin, ϵmax = b.ϵmin, b.ϵmax
     mini = SVector{D, T}(ϵmin)
     maxi = SVector{D, T}(ϵmax)
-    edgelengths_nonadjusted = @. (maxi .- mini) / b.N
-    edgelengths = nextfloat.(edgelengths_nonadjusted, n_eps)
-    histsize = SVector{D,Int}(fill(b.N, D))
+    if b.subdiv isa Real
+        edgelengths = one(SVector{D, T}) .* b.subdiv
+        histsize = ceil.(Int, (maxi .- mini) ./ edgelengths)
+    elseif b.subdiv isa Int
+        N = b.subdiv
+        edgelengths_nonadjusted = @. (maxi .- mini) / N
+        edgelengths = nextfloat.(edgelengths_nonadjusted, n_eps)
+        histsize = SVector{D,Int}(fill(N, D))
+    end
     ci = CartesianIndices(Tuple(histsize))
     li = LinearIndices(ci)
     RectangularBinEncoding(b, typeof(edgelengths)(mini), edgelengths, histsize, ci, li)
