@@ -87,18 +87,6 @@ function FixedRectangularBinning(r::AbstractRange, D::Int = 1, precise = false)
     FixedRectangularBinning(ntuple(x->r, D), precise)
 end
 
-# Deprecations
-function FixedRectangularBinning(ϵmin::NTuple{D,T}, ϵmax::NTuple{D,T}, N::Int) where {D, T}
-    FixedRectangularBinning(ntuple(x->range(ϵmin[i],ϵmax[i];length=N), D))
-end
-function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N, D::Int = 1)
-    if N isa Int
-        FixedRectangularBinning(ntuple(x-> range(ϵmin, ϵmax; length = N), D))
-    else
-        FixedRectangularBinning(ntuple(x-> range(ϵmin, ϵmax; step = N), D))
-    end
-end
-
 """
     RectangularBinEncoding <: Encoding
     RectangularBinEncoding(binning::RectangularBinning, x)
