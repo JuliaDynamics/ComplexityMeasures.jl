@@ -50,8 +50,8 @@ All ranges must be sorted.
 
 The optional second argument `precise` dictates whether Julia Base's `TwicePrecision`
 is used for when searching where a point falls into the range.
-Only useful for edge cases of points being almost exactly on the bin edges,
-and comes with a performance downside, so by default it is `false`.
+Useful for edge cases of points being almost exactly on the bin edges,
+and is exactly twice as slow, so by default it is `false`.
 
 Points falling outside the partition do not contribute to probabilities.
 Bins are always left-closed-right-open: `[a, b)`.
@@ -102,10 +102,12 @@ and then calls the second call signature.
 
 See [`FixedRectangularBinning`](@ref) for info on mapping points to bins.
 """
-struct RectangularBinEncoding{R<:Tuple, D, C, L} <: HistogramEncoding
+struct RectangularBinEncoding{R<:Tuple, D, T, C, L} <: HistogramEncoding
     ranges::R
     precise::Bool
-    histsize::NTuple{D,Int}
+    mini::SVector{D, T}
+    widths::SVector{D, T}
+    histsize::NTuple{D, Int}
     ci::C # cartesian indices
     li::L # linear indices
 end
@@ -124,9 +126,13 @@ end
 function RectangularBinEncoding(b::FixedRectangularBinning)
     ranges = b.ranges
     histsize = map(r -> length(r)-1, ranges)
+    D = length(ranges)
+    T = float(eltype(first(ranges)))
+    mini = SVector{D,T}(map(minimum, ranges))
+    widths = SVector{D,T}(map(step, ranges))
     ci = CartesianIndices(Tuple(histsize))
     li = LinearIndices(ci)
-    RectangularBinEncoding(ranges, b.precise, histsize, ci, li)
+    RectangularBinEncoding(ranges, b.precise, mini, widths, histsize, ci, li)
 end
 function RectangularBinEncoding(b::FixedRectangularBinning, x)
     if length(b.ranges) != dimension(x)
@@ -170,16 +176,11 @@ end
 function encode(e::RectangularBinEncoding, point)
     ranges = e.ranges
     if e.precise
+        # Don't know how to make this faster unfurtunately...
         cartidx = CartesianIndex(map(searchsortedlast, ranges, Tuple(point)))
     else
-        # These are extracted at compile time and are `Tuple`s
-        widths = map(step, ranges)
-        mini = map(minimum, ranges)
-        # Map a data point to its bin edge (plus one because indexing starts from 1)
-        # we also use `Tuple` because `point` is `SVector` and the broadcast
-        # below results in  `Vector` if you mix `Tuple` with `SVector`.
-        bin = floor.(Int, (Tuple(point) .- mini) ./ widths) .+ 1
-        cartidx = CartesianIndex(bin)
+        bin = floor.(Int, (point .- e.mini) ./ e.widths) .+ 1
+        cartidx = CartesianIndex(Tuple(bin))
     end
     # We have decided on the arbitrary convention that out of bound points
     # will get the special symbol `-1`. Erroring doesn't make sense as it is expected
