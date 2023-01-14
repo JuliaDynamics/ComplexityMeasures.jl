@@ -4,9 +4,9 @@ function FixedRectangularBinning(ϵmin::NTuple{D,T}, ϵmax::NTuple{D,T}, N::Int)
 end
 function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N, D::Int = 1)
     if N isa Int
-        FixedRectangularBinning(ntuple(x-> range(ϵmin, ϵmax; length = N), D))
+        FixedRectangularBinning(ntuple(x-> range(ϵmin, nextfloat(ϵmax); length = N), D))
     else
-        FixedRectangularBinning(ntuple(x-> range(ϵmin, ϵmax; step = N), D))
+        FixedRectangularBinning(ntuple(x-> range(ϵmin, nextfloat(ϵmax); step = N), D))
     end
 end
 
