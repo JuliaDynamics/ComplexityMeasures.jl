@@ -21,7 +21,6 @@ include("encodings.jl")
 include("complexity.jl")
 include("multiscale.jl")
 include("convenience.jl")
-include("deprecations.jl")
 
 # Library implementations (files include other files)
 include("encoding_implementations/encoding_implementations.jl")
@@ -29,6 +28,9 @@ include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies_definitions/entropies_definitions.jl")
 include("entropies_estimators/entropies_estimators.jl")
 include("complexity_measures/complexity_measures.jl")
+
+# deprecations (must be after all declarations)
+include("deprecations.jl")
 
 # Update messages:
 using Scratch

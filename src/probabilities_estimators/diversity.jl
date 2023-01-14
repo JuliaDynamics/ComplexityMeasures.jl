@@ -21,7 +21,8 @@ Diversity probabilities are computed as follows.
 2. Compute ``D = \\{d(\\bf x_t, \\bf x_{t+1}) \\}_{t=1}^{N-mτ-1}``,
     where ``d(\\cdot, \\cdot)`` is the cosine similarity between two `m`-dimensional
     vectors in the embedding.
-3. Divide the interval `[-1, 1]` into `nbins` equally sized subintervals.
+3. Divide the interval `[-1, 1]` into `nbins` equally sized subintervals
+   (including the value `+1`).
 4. Construct a histogram of cosine similarities ``d \\in D`` over those subintervals.
 5. Sum-normalize the histogram to obtain probabilities.
 
@@ -48,7 +49,7 @@ end
 
 function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
     ds, rbc = similarities_and_binning(est, x)
-    return probabilities_and_outcomes(ValueHistogram(rbc.binning), ds)
+    return probabilities_and_outcomes(rbc, ds)
 end
 
 outcome_space(est::Diversity) = outcome_space(encoding_for_diversity(est.nbins))
@@ -70,5 +71,6 @@ end
 cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
 
 function encoding_for_diversity(nbins::Int)
-    RectangularBinEncoding(FixedRectangularBinning(-1.0, 1.0, nbins))
+    binning = FixedRectangularBinning((range(-1.0, nextfloat(1.0); length = nbins+1),))
+    return RectangularBinEncoding(binning)
 end

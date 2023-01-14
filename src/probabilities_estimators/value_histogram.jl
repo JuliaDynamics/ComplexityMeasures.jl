@@ -27,11 +27,17 @@ and initializes this binning directly.
 ## Outcomes
 
 The outcome space for `ValueHistogram` is the unique bins constructed
-from `b`. Each bin is identified by its left (lowest-value) corner.
+from `b`. Each bin is identified by its left (lowest-value) corner,
+because bins are always left-closed-right-open intervals `[a, b)`.
 The bins are in data units, not integer (cartesian indices units), and
-are returned as `SVector`s.
-For [`FixedRectangularBinning`](@ref) this is well-defined from the binning, but for
-[`RectangularBinning`](@ref) input `x` is needed for a well-defined [`outcome_space`](@ref).
+are returned as `SVector`s, i.e., same type as input data.
+
+For convenience, [`outcome_space`](@ref)
+returns the outcomes in the same array format as the underlying binning
+(e.g., `Matrix` for 2D input).
+
+For [`FixedRectangularBinning`](@ref) the [`outcome_space`](@ref) is well-defined from the
+binning, but for [`RectangularBinning`](@ref) input `x` is needed as well.
 """
 struct ValueHistogram{B<:AbstractBinning} <: ProbabilitiesEstimator
     binning::B
@@ -55,6 +61,9 @@ end
 
 function probabilities_and_outcomes(est::ValueHistogram, x)
     encoding = RectangularBinEncoding(est.binning, x)
+    return probabilities_and_outcomes(encoding, x)
+end
+function probabilities_and_outcomes(encoding::RectangularBinEncoding, x)
     probs, bins = fasthist(encoding, x) # bins are integers here
     unique!(bins) # `bins` is already sorted from `fasthist!`
     # Here we transfor the cartesian coordinate based bins into data unit bins:
@@ -63,3 +72,7 @@ function probabilities_and_outcomes(est::ValueHistogram, x)
 end
 
 outcome_space(est::ValueHistogram, x) = outcome_space(RectangularBinEncoding(est.binning, x))
+
+function outcome_space(est::ValueHistogram{<:FixedRectangularBinning})
+    return outcome_space(RectangularBinEncoding(est.binning))
+end

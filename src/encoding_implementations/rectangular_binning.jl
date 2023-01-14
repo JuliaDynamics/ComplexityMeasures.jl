@@ -7,18 +7,19 @@ abstract type HistogramEncoding <: Encoding end
 ##################################################################
 # Structs and docstrings
 ##################################################################
-# Notice that the binning types are intermediate structs that are not used directly
-# in the source code. Their only purpose is instructions of how to create a
-# `RectangularBinEncoder`. All actual source code functionality of `ValueHistogram`
-# is implemented based on `RectangularBinEncoder`.
+# The binning types are intermediate structs whose only purpose is
+# instructions for initializing the `RectangularBinEncoding`
 
 """
-    RectangularBinning(ϵ) <: AbstractBinning
+    RectangularBinning(ϵ, precise = false) <: AbstractBinning
 
 Rectangular box partition of state space using the scheme `ϵ`,
-deducing the coordinates of the grid axis minima from the input data.
-Generally it is preferred to use [`FixedRectangularBinning`](@ref) instead,
-as it has a well defined outcome space without knowledge of input data.
+deducing the histogram extent and bin width from the input data.
+
+`RectangularBinning` is a convenience struct.
+It is re-cast into [`FixedRectangularBinning`](@ref)
+once the data are provided, so see that docstring for info on the bin calculation
+and the meaning of `precise`.
 
 Binning instructions are deduced from the type of `ϵ` as follows:
 
@@ -30,80 +31,163 @@ Binning instructions are deduced from the type of `ϵ` as follows:
     intervals that cover all data.
 4. `ϵ::Vector{Float64}` divides the i-th coordinate axis into intervals of fixed size
     `ϵ[i]`, starting from the axis minima until the data is completely covered by boxes.
+
+`RectangularBinning` ensures all input data are covered by extending the created
+ranges if need be.
 """
 struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
+    precise::Bool
 end
-
-const ValidFixedBinInputs = Union{Number, NTuple}
+RectangularBinning(ε) = RectangularBinning(ε, false)
 
 """
     FixedRectangularBinning <: AbstractBinning
-    FixedRectangularBinning(ϵmin::NTuple, ϵmax::NTuple, N::Int)
+    FixedRectangularBinning(ranges::Tuple{<:AbstractRange...}, precise = false)
 
-Rectangular box partition of state space where the extent of the grid is explicitly
-specified by `ϵmin` and `emax`, and along each dimension, the grid is subdivided into `N`
-subintervals. Points falling outside the partition do not contribute to probabilities.
-This binning type leads to a well-defined outcome space without knowledge of input data,
-see [`ValueHistogram`](@ref).
+Rectangular box partition of state space where the partition along each dimension
+is explicitly given by each range `ranges`, which is a tuple of `AbstractRange` subtypes.
+Typically, each range is the output of the `range` Base function, e.g.,
+`ranges = (0:0.1:1, range(0, 1; length = 101), range(2.1, 3.2; step = 0.33))`.
+All ranges must be sorted.
 
-`ϵmin`/`emax` must be `NTuple{D, <:Real}` for input of `D`-dimensional data.
+The optional second argument `precise` dictates whether Julia Base's `TwicePrecision`
+is used for when searching where a point falls into the range.
+Useful for edge cases of points being almost exactly on the bin edges,
+but it is exactly four times as slow, so by default it is `false`.
 
-    FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N::Int, D::Int = 1)
+Points falling outside the partition do not contribute to probabilities.
+Bins are always left-closed-right-open: `[a, b)`.
+**This means that the last value of
+each of the ranges dictates the last right-closing value.**
+This value does _not_ belong to the histogram!
+E.g., if given a range `r = range(0, 1; length = 11)`, with `r[end] = 1`,
+the value `1` is outside the partition and would not attribute any
+increase of the probability corresponding to the last bin (here `[0.9, 1)`)!
 
-This is a convenience method where each dimension of the binning has the same extent
+**Equivalently, the size of the histogram is
+`histsize = map(r -> length(r)-1, ranges)`!**
+
+`FixedRectangularBinning` leads to a well-defined outcome space without knowledge of input
+data, see [`ValueHistogram`](@ref).
+"""
+struct FixedRectangularBinning{R<:Tuple} <: AbstractBinning
+    ranges::R
+    precise::Bool
+end
+
+function FixedRectangularBinning(ranges::R, precise = false) where {R}
+    if any(r -> !issorted(r), ranges)
+        throw(ArgumentError("All input ranges must be sorted!"))
+    end
+    return FixedRectangularBinning{R}(ranges, precise)
+end
+
+"""
+    FixedRectangularBinning(range::AbstractRange, D::Int = 1, precise = false)
+
+This is a convenience method where each dimension of the binning has the same range
 and the input data are `D` dimensional, which defaults to 1 (timeseries).
 """
-struct FixedRectangularBinning{D,T<:Real} <: AbstractBinning
-    ϵmin::NTuple{D,T}
-    ϵmax::NTuple{D,T}
-    N::Int
-end
-function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N::Int, D::Int = 1)
-    FixedRectangularBinning(ntuple(x->ϵmin, D), ntuple(x->ϵmax, D), N)
+function FixedRectangularBinning(r::AbstractRange, D::Int = 1, precise = false)
+    FixedRectangularBinning(ntuple(x->r, D), precise)
 end
 
 """
     RectangularBinEncoding <: Encoding
-    RectangularBinEncoding(binning::RectangularBinning, x; n_eps = 2)
-    RectangularBinEncoding(binning::FixedRectangularBinning; n_eps = 2)
+    RectangularBinEncoding(binning::RectangularBinning, x)
+    RectangularBinEncoding(binning::FixedRectangularBinning)
 
 An encoding scheme that [`encode`](@ref)s points `χ ∈ x` into their histogram bins.
-It finds the minima along each dimension, and computes appropriate
-edge lengths for each dimension of `x` given a rectangular binning.
 
-The second signature does not need `x` because (1) the binning is fixed, and the
-size of `x` doesn't matter, and (2) because the binning contains the dimensionality
-information as `ϵmin/max` is already an `NTuple`.
+The first call signature simply initializes a [`FixedRectangularBinning`](@ref)
+and then calls the second call signature.
 
-Due to roundoff error when computing bin edges, the computed bin widths
-are increased to their `nextfloat` `n_eps` times
-to ensure the correct number of bins is produced.
-
-See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref).
+See [`FixedRectangularBinning`](@ref) for info on mapping points to bins.
 """
-struct RectangularBinEncoding{B, D, T, C, L} <: HistogramEncoding
-    binning::B # either RectangularBinning or FixedRectangularBinning
-    mini::SVector{D,T} # fields are either static vectors or numbers
-    edgelengths::SVector{D,T}
-    histsize::SVector{D,Int}
+struct RectangularBinEncoding{R<:Tuple, D, T, C, L} <: HistogramEncoding
+    ranges::R
+    precise::Bool
+    mini::SVector{D, T}
+    widths::SVector{D, T}
+    histsize::NTuple{D, Int}
     ci::C # cartesian indices
     li::L # linear indices
 end
 
 function Base.show(io::IO, x::RectangularBinEncoding)
     return print(io, "RectangularBinEncoding\n" *
-        "  box corners: $(x.mini)\n" *
-        "  edgelengths: $(x.edgelengths)\n" *
+        "  ranges: $(x.ranges)\n" *
         "  histogram size: $(x.histsize)"
     )
 end
 
+##################################################################
+# Initialization of encoding
+##################################################################
+# Fixed grid
+function RectangularBinEncoding(b::FixedRectangularBinning)
+    ranges = b.ranges
+    histsize = map(r -> length(r)-1, ranges)
+    D = length(ranges)
+    T = float(eltype(first(ranges)))
+    mini = SVector{D,T}(map(minimum, ranges))
+    widths = SVector{D,T}(map(step, ranges))
+    ci = CartesianIndices(Tuple(histsize))
+    li = LinearIndices(ci)
+    RectangularBinEncoding(ranges, b.precise, mini, widths, histsize, ci, li)
+end
+function RectangularBinEncoding(b::FixedRectangularBinning, x)
+    if length(b.ranges) != dimension(x)
+        throw(ArgumentError("""
+        The dimensionality of the `FixedRectangularBinning` and input `x` do not match.
+        Got $(e.ranges) and $(dimension(x))."""))
+    end
+    return RectangularBinEncoding(b)
+end
+
+# Data-controlled grid: just cast into FixesRectangularBinning
+function RectangularBinEncoding(b::RectangularBinning, x)
+    RectangularBinEncoding(FixedRectangularBinning(b, x))
+end
+function FixedRectangularBinning(b::RectangularBinning, x)
+    D = dimension(x)
+    T = eltype(x)
+    ϵ = b.ϵ
+    mini, maxi = minmaxima(x)
+    if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
+        widths = SVector{D,T}(ϵ .* ones(SVector{D,T}))
+        # To ensure all points are guaranteed to be covered, we add the width
+        # to the max, if the max isn't included in the resulting range
+        function covering_range(i)
+            r = range(mini[i], maxi[i]; step = widths[i])
+            if maxi[i] ∉ r
+                return range(mini[i], maxi[i] + widths[i]; step = widths[i])
+            else
+                return r
+            end
+        end
+        ranges = ntuple(i -> covering_range(i), D)
+    elseif ϵ isa Int || ϵ isa Vector{Int}
+        # use `nextfloat` to ensure all data are covered!
+        maxi = nextfloat.(maxi)
+        # We add one, because the user input specifies the number of bins,
+        # and the number of bins is the range length - 1
+        lengths = ϵ .* ones(SVector{D,Int}) .+ 1
+        ranges = ntuple(i -> range(mini[i], maxi[i]; length = lengths[i]), D)
+    else
+        error("Invalid ϵ for binning of a dataset")
+    end
+    # By default we have the imprecise version here;
+    # use `Fixed` if you want precise
+    return FixedRectangularBinning(ranges, b.precise)
+end
+
+##################################################################
+# encode/decode
+##################################################################
 function encode(e::RectangularBinEncoding, point)
-    (; mini, edgelengths) = e
-    # Map a data point to its bin edge (plus one because indexing starts from 1)
-    bin = floor.(Int, (point .- mini) ./ edgelengths) .+ 1
-    cartidx = CartesianIndex(Tuple(bin))
+    cartidx = cartesian_bin_index(e, point)
     # We have decided on the arbitrary convention that out of bound points
     # will get the special symbol `-1`. Erroring doesn't make sense as it is expected
     # that for fixed histograms there may be points outside of them.
@@ -114,73 +198,43 @@ function encode(e::RectangularBinEncoding, point)
     end
 end
 
-function decode(e::RectangularBinEncoding{B, D, T}, bin::Int) where {B, D, T}
-    V = SVector{D,T}
+"""
+    cartesian_bin_index(e::RectangularBinEncoding, point::SVector)
+
+Return the cartesian index of
+the given `point` within the binning encapsulated in `e`.
+Internal function called by `encode`.
+"""
+function cartesian_bin_index(e::RectangularBinEncoding, point)
+    ranges = e.ranges
+    if e.precise
+        # Don't know how to make this faster unfurtunately...
+        cartidx = CartesianIndex(map(searchsortedlast, ranges, Tuple(point)))
+    else
+        bin = floor.(Int, (point .- e.mini) ./ e.widths) .+ 1
+        cartidx = CartesianIndex(Tuple(bin))
+    end
+    return cartidx
+end
+
+function decode(e::RectangularBinEncoding, bin::Int)
     if checkbounds(Bool, e.ci, bin)
         @inbounds cartesian = e.ci[bin]
     else
-        error("Cannot decode integer $(bin): out of bounds of underlying histogram.")
+        throw(ArgumentError(
+            "Cannot decode integer $(bin): out of bounds of underlying binning."
+        ))
     end
-    (; mini, edgelengths) = e
+    # The decoding step is rather trivial here; we just index the ranges at the index
+    ranges = e.ranges
+    D = length(ranges)
+    left_edge = @inbounds ntuple(i -> ranges[i][cartesian[i]], D)
+    return SVector{D}(left_edge)
+    # widths = e.widths
+    # mini = e.mini
+    # V = SVector{length(ranges), eltype(float(first(ranges)))}
     # Remove one because we want lowest value corner, and we get indices starting from 1
-    return (V(Tuple(cartesian)) .- 1) .* edgelengths .+ mini
-end
-
-##################################################################
-# Initialization of encodings
-##################################################################
-# Data-controlled grid
-function RectangularBinEncoding(b::RectangularBinning, x; n_eps = 2)
-    # This function always returns static vectors and is type stable
-    D = dimension(x)
-    T = eltype(x)
-    ϵ = b.ϵ
-    mini, maxi = minmaxima(x)
-    v = ones(SVector{D,T})
-    if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
-        edgelengths = SVector{D,T}(ϵ .* v)
-        histsize = ceil.(Int, nextfloat.((maxi .- mini), n_eps) ./ edgelengths)
-    elseif ϵ isa Int || ϵ isa Vector{Int}
-        edgeslengths_nonadjusted = @. (maxi - mini)/ϵ
-        # Just taking nextfloat once here isn't enough for bins to cover data when using
-        # `encode_as_bin` later, because subtraction and division leads to loss
-        # of precision. We need a slightly bigger number, so apply nextfloat twice.
-        edgelengths = SVector{D,T}(nextfloat.(edgeslengths_nonadjusted, n_eps))
-        if ϵ isa Vector{Int}
-            histsize = SVector{D, Int}(ϵ)
-        else
-            histsize = SVector{D, Int}(fill(ϵ, D))
-        end
-    else
-        error("Invalid ϵ for binning of a dataset")
-    end
-    # Cartesian indices of the underlying histogram
-    ci = CartesianIndices(Tuple(histsize))
-    li = LinearIndices(ci)
-    RectangularBinEncoding(b, mini, edgelengths, histsize, ci, li)
-end
-
-# fixed grid
-function RectangularBinEncoding(b::FixedRectangularBinning{D}, x; n_eps = 2) where {D}
-    if D != dimension(x)
-        throw(ArgumentError("""
-        The dimensionality of the `FixedRectangularBinning` and input `x` do not match.
-        Got $(D) and $(dimension(x))."""))
-    end
-    return RectangularBinEncoding(b; n_eps)
-end
-
-function RectangularBinEncoding(b::FixedRectangularBinning{D, T}; n_eps = 2) where {D,T}
-    # This function always returns static vectors and is type stable
-    ϵmin, ϵmax = b.ϵmin, b.ϵmax
-    mini = SVector{D, T}(ϵmin)
-    maxi = SVector{D, T}(ϵmax)
-    edgelengths_nonadjusted = @. (maxi .- mini) / b.N
-    edgelengths = nextfloat.(edgelengths_nonadjusted, n_eps)
-    histsize = SVector{D,Int}(fill(b.N, D))
-    ci = CartesianIndices(Tuple(histsize))
-    li = LinearIndices(ci)
-    RectangularBinEncoding(b, typeof(edgelengths)(mini), edgelengths, histsize, ci, li)
+    # return (V(Tuple(cartesian)) .- 1) .* widths .+ mini
 end
 
 ##################################################################
@@ -189,9 +243,15 @@ end
 total_outcomes(e::RectangularBinEncoding) = prod(e.histsize)
 
 function outcome_space(e::RectangularBinEncoding)
-    # this is super simple :P could be optimized but its not a frequent operation
-    return [decode(e, i) for i in 1:total_outcomes(e)]
+    # This is super simple thanks to using ranges :)
+    reduced_ranges = map(r -> r[1:end-1], e.ranges)
+    iter = Iterators.product(reduced_ranges...)
+    # Convert to `SVector` because that's the agreed outcome space type
+    V = SVector{length(e.ranges), eltype(float(first(e.ranges)))}
+    return V.(iter)
 end
+outcome_space(b::AbstractBinning, args...) =
+outcome_space(RectangularBinEncoding(b, args...))
 
 ##################################################################
 # low level histogram call

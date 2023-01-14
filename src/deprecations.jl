@@ -1,3 +1,16 @@
+# from before histogram-from-ranges rework
+function FixedRectangularBinning(ϵmin::NTuple{D,T}, ϵmax::NTuple{D,T}, N::Int) where {D, T}
+    FixedRectangularBinning(ntuple(x->range(ϵmin[i],ϵmax[i];length=N), D))
+end
+function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N, D::Int = 1)
+    if N isa Int
+        FixedRectangularBinning(ntuple(x-> range(ϵmin, nextfloat(float(ϵmax)); length = N), D))
+    else
+        FixedRectangularBinning(ntuple(x-> range(ϵmin, nextfloat(float(ϵmax)); step = N), D))
+    end
+end
+
+
 # from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
 function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
     if e isa Shannon

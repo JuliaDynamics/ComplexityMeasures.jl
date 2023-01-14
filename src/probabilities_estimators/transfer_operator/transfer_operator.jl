@@ -117,8 +117,7 @@ end
 # for datasets of >100 000+ points
 function inds_in_terms_of_unique_sorted(x) # assumes sorted
     @assert issorted(x)
-    U = unique(x)
-    N, Nu = length(x), length(U)
+    N = length(x)
     prev = view(x, 1)
     inds = zeros(Int, N)
     uidx = 1
@@ -179,17 +178,6 @@ struct TransferOperatorApproximationRectangular{
     visitors::Vector{Vector{Int}}
 end
 
-function transferoperatorencoder(
-    binning::Union{FixedRectangularBinning, RectangularBinning}, x::AbstractDataset
-)
-    if binning isa FixedRectangularBinning
-        return RectangularBinEncoding(binning)
-    elseif binning isa RectangularBinning
-        return RectangularBinEncoding(binning, x)
-    else
-        throw(ArgumentError("Binning $(typeof(binning)) not supported for transfer operator"))
-    end
-end
 """
     transferoperator(pts::AbstractDataset,
         binning::RectangularBinning) → TransferOperatorApproximationRectangular
@@ -217,7 +205,7 @@ function transferoperator(pts::AbstractDataset{D, T},
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
-    encoder = transferoperatorencoder(binning, pts)
+    encoder = RectangularBinEncoding(binning, pts)
 
     # The L points visits a total of L bins, which are the following bins (referenced
     # here as cartesian coordinates, not absolute bins):
@@ -247,10 +235,8 @@ function transferoperator(pts::AbstractDataset{D, T},
     n_visitsᵢ::Int = 0
 
     if boundary_condition == :circular
-        #warn("Using circular boundary condition")
         append!(visits_whichbin, [1])
     elseif boundary_condition == :random
-        #warn("Using random circular boundary condition")
         append!(visits_whichbin, [rand(1:length(visits_whichbin))])
     else
         error("Boundary condition $(boundary_condition) not implemented")
@@ -296,12 +282,10 @@ function transferoperator(pts::AbstractDataset{D, T},
             # To which boxes do each of the visitors to bᵢ jump in the next
             # time step?
             target_bins = visits_whichbin[timeindices_visiting_pts .+ 1]
-            unique_target_bins = unique(target_bins)
 
             # Count how many points jump from the i-th bin to each of
             # the unique target bins, and use that to calculate the transition
             # probability from bᵢ to bⱼ.
-            #for j in 1:length(unique_target_bins)
             for (j, bᵤ) in enumerate(unique(target_bins))
                 n_transitions_i_to_j = sum(target_bins .== bᵤ)
 
@@ -450,10 +434,6 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
         distribution = distribution ./ colsum_distribution
     end
 
-    # Find partition elements with strictly positive measure.
-    δ = tolerance/size(to.transfermatrix, 1)
-    inds_nonzero = findall(distribution .> δ)
-
     # Extract the elements of the invariant measure corresponding to these indices
     return InvariantMeasure(to, Probabilities(distribution))
 end
@@ -479,8 +459,7 @@ function transfermatrix(iv::InvariantMeasure)
 end
 
 function probabilities_and_outcomes(est::TransferOperator, x::Array_or_Dataset)
-    encoder = transferoperatorencoder(est.binning, x)
-    to = transferoperator(x, encoder.binning)
+    to = transferoperator(x, est.binning)
     probs = invariantmeasure(to).ρ
 
     # Note: bins are *not* sorted. They occur in the order of first appearance, according
@@ -492,5 +471,4 @@ function probabilities_and_outcomes(est::TransferOperator, x::Array_or_Dataset)
     return probs, outcomes
 end
 
-outcome_space(x, est::TransferOperator) = outcome_space(x, est.binning)
-total_outcomes(x, est::TransferOperator) = total_outcomes(x, est.binning)
+outcome_space(est::TransferOperator, x) = outcome_space(est.encoder, x)
