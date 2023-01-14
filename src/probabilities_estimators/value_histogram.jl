@@ -61,6 +61,9 @@ end
 
 function probabilities_and_outcomes(est::ValueHistogram, x)
     encoding = RectangularBinEncoding(est.binning, x)
+    return probabilities_and_outcomes(encoding, x)
+end
+function probabilities_and_outcomes(encoding::RectangularBinEncoding, x)
     probs, bins = fasthist(encoding, x) # bins are integers here
     unique!(bins) # `bins` is already sorted from `fasthist!`
     # Here we transfor the cartesian coordinate based bins into data unit bins:
