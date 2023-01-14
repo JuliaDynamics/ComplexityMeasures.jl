@@ -7,20 +7,19 @@ abstract type HistogramEncoding <: Encoding end
 ##################################################################
 # Structs and docstrings
 ##################################################################
-# Notice that the binning types are intermediate structs that are not used directly
-# in the source code. Their only purpose is instructions of how to create a
-# `RectangularBinEncoder`. All actual source code functionality of `ValueHistogram`
-# is implemented based on `RectangularBinEncoder`.
+# The binning types are intermediate structs whose only purpose is
+# instructions for initializing the `RectangularBinEncoding`
 
 """
     RectangularBinning(ϵ) <: AbstractBinning
 
 Rectangular box partition of state space using the scheme `ϵ`,
-deducing the coordinates of the grid axis minima from the input data.
-Generally it is preferred to use [`FixedRectangularBinning`](@ref) instead,
-as it has a well defined outcome space without knowledge of input data.
-`RectangularBinning` is re-cast into [`FixedRectangularBinning`](@ref)
-once the data are provided, so see that docstring for info on the bin calculation.
+deducing the histogram extent and bin width from the input data.
+
+`RectangularBinning` is a convenience struct.
+It is re-cast into [`FixedRectangularBinning`](@ref)
+once the data are provided, so see that docstring for info on the bin calculation
+and for the possibility of more precision during the histogram calculation.
 
 Binning instructions are deduced from the type of `ϵ` as follows:
 
