@@ -30,8 +30,10 @@ The outcome space for `ValueHistogram` is the unique bins constructed
 from `b`. Each bin is identified by its left (lowest-value) corner,
 because bins are always left-closed-right-open intervals `[a, b)`.
 The bins are in data units, not integer (cartesian indices units), and
-are returned as `Tuple`s. For convenience, [`outcome_space`](@ref)
-returns the outcomes in the same array format as the histogram
+are returned as `SVector`s, i.e., same type as input data.
+
+For convenience, [`outcome_space`](@ref)
+returns the outcomes in the same array format as the underlying binning
 (e.g., `Matrix` for 2D input).
 
 For [`FixedRectangularBinning`](@ref) the [`outcome_space`](@ref) is well-defined from the

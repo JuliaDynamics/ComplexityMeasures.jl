@@ -11,14 +11,15 @@ abstract type HistogramEncoding <: Encoding end
 # instructions for initializing the `RectangularBinEncoding`
 
 """
-    RectangularBinning(ϵ) <: AbstractBinning
+    RectangularBinning(ϵ, precise = false) <: AbstractBinning
 
 Rectangular box partition of state space using the scheme `ϵ`,
 deducing the histogram extent and bin width from the input data.
 
 `RectangularBinning` is a convenience struct.
 It is re-cast into [`FixedRectangularBinning`](@ref)
-once the data are provided, so see that docstring for info on the bin calculation.
+once the data are provided, so see that docstring for info on the bin calculation
+and the meaning of `precise`.
 
 Binning instructions are deduced from the type of `ϵ` as follows:
 
@@ -32,11 +33,14 @@ Binning instructions are deduced from the type of `ϵ` as follows:
     `ϵ[i]`, starting from the axis minima until the data is completely covered by boxes.
 
 To ensure all data are covered, the `nextfloat` of the data maximum value is used
-as the maximum along each dimension.
+as the maximum along each dimension. However this will lead to 100% accurate results
+only when `precise = true`.
 """
 struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
+    precise::Bool
 end
+RectangularBinning(ε) = RectangularBinning(ε, false)
 
 """
     FixedRectangularBinning <: AbstractBinning
@@ -51,7 +55,7 @@ All ranges must be sorted.
 The optional second argument `precise` dictates whether Julia Base's `TwicePrecision`
 is used for when searching where a point falls into the range.
 Useful for edge cases of points being almost exactly on the bin edges,
-and is exactly twice as slow, so by default it is `false`.
+but it is exactly four times as slow, so by default it is `false`.
 
 Points falling outside the partition do not contribute to probabilities.
 Bins are always left-closed-right-open: `[a, b)`.
@@ -157,7 +161,6 @@ function FixedRectangularBinning(b::RectangularBinning, x)
     v = ones(SVector{D,T})
     if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
         widths = SVector{D,T}(ϵ .* v)
-        # use `nextfloat` to ensure all data are covered!
         ranges = ntuple(i -> range(mini[i], maxi[i]; step = widths[i]), D)
     elseif ϵ isa Int || ϵ isa Vector{Int}
         # We add one, because the user input specifies the number of bins,
@@ -169,7 +172,7 @@ function FixedRectangularBinning(b::RectangularBinning, x)
     end
     # By default we have the imprecise version here;
     # use `Fixed` if you want precise
-    return FixedRectangularBinning(ranges)
+    return FixedRectangularBinning(ranges, b.precise)
 end
 
 ##################################################################
@@ -198,14 +201,20 @@ function decode(e::RectangularBinEncoding, bin::Int)
     if checkbounds(Bool, e.ci, bin)
         @inbounds cartesian = e.ci[bin]
     else
-        error("Cannot decode integer $(bin): out of bounds of underlying histogram.")
+        throw(ArgumentError(
+            "Cannot decode integer $(bin): out of bounds of underlying binning."
+        ))
     end
+    # The decoding step is rather trivial here; we just index the ranges at the index
     ranges = e.ranges
-    V = SVector{length(ranges), eltype(float(first(ranges)))}
-    widths = map(step, ranges)
-    mini = map(minimum, ranges)
+    D = length(ranges)
+    left_edge = @inbounds ntuple(i -> ranges[i][cartesian[i]], D)
+    return SVector{D}(left_edge)
+    # widths = e.widths
+    # mini = e.mini
+    # V = SVector{length(ranges), eltype(float(first(ranges)))}
     # Remove one because we want lowest value corner, and we get indices starting from 1
-    return (V(Tuple(cartesian)) .- 1) .* widths .+ mini
+    # return (V(Tuple(cartesian)) .- 1) .* widths .+ mini
 end
 
 ##################################################################
@@ -215,9 +224,11 @@ total_outcomes(e::RectangularBinEncoding) = prod(e.histsize)
 
 function outcome_space(e::RectangularBinEncoding)
     # This is super simple thanks to using ranges :)
-    # (and super performant)
     reduced_ranges = map(r -> r[1:end-1], e.ranges)
-    return collect(Iterators.product(reduced_ranges...))
+    iter = Iterators.product(reduced_ranges...)
+    # Convert to `SVector` because that's the agreed outcome space type
+    V = SVector{length(e.ranges), eltype(float(first(e.ranges)))}
+    return V.(iter)
 end
 outcome_space(b::AbstractBinning, args...) =
 outcome_space(RectangularBinEncoding(b, args...))
