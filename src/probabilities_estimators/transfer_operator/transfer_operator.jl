@@ -179,17 +179,6 @@ struct TransferOperatorApproximationRectangular{
     visitors::Vector{Vector{Int}}
 end
 
-function transferoperatorencoder(
-    binning::Union{FixedRectangularBinning, RectangularBinning}, x::AbstractDataset
-)
-    if binning isa FixedRectangularBinning
-        return RectangularBinEncoding(binning)
-    elseif binning isa RectangularBinning
-        return RectangularBinEncoding(binning, x)
-    else
-        throw(ArgumentError("Binning $(typeof(binning)) not supported for transfer operator"))
-    end
-end
 """
     transferoperator(pts::AbstractDataset,
         binning::RectangularBinning) → TransferOperatorApproximationRectangular
@@ -217,7 +206,7 @@ function transferoperator(pts::AbstractDataset{D, T},
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
-    encoder = transferoperatorencoder(binning, pts)
+    encoder = RectangularBinEncoding(binning, pts)
 
     # The L points visits a total of L bins, which are the following bins (referenced
     # here as cartesian coordinates, not absolute bins):
@@ -479,7 +468,7 @@ function transfermatrix(iv::InvariantMeasure)
 end
 
 function probabilities_and_outcomes(est::TransferOperator, x::Array_or_Dataset)
-    encoder = transferoperatorencoder(est.binning, x)
+    encoder = RectangularBinEncoding(est.binning, x)
     to = transferoperator(x, encoder.binning)
     probs = invariantmeasure(to).ρ
 
