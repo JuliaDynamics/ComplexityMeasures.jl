@@ -117,8 +117,7 @@ end
 # for datasets of >100 000+ points
 function inds_in_terms_of_unique_sorted(x) # assumes sorted
     @assert issorted(x)
-    U = unique(x)
-    N, Nu = length(x), length(U)
+    N = length(x)
     prev = view(x, 1)
     inds = zeros(Int, N)
     uidx = 1
@@ -236,10 +235,8 @@ function transferoperator(pts::AbstractDataset{D, T},
     n_visitsᵢ::Int = 0
 
     if boundary_condition == :circular
-        #warn("Using circular boundary condition")
         append!(visits_whichbin, [1])
     elseif boundary_condition == :random
-        #warn("Using random circular boundary condition")
         append!(visits_whichbin, [rand(1:length(visits_whichbin))])
     else
         error("Boundary condition $(boundary_condition) not implemented")
