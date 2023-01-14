@@ -439,10 +439,6 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
         distribution = distribution ./ colsum_distribution
     end
 
-    # Find partition elements with strictly positive measure.
-    δ = tolerance/size(to.transfermatrix, 1)
-    inds_nonzero = findall(distribution .> δ)
-
     # Extract the elements of the invariant measure corresponding to these indices
     return InvariantMeasure(to, Probabilities(distribution))
 end
