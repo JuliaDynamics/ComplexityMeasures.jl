@@ -88,7 +88,7 @@ end
     n = 10 # boxes cover 0 - 1 in steps of slightly more than 0.1
     ε = nextfloat(0.1, 2) # this guarantees that we get the same as the `n` above!
 
-    bin = FixedRectangularBinning(0, 1, n, 2)
+    bin = FixedRectangularBinning(0.0, 1.0, n, 2)
 
     est = ValueHistogram(bin)
     p = probabilities(est, x)
