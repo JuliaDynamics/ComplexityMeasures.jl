@@ -158,10 +158,12 @@ function FixedRectangularBinning(b::RectangularBinning, x)
     if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
         widths = SVector{D,T}(ϵ .* v)
         # use `nextfloat` to ensure all data are covered!
-        ranges = ntuple(range(mini[i], maxi[i]; step = widths[i]), D)
+        ranges = ntuple(i -> range(mini[i], maxi[i]; step = widths[i]), D)
     elseif ϵ isa Int || ϵ isa Vector{Int}
-        lengths = ϵ .* ones(SVector{D,Int})
-        ranges = ntuple(range(mini[i], maxi[i]; length = lengths[i]), D)
+        # We add one, because the user input specifies the number of bins,
+        # and the number of bins is the range length - 1
+        lengths = ϵ .* ones(SVector{D,Int}) .+ 1
+        ranges = ntuple(i -> range(mini[i], maxi[i]; length = lengths[i]), D)
     else
         error("Invalid ϵ for binning of a dataset")
     end
