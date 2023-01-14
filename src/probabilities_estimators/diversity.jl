@@ -49,7 +49,7 @@ end
 
 function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
     ds, rbc = similarities_and_binning(est, x)
-    return probabilities_and_outcomes(ValueHistogram(rbc.binning), ds)
+    return probabilities_and_outcomes(rbc, ds)
 end
 
 outcome_space(est::Diversity) = outcome_space(encoding_for_diversity(est.nbins))
@@ -71,6 +71,6 @@ end
 cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
 
 function encoding_for_diversity(nbins::Int)
-    binning = FixedRectangularBinning((range(-1.0, nextfloat(1.0); length = nbins),))
+    binning = FixedRectangularBinning((range(-1.0, nextfloat(1.0); length = nbins+1),))
     return RectangularBinEncoding(binning)
 end
