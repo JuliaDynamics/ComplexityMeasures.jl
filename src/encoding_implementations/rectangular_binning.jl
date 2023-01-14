@@ -179,14 +179,7 @@ end
 # encode/decode
 ##################################################################
 function encode(e::RectangularBinEncoding, point)
-    ranges = e.ranges
-    if e.precise
-        # Don't know how to make this faster unfurtunately...
-        cartidx = CartesianIndex(map(searchsortedlast, ranges, Tuple(point)))
-    else
-        bin = floor.(Int, (point .- e.mini) ./ e.widths) .+ 1
-        cartidx = CartesianIndex(Tuple(bin))
-    end
+
     # We have decided on the arbitrary convention that out of bound points
     # will get the special symbol `-1`. Erroring doesn't make sense as it is expected
     # that for fixed histograms there may be points outside of them.
@@ -196,6 +189,26 @@ function encode(e::RectangularBinEncoding, point)
         return -1
     end
 end
+
+"""
+    cartesian_bin_index(e::RectangularBinEncoding, point::SVector)
+
+Internal function called by `encode`. Returns the cartesian index of
+the given `point` within the binning encapsulated in `e`.
+"""
+function cartesian_bin_index(e::RectangularBinEncoding, point)
+    ranges = e.ranges
+    if e.precise
+        # Don't know how to make this faster unfurtunately...
+        cartidx = CartesianIndex(map(searchsortedlast, ranges, Tuple(point)))
+    else
+        bin = floor.(Int, (point .- e.mini) ./ e.widths) .+ 1
+        cartidx = CartesianIndex(Tuple(bin))
+    end
+    return cartidx
+end
+
+
 
 function decode(e::RectangularBinEncoding, bin::Int)
     if checkbounds(Bool, e.ci, bin)
