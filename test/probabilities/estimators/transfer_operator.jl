@@ -9,7 +9,7 @@ binnings = [
     RectangularBinning(0.2),
     RectangularBinning([2, 3]),
     RectangularBinning([0.2, 0.3]),
-    FixedRectangularBinning(0, 1, 5, 2)
+    FixedRectangularBinning(rage(0, 1; length = 5), 2)
 ]
 
 # There's not easy way of constructing an analytical example for the resulting

@@ -468,8 +468,7 @@ function transfermatrix(iv::InvariantMeasure)
 end
 
 function probabilities_and_outcomes(est::TransferOperator, x::Array_or_Dataset)
-    encoder = RectangularBinEncoding(est.binning, x)
-    to = transferoperator(x, encoder.binning)
+    to = transferoperator(x, est.binning)
     probs = invariantmeasure(to).ρ
 
     # Note: bins are *not* sorted. They occur in the order of first appearance, according
