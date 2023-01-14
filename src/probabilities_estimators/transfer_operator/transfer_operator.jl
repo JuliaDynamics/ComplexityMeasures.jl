@@ -285,12 +285,10 @@ function transferoperator(pts::AbstractDataset{D, T},
             # To which boxes do each of the visitors to bᵢ jump in the next
             # time step?
             target_bins = visits_whichbin[timeindices_visiting_pts .+ 1]
-            unique_target_bins = unique(target_bins)
 
             # Count how many points jump from the i-th bin to each of
             # the unique target bins, and use that to calculate the transition
             # probability from bᵢ to bⱼ.
-            #for j in 1:length(unique_target_bins)
             for (j, bᵤ) in enumerate(unique(target_bins))
                 n_transitions_i_to_j = sum(target_bins .== bᵤ)
 
