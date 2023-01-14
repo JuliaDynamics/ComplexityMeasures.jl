@@ -39,14 +39,15 @@ const ValidFixedBinInputs = Union{Number, NTuple}
 
 """
     FixedRectangularBinning <: AbstractBinning
-    FixedRectangularBinning(ϵmin::NTuple, ϵmax::NTuple, z::Union{Real, Int})
+    FixedRectangularBinning(xmin::NTuple, xmax::NTuple, subdiv::Union{Real, Int})
 
 Rectangular box partition of state space where the extent of the grid is explicitly
-specified by `ϵmin` and `emax`, and along each dimension.
+specified by by providing the minium `xmin` and maximum `xmax`
+values along each dimension.
 
 The third argument `subdiv` decides how the grid is subdivided:
-if it is an integer, the grid is subdivided into that many subintervals.
-Otherwise it is a real, and it is taken as the edge width.
+if it is an integer, each dimension is subdivided into that many subintervals.
+Otherwise it is a real, and it is taken as the edge width for each dimension.
 
 Points falling outside the partition do not contribute to probabilities.
 This binning type leads to a well-defined outcome space without knowledge of input data,
@@ -54,7 +55,7 @@ see [`ValueHistogram`](@ref).
 
 `ϵmin`/`emax` must be `NTuple{D, <:Real}` for input of `D`-dimensional data.
 
-    FixedRectangularBinning(ϵmin::Real, ϵmax::Real, subdiv, D::Int = 1)
+    FixedRectangularBinning(xmin::Real, xmax::Real, subdiv, D::Int = 1)
 
 This is a convenience method where each dimension of the binning has the same extent
 and the input data are `D` dimensional, which defaults to 1 (timeseries).
