@@ -129,7 +129,7 @@ function RectangularBinEncoding(b::FixedRectangularBinning)
     RectangularBinEncoding(ranges, b.precise, histsize, ci, li)
 end
 function RectangularBinEncoding(b::FixedRectangularBinning, x)
-    if length(e.ranges) != dimension(x)
+    if length(b.ranges) != dimension(x)
         throw(ArgumentError("""
         The dimensionality of the `FixedRectangularBinning` and input `x` do not match.
         Got $(e.ranges) and $(dimension(x))."""))
@@ -176,7 +176,9 @@ function encode(e::RectangularBinEncoding, point)
         widths = map(step, ranges)
         mini = map(minimum, ranges)
         # Map a data point to its bin edge (plus one because indexing starts from 1)
-        bin = floor.(Int, (point .- mini) ./ widths) .+ 1
+        # we also use `Tuple` because `point` is `SVector` and the broadcast
+        # below results in  `Vector` if you mix `Tuple` with `SVector`.
+        bin = floor.(Int, (Tuple(point) .- mini) ./ widths) .+ 1
         cartidx = CartesianIndex(bin)
     end
     # We have decided on the arbitrary convention that out of bound points
