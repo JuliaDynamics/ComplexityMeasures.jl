@@ -18,8 +18,7 @@ deducing the histogram extent and bin width from the input data.
 
 `RectangularBinning` is a convenience struct.
 It is re-cast into [`FixedRectangularBinning`](@ref)
-once the data are provided, so see that docstring for info on the bin calculation
-and for the possibility of more precision during the histogram calculation.
+once the data are provided, so see that docstring for info on the bin calculation.
 
 Binning instructions are deduced from the type of `ϵ` as follows:
 
@@ -31,6 +30,9 @@ Binning instructions are deduced from the type of `ϵ` as follows:
     intervals that cover all data.
 4. `ϵ::Vector{Float64}` divides the i-th coordinate axis into intervals of fixed size
     `ϵ[i]`, starting from the axis minima until the data is completely covered by boxes.
+
+To ensure all data are covered, the `nextfloat` of the data maximum value is used
+as the maximum along each dimension.
 """
 struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
@@ -137,13 +139,19 @@ end
 
 # Data-controlled grid: just cast into FixesRectangularBinning
 function RectangularBinEncoding(b::RectangularBinning, x)
+    RectangularBinEncoding(FixedRectangularBinning(b, x))
+end
+function FixedRectangularBinning(b::RectangularBinning, x)
     D = dimension(x)
     T = eltype(x)
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
+    # use `nextfloat` to ensure all data are covered!
+    maxi = nextfloat.(maxi)
     v = ones(SVector{D,T})
     if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
         widths = SVector{D,T}(ϵ .* v)
+        # use `nextfloat` to ensure all data are covered!
         ranges = ntuple(range(mini[i], maxi[i]; step = widths[i]), D)
     elseif ϵ isa Int || ϵ isa Vector{Int}
         lengths = ϵ .* ones(SVector{D,Int})
@@ -153,7 +161,7 @@ function RectangularBinEncoding(b::RectangularBinning, x)
     end
     # By default we have the imprecise version here;
     # use `Fixed` if you want precise
-    return RectangularBinEncoding(FixedRectangularBinning(ranges))
+    return FixedRectangularBinning(ranges)
 end
 
 ##################################################################
