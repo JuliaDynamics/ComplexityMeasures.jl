@@ -179,7 +179,7 @@ end
 # encode/decode
 ##################################################################
 function encode(e::RectangularBinEncoding, point)
-
+    cartidx = cartesian_bin_index(e, point)
     # We have decided on the arbitrary convention that out of bound points
     # will get the special symbol `-1`. Erroring doesn't make sense as it is expected
     # that for fixed histograms there may be points outside of them.
@@ -193,8 +193,9 @@ end
 """
     cartesian_bin_index(e::RectangularBinEncoding, point::SVector)
 
-Internal function called by `encode`. Returns the cartesian index of
+Return the cartesian index of
 the given `point` within the binning encapsulated in `e`.
+Internal function called by `encode`.
 """
 function cartesian_bin_index(e::RectangularBinEncoding, point)
     ranges = e.ranges
@@ -207,8 +208,6 @@ function cartesian_bin_index(e::RectangularBinEncoding, point)
     end
     return cartidx
 end
-
-
 
 function decode(e::RectangularBinEncoding, bin::Int)
     if checkbounds(Bool, e.ci, bin)
