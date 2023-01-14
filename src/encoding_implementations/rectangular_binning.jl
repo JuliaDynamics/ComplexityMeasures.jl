@@ -32,9 +32,8 @@ Binning instructions are deduced from the type of `ϵ` as follows:
 4. `ϵ::Vector{Float64}` divides the i-th coordinate axis into intervals of fixed size
     `ϵ[i]`, starting from the axis minima until the data is completely covered by boxes.
 
-To ensure all data are covered, the `nextfloat` of the data maximum value is used
-as the maximum along each dimension. However this will lead to 100% accurate results
-only when `precise = true`.
+`RectangularBinning` ensures all input data are covered by extending the created
+ranges if need be.
 """
 struct RectangularBinning{E} <: AbstractBinning
     ϵ::E
@@ -156,13 +155,22 @@ function FixedRectangularBinning(b::RectangularBinning, x)
     T = eltype(x)
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
-    # use `nextfloat` to ensure all data are covered!
-    maxi = nextfloat.(maxi)
-    v = ones(SVector{D,T})
     if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
-        widths = SVector{D,T}(ϵ .* v)
-        ranges = ntuple(i -> range(mini[i], maxi[i]; step = widths[i]), D)
+        widths = SVector{D,T}(ϵ .* ones(SVector{D,T}))
+        # To ensure all points are guaranteed to be covered, we add the width
+        # to the max, if the max isn't included in the resulting range
+        function covering_range(i)
+            r = range(mini[i], maxi[i]; step = widths[i])
+            if maxi[i] ∉ r
+                return range(mini[i], maxi[i] + widths[i]; step = widths[i])
+            else
+                return r
+            end
+        end
+        ranges = ntuple(i -> covering_range(i), D)
     elseif ϵ isa Int || ϵ isa Vector{Int}
+        # use `nextfloat` to ensure all data are covered!
+        maxi = nextfloat.(maxi)
         # We add one, because the user input specifies the number of bins,
         # and the number of bins is the range length - 1
         lengths = ϵ .* ones(SVector{D,Int}) .+ 1

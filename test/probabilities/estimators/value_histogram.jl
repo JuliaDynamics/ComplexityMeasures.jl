@@ -118,4 +118,18 @@ end
     @test decode(rbc, 100) == SVector(0.9, 0.9)
 end
 
+@testset "All points covered" begin
+    x = Dataset(rand(100, 2))
+    binnings = [
+        RectangularBinning(5, true),
+        RectangularBinning(0.2, true),
+        RectangularBinning([2, 4], true),
+        RectangularBinning([0.5, 0.25], true),
+    ]
 
+    for bin in binnings
+        rbe = RectangularBinEncoding(bin, x)
+        visited_bins = map(pᵢ -> encode(rbe, pᵢ), x)
+        @test -1 ∉ visited_bins
+    end
+end
