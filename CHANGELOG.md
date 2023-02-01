@@ -2,6 +2,11 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 2.4.1
+
+- Fixed bug in error message for `RectangularBinEncoder` when dimensions of
+    `FixedRectangularBinning` and input data didn't match.
+
 ## 2.4
 - Rectangular binnings have been reformed to operate based on ranges. This leads to much more intuitive bin sizes and edges. For `RectangularBinning` nothing changes, while for `FixedRectangularBinning` the ranges should be given explicitly. Backwards compatible deprecations have been added.
 - This also allows for a new `precise` option that utilizes Base Julia `TwinPrecision` to make more accurate mapping of points to bins at the cost of performance.
