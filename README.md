@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/JuliaDynamics/ComplexityMeasures.jl/branch/main/graph/badge.svg?token=6XlPGg5nRG)](https://codecov.io/gh/JuliaDynamics/ComplexityMeasures.jl)
 [![Package Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/ComplexityMeasures)](https://pkgs.genieframework.com?packages=ComplexityMeasures)
 [![Package Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/Entropies)](https://pkgs.genieframework.com?packages=Entropies)
+[![DOI](https://zenodo.org/badge/306859984.svg)](https://zenodo.org/badge/latestdoi/306859984)
 
 A Julia package that provides estimators for probabilities, entropies, and other
 complexity measures, in the context of nonlinear dynamics, nonlinear timeseries
