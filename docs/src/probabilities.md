@@ -37,12 +37,12 @@ Any of the following estimators can be used with [`probabilities`](@ref)
 | Estimator                                   | Principle                   | Input data          |
 |:--------------------------------------------|:----------------------------|:--------------------|
 | [`CountOccurrences`](@ref)                  | Count of unique elements    | `Any` |
-| [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `Dataset` |
-| [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `Dataset` |
-| [`NaiveKernel`](@ref)                       | Kernel density estimation   | `Dataset`           |
-| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`, `Dataset` |
-| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`, `Dataset` |
-| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`, `Dataset` |
+| [`ValueHistogram`](@ref)                    | Binning (histogram)         | `Vector`, `StateSpaceSet` |
+| [`TransferOperator`](@ref)                  | Binning (transfer operator) | `Vector`, `StateSpaceSet` |
+| [`NaiveKernel`](@ref)                       | Kernel density estimation   | `StateSpaceSet`           |
+| [`SymbolicPermutation`](@ref)               | Ordinal patterns            | `Vector`, `StateSpaceSet` |
+| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns            | `Vector`, `StateSpaceSet` |
+| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns            | `Vector`, `StateSpaceSet` |
 | [`SpatialSymbolicPermutation`](@ref)        | Ordinal patterns in space   | `Array` |
 | [`Dispersion`](@ref)                        | Dispersion patterns         | `Vector`            |
 | [`SpatialDispersion`](@ref)                 | Dispersion patterns in space  | `Array` |

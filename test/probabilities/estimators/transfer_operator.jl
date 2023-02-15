@@ -1,8 +1,8 @@
-using StateSpaceSets: Dataset
+using StateSpaceSets: StateSpaceSet
 
 @test TransferOperator(RectangularBinning(3)) isa TransferOperator
 
-D = Dataset(rand(100, 2))
+D = StateSpaceSet(rand(100, 2))
 
 binnings = [
     RectangularBinning(3),

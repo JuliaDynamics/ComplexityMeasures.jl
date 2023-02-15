@@ -10,7 +10,7 @@ export ZhuSingh
     ZhuSingh(; k = 1, w = 0, base = 2)
 
 The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
-differential [`entropy`](@ref) of a multi-dimensional [`Dataset`](@ref)
+differential [`entropy`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref)
 in the given `base`.
 
 ## Description
@@ -51,7 +51,7 @@ Base.@kwdef struct ZhuSingh{B} <: NNDiffEntropyEst
     base::B = 2
 end
 
-function entropy(est::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
+function entropy(est::ZhuSingh, x::AbstractStateSpaceSet{D, T}) where {D, T}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())

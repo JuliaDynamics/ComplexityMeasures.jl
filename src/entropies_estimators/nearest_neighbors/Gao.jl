@@ -1,4 +1,4 @@
-using StateSpaceSets: AbstractDataset
+using StateSpaceSets: AbstractStateSpaceSet
 using Neighborhood: Euclidean, KDTree, NeighborNumber, Theiler
 using Neighborhood: bulksearch
 using SpecialFunctions: digamma
@@ -48,7 +48,7 @@ Base.@kwdef struct Gao{B} <: NNDiffEntropyEst
     corrected::Bool = true
 end
 
-function entropy(est::Gao, x::AbstractDataset{D}) where D
+function entropy(est::Gao, x::AbstractStateSpaceSet{D}) where D
     (; k, w) = est
     N = length(x)
     f = (k  * gamma(D / 2 + 1)) / ( (N - 1) * π^(D / 2))

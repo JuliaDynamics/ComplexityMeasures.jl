@@ -2,8 +2,8 @@ using ComplexityMeasures, Test
 
 # To ensure minimal rectangle volumes are correct, we also test internals directly here.
 # It's not feasible to construct an end-product test due to the neighbor searches.
-x = Dataset([[-1, -2], [0, -2], [3, 2]]);
-y = Dataset([[3, 1], [-5, 1], [3, -2]]);
+x = StateSpaceSet([[-1, -2], [0, -2], [3, 2]]);
+y = StateSpaceSet([[3, 1], [-5, 1], [3, -2]]);
 @test ComplexityMeasures.volume_minimal_rect([0, 0], x) == 24
 @test ComplexityMeasures.volume_minimal_rect([0, 0], y) == 40
 

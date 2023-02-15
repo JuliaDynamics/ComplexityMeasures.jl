@@ -88,7 +88,7 @@ abstract type ProbabilitiesEstimator end
 
 Compute a probability distribution over the set of possible outcomes defined by the
 probabilities estimator `est`, given input data `x`, which is typically an `Array` or
-a `Dataset`; see [Input data for ComplexityMeasures.jl](@ref).
+a `StateSpaceSet`; see [Input data for ComplexityMeasures.jl](@ref).
 Configuration options are always given as arguments to the chosen estimator.
 
 To obtain the outcomes corresponding to these probabilities, use [`outcomes`](@ref).

@@ -143,7 +143,7 @@ function inds_in_terms_of_unique(x, sorted::Bool)
     end
 end
 
-inds_in_terms_of_unique(x::AbstractDataset) = inds_in_terms_of_unique(x.data)
+inds_in_terms_of_unique(x::AbstractStateSpaceSet) = inds_in_terms_of_unique(x.data)
 
 
 """
@@ -179,7 +179,7 @@ struct TransferOperatorApproximationRectangular{
 end
 
 """
-    transferoperator(pts::AbstractDataset,
+    transferoperator(pts::AbstractStateSpaceSet,
         binning::RectangularBinning) → TransferOperatorApproximationRectangular
 
 Estimate the transfer operator given a set of sequentially ordered points subject to a
@@ -200,7 +200,7 @@ transferoperator(orbit, RectangularBinning(10))
 
 See also: [`RectangularBinning`](@ref).
 """
-function transferoperator(pts::AbstractDataset{D, T},
+function transferoperator(pts::AbstractStateSpaceSet{D, T},
         binning::Union{FixedRectangularBinning, RectangularBinning};
         boundary_condition = :circular) where {D, T<:Real}
 
@@ -326,7 +326,7 @@ end
 
 import LinearAlgebra: norm
 """
-    invariantmeasure(x::AbstractDataset, binning::RectangularBinning) → iv::InvariantMeasure
+    invariantmeasure(x::AbstractStateSpaceSet, binning::RectangularBinning) → iv::InvariantMeasure
 
 Estimate an invariant measure over the points in `x` based on binning the data into
 rectangular boxes dictated by the `binning`, then approximate the transfer
@@ -438,7 +438,7 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     return InvariantMeasure(to, Probabilities(distribution))
 end
 
-function invariantmeasure(x::AbstractDataset,
+function invariantmeasure(x::AbstractStateSpaceSet,
         binning::Union{FixedRectangularBinning, RectangularBinning})
     to = transferoperator(x, binning)
     invariantmeasure(to)

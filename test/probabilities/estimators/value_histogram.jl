@@ -4,7 +4,7 @@ using Random
 
 @testset "Standard ranges binning" begin
 
-    x = Dataset(rand(Random.MersenneTwister(1234), 100_000, 2))
+    x = StateSpaceSet(rand(Random.MersenneTwister(1234), 100_000, 2))
     push!(x, SVector(0, 0)) # ensure both 0 and 1 have values in, exactly.
     push!(x, SVector(1, 1))
 
@@ -119,7 +119,7 @@ end
 end
 
 @testset "All points covered" begin
-    x = Dataset(rand(100, 2))
+    x = StateSpaceSet(rand(100, 2))
     binnings = [
         RectangularBinning(5, true),
         RectangularBinning(0.2, true),

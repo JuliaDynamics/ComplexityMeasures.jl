@@ -11,7 +11,7 @@ using Distributions: MvNormal
 
 𝒩 = MvNormal([1, -4], 2)
 N = 500
-D = Dataset(sort([rand(𝒩) for i = 1:N]))
+D = StateSpaceSet(sort([rand(𝒩) for i = 1:N]))
 x, y = columns(D)
 p = probabilities(NaiveKernel(1.5), D)
 fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
@@ -66,7 +66,7 @@ knn_estimators = [
 Hs_uniform_knn = [[zeros(nreps) for N in Ns] for e in knn_estimators]
 for (i, est) in enumerate(knn_estimators)
     for j = 1:nreps
-        pts = randn(maximum(Ns)) |> Dataset
+        pts = randn(maximum(Ns)) |> StateSpaceSet
         for (k, N) in enumerate(Ns)
             Hs_uniform_knn[i][k][j] = entropy(e, est, pts[1:N])
         end
@@ -82,7 +82,7 @@ estimators_os = [Vasicek, Ebrahimi, AlizadehArghami, Correa]
 Hs_uniform_os = [[zeros(nreps) for N in Ns] for e in estimators_os]
 for (i, est_os) in enumerate(estimators_os)
     for j = 1:nreps
-        pts = randn(maximum(Ns)) # raw timeseries, not a `Dataset`
+        pts = randn(maximum(Ns)) # raw timeseries, not a `StateSpaceSet`
         for (k, N) in enumerate(Ns)
             m = floor(Int, N / 100) # Scale `m` to timeseries length
             est = est_os(; m) # Instantiate estimator with current `m`

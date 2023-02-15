@@ -4,7 +4,7 @@ using Test, LinearAlgebra
 # Test internals in addition to end-product, because designing an exact end-product
 # test is  a mess due to the neighbor searches. If these top-level tests fail, then
 # the issue is probability related to these functions.
-nns = Dataset([[-1, -1], [0, -2], [3, 2.0]])
+nns = StateSpaceSet([[-1, -1], [0, -2], [3, 2.0]])
 x = SVector(0.0, 0.0)
 dists = ComplexityMeasures.maxdists(x, nns)
 vol = ComplexityMeasures.volume_minimal_rect(dists)
@@ -12,7 +12,7 @@ vol = ComplexityMeasures.volume_minimal_rect(dists)
 @test vol == 24.0
 @test ξ == 2.0
 
-nns = Dataset([[3, 1], [3, -2], [-5, 1.0]])
+nns = StateSpaceSet([[3, 1], [3, -2], [-5, 1.0]])
 x = SVector(0.0, 0.0)
 dists = ComplexityMeasures.maxdists(x, nns)
 vol = ComplexityMeasures.volume_minimal_rect(dists)
@@ -20,7 +20,7 @@ vol = ComplexityMeasures.volume_minimal_rect(dists)
 @test vol == 40.0
 @test ξ == 2.0
 
-nns = Dataset([[-3, 1], [3, 1], [5, -2.0]])
+nns = StateSpaceSet([[-3, 1], [3, 1], [5, -2.0]])
 x = SVector(0.0, 0.0)
 dists = ComplexityMeasures.maxdists(x, nns)
 vol = ComplexityMeasures.volume_minimal_rect(dists)
