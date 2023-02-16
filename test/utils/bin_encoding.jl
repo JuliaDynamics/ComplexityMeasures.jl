@@ -8,10 +8,14 @@ seeds = [1234, 57772, 90897, 2158081, 888]
 # But that's okay, since we do not do guarantees for that case.
 binnings = [
     RectangularBinning(3, true),
+    RectangularBinning(3, false),
     RectangularBinning(0.2, true),
+    RectangularBinning(0.2, false),
     RectangularBinning([2, 3], true),
+    RectangularBinning([2, 3], false),
     RectangularBinning([0.2, 0.3], true),
-    FixedRectangularBinning(range(0, 1; length = 5), 2, true)
+    FixedRectangularBinning(range(0, 1; length = 5), 2, true),
+    FixedRectangularBinning(range(0, 1; length = 5), 2, false),
 ]
 
 @testset "seed $(seed)" for seed in seeds

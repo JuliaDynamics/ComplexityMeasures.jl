@@ -176,7 +176,7 @@ function FixedRectangularBinning(b::RectangularBinning, x)
     elseif ϵ isa Int || ϵ isa Vector{Int}
         # use `nextfloat` to ensure all data are covered
         # (but only certain if `precise = true`)
-        maxi = nextfloat.(maxi)
+        maxi = nextfloat.(maxi, 2)
         # We add one, because the user input specifies the number of bins,
         # and the number of bins is the range length - 1
         lengths = ϵ .* ones(SVector{D,Int}) .+ 1
