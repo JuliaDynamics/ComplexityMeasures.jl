@@ -137,7 +137,8 @@ The entropy behaviour can be parallelized with the `ChaosTools.lyapunov` of the 
 ```@example MAIN
 using DynamicalSystemsBase, CairoMakie
 
-ds = Systems.logistic()
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1-x[1]))
+ds = DeterministicIteratedMap(logistic_rule, [0.4], [4.0])
 rs = 3.4:0.001:4
 N_lyap, N_ent = 100000, 10000
 m, τ = 6, 1 # Symbol size/dimension and embedding lag
@@ -148,22 +149,21 @@ hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
 for (i, r) in enumerate(rs)
     ds.p[1] = r
 
-    x = trajectory(ds, N_ent) # time series
-    hperm = entropy(SymbolicPermutation(; m, τ), x)
-    hwtperm = entropy(SymbolicWeightedPermutation(; m, τ), x)
-    hampperm = entropy(SymbolicAmplitudeAwarePermutation(; m, τ), x)
-
-    hs_perm[i] = hperm; hs_wtperm[i] = hwtperm; hs_ampperm[i] = hampperm
+    x, t = trajectory(ds, N_ent)
+    ## `x` is a 1D dataset, need to recast into a timeseries
+    x = columns(x)[1]
+    hs_perm[i] = entropy(SymbolicPermutation(; m, τ), x)
+    hs_wtperm[i] = entropy(SymbolicWeightedPermutation(; m, τ), x)
+    hs_ampperm[i] = entropy(SymbolicAmplitudeAwarePermutation(; m, τ), x)
 end
 
 fig = Figure()
-a2 = Axis(fig[1,1]; ylabel = L"h_6 (SP)")
-lines!(a2, rs, hs_perm; color = Cycled(2))
-a3 = Axis(fig[2,1]; ylabel = L"h_6 (WT)")
-lines!(a3, rs, hs_wtperm; color = Cycled(3))
-a4 = Axis(fig[3,1]; ylabel = L"h_6 (SAAP)")
-lines!(a4, rs, hs_ampperm; color = Cycled(4))
-a4.xlabel = L"r"
+a1 = Axis(fig[1,1]; ylabel = L"h_6 (SP)")
+lines!(a1, rs, hs_perm; color = Cycled(2))
+a2 = Axis(fig[2,1]; ylabel = L"h_6 (WT)")
+lines!(a2, rs, hs_wtperm; color = Cycled(3))
+a3 = Axis(fig[3,1]; ylabel = L"h_6 (SAAP)", xlabel = L"r")
+lines!(a3, rs, hs_ampperm; color = Cycled(4))
 
 for a in (a1,a2,a3)
     hidexdecorations!(a, grid = false)
