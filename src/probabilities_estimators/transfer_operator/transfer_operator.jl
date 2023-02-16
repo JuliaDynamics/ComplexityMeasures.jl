@@ -10,7 +10,7 @@ export
 
 """
     TransferOperator <: ProbabilitiesEstimator
-    TransferOperator(b::RectangularBinning)
+    TransferOperator(b::AbstractBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by
 the given binning scheme `b`, then approximating the transfer (Perron-Frobenius) operator
@@ -184,21 +184,6 @@ end
 
 Estimate the transfer operator given a set of sequentially ordered points subject to a
 rectangular partition given by the `binning`.
-
-## Example
-
-```julia
-using DynamicalSystems, Plots, EntropyDefinition
-D = 4
-ds = Systems.lorenz96(D; F = 32.0)
-N, dt = 20000, 0.1
-orbit = trajectory(ds, N*dt; dt = dt, Ttr = 10.0)
-
-# Estimate transfer operator over some coarse graining of the orbit.
-transferoperator(orbit, RectangularBinning(10))
-```
-
-See also: [`RectangularBinning`](@ref).
 """
 function transferoperator(pts::AbstractStateSpaceSet{D, T},
         binning::Union{FixedRectangularBinning, RectangularBinning};
@@ -325,6 +310,7 @@ end
 
 
 import LinearAlgebra: norm
+
 """
     invariantmeasure(x::AbstractStateSpaceSet, binning::RectangularBinning) → iv::InvariantMeasure
 
@@ -338,11 +324,10 @@ Details on the estimation procedure is found the [`TransferOperator`](@ref) docs
 ## Example
 
 ```julia
-using DynamicalSystems, Plots, ComplexityMeasures
-D = 4
-ds = Systems.lorenz96(D; F = 32.0)
-N, dt = 20000, 0.1
-orbit = trajectory(ds, N*dt; dt = dt, Ttr = 10.0)
+using DynamicalSystems
+henon_rule(x, p, n) = SVector{2}(1.0 - p[1]*x[1]^2 + x[2], p[2]*x[1])
+henon = DeterministicIteratedMap(henon_rule, zeros(2), [1.4, 0.3])
+orbit, t = trajectory(ds, 20_000; Ttr = 10)
 
 # Estimate the invariant measure over some coarse graining of the orbit.
 iv = invariantmeasure(orbit, RectangularBinning(15))

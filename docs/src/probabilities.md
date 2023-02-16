@@ -60,6 +60,7 @@ CountOccurrences
 
 ```@docs
 ValueHistogram
+AbstractBinning
 RectangularBinning
 FixedRectangularBinning
 ```
