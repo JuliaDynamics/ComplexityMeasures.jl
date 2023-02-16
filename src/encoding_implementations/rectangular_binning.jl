@@ -175,8 +175,11 @@ function FixedRectangularBinning(b::RectangularBinning, x)
         ranges = ntuple(i -> ensure_covering_range(i), D)
     elseif ϵ isa Int || ϵ isa Vector{Int}
         # use `nextfloat` to ensure all data are covered
-        # (but only certain if `precise = true`)
-        maxi = nextfloat.(maxi, 2)
+        if b.precise # in the precise case we can just use 1 next float
+            maxi = nextfloat.(maxi)
+        else # otherwise we need a bit more width
+            maxi = nextfloat.(maxi, 2)
+        end
         # We add one, because the user input specifies the number of bins,
         # and the number of bins is the range length - 1
         lengths = ϵ .* ones(SVector{D,Int}) .+ 1
