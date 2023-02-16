@@ -6,7 +6,7 @@ export Zhu
 
 The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] is an extension to
 [`KozachenkoLeonenko`](@ref), and computes the [`Shannon`](@ref)
-differential [`entropy`](@ref) of a multi-dimensional [`Dataset`](@ref) in the given `base`.
+differential [`entropy`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref) in the given `base`.
 
 ## Description
 
@@ -37,7 +37,7 @@ Base.@kwdef struct Zhu{B} <: NNDiffEntropyEst
     base::B = 2
 end
 
-function entropy(est::Zhu, x::AbstractDataset{D, T}) where {D, T}
+function entropy(est::Zhu, x::AbstractStateSpaceSet{D, T}) where {D, T}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())
@@ -65,7 +65,7 @@ This function respects the coordinate system of the input data, i.e. it does not
 any rotation (which would be computationally more demanding because we'd need to find the
 convex hull of `nns`, but could potentially give more accurate results).
 """
-volume_minimal_rect(xᵢ, nns::AbstractDataset) = prod(maxdists(xᵢ, nns) .* 2)
+volume_minimal_rect(xᵢ, nns::AbstractStateSpaceSet) = prod(maxdists(xᵢ, nns) .* 2)
 
 """
     maxdists(xᵢ, nns) → dists

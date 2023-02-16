@@ -64,7 +64,7 @@ end
 total_outcomes(::OrdinalPatternEncoding{m}) where {m} = factorial(m)
 outcome_space(::OrdinalPatternEncoding{m}) where {m} = permutations(1:m) |> collect
 
-# Notice that `χ` is an element of a `Dataset`, so most definitely a static vector in
+# Notice that `χ` is an element of a `StateSpaceSet`, so most definitely a static vector in
 # our code. However we allow `AbstractVector` if a user wanna use `encode` directly.
 function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector) where {m}
     if m != length(χ)

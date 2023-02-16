@@ -5,7 +5,7 @@ export KozachenkoLeonenko
     KozachenkoLeonenko(; w::Int = 0, base = 2)
 
 The `KozachenkoLeonenko` estimator computes the [`Shannon`](@ref) differential
-[`entropy`](@ref) of a multi-dimensional [`Dataset`](@ref) in the given `base`.
+[`entropy`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref) in the given `base`.
 
 ## Description
 
@@ -41,7 +41,7 @@ See also: [`entropy`](@ref), [`Kraskov`](@ref), [`DifferentialEntropyEstimator`]
     base::B = 2
 end
 
-function entropy(est::KozachenkoLeonenko, x::AbstractDataset{D}) where {D}
+function entropy(est::KozachenkoLeonenko, x::AbstractStateSpaceSet{D}) where {D}
     (; w) = est
 
     N = length(x)

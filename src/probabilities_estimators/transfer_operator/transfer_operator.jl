@@ -10,7 +10,7 @@ export
 
 """
     TransferOperator <: ProbabilitiesEstimator
-    TransferOperator(b::RectangularBinning)
+    TransferOperator(b::AbstractBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by
 the given binning scheme `b`, then approximating the transfer (Perron-Frobenius) operator
@@ -143,7 +143,7 @@ function inds_in_terms_of_unique(x, sorted::Bool)
     end
 end
 
-inds_in_terms_of_unique(x::AbstractDataset) = inds_in_terms_of_unique(x.data)
+inds_in_terms_of_unique(x::AbstractStateSpaceSet) = inds_in_terms_of_unique(x.data)
 
 
 """
@@ -172,44 +172,29 @@ struct TransferOperatorApproximationRectangular{
         BINS,
         E}
     transfermatrix::AbstractArray{T, 2}
-    encoder::E
+    encoding::E
     bins::BINS
     sort_idxs::Vector{Int}
     visitors::Vector{Vector{Int}}
 end
 
 """
-    transferoperator(pts::AbstractDataset,
+    transferoperator(pts::AbstractStateSpaceSet,
         binning::RectangularBinning) → TransferOperatorApproximationRectangular
 
 Estimate the transfer operator given a set of sequentially ordered points subject to a
 rectangular partition given by the `binning`.
-
-## Example
-
-```julia
-using DynamicalSystems, Plots, EntropyDefinition
-D = 4
-ds = Systems.lorenz96(D; F = 32.0)
-N, dt = 20000, 0.1
-orbit = trajectory(ds, N*dt; dt = dt, Ttr = 10.0)
-
-# Estimate transfer operator over some coarse graining of the orbit.
-transferoperator(orbit, RectangularBinning(10))
-```
-
-See also: [`RectangularBinning`](@ref).
 """
-function transferoperator(pts::AbstractDataset{D, T},
+function transferoperator(pts::AbstractStateSpaceSet{D, T},
         binning::Union{FixedRectangularBinning, RectangularBinning};
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
-    encoder = RectangularBinEncoding(binning, pts)
+    encoding = RectangularBinEncoding(binning, pts)
 
     # The L points visits a total of L bins, which are the following bins (referenced
     # here as cartesian coordinates, not absolute bins):
-    visited_bins = map(pᵢ -> encode(encoder, pᵢ), pts)
+    visited_bins = map(pᵢ -> encode(encoding, pᵢ), pts)
     sort_idxs = sortperm(visited_bins)
     #sort!(visited_bins) # see todo on github
 
@@ -302,7 +287,7 @@ function transferoperator(pts::AbstractDataset{D, T},
     # visited_bins[i] corresponds to the i-th row/column of the transfer operator
     unique!(visited_bins)
     TransferOperatorApproximationRectangular(
-        TO, encoder, visited_bins, sort_idxs, visitors)
+        TO, encoding, visited_bins, sort_idxs, visitors)
 end
 
 """
@@ -325,8 +310,9 @@ end
 
 
 import LinearAlgebra: norm
+
 """
-    invariantmeasure(x::AbstractDataset, binning::RectangularBinning) → iv::InvariantMeasure
+    invariantmeasure(x::AbstractStateSpaceSet, binning::RectangularBinning) → iv::InvariantMeasure
 
 Estimate an invariant measure over the points in `x` based on binning the data into
 rectangular boxes dictated by the `binning`, then approximate the transfer
@@ -338,11 +324,10 @@ Details on the estimation procedure is found the [`TransferOperator`](@ref) docs
 ## Example
 
 ```julia
-using DynamicalSystems, Plots, ComplexityMeasures
-D = 4
-ds = Systems.lorenz96(D; F = 32.0)
-N, dt = 20000, 0.1
-orbit = trajectory(ds, N*dt; dt = dt, Ttr = 10.0)
+using DynamicalSystems
+henon_rule(x, p, n) = SVector{2}(1.0 - p[1]*x[1]^2 + x[2], p[2]*x[1])
+henon = DeterministicIteratedMap(henon_rule, zeros(2), [1.4, 0.3])
+orbit, t = trajectory(ds, 20_000; Ttr = 10)
 
 # Estimate the invariant measure over some coarse graining of the orbit.
 iv = invariantmeasure(orbit, RectangularBinning(15))
@@ -438,7 +423,7 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     return InvariantMeasure(to, Probabilities(distribution))
 end
 
-function invariantmeasure(x::AbstractDataset,
+function invariantmeasure(x::AbstractStateSpaceSet,
         binning::Union{FixedRectangularBinning, RectangularBinning})
     to = transferoperator(x, binning)
     invariantmeasure(to)
@@ -467,8 +452,8 @@ function probabilities_and_outcomes(est::TransferOperator, x::Array_or_Dataset)
     # appearance
     bins = to.bins
     unique!(bins)
-    outcomes = decode.(Ref(to.encoder), bins) # coordinates of the visited bins
+    outcomes = decode.(Ref(to.encoding), bins) # coordinates of the visited bins
     return probs, outcomes
 end
 
-outcome_space(est::TransferOperator, x) = outcome_space(est.encoder, x)
+outcome_space(est::TransferOperator, x) = outcome_space(est.encoding, x)

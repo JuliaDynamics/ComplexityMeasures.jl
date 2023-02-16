@@ -33,7 +33,7 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     estimated as the frequencies of the encoded permutation symbols
     by using [`CountOccurrences`](@ref). When giving the resulting probabilities to
     [`entropy`](@ref), the original permutation entropy is computed [^BandtPompe2002].
-- **Multivariate data**. If applied to a an `D`-dimensional `Dataset`,
+- **Multivariate data**. If applied to a an `D`-dimensional `StateSpaceSet`,
     then no embedding is constructed, `m` must be equal to `D` and `τ` is ignored.
     Each vector ``\\bf{x}_i`` of the dataset is mapped
     directly to its permutation pattern ``\\pi_{i}`` by comparing the
@@ -74,7 +74,7 @@ See also [`OrdinalPatternEncoding`(@ref).
 ## In-place symbolization
 
 `SymbolicPermutation` also implements the in-place [`probabilities!`](@ref)
-for `Dataset` input (or embedded vector input) for reducing allocations in looping scenarios.
+for `StateSpaceSet` input (or embedded vector input) for reducing allocations in looping scenarios.
 The length of the pre-allocated symbol vector must be the length of the dataset.
 For example
 
@@ -82,7 +82,7 @@ For example
 using ComplexityMeasures
 m, N = 2, 100
 est = SymbolicPermutation(; m, τ)
-x = Dataset(rand(N, m)) # some input dataset
+x = StateSpaceSet(rand(N, m)) # some input dataset
 πs_ts = zeros(Int, N) # length must match length of `x`
 p = probabilities!(πs_ts, est, x)
 ```
@@ -198,13 +198,13 @@ end
 # how the probabilities are counted.
 
 function probabilities(est::PermProbEst{m}, x::AbstractVector{T}) where {m, T<:Real}
-    dataset::Dataset{m,T} = embed(x, m, est.τ)
+    dataset::StateSpaceSet{m,T} = embed(x, m, est.τ)
     return probabilities(est, dataset)
 end
 
-function probabilities(est::PermProbEst{m}, x::AbstractDataset{D}) where {m, D}
+function probabilities(est::PermProbEst{m}, x::AbstractStateSpaceSet{D}) where {m, D}
     m != D && throw(ArgumentError(
-        "Order of ordinal patterns and dimension of `Dataset` must match!"
+        "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
     ))
     πs = zeros(Int, length(x))
     return probabilities!(πs, est, x)
@@ -213,12 +213,12 @@ end
 function probabilities!(::Vector{Int}, ::PermProbEst, ::AbstractVector)
     error("""
     In-place `probabilities!` for `SymbolicPermutation` can only be used by
-    Dataset input, not timeseries. First embed the timeseries or use the
+    StateSpaceSet input, not timeseries. First embed the timeseries or use the
     normal version `probabilities`.
     """)
 end
 
-function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractDataset{m}) where {m}
+function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceSet{m}) where {m}
     # TODO: The following loop can probably be parallelized!
     @inbounds for (i, χ) in enumerate(x)
         πs[i] = encode(est.encoding, χ)
@@ -240,7 +240,7 @@ function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_Dataset) w
         dataset = x
     end
     m != dimension(dataset) && throw(ArgumentError(
-        "Order of ordinal patterns and dimension of `Dataset` must match!"
+        "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
     ))
     πs = zeros(Int, length(dataset))
     ps = probabilities!(πs, est, dataset)
@@ -258,7 +258,7 @@ outcome_space(est::PermutationProbabilitiesEstimator) = outcome_space(est.encodi
 ###########################################################################################
 permutation_weights(::SymbolicPermutation, ::Any) = nothing
 
-function permutation_weights(::SymbolicWeightedPermutation{m}, x::AbstractDataset) where {m}
+function permutation_weights(::SymbolicWeightedPermutation{m}, x::AbstractStateSpaceSet) where {m}
     weights_from_variance.(vec(x), m)
 end
 
@@ -268,7 +268,7 @@ function weights_from_variance(χ, m::Int)
     return s/m
 end
 
-function permutation_weights(est::SymbolicAmplitudeAwarePermutation{m}, x::AbstractDataset) where {m}
+function permutation_weights(est::SymbolicAmplitudeAwarePermutation{m}, x::AbstractStateSpaceSet) where {m}
     AAPE.(vec(x), est.A, m)
 end
 

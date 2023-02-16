@@ -3,7 +3,7 @@ using ComplexityMeasures.DelayEmbeddings.Neighborhood: KDTree
 @test NaiveKernel(0.1; method = KDTree) isa ProbabilitiesEstimator
 
 N = 1000
-pts = Dataset([rand(2) for i = 1:N]);
+pts = StateSpaceSet([rand(2) for i = 1:N]);
 ϵ = 0.3
 est_direct = NaiveKernel(ϵ, method = KDTree)
 est_tree = NaiveKernel(ϵ, method = BruteForce)

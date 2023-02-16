@@ -1,6 +1,11 @@
-export RectangularBinning, FixedRectangularBinning
+export RectangularBinning, FixedRectangularBinning, AbstractBinning
 export RectangularBinEncoding
 
+"""
+    AbstractBinning
+
+Supertype encompassing [`RectangularBinning`](@ref) and [`FixedRectangualrBinning`](@ref).
+"""
 abstract type AbstractBinning end
 abstract type HistogramEncoding <: Encoding end
 
@@ -159,7 +164,7 @@ function FixedRectangularBinning(b::RectangularBinning, x)
         widths = SVector{D,T}(ϵ .* ones(SVector{D,T}))
         # To ensure all points are guaranteed to be covered, we add the width
         # to the max, if the max isn't included in the resulting range
-        function covering_range(i)
+        ensure_covering_range = (i) -> begin
             r = range(mini[i], maxi[i]; step = widths[i])
             if maxi[i] ∉ r
                 return range(mini[i], maxi[i] + widths[i]; step = widths[i])
@@ -167,10 +172,14 @@ function FixedRectangularBinning(b::RectangularBinning, x)
                 return r
             end
         end
-        ranges = ntuple(i -> covering_range(i), D)
+        ranges = ntuple(i -> ensure_covering_range(i), D)
     elseif ϵ isa Int || ϵ isa Vector{Int}
-        # use `nextfloat` to ensure all data are covered!
-        maxi = nextfloat.(maxi)
+        # use `nextfloat` to ensure all data are covered
+        if b.precise # in the precise case we can just use 1 next float
+            maxi = nextfloat.(maxi)
+        else # otherwise we need a bit more width
+            maxi = nextfloat.(maxi, 2)
+        end
         # We add one, because the user input specifies the number of bins,
         # and the number of bins is the range length - 1
         lengths = ϵ .* ones(SVector{D,Int}) .+ 1

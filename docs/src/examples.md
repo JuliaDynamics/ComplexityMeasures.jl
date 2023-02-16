@@ -11,7 +11,7 @@ using Distributions: MvNormal
 
 𝒩 = MvNormal([1, -4], 2)
 N = 500
-D = Dataset(sort([rand(𝒩) for i = 1:N]))
+D = StateSpaceSet(sort([rand(𝒩) for i = 1:N]))
 x, y = columns(D)
 p = probabilities(NaiveKernel(1.5), D)
 fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
@@ -40,7 +40,7 @@ entropy is `0.5*log(2π) + 0.5` nats when using natural logarithms.
 
 ```@example MAIN
 using ComplexityMeasures
-using DynamicalSystemsBase, CairoMakie, Statistics
+using CairoMakie, Statistics
 nreps = 30
 Ns = [100:100:500; 1000:1000:5000]
 e = Shannon(; base = MathConstants.e)
@@ -66,7 +66,7 @@ knn_estimators = [
 Hs_uniform_knn = [[zeros(nreps) for N in Ns] for e in knn_estimators]
 for (i, est) in enumerate(knn_estimators)
     for j = 1:nreps
-        pts = randn(maximum(Ns)) |> Dataset
+        pts = randn(maximum(Ns)) |> StateSpaceSet
         for (k, N) in enumerate(Ns)
             Hs_uniform_knn[i][k][j] = entropy(e, est, pts[1:N])
         end
@@ -82,7 +82,7 @@ estimators_os = [Vasicek, Ebrahimi, AlizadehArghami, Correa]
 Hs_uniform_os = [[zeros(nreps) for N in Ns] for e in estimators_os]
 for (i, est_os) in enumerate(estimators_os)
     for j = 1:nreps
-        pts = randn(maximum(Ns)) # raw timeseries, not a `Dataset`
+        pts = randn(maximum(Ns)) # raw timeseries, not a `StateSpaceSet`
         for (k, N) in enumerate(Ns)
             m = floor(Int, N / 100) # Scale `m` to timeseries length
             est = est_os(; m) # Instantiate estimator with current `m`
@@ -130,45 +130,40 @@ are negatively biased for small sample sizes.
 
 ## Discrete entropy: permutation entropy
 
-This example reproduces an example from Bandt and Pompe (2002), where the permutation
-entropy is compared with the largest Lyapunov exponents from time series of the chaotic
-logistic map. EntropyDefinition estimates using [`SymbolicWeightedPermutation`](@ref)
+This example plots permutation entropy for time series of the chaotic logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
+The entropy behaviour can be parallelized with the `ChaosTools.lyapunov` of the map.
 
 ```@example MAIN
 using DynamicalSystemsBase, CairoMakie
-using ChaosTools: lyapunov
 
-ds = Systems.logistic()
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1-x[1]))
+ds = DeterministicIteratedMap(logistic_rule, [0.4], [4.0])
 rs = 3.4:0.001:4
 N_lyap, N_ent = 100000, 10000
 m, τ = 6, 1 # Symbol size/dimension and embedding lag
 
 # Generate one time series for each value of the logistic parameter r
-lyaps, hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
+hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
 
 for (i, r) in enumerate(rs)
     ds.p[1] = r
-    lyaps[i] = lyapunov(ds, N_lyap)
 
-    x = trajectory(ds, N_ent) # time series
-    hperm = entropy(SymbolicPermutation(; m, τ), x)
-    hwtperm = entropy(SymbolicWeightedPermutation(; m, τ), x)
-    hampperm = entropy(SymbolicAmplitudeAwarePermutation(; m, τ), x)
-
-    hs_perm[i] = hperm; hs_wtperm[i] = hwtperm; hs_ampperm[i] = hampperm
+    x, t = trajectory(ds, N_ent)
+    ## `x` is a 1D dataset, need to recast into a timeseries
+    x = columns(x)[1]
+    hs_perm[i] = entropy(SymbolicPermutation(; m, τ), x)
+    hs_wtperm[i] = entropy(SymbolicWeightedPermutation(; m, τ), x)
+    hs_ampperm[i] = entropy(SymbolicAmplitudeAwarePermutation(; m, τ), x)
 end
 
 fig = Figure()
-a1 = Axis(fig[1,1]; ylabel = L"\lambda")
-lines!(a1, rs, lyaps); ylims!(a1, (-2, log(2)))
-a2 = Axis(fig[2,1]; ylabel = L"h_6 (SP)")
-lines!(a2, rs, hs_perm; color = Cycled(2))
-a3 = Axis(fig[3,1]; ylabel = L"h_6 (WT)")
-lines!(a3, rs, hs_wtperm; color = Cycled(3))
-a4 = Axis(fig[4,1]; ylabel = L"h_6 (SAAP)")
-lines!(a4, rs, hs_ampperm; color = Cycled(4))
-a4.xlabel = L"r"
+a1 = Axis(fig[1,1]; ylabel = L"h_6 (SP)")
+lines!(a1, rs, hs_perm; color = Cycled(2))
+a2 = Axis(fig[2,1]; ylabel = L"h_6 (WT)")
+lines!(a2, rs, hs_wtperm; color = Cycled(3))
+a3 = Axis(fig[3,1]; ylabel = L"h_6 (SAAP)", xlabel = L"r")
+lines!(a3, rs, hs_ampperm; color = Cycled(4))
 
 for a in (a1,a2,a3)
     hidexdecorations!(a, grid = false)
@@ -183,7 +178,7 @@ energy is contained at one scale) and higher for very irregular signals (energy 
 more out across scales).
 
 ```@example MAIN
-using DynamicalSystemsBase, CairoMakie
+using CairoMakie
 N, a = 1000, 10
 t = LinRange(0, 2*a*π, N)
 
@@ -302,7 +297,6 @@ This example is adapted from Li et al. (2021)[^Li2019].
 
 ```@example MAIN
 using ComplexityMeasures
-using DynamicalSystemsBase
 using Random
 using CairoMakie
 using Distributions: Normal
@@ -350,10 +344,10 @@ fig
 
 ## Discrete entropy: normalized entropy for comparing different signals
 
-When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the Wavelet entropy example where we use the spectral entropy instead of the wavelet entropy:
+When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the wavelet entropy example where we use the spectral entropy instead of the wavelet entropy:
 
 ```@example MAIN
-using DynamicalSystemsBase
+using ComplexityMeasures
 N1, N2, a = 101, 10001, 10
 
 for N in (N1, N2)
@@ -361,9 +355,8 @@ for N in (N1, N2)
     local x = sin.(t) # periodic
     local y = sin.(t .+ cos.(t/0.5)) # periodic, complex spectrum
     local z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
-    local w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
 
-    for q in (x, y, z, w)
+    for q in (x, y, z)
         h = entropy(PowerSpectrum(), q)
         n = entropy_normalized(PowerSpectrum(), q)
         println("entropy: $(h), normalized: $(n).")
@@ -371,7 +364,7 @@ for N in (N1, N2)
 end
 ```
 
-You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
+You see that while the direct entropy values of noisy signal changes strongly with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.
 
 ## Spatiotemporal permutation entropy
@@ -471,8 +464,6 @@ generated numbers and do not provide code that specify random number seeds.
 
 ```@example MAIN
 using ComplexityMeasures
-using ComplexityMeasures
-using DynamicalSystemsBase
 using Random
 using CairoMakie
 using Distributions: Normal
@@ -536,7 +527,8 @@ using DynamicalSystemsBase
 using TimeseriesSurrogates
 
 est = MissingDispersionPatterns(Dispersion(m = 3, c = 7))
-sys = Systems.logistic(0.6; r = 4.0)
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1-x[1]))
+sys = DeterministicIteratedMap(logistic_rule, [0.6], [4.0])
 Ls = collect(100:100:1000)
 nL = length(Ls)
 nreps = 30 # should be higher for real applications
@@ -548,7 +540,8 @@ y = rand(maximum(Ls))
 
 for (i, L) in enumerate(Ls)
     # Deterministic time series
-    x = trajectory(sys, L - 1, Ttr = 5000)
+    x, t = trajectory(sys, L - 1, Ttr = 5000)
+    x = columns(x)[1] # remember to make it `Vector{<:Real}
     sx = surrogenerator(x, method)
     r_det[i] = complexity_normalized(est, x)
     r_det_surr[i][:] = [complexity_normalized(est, sx()) for j = 1:nreps]
@@ -619,17 +612,16 @@ using DelayEmbeddings
 using CairoMakie
 
 # Equation 13 in Pincus (1991)
-function eom_henon(u, p, n)
+function henon_rule(u, p, n)
     R = p[1]
     x, y = u
     dx = R*y + 1 - 1.4*x^2
     dy = 0.3*R*x
-
-    return SVector{2}(dx, dy)
+    return SVector(dx, dy)
 end
 
 function henon(; u₀ = rand(2), R = 0.8)
-    DiscreteDynamicalSystem(eom_henon, u₀, [R])
+    DeterministicIteratedMap(henon_rule, u₀, [R])
 end
 
 ts_lengths = [300, 1000, 2000, 3000]
@@ -646,7 +638,7 @@ for (i, L) in enumerate(ts_lengths)
     k = 1
     while k <= nreps
         sys = henon(u₀ = rand(2), R = 0.8)
-        t = trajectory(sys, L, Ttr = 5000)
+        t = trajectory(sys, L; Ttr = 5000)[1]
 
         if !any([containsinf(tᵢ) for tᵢ in t])
             x, y = columns(t)
@@ -689,7 +681,6 @@ less regular signals should have higher sample entropy.
 
 ```@example MAIN
 using ComplexityMeasures
-using DynamicalSystemsBase
 using CairoMakie
 N, a = 2000, 10
 t = LinRange(0, 2*a*π, N)

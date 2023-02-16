@@ -5,7 +5,7 @@ export Kraskov
     Kraskov(; k::Int = 1, w::Int = 1, base = 2)
 
 The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`entropy`](@ref) of
-a multi-dimensional [`Dataset`](@ref) using the `k`-th nearest neighbor
+a multi-dimensional [`StateSpaceSet`](@ref) using the `k`-th nearest neighbor
 searches method from [^Kraskov2004] at the given `base`.
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
@@ -35,7 +35,7 @@ Base.@kwdef struct Kraskov{B} <: NNDiffEntropyEst
     base::B = 2
 end
 
-function entropy(est::Kraskov, x::AbstractDataset{D}) where {D}
+function entropy(est::Kraskov, x::AbstractStateSpaceSet{D}) where {D}
     (; k, w) = est
     N = length(x)
     ρs = maximum_neighbor_distances(x, w, k)

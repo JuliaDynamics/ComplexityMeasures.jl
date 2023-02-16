@@ -11,8 +11,8 @@ using Reexport
 @reexport using StateSpaceSets
 using DelayEmbeddings: embed
 
-const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractDataset}
-const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractDataset}
+const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractStateSpaceSet}
+const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractStateSpaceSet}
 
 # Core API types and functions
 include("probabilities.jl")

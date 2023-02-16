@@ -75,7 +75,7 @@ Base.@kwdef struct Lord{B} <: NNDiffEntropyEst
     base::B = 2
 end
 
-function entropy(est::Lord, x::AbstractDataset{D}) where {D}
+function entropy(est::Lord, x::AbstractStateSpaceSet{D}) where {D}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())
