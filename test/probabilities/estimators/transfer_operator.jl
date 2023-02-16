@@ -1,15 +1,17 @@
-using StateSpaceSets: StateSpaceSet
-
+using ComplexityMeasures, Test
+using Random: MersenneTwister
 @test TransferOperator(RectangularBinning(3)) isa TransferOperator
 
-D = StateSpaceSet(rand(100, 2))
+D = StateSpaceSet(rand(MersenneTwister(1234), 100, 2))
 
+# Note that if `false` is used for `precise` the tests will fail.
+# But that's okay, since we do not do guarantees for that case.
 binnings = [
-    RectangularBinning(3),
-    RectangularBinning(0.2),
-    RectangularBinning([2, 3]),
-    RectangularBinning([0.2, 0.3]),
-    FixedRectangularBinning(range(0, 1; length = 5), 2)
+    RectangularBinning(3, true),
+    RectangularBinning(0.2, true),
+    RectangularBinning([2, 3], true),
+    RectangularBinning([0.2, 0.3], true),
+    FixedRectangularBinning(range(0, 1; length = 5), 2, true)
 ]
 
 # There's not easy way of constructing an analytical example for the resulting
