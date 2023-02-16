@@ -12,13 +12,12 @@ using Statistics
 # Equation 13 in Pincus (1991)
 function eom_henon(u, p, n)
     R = p[1]
-    x, y = (u...,)
+    x, y = u
     dx = R*y + 1 - 1.4*x^2
     dy = 0.3*R*x
-
-    return SVector{2}(dx, dy)
+    return SVector(dx, dy)
 end
-henon(; u₀ = rand(2), R = 0.8) = DiscreteDynamicalSystem(eom_henon, u₀, [R])
+henon(; u₀ = rand(2), R = 0.8) = DeterministicIteratedMap(eom_henon, u₀, [R])
 
 # For some initial conditions, the Henon map as specified here blows up,
 # so we need to check for infinite values.
@@ -31,9 +30,9 @@ function calculate_hs(; nreps = 50, L = 1000)
     k = 1
     while k <= nreps
         sys = henon(u₀ = rand(2), R = 0.8)
-        t = trajectory(sys, L, Ttr = 5000)
+        t, tvec = trajectory(sys, L, Ttr = 5000)
 
-        if !any([containsinf(tᵢ) for tᵢ in t])
+        if !any(tᵢ -> containsinf(tᵢ), t)
             x = t[:, 1]
             hs[k] = complexity(ApproximateEntropy(r = 0.05, m = 2), x)
             hs_conv[k] = entropy_approx(x, r = 0.05, m = 2)
