@@ -130,14 +130,12 @@ are negatively biased for small sample sizes.
 
 ## Discrete entropy: permutation entropy
 
-This example reproduces an example from Bandt and Pompe (2002), where the permutation
-entropy is compared with the largest Lyapunov exponents from time series of the chaotic
-logistic map. EntropyDefinition estimates using [`SymbolicWeightedPermutation`](@ref)
+This example plots permutation entropy for time series of the chaotic logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
+The entropy behaviour can be parallelized with the `ChaosTools.lyapunov` of the map.
 
 ```@example MAIN
 using DynamicalSystemsBase, CairoMakie
-using ChaosTools: lyapunov
 
 ds = Systems.logistic()
 rs = 3.4:0.001:4
@@ -145,11 +143,10 @@ N_lyap, N_ent = 100000, 10000
 m, τ = 6, 1 # Symbol size/dimension and embedding lag
 
 # Generate one time series for each value of the logistic parameter r
-lyaps, hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
+hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
 
 for (i, r) in enumerate(rs)
     ds.p[1] = r
-    lyaps[i] = lyapunov(ds, N_lyap)
 
     x = trajectory(ds, N_ent) # time series
     hperm = entropy(SymbolicPermutation(; m, τ), x)
@@ -160,13 +157,11 @@ for (i, r) in enumerate(rs)
 end
 
 fig = Figure()
-a1 = Axis(fig[1,1]; ylabel = L"\lambda")
-lines!(a1, rs, lyaps); ylims!(a1, (-2, log(2)))
-a2 = Axis(fig[2,1]; ylabel = L"h_6 (SP)")
+a2 = Axis(fig[1,1]; ylabel = L"h_6 (SP)")
 lines!(a2, rs, hs_perm; color = Cycled(2))
-a3 = Axis(fig[3,1]; ylabel = L"h_6 (WT)")
+a3 = Axis(fig[2,1]; ylabel = L"h_6 (WT)")
 lines!(a3, rs, hs_wtperm; color = Cycled(3))
-a4 = Axis(fig[4,1]; ylabel = L"h_6 (SAAP)")
+a4 = Axis(fig[3,1]; ylabel = L"h_6 (SAAP)")
 lines!(a4, rs, hs_ampperm; color = Cycled(4))
 a4.xlabel = L"r"
 
