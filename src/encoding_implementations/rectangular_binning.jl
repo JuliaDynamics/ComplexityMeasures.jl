@@ -164,7 +164,7 @@ function FixedRectangularBinning(b::RectangularBinning, x)
         widths = SVector{D,T}(ϵ .* ones(SVector{D,T}))
         # To ensure all points are guaranteed to be covered, we add the width
         # to the max, if the max isn't included in the resulting range
-        function covering_range(i)
+        ensure_covering_range = (i) -> begin
             r = range(mini[i], maxi[i]; step = widths[i])
             if maxi[i] ∉ r
                 return range(mini[i], maxi[i] + widths[i]; step = widths[i])
@@ -172,9 +172,10 @@ function FixedRectangularBinning(b::RectangularBinning, x)
                 return r
             end
         end
-        ranges = ntuple(i -> covering_range(i), D)
+        ranges = ntuple(i -> ensure_covering_range(i), D)
     elseif ϵ isa Int || ϵ isa Vector{Int}
-        # use `nextfloat` to ensure all data are covered!
+        # use `nextfloat` to ensure all data are covered
+        # (but only certain if `precise = true`)
         maxi = nextfloat.(maxi)
         # We add one, because the user input specifies the number of bins,
         # and the number of bins is the range length - 1
