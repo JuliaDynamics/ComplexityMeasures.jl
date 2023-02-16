@@ -172,7 +172,7 @@ struct TransferOperatorApproximationRectangular{
         BINS,
         E}
     transfermatrix::AbstractArray{T, 2}
-    encoder::E
+    encoding::E
     bins::BINS
     sort_idxs::Vector{Int}
     visitors::Vector{Vector{Int}}
@@ -190,11 +190,11 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
-    encoder = RectangularBinEncoding(binning, pts)
+    encoding = RectangularBinEncoding(binning, pts)
 
     # The L points visits a total of L bins, which are the following bins (referenced
     # here as cartesian coordinates, not absolute bins):
-    visited_bins = map(pᵢ -> encode(encoder, pᵢ), pts)
+    visited_bins = map(pᵢ -> encode(encoding, pᵢ), pts)
     sort_idxs = sortperm(visited_bins)
     #sort!(visited_bins) # see todo on github
 
@@ -287,7 +287,7 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
     # visited_bins[i] corresponds to the i-th row/column of the transfer operator
     unique!(visited_bins)
     TransferOperatorApproximationRectangular(
-        TO, encoder, visited_bins, sort_idxs, visitors)
+        TO, encoding, visited_bins, sort_idxs, visitors)
 end
 
 """
@@ -452,8 +452,8 @@ function probabilities_and_outcomes(est::TransferOperator, x::Array_or_Dataset)
     # appearance
     bins = to.bins
     unique!(bins)
-    outcomes = decode.(Ref(to.encoder), bins) # coordinates of the visited bins
+    outcomes = decode.(Ref(to.encoding), bins) # coordinates of the visited bins
     return probs, outcomes
 end
 
-outcome_space(est::TransferOperator, x) = outcome_space(est.encoder, x)
+outcome_space(est::TransferOperator, x) = outcome_space(est.encoding, x)
