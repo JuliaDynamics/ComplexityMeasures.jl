@@ -22,7 +22,8 @@ binnings = [
 # each bin exactly.
 
 @testset "Binning test $i" for i in eachindex(binnings)
-    to = ComplexityMeasures.transferoperator(D, binnings[i])
+    b = binnings[i]
+    to = ComplexityMeasures.transferoperator(D, b)
     @test to isa ComplexityMeasures.TransferOperatorApproximationRectangular
 
     iv = invariantmeasure(to)
@@ -35,4 +36,7 @@ binnings = [
     est = TransferOperator(binnings[i])
     @test probabilities(est, D) isa Probabilities
     @test probabilities_and_outcomes(est, D) isa Tuple{Probabilities, Vector{SVector{2, Float64}}}
+
+    # Test that gives approximately same entropy as ValueHistogram:
+    abs(entropy(TransferOperator(b), D) - entropy(ValueHistogram(b), D) ) < 0.1 # or something like that
 end
