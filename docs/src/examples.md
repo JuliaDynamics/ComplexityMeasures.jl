@@ -638,7 +638,7 @@ for (i, L) in enumerate(ts_lengths)
     k = 1
     while k <= nreps
         sys = henon(u₀ = rand(2), R = 0.8)
-        t = trajectory(sys, L, Ttr = 5000)
+        t = trajectory(sys, L; Ttr = 5000)[1]
 
         if !any([containsinf(tᵢ) for tᵢ in t])
             x, y = columns(t)
