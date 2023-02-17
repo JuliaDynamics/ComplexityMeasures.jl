@@ -6,7 +6,7 @@ In this page we document estimators for complexity measures that are not entropi
 - [`complexity_normalized`](@ref)
 - [`ComplexityEstimator`](@ref)
 
-## Complexiy measures API
+## Complexity measures API
 
 ```@docs
 complexity
