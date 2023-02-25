@@ -52,14 +52,14 @@ w = 0 # Theiler window of 0 (only exclude the point itself during neighbor searc
 knn_estimators = [
     # with k = 1, Kraskov is virtually identical to
     # Kozachenko-Leonenko, so pick a higher number of neighbors for Kraskov
-    Kraskov(; k = 3, w),
-    KozachenkoLeonenko(; w),
-    Zhu(; k = 3, w),
-    ZhuSingh(; k = 3, w),
-    Gao(; k = 3, w, corrected = false),
-    Gao(; k = 3, w, corrected = true),
-    Goria(; k = 3, w),
-    Lord(; k = 20, w) # more neighbors for accurate ellipsoid estimation
+    Kraskov(; k = 3, base = ℯ, w),
+    KozachenkoLeonenko(; base = ℯ, w),
+    Zhu(; k = 3, base = ℯ, w),
+    ZhuSingh(; k = 3, base = ℯ, w),
+    Gao(; k = 3, base = ℯ, corrected = false, w),
+    Gao(; k = 3, base = ℯ, corrected = true, w),
+    Goria(; k = 3, w, base = ℯ),
+    Lord(; k = 20, w, base = ℯ) # more neighbors for accurate ellipsoid estimation
 ]
 
 # Test each estimator `nreps` times over time series of varying length.
@@ -68,7 +68,7 @@ for (i, est) in enumerate(knn_estimators)
     for j = 1:nreps
         pts = randn(maximum(Ns)) |> StateSpaceSet
         for (k, N) in enumerate(Ns)
-            Hs_uniform_knn[i][k][j] = entropy(e, est, pts[1:N])
+            Hs_uniform_knn[i][k][j] = entropy(est, pts[1:N])
         end
     end
 end
@@ -85,8 +85,8 @@ for (i, est_os) in enumerate(estimators_os)
         pts = randn(maximum(Ns)) # raw timeseries, not a `StateSpaceSet`
         for (k, N) in enumerate(Ns)
             m = floor(Int, N / 100) # Scale `m` to timeseries length
-            est = est_os(; m) # Instantiate estimator with current `m`
-            Hs_uniform_os[i][k][j] = entropy(e, est, pts[1:N])
+            est = est_os(; m, base = ℯ) # Instantiate estimator with current `m`
+            Hs_uniform_os[i][k][j] = entropy(est, pts[1:N])
         end
     end
 end
