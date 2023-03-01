@@ -84,9 +84,3 @@ AlizadehArghami
 Ebrahimi
 Correa
 ```
-
-## Convenience
-
-```@docs
-convert_logunit
-```
