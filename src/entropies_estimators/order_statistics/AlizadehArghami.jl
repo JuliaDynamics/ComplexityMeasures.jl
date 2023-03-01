@@ -57,6 +57,7 @@ function entropy(est::AlizadehArghami, x::AbstractVector{<:Real})
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
+    # The estimated entropy has "unit" [nats]
     h = entropy(Vasicek(; m, base = MathConstants.e), x) + (2 / n)*(m * log(2))
-    return h / log(est.base, MathConstants.e)
+    return convert_logunit(h, ℯ, est.base)
 end

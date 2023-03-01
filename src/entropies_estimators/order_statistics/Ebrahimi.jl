@@ -87,5 +87,8 @@ function entropy(est::Ebrahimi, x::AbstractVector{<:Real})
         dprev = ith_order_statistic(ex, i - m, n)
         HVₘₙ += log(f * (dnext - dprev))
     end
-    return (HVₘₙ / n) / log(est.base, ℯ)
+
+    # The estimated entropy has "unit" [nats]
+    h = HVₘₙ / n
+    return convert_logunit(h, ℯ, est.base)
 end
