@@ -80,7 +80,10 @@ function entropy(est::Correa, x::AbstractVector{<:Real})
         den *= n
         HCₘₙ += log(num / den)
     end
-    return (-HCₘₙ / n) / log(est.base, ℯ)
+    # The estimated entropy has "unit" [nats]
+    h = -HCₘₙ / n
+    return convert_logunit(h, ℯ, est.base)
+
 end
 
 function local_scaled_mean(ex, i::Int, m::Int, n::Int = length(x))

@@ -42,8 +42,9 @@ function entropy(est::Zhu, x::AbstractStateSpaceSet{D, T}) where {D, T}
     N = length(x)
     tree = KDTree(x, Euclidean())
     nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
+    # The estimated entropy has "unit" [nats]
     h = digamma(N) + mean_logvolumes(x, nn_idxs, N) - digamma(k) + (D - 1) / k
-    return h / log(est.base, MathConstants.e)
+    return convert_logunit(h, ℯ, est.base)
 end
 
 function mean_logvolumes(x, nn_idxs, N::Int)

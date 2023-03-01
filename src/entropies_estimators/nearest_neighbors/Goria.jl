@@ -57,11 +57,11 @@ function entropy(est::Goria, x::AbstractStateSpaceSet{D}) where D
 
     tree = KDTree(x, Euclidean())
     ds = last.(bulksearch(tree, x, NeighborNumber(k), Theiler(w))[2])
+    # The estimated entropy has "unit" [nats]
     h = D * log(prod(ds .^ (1 / N))) +
           log(N - 1) +
           log(c1(D)) -
           digamma(k)
-
-    return h / log(est.base, ℯ)
+    return convert_logunit(h, ℯ, est.base)
 end
 c1(D::Int) = (2π^(D/2)) / (D* gamma(D/2))

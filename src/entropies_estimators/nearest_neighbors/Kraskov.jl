@@ -43,5 +43,5 @@ function entropy(est::Kraskov, x::AbstractStateSpaceSet{D}) where {D}
     h = -digamma(k) + digamma(N) +
         log(MathConstants.e, ball_volume(D)) +
         D/N*sum(log.(MathConstants.e, ρs))
-    return h / log(est.base, MathConstants.e) # Convert to target unit
+    return convert_logunit(h, ℯ, est.base)
 end

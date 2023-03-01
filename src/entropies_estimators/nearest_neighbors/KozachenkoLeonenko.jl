@@ -51,5 +51,5 @@ function entropy(est::KozachenkoLeonenko, x::AbstractStateSpaceSet{D}) where {D}
         log(MathConstants.e, ball_volume(D)) +
         MathConstants.eulergamma +
         log(MathConstants.e, N - 1)
-    return h / log(est.base, MathConstants.e) # Convert to target unit
+    return convert_logunit(h, ℯ, est.base)
 end

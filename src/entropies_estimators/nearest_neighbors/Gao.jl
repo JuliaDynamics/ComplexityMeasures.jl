@@ -55,10 +55,12 @@ function entropy(est::Gao, x::AbstractStateSpaceSet{D}) where D
     tree = KDTree(x, Euclidean())
     idxs, ds = bulksearch(tree, x, NeighborNumber(k), Theiler(w))
 
-    h = -(1 / N) * sum(log(f * 1 / last(dᵢ)^D) for dᵢ in ds) # in nats
+    # The estimated entropy has "unit" [nats]
+    h = -(1 / N) * sum(log(f * 1 / last(dᵢ)^D) for dᵢ in ds)
     if est.corrected
         correction = digamma(k) - log(k)
         h -= correction
     end
-    return h / log(est.base, ℯ) # convert to target unit *after* correction
+
+    return convert_logunit(h, ℯ, est.base) # convert to target unit *after* correction
 end
