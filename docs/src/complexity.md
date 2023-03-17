@@ -37,3 +37,8 @@ MissingDispersionPatterns
 ```@docs
 ReverseDispersion
 ```
+
+## Statistical complexity
+```@docs
+StatisticalComplexity
+```
