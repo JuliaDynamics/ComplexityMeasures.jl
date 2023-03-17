@@ -50,7 +50,7 @@ Base.@kwdef struct StatisticalComplexity{E, D, H} <: ComplexityEstimator
     end
 end
 
-function complexity(c::StatisticalComplexity, x::AbstractVector{T}) where T
+function complexity(c::StatisticalComplexity, x)
     (; dist, est, entr) = c
 
     p = probabilities(est, x)
@@ -60,7 +60,7 @@ function complexity(c::StatisticalComplexity, x::AbstractVector{T}) where T
     L = total_outcomes(est, x)
 
     # calculate distance between calculated distribution and uniform one
-    D_q = evaluate(dist, p.p, fill(1.0/L, size(p)))
+    D_q = evaluate(dist, vec(p), fill(1.0/L, size(p)))
 
     # generate distribution with just one filled bin
     deterministic = zeros(size(p))
@@ -74,21 +74,13 @@ end
 
 function complexity(c::StatisticalComplexity, p::Probabilities)
     (; dist, est, entr) = c
-    if !(est isa SymbolicPermutation || est isa SymbolicWeightedPermutation || est isa SymbolicAmplitudeAwarePermutation)
-        throw(
-            ArgumentError(
-                "To estimate the statistical complexity directly from a probabiliy distribution, "*
-                "the probabilities estimator must be one of"*
-                "`SymbolicPermutation`, `SymbolicAmplitudeAwarePermutation` or `SymbolicWeightedPermutation`"
-            )
-        )
-    end
-    L = total_outcomes(est, randn(100))
+
+    L = total_outcomes(est)
     norm = log(entr.base, L)
     H_q = entropy(entr, p) / norm
 
     # calculate distance between calculated distribution and uniform one
-    D_q = evaluate(dist, p.p, fill(1.0/L, size(p)))
+    D_q = evaluate(dist, vec(p), fill(1.0/L, size(p)))
 
     # generate distribution with just one filled bin
     deterministic = zeros(size(p))
@@ -101,11 +93,12 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
 end
 
 function fill_probs_k!(p, prob_params, L, i, k)
-    p.p[1] = prob_params[k] # why set first element here if overwriting it in the loop below?
+    probs = vec(p)
+    probs[1] = prob_params[k] # why set first element here if overwriting it in the loop below?
     # if we know that p has sufficient length relative to L and i,
     # @inbounds can save some computation time by skipping bounds checking.
     @inbounds for j = 1:(L - i) 
-        p.p[j] = (1 - prob_params[k]) / (L - i)
+        probs[j] = (1 - prob_params[k]) / (L - i)
     end
 end
 
@@ -141,7 +134,7 @@ function maximum_complexity_entropy(c::StatisticalComplexity; num::Int = 1)
 
     j = 1
     for i in 1:(L - 1)
-        p.p .= 0.0 # Note 0.0, not 0 (the elements in `p` are floats, so we should re-fill with floats to avoid conversions)
+        vec(p) .= 0.0 # Note 0.0, not 0 (the elements in `p` are floats, so we should re-fill with floats to avoid conversions)
         for k in 1:num
             # Does this function ensure sum(p) == 1? If not, we need to normalize `p` afterwards, because `entropy` requires
             # normalized probabilities (i.e. summing to 1)
