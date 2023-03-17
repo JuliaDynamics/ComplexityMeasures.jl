@@ -39,15 +39,7 @@ Base.@kwdef struct StatisticalComplexity{E, D, H} <: ComplexityEstimator
     dist::D = JSDivergence()
     est::E = SymbolicPermutation()
     entr::H = Renyi()
-
-    function StatisticalComplexity(dist::D, est::E, entr::H) where {E, D, H}
-        new{E, D, H}(dist, est, entr)
-    end
-    function StatisticalComplexity(x::AbstractVector;
-            dist::SemiMetric, est::ProbabilitiesEstimator,
-            entr::EntropyDefinition)
-        StatisticalComplexity(dist, est, entr)
-    end
+    entr_val::Base.RefValue{Float64} = Ref(0.0)
 end
 
 function complexity(c::StatisticalComplexity, x)
@@ -68,6 +60,7 @@ function complexity(c::StatisticalComplexity, x)
 
     D_max = evaluate(dist, deterministic, fill(1.0/L, size(p)))
     C_q = D_q / D_max * H_q
+    c.entr_val[] = H_q
 
     return C_q
 end
@@ -88,6 +81,7 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
 
     D_max = evaluate(dist, deterministic, fill(1.0/L, size(p)))
     C_q = D_q / D_max * H_q
+    c.entr_val[] = H_q
 
     return C_q
 end
@@ -124,7 +118,6 @@ This function is adapted from S. Sippels implementation in statcomp [^statcomp].
 """
 function maximum_complexity_entropy(c::StatisticalComplexity; num::Int = 1)
     L = total_outcomes(c.est, randn(10))
-    norm = log(c.entr.base, L)
     # avoid having to resize later by just making result containers vectors straight away.
     hs = zeros((L - 1) * num)
     cs = zeros((L - 1) * num)
@@ -138,9 +131,9 @@ function maximum_complexity_entropy(c::StatisticalComplexity; num::Int = 1)
         for k in 1:num
             # Does this function ensure sum(p) == 1? If not, we need to normalize `p` afterwards, because `entropy` requires
             # normalized probabilities (i.e. summing to 1)
-            fill_probs_k!(p, prob_params, L, i, k) 
-            hs[j] = entropy(c.entr, p) / norm
+            fill_probs_k!(p, prob_params, L, i, k)            
             cs[j] = complexity(c, p)
+            hs[j] = c.entr_val[]
             j += 1
         end
     end
@@ -169,22 +162,18 @@ function minimum_complexity_entropy(c::StatisticalComplexity; num::Int=1000)
 
     L = total_outcomes(c.est, randn(10))
     prob_params = linearpermissiverange(1/L; stop=1, length=num)
-    hs = Float64[]
-    cs = Float64[]
-
-    deterministic = zeros(L)
-    deterministic[1] = 1
-    d_max = evaluate(c.dist, deterministic, fill(1.0/L, L))
-    h_max = entropy(c.entr, Probabilities(ones(L)/L))
+    hs = zeros(num)
+    cs = zeros(num)
+    p = ones(L)
 
     for i in 1:num
-        p_i = ones(L) * (1-prob_params[i]) / (L-1)
-        p_i[1] = prob_params[i]
-        p_i = Probabilities(p_i)
-        h = entropy(c.entr, p_i)
-        push!(hs, h/h_max)
-        d = evaluate(c.dist, p_i.p, fill(1.0/L, L))
-        push!(cs, d / d_max * h / h_max)
+        fill!(p, 1.0)
+        p .*= (1-prob_params[i]) / (L-1)
+        p[1] = prob_params[i]
+        probs = Probabilities(p, true)
+        compl = complexity(c, probs)
+        cs[i] = compl
+        hs[i] = c.entr_val[]
     end
     return reverse(hs), reverse(cs)
 end
