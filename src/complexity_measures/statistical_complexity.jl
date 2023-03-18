@@ -7,28 +7,37 @@ export StatisticalComplexity, minimum_complexity_entropy, maximum_complexity_ent
     StatisticalComplexity <: ComplexityEstimator
     StatisticalComplexity([x]; kwargs...)
 
-An estimator for the statistical complexity and entropy according to [^Rosso2007], used with [`complexity`](@ref).
+An estimator for the statistical complexity and entropy according to Rosso et al. (2007)[^Rosso2007](@ref),
+used with [`complexity`](@ref).
 
 ## Keyword arguments
+
 - `est::ProbabilitiesEstimator = SymbolicPermutation()`: which estimator to use to get the probabilities
 - `dist<:SemiMetric = JSDivergence()`: the distance measure between the estimated probability
     distribution and a uniform distribution with the same maximal number of bins
 
 ## Description
-Statistical Complexity is defined as 
+
+Statistical complexity is defined as 
 ```math
 C_q[P] = \\mathcal{H}_q\\cdot \\mathcal{Q}_q[P],
 ```
-where `Q_q` is a "disequilibrium" obtained from a distance-measure and
+where ``Q_q`` is a "disequilibrium" obtained from a distance-measure and
 `H_q` a disorder measure.
 In the original paper[^Rosso2007], this complexity measure was defined
 via an ordinal pattern-based probability distribution, the Shannon entropy 
 and the Jensen-Shannon divergence as a distance measure.
 This implementation allows for a generalization of the
 complexity measure as developed in [^Rosso2013].
-Here, `H_q` can be the (q-order) Shannon-, Renyi or Tsallis
-entropy and Q_q based either on the Euclidean, Wooters, Kullback,
-q-Kullback, Jensen or q-Jensen distance.
+Here, ``H_q``` can be the (q-order) Shannon-, Renyi or Tsallis
+entropy and ``Q_q`` based either on the Euclidean, Wooters, Kullback,
+q-Kullback, Jensen or q-Jensen distance as
+```math
+Q_q[P] = Q_q^0\\cdot D[P, P_e],
+```
+where ``D[P, P_e]`` is the distance between the obtained distribution ``P``
+and a uniform distribution with the same maximum number of bins, measured by
+the distance measure `dist`.
 
 [^Rosso2007]: Rosso, O. A. et al. (2007). Distinguishing Noise from Chaos. 
     Physical Review Letters 99, no. 15: 154102. https://doi.org/10.1103/PhysRevLett.99.154102.
@@ -100,10 +109,12 @@ linearpermissiverange(start; stop, length) = length==1 ? (start:start) : range(s
 
 """
     maximum_complexity_entropy(c::StatisticalComplexity; num=1)
+
 Calculate the maximum complexity-entropy curve for the statistical complexity according to [^Rosso2007]
 for `num * total_outcomes(c.est)` different values of the normalized permutation entropy.
 
 ## Description
+
 The way the statistical complexity is designed, there is a minimum and maximum possible complexity
 for data with a given permutation entropy.
 The calculation time of the maximum complexity curve grows as `O(total_outcomes(c.est)^2)`, and thus takes
@@ -143,10 +154,12 @@ end
 
 """
     minimum_complexity_entropy(c::StatisticalComplexity; num=100) -> entropy, complexity
+
 Calculate the maximum complexity-entropy curve for the statistical complexity according to [^Rosso2007]
 for `num` different values of the normalized permutation entropy.
 
 ## Description
+
 The way the statistical complexity is designed, there is a minimum and maximum possible complexity
 for data with a given permutation entropy.
 Here, the lower bound of the statistical complexity is calculated as a function of the permutation entropy
