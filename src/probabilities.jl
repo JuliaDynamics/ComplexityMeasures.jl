@@ -39,8 +39,6 @@ for f in (:length, :size, :eachindex, :eltype, :parent,
     @eval Base.$(f)(d::Probabilities{T, N}, args...) where {T, N} = $(f)(d.p, args...)
 end
 
-eachindex(p::Probabilities{T, 1}) where T = eachindex(vec(p))
-
 Base.IteratorSize(::Probabilities) = Base.HasLength()
 # Special extension due to the rules of the API
 @inline Base.sum(::Probabilities{T}) where T = one(T)
