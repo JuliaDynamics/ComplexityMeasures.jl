@@ -736,3 +736,76 @@ lines!(a1, rs, hs_periodic, label = "Periodic signal")
 axislegend()
 fig
 ```
+
+## Statistical complexity of iterated maps
+
+Here, we reproduce parts of the plot in Rosso et al.
+(2007): We calculate the permutation entropy and
+statistical complexity of the logistic map and the
+Henon map.
+
+The distance metric used in the paper seems to be no the
+JS divergence as stated, but the JS distance, at least
+that's how we can match the plot in Fig. 1.
+
+```@example MAIN
+using ComplexityMeasures
+using Distances
+using DynamicalSystemsBase
+using CairoMakie
+
+# define dynamical systems
+function logistic(x0=0.4; r = 4.0)
+    return DeterministicIteratedMap(logistic_rule, SVector(x0), [r])
+end
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1 - x[1]))
+logistic_jacob(x, p, n) = @inbounds SMatrix{1,1}(p[1]*(1 - 2x[1]))
+
+function henon(u0=zeros(2); a = 1.4, b = 0.3)
+    return DeterministicIteratedMap(henon_rule, u0, [a,b])
+end
+henon_rule(x, p, n) = SVector{2}(1.0 - p[1]*x[1]^2 + x[2], p[2]*x[1])
+henon_jacob(x, p, n) = SMatrix{2,2}(-2*p[1]*x[1], p[2], 1.0, 0.0)
+
+# define JSDistance metric as sqrt(JSDivergence())
+struct JSDistance <: Metric end
+@inline function (::JSDistance)(ai::T, bi::T) where {T}
+    sqrt(evaluate(JSDivergence(), ai, bi))
+end
+
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel=L"H_S", ylabel=L"C_{JS}")
+
+# pattern length and lag of ordinal patterns
+m, τ = 6, 1
+# number of data points used (as in Rosso paper)
+N = 2^15
+
+# loop over both distances
+for dist_metric in (JSDistance(), JSDivergence())
+    c = StatisticalComplexity(
+        dist=dist_metric,
+        est=SymbolicPermutation(; m, τ),
+        entr=Renyi()
+    )
+    for (ds, sym, name) in zip(
+            (logistic(), henon()),
+            (:utriangle, :circle),
+            ("logistic map ($dist_metric)", "henon map ($dist_metric)")
+        )
+
+        x, t = trajectory(ds, N, Ttr=1000)
+
+        entropy, complexity = entropy_complexity(c, x[:, 1])
+
+        scatter!(ax, entropy, complexity; marker=sym, label=name, markersize=25)
+    end
+
+    (entr_min, compl_min), (entr_max, compl_max) = min_max_complexity_curves(c)
+    ls = dist_metric isa JSDivergence ? :solid : :dot
+    lines!(ax, entr_min, compl_min; color=:black, linestyle=ls, label="$dist_metric")
+    lines!(ax, entr_max, compl_max; color=:black, linestyle=ls)
+end
+axislegend(; position=:lt)
+fig
+```
