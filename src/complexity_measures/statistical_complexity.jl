@@ -146,7 +146,7 @@ The way the statistical complexity is designed, there is a minimum and maximum p
 for data with a given permutation entropy.
 The calculation time of the maximum complexity curve grows as `O(total_outcomes(c.est)^2)`, and thus takes
 very long for high numbers of outcomes.
-This function is adapted from S. Sippels implementation in statcomp [^statcomp].
+This function is inspired by S. Sippels implementation in statcomp [^statcomp].
 
 This function will work with any `ProbabilitiesEstimator` where `total_outcomes`(@ref) is known a priori.
 
