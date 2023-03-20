@@ -1,7 +1,7 @@
 using Distances
 using ComplexityMeasures: ProbabilitiesEstimator
 
-export StatisticalComplexity, entropy_complexity, min_max_complexity_curves
+export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
 
 """
     StatisticalComplexity <: ComplexityEstimator
@@ -134,11 +134,11 @@ end
 linearpermissiverange(start; stop, length) = length==1 ? (start:start) : range(start, stop=stop, length=length)
 
 """
-    min_max_complexity_curves(c::StatisticalComplexity; num_max=1, num_min=1000) -> ([min_entropy, min_complexity], [max_entropy, max_complexity])
+    entropy_complexity_curves(c::StatisticalComplexity; num_max=1, num_min=1000) -> (min_entropy_complexity, max_entropy_complexity)
 
 Calculate the maximum complexity-entropy curve for the statistical complexity according to [^Rosso2007]
-for `num_max * total_outcomes(c.est)` different values of the normalized permutation entropy (in case of the maximum complexity curves)
-and `num_min` different values of the normalized permutation entropy (in case of the minimum complexity curve).
+for `num_max * total_outcomes(c.est)` different values of the normalized information measure of choice (in case of the maximum complexity curves)
+and `num_min` different values of the normalized information measure of choice (in case of the minimum complexity curve).
 
 ## Description
 
@@ -156,12 +156,11 @@ This function will work with any `ProbabilitiesEstimator` where `total_outcomes`
 [^statcomp] Sippel, S., Lange, H., Gans, F. (2019).
             [statcomp: Statistical Complexity and Information Measures for Time Series Analysis](https://cran.r-project.org/web/packages/statcomp/index.html)
 """
-function min_max_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, num_min::Int=1000)
+function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, num_min::Int=1000)
 
     L = total_outcomes(c.est)
     # avoid having to resize later by just making result containers vectors straight away.
-    hs = zeros((L - 1) * num_max)
-    cs = zeros((L - 1) * num_max)
+    hs_cs_max = zeros(SVector{2, Float64}, (L-1)*num_max)
 
     p = Probabilities(zeros(L), true) # can't normalize zeros, so let's pretend this is already normalized
     prob_params = linearpermissiverange(0; stop = 1 / L, length = num_max)
@@ -173,27 +172,17 @@ function min_max_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
             # Does this function ensure sum(p) == 1? If not, we need to normalize `p` afterwards, because `entropy` requires
             # normalized probabilities (i.e. summing to 1)
             fill_probs_k!(p, prob_params, L, i, k)
-            cs[j] = complexity(c, p)
-            hs[j] = c.entr_val[]
+            compl = complexity(c, p)
+            hs_cs_max[j] = SVector(c.entr_val[], compl)
             j += 1
         end
     end
+    hs = [x[1] for x in hs_cs_max]
     args = sortperm(hs)
-    if (L - 1) * num_max < 100
-        max_entropy_complexity = [
-            SVector{(L - 1) * num_max}(hs[args]),
-            SVector{(L - 1) * num_max}(cs[args])
-        ]
-    else
-        max_entropy_complexity = [
-            hs[args],
-            cs[args]
-        ]
-    end
+    hs_cs_max = hs_cs_max[args]
 
     prob_params = linearpermissiverange(1/L; stop=1, length=num_min)
-    hs = zeros(num_min)
-    cs = zeros(num_min)
+    hs_cs_min = zeros(SVector{2, Float64}, num_min)
     p = ones(L)
 
     for i in 1:num_min
@@ -202,22 +191,10 @@ function min_max_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
         p[1] = prob_params[i]
         probs = Probabilities(p, true)
         compl = complexity(c, probs)
-        cs[i] = compl
-        hs[i] = c.entr_val[]
-    end
-    if num_min < 100
-        min_entropy_complexity = [
-            SVector{num_min}(reverse(hs)),
-            SVector{num_min}(reverse(cs))
-        ]
-    else
-        min_entropy_complexity = [
-            reverse(hs),
-            reverse(cs)
-        ]
+        hs_cs_min[i] = SVector(c.entr_val[], compl)
     end
     return (
-        min_entropy_complexity,
-        max_entropy_complexity
+        hs_cs_min,
+        hs_cs_max
     )
 end

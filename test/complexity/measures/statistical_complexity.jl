@@ -26,15 +26,15 @@ using Test
     @test 0.99 < entr < 1.0
 
     # test minimum and maximum complexity entropy curves
-    (entr_min, compl_min), (entr_max, compl_max) = min_max_complexity_curves(c; num_min=10000)
-    @test minimum(entr_min) == 0
-    @test maximum(entr_min) ≈ 1
-    @test minimum(compl_min) == 0
+    min_curve, max_curve = entropy_complexity_curves(c; num_min=10000)
+    @test minimum(x[1] for x in min_curve) == 0
+    @test maximum(x[1] for x in min_curve) ≈ 1
+    @test minimum(x[2] for x in min_curve) == 0
     # this value is calculated with statcomp (R package)
-    @test maximum(compl_min) ≈ 0.197402387702839
-    @test minimum(entr_max) == 0
-    @test 0.99 <= maximum(entr_max) <= 1
-    @test minimum(compl_max) == 0
+    @test maximum(x[2] for x in min_curve) ≈ 0.197402387702839
+    @test minimum(x[1] for x in max_curve) == 0
+    @test 0.99 <= maximum(x[1] for x in max_curve) <= 1
+    @test minimum(x[2] for x in max_curve) == 0
     # this value is calculated with statcomp
-    @test maximum(compl_max) ≈ 0.496700423446187
+    @test maximum(x[2] for x in max_curve) ≈ 0.496700423446187
 end
