@@ -122,7 +122,7 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
     return C_q
 end
 
-linearpermissiverange(start; stop, length) = length==1 ? (start:start) : range(start, stop=stop, length=length)
+linearpermissiverange(start; stop, length) = length==1 ? [start] : collect(range(start, stop=stop, length=length))
 
 """
     entropy_complexity_curves(c::StatisticalComplexity; num_max=1, num_min=1000) -> (min_entropy_complexity, max_entropy_complexity)
