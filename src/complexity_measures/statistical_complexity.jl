@@ -109,13 +109,13 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
     H_q = entropy(entr, p) / norm
 
     # calculate distance between calculated distribution and uniform one
-    D_q = evaluate(dist, vec(p), fill(1.0/L, size(p)))
+    D_q = evaluate(dist, [vec(p)..., zeros(L-length(p))...], fill(1.0/L, L))
 
     # generate distribution with just one filled bin
-    deterministic = zeros(size(p))
+    deterministic = zeros(L)
     deterministic[1] = 1
 
-    D_max = evaluate(dist, deterministic, fill(1.0/L, size(p)))
+    D_max = evaluate(dist, deterministic, fill(1.0/L, L))
     C_q = D_q / D_max * H_q
     c.entr_val[] = H_q
 
