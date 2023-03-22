@@ -736,3 +736,106 @@ lines!(a1, rs, hs_periodic, label = "Periodic signal")
 axislegend()
 fig
 ```
+
+## Statistical complexity of iterated maps
+
+In this example, we reproduce parts of Fig. 1 in Rosso et al. (2007): We compute the statistical complexity of the Henon, logistic and Schuster map, as well as that of k-noise.
+```@example MAIN
+using ComplexityMeasures
+using Distances
+using DynamicalSystemsBase
+using CairoMakie
+using FFTW
+using Statistics
+
+N = 2^15
+
+function logistic(x0=0.4; r = 4.0)
+    return DeterministicIteratedMap(logistic_rule, SVector(x0), [r])
+end
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1 - x[1]))
+logistic_jacob(x, p, n) = @inbounds SMatrix{1,1}(p[1]*(1 - 2x[1]))
+
+function henon(u0=zeros(2); a = 1.4, b = 0.3)
+    return DeterministicIteratedMap(henon_rule, u0, [a,b])
+end
+henon_rule(x, p, n) = SVector{2}(1.0 - p[1]*x[1]^2 + x[2], p[2]*x[1])
+henon_jacob(x, p, n) = SMatrix{2,2}(-2*p[1]*x[1], p[2], 1.0, 0.0)
+
+function schuster(x0=0.5, z=3.0/2)
+    return DeterministicIteratedMap(schuster_rule, SVector(x0), [z])
+end
+schuster_rule(x, p, n) = @inbounds SVector((x[1]+x[1]^p[1]) % 1)
+
+# generate noise with power spectrum that falls like 1/f^k
+function k_noise(k=3)
+    function f(N)
+        x = rand(Float64, N)
+        # generate power spectrum of random numbers and multiply by f^(-k/2)
+        x_hat = fft(x) .* abs.(vec(fftfreq(length(x)))) .^ (-k/2)
+        # set to zero for frequency zero
+        x_hat[1] = 0
+        return real.(ifft(x_hat))
+    end
+    return f
+end
+
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel=L"H_S", ylabel=L"C_{JS}")
+
+m, τ = 6, 1
+m_kwargs = (
+        (color=:transparent,
+        strokecolor=:red,
+        marker=:utriangle,
+        strokewidth=2),
+        (color=:transparent,
+        strokecolor=:blue,
+        marker=:rect,
+        strokewidth=2),
+        (color=:magenta,
+        marker=:circle),
+        (color=:blue,
+        marker=:rect)
+    )
+
+n = 100
+
+c = StatisticalComplexity(
+    dist=JSDivergence(),
+    est=SymbolicPermutation(; m, τ),
+    entr=Renyi()
+)
+for (j, (ds_gen, sym, ds_name)) in enumerate(zip(
+        (logistic, henon, schuster, k_noise),
+        (:utriangle, :rect, :dtriangle, :diamond),
+        ("Logistic map", "Henon map", "Schuster map", "k-noise (k=3)"),
+    ))
+
+    if j < 4
+        dim = dimension(ds_gen())
+        hs, cs = zeros(n), zeros(n)
+        for k in 1:n
+            ic = rand(dim) * 0.3
+            ds = ds_gen(SVector{dim}(ic))
+            x, t = trajectory(ds, N, Ttr=100)
+            hs[k], cs[k] = entropy_complexity(c, x[:, 1])
+        end
+        scatter!(ax, mean(hs), mean(cs); label="$ds_name", markersize=25, m_kwargs[j]...)
+    else
+        ds = ds_gen()
+        hs, cs = zeros(n), zeros(n)
+        for k in 1:n
+            x = ds(N)
+            hs[k], cs[k] = entropy_complexity(c, x[:, 1])
+        end
+        scatter!(ax, mean(hs), mean(cs); label="$ds_name", markersize=25, m_kwargs[j]...)
+    end
+end
+
+min_curve, max_curve = entropy_complexity_curves(c)
+lines!(ax, min_curve; color=:black)
+lines!(ax, max_curve; color=:black)
+axislegend(; position=:lt)
+fig
+```
