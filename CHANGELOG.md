@@ -2,6 +2,9 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 2.7.1
+- fix bug in calculation of statistical complexity
+
 ## 2.7
 - Add generalized statistical complexity as complexity measure.
 

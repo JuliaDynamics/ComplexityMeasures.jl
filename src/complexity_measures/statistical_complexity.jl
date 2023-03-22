@@ -67,26 +67,11 @@ Base.@kwdef struct StatisticalComplexity{E, D, H} <: ComplexityEstimator
 end
 
 function complexity(c::StatisticalComplexity, x)
-    (; dist, est, entr) = c
+    (; est) = c
 
     p = probabilities(est, x)
 
-    H_q = entropy_normalized(entr, est, x)
-
-    L = total_outcomes(est, x)
-
-    # calculate distance between calculated distribution and uniform one
-    D_q = evaluate(dist, vec(p), fill(1.0/L, size(p)))
-
-    # generate distribution with just one filled bin
-    deterministic = zeros(size(p))
-    deterministic[1] = 1
-
-    D_max = evaluate(dist, deterministic, fill(1.0/L, size(p)))
-    C_q = D_q / D_max * H_q
-    c.entr_val[] = H_q
-
-    return C_q
+    return complexity(c, p)
 end
 
 """
@@ -109,13 +94,13 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
     H_q = entropy(entr, p) / norm
 
     # calculate distance between calculated distribution and uniform one
-    D_q = evaluate(dist, vec(p), fill(1.0/L, size(p)))
+    D_q = evaluate(dist, [vec(p)..., zeros(L-length(p))...], fill(1.0/L, L))
 
     # generate distribution with just one filled bin
-    deterministic = zeros(size(p))
+    deterministic = zeros(L)
     deterministic[1] = 1
 
-    D_max = evaluate(dist, deterministic, fill(1.0/L, size(p)))
+    D_max = evaluate(dist, deterministic, fill(1.0/L, L))
     C_q = D_q / D_max * H_q
     c.entr_val[] = H_q
 
