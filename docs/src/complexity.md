@@ -37,3 +37,10 @@ MissingDispersionPatterns
 ```@docs
 ReverseDispersion
 ```
+
+## Statistical complexity
+```@docs
+StatisticalComplexity
+entropy_complexity
+entropy_complexity_curves
+```

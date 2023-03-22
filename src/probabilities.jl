@@ -36,7 +36,7 @@ end
 # extend base Array interface:
 for f in (:length, :size, :eachindex, :eltype, :parent,
     :lastindex, :firstindex, :vec, :getindex, :iterate)
-    @eval Base.$(f)(d::Probabilities, args...) = $(f)(d.p, args...)
+    @eval Base.$(f)(d::Probabilities{T, N}, args...) where {T, N} = $(f)(d.p, args...)
 end
 
 Base.IteratorSize(::Probabilities) = Base.HasLength()
