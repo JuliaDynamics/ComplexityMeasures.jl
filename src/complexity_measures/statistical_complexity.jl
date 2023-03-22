@@ -121,16 +121,6 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
     return C_q
 end
 
-function fill_probs_k!(p, prob_params, L, i, k)
-    probs = vec(p)
-    probs[1] = prob_params[k] # why set first element here if overwriting it in the loop below?
-    # if we know that p has sufficient length relative to L and i,
-    # @inbounds can save some computation time by skipping bounds checking.
-    @inbounds for j = 1:(L - i)
-        probs[j] = (1 - prob_params[k]) / (L - i)
-    end
-end
-
 linearpermissiverange(start; stop, length) = length==1 ? (start:start) : range(start, stop=stop, length=length)
 
 """
@@ -171,7 +161,7 @@ function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
         for k in 1:num_max
             # Does this function ensure sum(p) == 1? If not, we need to normalize `p` afterwards, because `entropy` requires
             # normalized probabilities (i.e. summing to 1)
-            fill_probs_k!(p, prob_params, L, i, k)
+            _fill_probs_k!(p, prob_params, L, i, k)
             compl = complexity(c, p)
             hs_cs_max[j] = SVector(c.entr_val[], compl)
             j += 1
@@ -191,10 +181,20 @@ function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
         p[1] = prob_params[i]
         probs = Probabilities(p, true)
         compl = complexity(c, probs)
-        hs_cs_min[i] = SVector(c.entr_val[], compl)
+        hs_cs_min[end-i+1] = SVector(c.entr_val[], compl)
     end
     return (
         hs_cs_min,
         hs_cs_max
     )
+end
+
+function _fill_probs_k!(p, prob_params, L, i, k)
+    probs = vec(p)
+    probs[1] = prob_params[k] # why set first element here if overwriting it in the loop below?
+    # if we know that p has sufficient length relative to L and i,
+    # @inbounds can save some computation time by skipping bounds checking.
+    @inbounds for j = 1:(L - i)
+        probs[j] = (1 - prob_params[k]) / (L - i)
+    end
 end
