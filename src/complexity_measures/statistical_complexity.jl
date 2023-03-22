@@ -52,7 +52,7 @@ compl = complexity(c, x)
 entr = c.entr_val[]
 ```
 To obtain both the entropy and the statistical complexity together as a `Tuple`, use the wrapper
-`entropy_complexity`(@ref).
+[`entropy_complexity`](@ref).
 
 [^Rosso2007]: Rosso, O. A. et al. (2007). Distinguishing Noise from Chaos.
     Physical Review Letters 99, no. 15: 154102. https://doi.org/10.1103/PhysRevLett.99.154102.
@@ -92,8 +92,9 @@ end
 """
     entropy_complexity(c::StatisticalComplexity, x)
 
-Calculate both the `StatisticalComplexity`(@ref) and corresponding entropy
-and return both as a `Tuple`.
+Return both the entropy and the corresponding [`StatisticalComplexity`](@ref).
+Useful when wanting to plot data on the "entropy-complexity plane".
+See also [`entropy_complexity_curves`](@ref).
 """
 function entropy_complexity(c::StatisticalComplexity, x)
     compl = complexity(c, x)
@@ -140,10 +141,10 @@ This function is inspired by S. Sippels implementation in statcomp [^statcomp].
 
 This function will work with any `ProbabilitiesEstimator` where `total_outcomes`(@ref) is known a priori.
 
-[^Rosso2007] Rosso, O. A., Larrondo, H. A., Martin, M. T., Plastino, A., & Fuentes, M. A. (2007).
+[^Rosso2007]: Rosso, O. A., Larrondo, H. A., Martin, M. T., Plastino, A., & Fuentes, M. A. (2007).
             [Distinguishing noise from chaos](https://doi.org/10.1103/PhysRevLett.99.154102).
             Physical review letters, 99(15), 154102.
-[^statcomp] Sippel, S., Lange, H., Gans, F. (2019).
+[^statcomp]: Sippel, S., Lange, H., Gans, F. (2019).
             [statcomp: Statistical Complexity and Information Measures for Time Series Analysis](https://cran.r-project.org/web/packages/statcomp/index.html)
 """
 function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, num_min::Int=1000)
