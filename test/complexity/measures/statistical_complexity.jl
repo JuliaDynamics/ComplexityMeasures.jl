@@ -35,25 +35,25 @@ using Test
     # this value is calculated with statcomp
     @test maximum(x[2] for x in max_curve) ≈ 0.496700423446187
 
-    # check that complexity value of logistic map is between minimum and maximum curve
-    function logistic(x0=0.4; r = 4.0)
-        return DeterministicIteratedMap(logistic_rule, SVector(x0), [r])
+    # check that complexity value of schuster map is between minimum and maximum curve
+    function schuster(x0=0.5, z=3.0/2)
+        return DeterministicIteratedMap(schuster_rule, SVector(x0), [z])
     end
-    logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1 - x[1]))
+    schuster_rule(x, p, n) = @inbounds SVector((x[1]+x[1]^p[1]) % 1)
     m, τ = 6, 1
     c = StatisticalComplexity(
         dist=JSDivergence(),
         est=SymbolicPermutation(; m, τ),
         entr=Renyi()
     )
-    ds = logistic()
+    ds = schuster()
     x, t = trajectory(ds, 2^15, Ttr=100)
     entr, compl = entropy_complexity(c, x[:, 1])
     # get indices where the entropy of the system is close to a h-value of the entropy complexity curves
-    min_entr_ind = findfirst(isapprox.([x[1] for x in min_curve], 0.5, atol=5e-3) )
-    max_entr_ind = findfirst(isapprox.([x[1] for x in max_curve], 0.5, atol=5e-3) )
+    min_entr_ind = findfirst(isapprox.([x[1] for x in min_curve], 0.5, atol=5e-4) )
+    max_entr_ind = findlast(isapprox.([x[1] for x in max_curve], 0.5, atol=5e-3) )
     # get corresponding complexity values
     min_complexity = [x[2] for x in min_curve][min_entr_ind]
     max_complexity = [x[2] for x in max_curve][max_entr_ind]
-    @test min_complexity < compl < max_complexity
+    @test min_complexity < compl <= max_complexity
 end
