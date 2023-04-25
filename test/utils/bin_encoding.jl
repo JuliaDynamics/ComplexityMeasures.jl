@@ -30,3 +30,37 @@ binnings = [
 
     end
 end
+
+@testset "maxi in range corrected (###)" begin
+    X = SVector{2, Float64}.(vec(collect(Iterators.product(0:0.05:0.99, 0:0.05:0.99))))
+    X = StateSpaceSet(X)
+    # From FractalDimensions.jl
+    function _data_boxing(X, encoding)
+        # Output is a dictionary mapping cartesian indices to vector of data point indices
+        # in said cartesian index bin
+        boxes_to_contents = Dict{NTuple{dimension(X), Int}, Vector{Int}}()
+        for (j, x) in enumerate(X)
+            i = encode(encoding, x) # linear index of box in histogram
+            if i == -1
+                error("$(j)-th point was encoded as -1. Point = $(x)")
+            end
+            ci = Tuple(encoding.ci[i]) # cartesian index of box in histogram
+            if !haskey(boxes_to_contents, ci)
+                boxes_to_contents[ci] = Int[]
+            end
+            push!(boxes_to_contents[ci], j)
+        end
+        return boxes_to_contents
+    end
+
+    @testset "0.1 rad" begin
+        encoding = RectangularBinEncoding(RectangularBinning(0.1, true), X)
+        btc = _data_boxing(X, encoding)
+        @test all(isequal(4), length.(values(btc)))
+    end
+    @testset "0.05 rad" begin
+        encoding = RectangularBinEncoding(RectangularBinning(0.05, true), X)
+        btc = _data_boxing(X, encoding)
+        @test all(isequal(1), length.(values(btc)))
+    end
+end

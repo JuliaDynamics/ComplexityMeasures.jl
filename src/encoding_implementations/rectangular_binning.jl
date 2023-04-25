@@ -163,10 +163,13 @@ function FixedRectangularBinning(b::RectangularBinning, x)
     if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
         widths = SVector{D,T}(ϵ .* ones(SVector{D,T}))
         # To ensure all points are guaranteed to be covered, we add the width
-        # to the max, if the max isn't included in the resulting range
+        # to the max, if the max isn't included in the resulting range.
+        # We also add the width if the maximum is the end point of the range,
+        # as according to our definition, the end point of a range is NOT
+        # included in the histogram!
         ensure_covering_range = (i) -> begin
             r = range(mini[i], maxi[i]; step = widths[i])
-            if maxi[i] ∉ r
+            if (maxi[i] ∉ r) || (maxi[i] == r[end])
                 return range(mini[i], maxi[i] + widths[i]; step = widths[i])
             else
                 return r
