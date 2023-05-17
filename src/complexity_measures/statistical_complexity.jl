@@ -54,8 +54,9 @@ entr = c.entr_val[]
 To obtain both the entropy and the statistical complexity together as a `Tuple`, use the wrapper
 [`entropy_complexity`](@ref).
 
-[^Rosso2007]: Rosso, O. A. et al. (2007). Distinguishing Noise from Chaos.
-    Physical Review Letters 99, no. 15: 154102. https://doi.org/10.1103/PhysRevLett.99.154102.
+[^Rosso2007]: Rosso, O. A., Larrondo, H. A., Martin, M. T., Plastino, A., & Fuentes, M. A. (2007).
+            [Distinguishing noise from chaos](https://doi.org/10.1103/PhysRevLett.99.154102).
+            Physical review letters, 99(15), 154102.
 [^Rosso2013]: Rosso, O. A. (2013) Generalized Statistical Complexity: A New Tool for Dynamical Systems.
 
 """
