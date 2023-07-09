@@ -2,6 +2,9 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 2.8.0
+- New function `allprobabilities` that is like `probabilities` but also includes 0 entries for possible outcomes that were not present in the data.
+
 ## 2.7.1
 - fix bug in calculation of statistical complexity
 
