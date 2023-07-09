@@ -6,7 +6,7 @@ In this page we document estimators for complexity measures that are not entropi
 - [`complexity_normalized`](@ref)
 - [`ComplexityEstimator`](@ref)
 
-## Complexiy measures API
+## Complexity measures API
 
 ```@docs
 complexity
@@ -36,4 +36,11 @@ MissingDispersionPatterns
 
 ```@docs
 ReverseDispersion
+```
+
+## Statistical complexity
+```@docs
+StatisticalComplexity
+entropy_complexity
+entropy_complexity_curves
 ```

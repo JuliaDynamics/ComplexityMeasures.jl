@@ -19,7 +19,7 @@ end
 
 # Same for 2D sets (outcomes not tested here)
 y = [rand(rng, Bool) for _ in 1:10000]
-D = Dataset(x, y)
+D = StateSpaceSet(x, y)
 
 probs1 = probabilities(D)
 probs2 = probabilities(CountOccurrences(), D)

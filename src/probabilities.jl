@@ -36,7 +36,7 @@ end
 # extend base Array interface:
 for f in (:length, :size, :eachindex, :eltype, :parent,
     :lastindex, :firstindex, :vec, :getindex, :iterate)
-    @eval Base.$(f)(d::Probabilities, args...) = $(f)(d.p, args...)
+    @eval Base.$(f)(d::Probabilities{T, N}, args...) where {T, N} = $(f)(d.p, args...)
 end
 
 Base.IteratorSize(::Probabilities) = Base.HasLength()
@@ -88,7 +88,7 @@ abstract type ProbabilitiesEstimator end
 
 Compute a probability distribution over the set of possible outcomes defined by the
 probabilities estimator `est`, given input data `x`, which is typically an `Array` or
-a `Dataset`; see [Input data for ComplexityMeasures.jl](@ref).
+a `StateSpaceSet`; see [Input data for ComplexityMeasures.jl](@ref).
 Configuration options are always given as arguments to the chosen estimator.
 
 To obtain the outcomes corresponding to these probabilities, use [`outcomes`](@ref).

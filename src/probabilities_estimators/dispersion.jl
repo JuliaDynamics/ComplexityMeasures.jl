@@ -76,7 +76,7 @@ Base.@kwdef struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
     check_unique::Bool = false
 end
 
-function dispersion_histogram(x::AbstractDataset, N, m, τ)
+function dispersion_histogram(x::AbstractStateSpaceSet, N, m, τ)
     return fasthist!(x) ./ (N - (m - 1)*τ)
 end
 

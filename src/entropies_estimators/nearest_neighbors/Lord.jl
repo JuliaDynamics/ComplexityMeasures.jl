@@ -75,7 +75,7 @@ Base.@kwdef struct Lord{B} <: NNDiffEntropyEst
     base::B = 2
 end
 
-function entropy(est::Lord, x::AbstractDataset{D}) where {D}
+function entropy(est::Lord, x::AbstractStateSpaceSet{D}) where {D}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())
@@ -127,9 +127,10 @@ function entropy(est::Lord, x::AbstractDataset{D}) where {D}
             h += log(kᵢ * γ / (f * ϵᵢ^D * prod(Σ ./ σ₁)) )
         end
     end
+    # The estimated entropy has "unit" [nats]
     h = - h / N
 
-    return h / log(est.base, ℯ)
+    return convert_logunit(h, ℯ, est.base)
 end
 
 # This is zero-allocating.

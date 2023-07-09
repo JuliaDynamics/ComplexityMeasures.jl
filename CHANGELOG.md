@@ -2,11 +2,29 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 2.7.1
+- fix bug in calculation of statistical complexity
+
+## 2.7
+- Add generalized statistical complexity as complexity measure.
+
+## 2.6
+
+- Fixed differential entropy "unit" bug caused by erroneous conversion between logarithm
+    bases and introduced the `convert_logunit` function to convert between entropies
+    computed with different logarithm bases.
+
+## 2.5
+
+- Moved to StateSpaceSets.jl v1 (only renames of `Dataset` to `StateSpaceSet`).
+
 ## 2.4
+
 - Rectangular binnings have been reformed to operate based on ranges. This leads to much more intuitive bin sizes and edges. For `RectangularBinning` nothing changes, while for `FixedRectangularBinning` the ranges should be given explicitly. Backwards compatible deprecations have been added.
 - This also allows for a new `precise` option that utilizes Base Julia `TwinPrecision` to make more accurate mapping of points to bins at the cost of performance.
 
 ## 2.3
+
 - Like differential entropies, discrete entropies now also have their own estimator type.
 - The approach of giving both an entropy definition, and an entropy estimator to `entropy` has been dropped. Now the entropy estimators know what definitions they are applied for. This change is a deprecation, i.e., backwards compatible.
 - Added `MLEntropy` discrete entropy estimator.

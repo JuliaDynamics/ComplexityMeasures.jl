@@ -1,4 +1,4 @@
-using StateSpaceSets: AbstractDataset
+using StateSpaceSets: AbstractStateSpaceSet
 using Neighborhood: Euclidean, KDTree, NeighborNumber, Theiler
 using Neighborhood: bulksearch
 using SpecialFunctions: digamma
@@ -48,17 +48,19 @@ Base.@kwdef struct Gao{B} <: NNDiffEntropyEst
     corrected::Bool = true
 end
 
-function entropy(est::Gao, x::AbstractDataset{D}) where D
+function entropy(est::Gao, x::AbstractStateSpaceSet{D}) where D
     (; k, w) = est
     N = length(x)
     f = (k  * gamma(D / 2 + 1)) / ( (N - 1) * π^(D / 2))
     tree = KDTree(x, Euclidean())
     idxs, ds = bulksearch(tree, x, NeighborNumber(k), Theiler(w))
 
-    h = -(1 / N) * sum(log(f * 1 / last(dᵢ)^D) for dᵢ in ds) # in nats
+    # The estimated entropy has "unit" [nats]
+    h = -(1 / N) * sum(log(f * 1 / last(dᵢ)^D) for dᵢ in ds)
     if est.corrected
         correction = digamma(k) - log(k)
         h -= correction
     end
-    return h / log(est.base, ℯ) # convert to target unit *after* correction
+
+    return convert_logunit(h, ℯ, est.base) # convert to target unit *after* correction
 end
