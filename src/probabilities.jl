@@ -4,6 +4,7 @@ export probabilities_and_outcomes, outcomes
 export total_outcomes
 export missing_outcomes
 export outcome_space
+export allprobabilities
 
 ###########################################################################################
 # Types
@@ -235,5 +236,5 @@ function allprobabilities(est::ProbabilitiesEstimator, x::Array_or_Dataset)
             break
         end
     end
-    return Probabilities(allprobs; normed = true)
+    return Probabilities(allprobs, true)
 end
