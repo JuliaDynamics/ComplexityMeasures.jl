@@ -102,7 +102,9 @@ Due to performance optimizations, whether the returned probablities
 contain `0`s as entries or not depends on the estimator.
 E.g., in [`ValueHistogram`](@ref) `0`s are skipped, while in
 [`PowerSpectrum`](@ref) `0` are not, because we get them for free.
-Use the function [`allprobabilities`](@ref) for a version with all `0` entries.
+Use the function [`allprobabilities`](@ref) for a version with all `0` entries
+that ensures that given an `est`, the indices of `p` will be independent
+of the input data `x`.
 
     probabilities(x::Vector_or_Dataset) → p::Probabilities
 
@@ -206,6 +208,12 @@ end
 Same as [`probabilities`](@ref), however ensures that outcomes with `0` probability
 are explicitly added in the returned vector. This means that `p[i]` is the probability
 of `ospace[i]`, with `ospace = `[`outcome_space`](@ref)`(est, x)`.
+
+This function is useful in cases where one wants to compare the probability mass functions
+of two different input data `x, y` under the same estimator. E.g., to compute the
+KL-divergence of the two PMFs assumes that the obey the same indexing. This is
+not true for [`probabilities`](@ref) even with the same `est`, due to the skipping
+of 0 entries, but it is true for [`allprobabilities`](@ref).
 """
 function allprobabilities(est::ProbabilitiesEstimator, x::Array_or_Dataset)
     probs, outs = probabilities_and_outcomes(est, x)
