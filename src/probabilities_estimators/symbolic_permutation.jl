@@ -228,7 +228,7 @@ function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateS
     return Probabilities(probs)
 end
 
-function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_Dataset) where {m}
+function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
     # A bit of code duplication here, because we actually need the processed
     # `πs` to invert it with `decode`. This can surely be optimized with some additional
     # function that both maps to integers with `decode` but also keeps track of

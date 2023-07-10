@@ -11,8 +11,8 @@ using Reexport
 @reexport using StateSpaceSets
 using DelayEmbeddings: embed
 
-const Array_or_Dataset = Union{<:AbstractArray{<:Real}, <:AbstractStateSpaceSet}
-const Vector_or_Dataset = Union{<:AbstractVector{<:Real}, <:AbstractStateSpaceSet}
+const Array_or_SSSet = Union{<:AbstractArray{<:Real}, <:AbstractStateSpaceSet}
+const Vector_or_SSSet = Union{<:AbstractVector{<:Real}, <:AbstractStateSpaceSet}
 
 # Core API types and functions
 include("probabilities.jl")
@@ -52,7 +52,7 @@ We believe it is best to learn all of this by visiting the online documentation!
 We tried our best to keep pre-2.0 functions working and throw deprecation warnings.
 If we missed code that should be working, please let us know by opening an issue.
 
-For example, `genentropy(x::Array_or_Dataset, ε::Real; q, base)` is deprecated
+For example, `genentropy(x::Array_or_SSSet, ε::Real; q, base)` is deprecated
 in favor of `entropy(Renyi(q, base), ValueHistogram(ε), x)`.
 """
 

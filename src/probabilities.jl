@@ -89,7 +89,7 @@ abstract type ProbabilitiesEstimator end
 # probabilities and combo function
 ###########################################################################################
 """
-    probabilities(est::ProbabilitiesEstimator, x::Array_or_Dataset) → p::Probabilities
+    probabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p::Probabilities
 
 Compute a probability distribution over the set of possible outcomes defined by the
 probabilities estimator `est`, given input data `x`, which is typically an `Array` or
@@ -106,7 +106,7 @@ Use the function [`allprobabilities`](@ref) for a version with all `0` entries
 that ensures that given an `est`, the indices of `p` will be independent
 of the input data `x`.
 
-    probabilities(x::Vector_or_Dataset) → p::Probabilities
+    probabilities(x::Vector_or_SSSet) → p::Probabilities
 
 Estimate probabilities by directly counting the elements of `x`, assuming that
 `Ω = sort(unique(x))`, i.e. that the outcome space is the unique elements of `x`.
@@ -182,7 +182,7 @@ of missing (i.e. zero-probability) outcomes.
 
 See also: [`MissingDispersionPatterns`](@ref).
 """
-function missing_outcomes(est::ProbabilitiesEstimator, x::Array_or_Dataset)
+function missing_outcomes(est::ProbabilitiesEstimator, x::Array_or_SSSet)
     probs = probabilities(est, x)
     L = total_outcomes(est, x)
     O = count(!iszero, probs)
@@ -203,7 +203,7 @@ end
 # All probabilities
 ###########################################################################################
 """
-    allprobabilities(est::ProbabilitiesEstimator, x::Array_or_Dataset) → p
+    allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p
 
 Same as [`probabilities`](@ref), however ensures that outcomes with `0` probability
 are explicitly added in the returned vector. This means that `p[i]` is the probability
@@ -215,7 +215,7 @@ KL-divergence of the two PMFs assumes that the obey the same indexing. This is
 not true for [`probabilities`](@ref) even with the same `est`, due to the skipping
 of 0 entries, but it is true for [`allprobabilities`](@ref).
 """
-function allprobabilities(est::ProbabilitiesEstimator, x::Array_or_Dataset)
+function allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet)
     probs, outs = probabilities_and_outcomes(est, x)
     ospace = vec(outcome_space(est, x))
     # We first utilize that the outcome space is sorted and sort probabilities
