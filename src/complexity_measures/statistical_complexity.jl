@@ -7,7 +7,7 @@ export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
     StatisticalComplexity <: ComplexityEstimator
     StatisticalComplexity([x]; kwargs...)
 
-An estimator for the statistical complexity and entropy according to Rosso et al. (2007)[^Rosso2007](@ref),
+An estimator for the statistical complexity and entropy according to Rosso et al. (2007)[^Rosso2007],
 used with [`complexity`](@ref).
 
 ## Keyword arguments
@@ -47,7 +47,7 @@ The statistical complexity is exclusively used in combination with the related i
 The entropy can be accessed as a `Ref` value of the struct as
 ```julia
 x = randn(100)
-c = StatisticalComplexity
+c = StatisticalComplexity()
 compl = complexity(c, x)
 entr = c.entr_val[]
 ```
@@ -91,8 +91,7 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
     (; dist, est, entr) = c
 
     L = total_outcomes(est)
-    norm = log(entr.base, L)
-    H_q = entropy(entr, p) / norm
+    H_q = entropy(entr, p) / entropy_maximum(entr, est)
 
     # calculate distance between calculated distribution and uniform one
     D_q = evaluate(dist, [vec(p)..., zeros(L-length(p))...], fill(1.0/L, L))

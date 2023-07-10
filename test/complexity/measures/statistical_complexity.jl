@@ -17,6 +17,20 @@ using Test
     compl = complexity(c, collect(1:100))
     @test compl == 0.0
 
+    # test that this also works for another type of entropy
+    # we don't have any specific values but we can at least repeat the edge case of noise
+    # which should also be close to zeros
+    c = StatisticalComplexity(
+        dist=JSDivergence(),
+        est=SymbolicPermutation(; m=6, τ=1),
+        entr=Tsallis()
+    )
+    # complexity of white noise should be very close to zero
+    compl = complexity(c, x)
+    @test 0 < compl < 0.02
+    compl = complexity(c, collect(1:100))
+    @test compl == 0.0
+
     # test the wrapper
     entr, compl = entropy_complexity(c, x)
     @test 0 < compl < 0.02
@@ -56,4 +70,13 @@ using Test
     min_complexity = [x[2] for x in min_curve][min_entr_ind]
     max_complexity = [x[2] for x in max_curve][max_entr_ind]
     @test min_complexity < compl <= max_complexity
+
+    # also test that we get an error if we try a ProbabilitiesEstimator
+    # where the outcome space is not defined a priori
+    c = StatisticalComplexity(
+        dist=JSDivergence(),
+        est=ValueHistogram(0.1),
+        entr=Tsallis()
+    )
+    @test_throws ErrorException complexity(c, x)
 end
