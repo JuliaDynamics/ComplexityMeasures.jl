@@ -4,8 +4,7 @@ using ComplexityMeasures
 defaultname(file) = uppercasefirst(replace(splitext(basename(file))[1], '_' => ' '))
 testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include(file); end
 @testset "ComplexityMeasures.jl" begin
-    testfile("probabilities/interface.jl")
-    # Probability estimators.
+    # Probability estimators
     testfile("probabilities/estimators/count_occurrences.jl")
     testfile("probabilities/estimators/value_histogram.jl")
     testfile("probabilities/estimators/transfer_operator.jl")
@@ -17,7 +16,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("probabilities/estimators/spatial/spatial_permutation.jl")
     testfile("probabilities/estimators/spatial/spatial_dispersion.jl")
     # probabilities functions
-    testfile("probabilities/allprobabilities.jl")
+    testfile("probabilities/api.jl")
 
 
     include("entropies/entropies.jl")

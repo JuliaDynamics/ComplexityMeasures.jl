@@ -1,5 +1,12 @@
 using ComplexityMeasures, Test
 
+@testset "interface" begin
+    x = ones(3)
+    p = probabilities(x)
+    @test p isa Probabilities
+    @test p == [1]
+end
+
 @testset "Histogram" begin
     # Okay, with these inputs we know exactly what the final scenario
     # should be. Bins 1 2 and 3 have one entry, bin 4 has zero, bin 5
@@ -8,6 +15,9 @@ using ComplexityMeasures, Test
     est = ValueHistogram(FixedRectangularBinning((0:0.1:1,)))
     correct = [1, 1, 1, 0, 2, 0, 0, 0, 1, 0]
     correct = correct ./ sum(correct)
+
+    miss = missing_outcomes(est, x)
+    @test miss == 5
 
     p = allprobabilities(est, x)
 
@@ -25,6 +35,9 @@ end
     correct = correct ./ sum(correct)
     p = allprobabilities(est, x)
     @test p == correct
+
+    miss = missing_outcomes(est, x)
+    @test miss == 4
 
     # Make sure that different outcome would get different allprobs
     x = [1, 2, 3, 4, 5, 6, 5.5]
