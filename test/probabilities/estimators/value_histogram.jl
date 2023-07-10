@@ -48,11 +48,10 @@ using Random
             @test all(x -> x < 1, maximum(o))
             o2 = outcomes(est, x)
             @test o2 == o
-            @test issorted(o2)
 
             ospace = outcome_space(est, x)
-            @test ospace isa Matrix{SVector{2, Float64}}
-            @test size(ospace) == (n,n)
+            @test ospace isa Vector{SVector{2, Float64}}
+            @test size(ospace) == (n*n, )
             @test SVector(0.0, 0.0) ∈ ospace
             @test issorted(ospace)
 
