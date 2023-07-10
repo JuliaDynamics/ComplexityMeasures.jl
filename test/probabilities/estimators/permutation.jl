@@ -17,8 +17,8 @@ end
 @testset "Analytic, symbolic" begin
     est = SymbolicPermutation(m = 3, τ = 1)
     N = 1000
-    x = Dataset(repeat([1.1 2.2 3.3], 10))
-    y = Dataset(rand(Random.MersenneTwister(123), N, 3))
+    x = StateSpaceSet(repeat([1.1 2.2 3.3], 10))
+    y = StateSpaceSet(rand(Random.MersenneTwister(123), N, 3))
 
     @testset "direct" begin
         p1 = probabilities(est, x)
@@ -83,5 +83,6 @@ end
             [3, 2, 1],
         ]
         @test total_outcomes(est3) == factorial(3)
+        @test issorted(outcome_space(est3))
     end
 end

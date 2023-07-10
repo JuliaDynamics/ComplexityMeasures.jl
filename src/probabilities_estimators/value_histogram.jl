@@ -7,10 +7,7 @@ export ValueHistogram, VisitationFrequency
 A probability estimator based on binning the values of the data as dictated by
 the binning scheme `b` and formally computing their histogram, i.e.,
 the frequencies of points in the bins. An alias to this is `VisitationFrequency`.
-Available binnings are:
-
-- [`RectangularBinning`](@ref)
-- [`FixedRectangularBinning`](@ref)
+Available binnings are subtypes of [`AbstractBinning`](@ref).
 
 The `ValueHistogram` estimator has a linearithmic time complexity
 (`n log(n)` for `n = length(x)`) and a linear space complexity (`l` for `l = dimension(x)`).

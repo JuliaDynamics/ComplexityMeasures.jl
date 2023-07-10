@@ -11,7 +11,7 @@ This function is just a convenience call to:
 
 ```julia
 est = SymbolicPermutation(; m, τ)
-entropy(Shannon(base), x, est)
+entropy(Shannon(base), est, x)
 ```
 
 See [`SymbolicPermutation`](@ref) for more info. Similarly, one can use

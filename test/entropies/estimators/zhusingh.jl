@@ -4,7 +4,7 @@ using Test, LinearAlgebra
 # Test internals in addition to end-product, because designing an exact end-product
 # test is  a mess due to the neighbor searches. If these top-level tests fail, then
 # the issue is probability related to these functions.
-nns = Dataset([[-1, -1], [0, -2], [3, 2.0]])
+nns = StateSpaceSet([[-1, -1], [0, -2], [3, 2.0]])
 x = SVector(0.0, 0.0)
 dists = ComplexityMeasures.maxdists(x, nns)
 vol = ComplexityMeasures.volume_minimal_rect(dists)
@@ -12,7 +12,7 @@ vol = ComplexityMeasures.volume_minimal_rect(dists)
 @test vol == 24.0
 @test ξ == 2.0
 
-nns = Dataset([[3, 1], [3, -2], [-5, 1.0]])
+nns = StateSpaceSet([[3, 1], [3, -2], [-5, 1.0]])
 x = SVector(0.0, 0.0)
 dists = ComplexityMeasures.maxdists(x, nns)
 vol = ComplexityMeasures.volume_minimal_rect(dists)
@@ -20,7 +20,7 @@ vol = ComplexityMeasures.volume_minimal_rect(dists)
 @test vol == 40.0
 @test ξ == 2.0
 
-nns = Dataset([[-3, 1], [3, 1], [5, -2.0]])
+nns = StateSpaceSet([[-3, 1], [3, 1], [5, -2.0]])
 x = SVector(0.0, 0.0)
 dists = ComplexityMeasures.maxdists(x, nns)
 vol = ComplexityMeasures.volume_minimal_rect(dists)
@@ -32,11 +32,11 @@ vol = ComplexityMeasures.volume_minimal_rect(dists)
 # Check if the estimator converge to true values for some distributions with
 # analytically derivable entropy.
 # -------------------------------------------------------------------------------------
-# EntropyDefinition to log with base b of a uniform distribution on [0, 1] = ln(1 - 0)/(ln(b)) = 0
+# Entropy to log with base b of a uniform distribution on [0, 1] = ln(1 - 0)/(ln(b)) = 0
 U = 0.00
-# EntropyDefinition with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
+# Entropy with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
 N = round(0.5*log(2π) + 0.5, digits = 2)
-N_base3 = round((0.5*log(2π) + 0.5) / log(3, ℯ), digits = 2) # custom base
+N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
 
 npts = 1000000
 ea = entropy(ZhuSingh(k = 5), rand(npts))

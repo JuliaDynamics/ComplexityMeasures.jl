@@ -15,6 +15,9 @@ est = Diversity(; nbins, m, τ)
 binsize = (1-(-1))/10
 probs, events = probabilities_and_outcomes(est, x)
 
+@test issorted(events)
+@test issorted(outcome_space(est, x))
+
 ds = [0.605, 0.698, 0.924, 0.930] # value from Wang et al. (2020)
 # These distances should be in the following distance bins: [8, 8, 9, 9].
 # Which means that the probability distribution should be [0.5, 0.5]

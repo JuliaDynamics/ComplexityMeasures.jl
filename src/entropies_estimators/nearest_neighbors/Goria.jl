@@ -1,4 +1,4 @@
-using StateSpaceSets: AbstractDataset, Dataset
+using StateSpaceSets: AbstractStateSpaceSet, StateSpaceSet
 using Neighborhood: KDTree, NeighborNumber, Theiler
 using Neighborhood: bulksearch
 using SpecialFunctions: digamma
@@ -10,7 +10,7 @@ export Goria
     Goria(; k = 1, w = 0, base = 2)
 
 The `Goria` estimator computes the [`Shannon`](@ref) differential
-[`entropy`](@ref) of a multi-dimensional [`Dataset`](@ref) in the given `base`.
+[`entropy`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref) in the given `base`.
 
 ## Description
 
@@ -51,17 +51,17 @@ Base.@kwdef struct Goria{B} <: NNDiffEntropyEst
     base::B = 2
 end
 
-function entropy(est::Goria, x::AbstractDataset{D}) where D
+function entropy(est::Goria, x::AbstractStateSpaceSet{D}) where D
     (; k, w) = est
     N = length(x)
 
     tree = KDTree(x, Euclidean())
     ds = last.(bulksearch(tree, x, NeighborNumber(k), Theiler(w))[2])
+    # The estimated entropy has "unit" [nats]
     h = D * log(prod(ds .^ (1 / N))) +
           log(N - 1) +
           log(c1(D)) -
           digamma(k)
-
-    return h / log(est.base, ℯ)
+    return convert_logunit(h, ℯ, est.base)
 end
 c1(D::Int) = (2π^(D/2)) / (D* gamma(D/2))

@@ -10,7 +10,7 @@ export ZhuSingh
     ZhuSingh(; k = 1, w = 0, base = 2)
 
 The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
-differential [`entropy`](@ref) of a multi-dimensional [`Dataset`](@ref)
+differential [`entropy`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref)
 in the given `base`.
 
 ## Description
@@ -51,14 +51,15 @@ Base.@kwdef struct ZhuSingh{B} <: NNDiffEntropyEst
     base::B = 2
 end
 
-function entropy(est::ZhuSingh, x::AbstractDataset{D, T}) where {D, T}
+function entropy(est::ZhuSingh, x::AbstractStateSpaceSet{D, T}) where {D, T}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())
     nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
     mean_logvol, mean_digammaξ = mean_logvolumes_and_digamma(x, nn_idxs, N, k)
+    # The estimated entropy has "unit" [nats]
     h = digamma(N) + mean_logvol - mean_digammaξ
-    return h / log(est.base, MathConstants.e)
+    return convert_logunit(h, ℯ, est.base)
 end
 
 function mean_logvolumes_and_digamma(x, nn_idxs, N::Int, k::Int)

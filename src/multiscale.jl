@@ -26,8 +26,8 @@ The return type depends on `algorithm`. For example:
 """
 downsample(method::MultiScaleAlgorithm, s::Int, x)
 
-downsample(alg::MultiScaleAlgorithm,  s::Int, x::AbstractDataset) =
-    Dataset(map(t -> downsample(alg, s, t)), columns(x)...)
+downsample(alg::MultiScaleAlgorithm,  s::Int, x::AbstractStateSpaceSet) =
+    StateSpaceSet(map(t -> downsample(alg, s, t)), columns(x)...)
 
 
 function multiscale end

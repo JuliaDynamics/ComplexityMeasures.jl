@@ -1,7 +1,7 @@
 export EntropyDefinition
 export MLEntropy, DiscEntropyEst, DiscreteEntropyEstimator
 export DiffEntropyEst, DifferentialEntropyEstimator
-export entropy, entropy_maximum, entropy_normalized
+export entropy, entropy_maximum, entropy_normalized, convert_logunit
 
 """
     EntropyDefinition
@@ -244,4 +244,14 @@ function log_with_base(base)
     else
         x -> log(base, x)
     end
+end
+
+"""
+    convert_logunit(h_a::Real, , to) → h_b
+
+Convert a number `h_a` computed with logarithms to base `a` to an entropy `h_b` computed
+with logarithms to base `b`. This can be used to convert the "unit" of an entropy.
+"""
+function convert_logunit(h::Real, base_from, base_to)
+    h / log(base_from, base_to)
 end

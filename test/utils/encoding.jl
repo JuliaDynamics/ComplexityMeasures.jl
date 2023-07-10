@@ -1,4 +1,4 @@
-using StateSpaceSets: Dataset
+using StateSpaceSets: StateSpaceSet
 using DelayEmbeddings: genembed
 using StaticArrays: SVector
 using ComplexityMeasures: encode, decode
@@ -89,7 +89,7 @@ end
 #     @testset "User-defined grid" begin
 #         # For datasets
 #         # --------------------------------
-#         D = Dataset([-1.0, 0.0, 1.0], [-1.0, 0.0, 1.0])
+#         D = StateSpaceSet([-1.0, 0.0, 1.0], [-1.0, 0.0, 1.0])
 #         r = (1 - (-1)) / N
 
 #         # (-1, 1) range for all dims.
@@ -142,7 +142,7 @@ end
 #     end
 
 #     @testset "Grid defined by data" begin
-#         D = Dataset([-1.0, 0.0, 1.0], [-1.0, 0.0, 1.0])
+#         D = StateSpaceSet([-1.0, 0.0, 1.0], [-1.0, 0.0, 1.0])
 #         r = nextfloat((1.0 - (-1.0)) / N)
 #         binning_int = RectangularBinning(N)
 #         binning_intvec = RectangularBinning([N, N])
@@ -191,7 +191,7 @@ end
 #     end
 
 #     @testset "outcome length" begin
-#         X = Dataset(rand(10, 3))
+#         X = StateSpaceSet(rand(10, 3))
 #         x = rand(10)
 #         rbN = RectangularBinning(5)
 #         rbNs = RectangularBinning([5, 3, 4])

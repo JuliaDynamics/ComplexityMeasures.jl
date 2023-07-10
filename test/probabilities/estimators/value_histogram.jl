@@ -4,7 +4,7 @@ using Random
 
 @testset "Standard ranges binning" begin
 
-    x = Dataset(rand(Random.MersenneTwister(1234), 100_000, 2))
+    x = StateSpaceSet(rand(Random.MersenneTwister(1234), 100_000, 2))
     push!(x, SVector(0, 0)) # ensure both 0 and 1 have values in, exactly.
     push!(x, SVector(1, 1))
 
@@ -28,12 +28,6 @@ using Random
             (range(0, nextfloat(1.0); step = ε), range(0, nextfloat(1.0); step = ε))
         ),
     ]
-    # all reduce to these ranges (due to demanding ALL data to be in
-    # the histogram, i.e., also the `SVector(1,1)`)
-    casted_ranges = (
-        0.0:0.10000000000000002:1.0000000000000002,
-        0.0:0.10000000000000002:1.0000000000000002
-    )
 
     for bin in binnings
         @testset "bin isa $(nameof(typeof(bin)))" begin
@@ -56,15 +50,15 @@ using Random
             @test o2 == o
 
             ospace = outcome_space(est, x)
-            @test ospace isa Matrix{SVector{2, Float64}}
-            @test size(ospace) == (n,n)
+            @test ospace isa Vector{SVector{2, Float64}}
+            @test size(ospace) == (n*n, )
             @test SVector(0.0, 0.0) ∈ ospace
+            @test issorted(ospace)
 
             # ensure 1 is included, and must also be in the last bin
             rbe = RectangularBinEncoding(bin, x)
             @test encode(rbe, SVector(1.0, 1.0)) == n^2
 
-            @test rbe.ranges == casted_ranges
         end
     end
 
@@ -99,14 +93,15 @@ end
     rb1 = RectangularBinEncoding(RectangularBinning(N, false), x1)
     rb2 = RectangularBinEncoding(RectangularBinning(N, true), x1)
 
-    # With low accuracy we get this rounding error
-    @test encode(rb1, maximum(x1)) == -1
+    # low accuracy uses twice the next float, so no rounding error
+    @test encode(rb1, maximum(x1)) == 10
     @test encode(rb2, maximum(x1)) == 10
 
     x2 = [0.4125754262679051, 0.52844411982339560, 0.4535277505543355, 0.25502420827802674, 0.77862522996085940, 0.6081939026664078, 0.2628674795466387, 0.18846258495465185, 0.93320375283233840, 0.40093871561247874, 0.8032730760974603, 0.3531608285217499, 0.018436525139752136, 0.55541857934068420, 0.9907521337888632, 0.15382361136212420, 0.01774321666660561, 0.67569337507728300, 0.06130971689608822, 0.31417161558476836]
     rb1 = RectangularBinEncoding(RectangularBinning(N, false), x2)
     rb2 = RectangularBinEncoding(RectangularBinning(N, true), x2)
-    @test encode(rb1, maximum(x2)) == -1
+    # Same as above
+    @test encode(rb1, maximum(x2)) == 10
     @test encode(rb2, maximum(x2)) == 10
 
     # and a final analytic test with decode
@@ -119,7 +114,7 @@ end
 end
 
 @testset "All points covered" begin
-    x = Dataset(rand(100, 2))
+    x = StateSpaceSet(rand(100, 2))
     binnings = [
         RectangularBinning(5, true),
         RectangularBinning(0.2, true),

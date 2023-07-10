@@ -11,7 +11,7 @@ using Distributions: MvNormal
 
 𝒩 = MvNormal([1, -4], 2)
 N = 500
-D = Dataset(sort([rand(𝒩) for i = 1:N]))
+D = StateSpaceSet(sort([rand(𝒩) for i = 1:N]))
 x, y = columns(D)
 p = probabilities(NaiveKernel(1.5), D)
 fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
@@ -22,6 +22,45 @@ ax.zlabel = "P"
 ax.zticklabelsvisible = false
 fig
 ```
+
+## Probabilities: KL-divergence of histograms
+
+In this example we show how simple it is to compute the [KL-divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence) (or any other distance function for probability distributions) using ComplexityMeasures.jl. For simplicity, we will compute the KL-divergence between the [`ValueHistogram`](@ref)s of two timeseries.
+
+Note that it is **crucial** to use [`allprobabilities`](@ref) instead of [`probabilities`](@ref).
+
+```@example MAIN
+using ComplexityMeasures
+
+N = 1000
+t = range(0, 20π; length=N)
+x = @. clamp(sin(t), -0.5, 1)
+y = @. sin(t + cos(2t))
+
+r = -1:0.1:1
+est = ValueHistogram(FixedRectangularBinning(r))
+px = allprobabilities(est, x)
+py = allprobabilities(est, y)
+
+# Visualize
+using CairoMakie
+bins = r[1:end-1] .+ step(r)/2
+fig, ax = barplot(bins, px; label = L"p_x")
+barplot!(ax, bins, py; label = L"p_y")
+axislegend(ax; labelsize = 30)
+fig
+```
+
+```@example MAIN
+using StatsBase: kldivergence
+
+kldivergence(px, py)
+```
+
+```@example MAIN
+kldivergence(py, px)
+```
+(`Inf` because there are events with 0 probability in `px`)
 
 ## Differential entropy: estimator comparison
 
@@ -40,7 +79,7 @@ entropy is `0.5*log(2π) + 0.5` nats when using natural logarithms.
 
 ```@example MAIN
 using ComplexityMeasures
-using DynamicalSystemsBase, CairoMakie, Statistics
+using CairoMakie, Statistics
 nreps = 30
 Ns = [100:100:500; 1000:1000:5000]
 e = Shannon(; base = MathConstants.e)
@@ -52,23 +91,23 @@ w = 0 # Theiler window of 0 (only exclude the point itself during neighbor searc
 knn_estimators = [
     # with k = 1, Kraskov is virtually identical to
     # Kozachenko-Leonenko, so pick a higher number of neighbors for Kraskov
-    Kraskov(; k = 3, w),
-    KozachenkoLeonenko(; w),
-    Zhu(; k = 3, w),
-    ZhuSingh(; k = 3, w),
-    Gao(; k = 3, w, corrected = false),
-    Gao(; k = 3, w, corrected = true),
-    Goria(; k = 3, w),
-    Lord(; k = 20, w) # more neighbors for accurate ellipsoid estimation
+    Kraskov(; k = 3, base = ℯ, w),
+    KozachenkoLeonenko(; base = ℯ, w),
+    Zhu(; k = 3, base = ℯ, w),
+    ZhuSingh(; k = 3, base = ℯ, w),
+    Gao(; k = 3, base = ℯ, corrected = false, w),
+    Gao(; k = 3, base = ℯ, corrected = true, w),
+    Goria(; k = 3, w, base = ℯ),
+    Lord(; k = 20, w, base = ℯ) # more neighbors for accurate ellipsoid estimation
 ]
 
 # Test each estimator `nreps` times over time series of varying length.
 Hs_uniform_knn = [[zeros(nreps) for N in Ns] for e in knn_estimators]
 for (i, est) in enumerate(knn_estimators)
     for j = 1:nreps
-        pts = randn(maximum(Ns)) |> Dataset
+        pts = randn(maximum(Ns)) |> StateSpaceSet
         for (k, N) in enumerate(Ns)
-            Hs_uniform_knn[i][k][j] = entropy(e, est, pts[1:N])
+            Hs_uniform_knn[i][k][j] = entropy(est, pts[1:N])
         end
     end
 end
@@ -82,11 +121,11 @@ estimators_os = [Vasicek, Ebrahimi, AlizadehArghami, Correa]
 Hs_uniform_os = [[zeros(nreps) for N in Ns] for e in estimators_os]
 for (i, est_os) in enumerate(estimators_os)
     for j = 1:nreps
-        pts = randn(maximum(Ns)) # raw timeseries, not a `Dataset`
+        pts = randn(maximum(Ns)) # raw timeseries, not a `StateSpaceSet`
         for (k, N) in enumerate(Ns)
             m = floor(Int, N / 100) # Scale `m` to timeseries length
-            est = est_os(; m) # Instantiate estimator with current `m`
-            Hs_uniform_os[i][k][j] = entropy(e, est, pts[1:N])
+            est = est_os(; m, base = ℯ) # Instantiate estimator with current `m`
+            Hs_uniform_os[i][k][j] = entropy(est, pts[1:N])
         end
     end
 end
@@ -130,45 +169,40 @@ are negatively biased for small sample sizes.
 
 ## Discrete entropy: permutation entropy
 
-This example reproduces an example from Bandt and Pompe (2002), where the permutation
-entropy is compared with the largest Lyapunov exponents from time series of the chaotic
-logistic map. EntropyDefinition estimates using [`SymbolicWeightedPermutation`](@ref)
+This example plots permutation entropy for time series of the chaotic logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
 and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
+The entropy behaviour can be parallelized with the `ChaosTools.lyapunov` of the map.
 
 ```@example MAIN
 using DynamicalSystemsBase, CairoMakie
-using ChaosTools: lyapunov
 
-ds = Systems.logistic()
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1-x[1]))
+ds = DeterministicIteratedMap(logistic_rule, [0.4], [4.0])
 rs = 3.4:0.001:4
 N_lyap, N_ent = 100000, 10000
 m, τ = 6, 1 # Symbol size/dimension and embedding lag
 
 # Generate one time series for each value of the logistic parameter r
-lyaps, hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
+hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
 
 for (i, r) in enumerate(rs)
     ds.p[1] = r
-    lyaps[i] = lyapunov(ds, N_lyap)
 
-    x = trajectory(ds, N_ent) # time series
-    hperm = entropy(SymbolicPermutation(; m, τ), x)
-    hwtperm = entropy(SymbolicWeightedPermutation(; m, τ), x)
-    hampperm = entropy(SymbolicAmplitudeAwarePermutation(; m, τ), x)
-
-    hs_perm[i] = hperm; hs_wtperm[i] = hwtperm; hs_ampperm[i] = hampperm
+    x, t = trajectory(ds, N_ent)
+    ## `x` is a 1D dataset, need to recast into a timeseries
+    x = columns(x)[1]
+    hs_perm[i] = entropy(SymbolicPermutation(; m, τ), x)
+    hs_wtperm[i] = entropy(SymbolicWeightedPermutation(; m, τ), x)
+    hs_ampperm[i] = entropy(SymbolicAmplitudeAwarePermutation(; m, τ), x)
 end
 
 fig = Figure()
-a1 = Axis(fig[1,1]; ylabel = L"\lambda")
-lines!(a1, rs, lyaps); ylims!(a1, (-2, log(2)))
-a2 = Axis(fig[2,1]; ylabel = L"h_6 (SP)")
-lines!(a2, rs, hs_perm; color = Cycled(2))
-a3 = Axis(fig[3,1]; ylabel = L"h_6 (WT)")
-lines!(a3, rs, hs_wtperm; color = Cycled(3))
-a4 = Axis(fig[4,1]; ylabel = L"h_6 (SAAP)")
-lines!(a4, rs, hs_ampperm; color = Cycled(4))
-a4.xlabel = L"r"
+a1 = Axis(fig[1,1]; ylabel = L"h_6 (SP)")
+lines!(a1, rs, hs_perm; color = Cycled(2))
+a2 = Axis(fig[2,1]; ylabel = L"h_6 (WT)")
+lines!(a2, rs, hs_wtperm; color = Cycled(3))
+a3 = Axis(fig[3,1]; ylabel = L"h_6 (SAAP)", xlabel = L"r")
+lines!(a3, rs, hs_ampperm; color = Cycled(4))
 
 for a in (a1,a2,a3)
     hidexdecorations!(a, grid = false)
@@ -183,7 +217,7 @@ energy is contained at one scale) and higher for very irregular signals (energy 
 more out across scales).
 
 ```@example MAIN
-using DynamicalSystemsBase, CairoMakie
+using CairoMakie
 N, a = 1000, 10
 t = LinRange(0, 2*a*π, N)
 
@@ -302,7 +336,6 @@ This example is adapted from Li et al. (2021)[^Li2019].
 
 ```@example MAIN
 using ComplexityMeasures
-using DynamicalSystemsBase
 using Random
 using CairoMakie
 using Distributions: Normal
@@ -350,10 +383,10 @@ fig
 
 ## Discrete entropy: normalized entropy for comparing different signals
 
-When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the Wavelet entropy example where we use the spectral entropy instead of the wavelet entropy:
+When comparing different signals or signals that have different length, it is best to normalize entropies so that the "complexity" or "disorder" quantification is directly comparable between signals. Here is an example based on the wavelet entropy example where we use the spectral entropy instead of the wavelet entropy:
 
 ```@example MAIN
-using DynamicalSystemsBase
+using ComplexityMeasures
 N1, N2, a = 101, 10001, 10
 
 for N in (N1, N2)
@@ -361,9 +394,8 @@ for N in (N1, N2)
     local x = sin.(t) # periodic
     local y = sin.(t .+ cos.(t/0.5)) # periodic, complex spectrum
     local z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
-    local w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
 
-    for q in (x, y, z, w)
+    for q in (x, y, z)
         h = entropy(PowerSpectrum(), q)
         n = entropy_normalized(PowerSpectrum(), q)
         println("entropy: $(h), normalized: $(n).")
@@ -371,7 +403,7 @@ for N in (N1, N2)
 end
 ```
 
-You see that while the direct entropy values of the chaotic and noisy signals change massively with `N` but they are almost the same for the normalized version.
+You see that while the direct entropy values of noisy signal changes strongly with `N` but they are almost the same for the normalized version.
 For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.
 
 ## Spatiotemporal permutation entropy
@@ -471,8 +503,6 @@ generated numbers and do not provide code that specify random number seeds.
 
 ```@example MAIN
 using ComplexityMeasures
-using ComplexityMeasures
-using DynamicalSystemsBase
 using Random
 using CairoMakie
 using Distributions: Normal
@@ -536,7 +566,8 @@ using DynamicalSystemsBase
 using TimeseriesSurrogates
 
 est = MissingDispersionPatterns(Dispersion(m = 3, c = 7))
-sys = Systems.logistic(0.6; r = 4.0)
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1-x[1]))
+sys = DeterministicIteratedMap(logistic_rule, [0.6], [4.0])
 Ls = collect(100:100:1000)
 nL = length(Ls)
 nreps = 30 # should be higher for real applications
@@ -548,7 +579,8 @@ y = rand(maximum(Ls))
 
 for (i, L) in enumerate(Ls)
     # Deterministic time series
-    x = trajectory(sys, L - 1, Ttr = 5000)
+    x, t = trajectory(sys, L - 1, Ttr = 5000)
+    x = columns(x)[1] # remember to make it `Vector{<:Real}
     sx = surrogenerator(x, method)
     r_det[i] = complexity_normalized(est, x)
     r_det_surr[i][:] = [complexity_normalized(est, sx()) for j = 1:nreps]
@@ -619,17 +651,16 @@ using DelayEmbeddings
 using CairoMakie
 
 # Equation 13 in Pincus (1991)
-function eom_henon(u, p, n)
+function henon_rule(u, p, n)
     R = p[1]
     x, y = u
     dx = R*y + 1 - 1.4*x^2
     dy = 0.3*R*x
-
-    return SVector{2}(dx, dy)
+    return SVector(dx, dy)
 end
 
 function henon(; u₀ = rand(2), R = 0.8)
-    DiscreteDynamicalSystem(eom_henon, u₀, [R])
+    DeterministicIteratedMap(henon_rule, u₀, [R])
 end
 
 ts_lengths = [300, 1000, 2000, 3000]
@@ -646,7 +677,7 @@ for (i, L) in enumerate(ts_lengths)
     k = 1
     while k <= nreps
         sys = henon(u₀ = rand(2), R = 0.8)
-        t = trajectory(sys, L, Ttr = 5000)
+        t = trajectory(sys, L; Ttr = 5000)[1]
 
         if !any([containsinf(tᵢ) for tᵢ in t])
             x, y = columns(t)
@@ -689,7 +720,6 @@ less regular signals should have higher sample entropy.
 
 ```@example MAIN
 using ComplexityMeasures
-using DynamicalSystemsBase
 using CairoMakie
 N, a = 2000, 10
 t = LinRange(0, 2*a*π, N)
@@ -743,5 +773,108 @@ lines!(a1, rs, hs_U, label = "Uniform noise, U(0, 1)")
 lines!(a1, rs, hs_N, label = "Gaussian noise, N(0, 1)")
 lines!(a1, rs, hs_periodic, label = "Periodic signal")
 axislegend()
+fig
+```
+
+## Statistical complexity of iterated maps
+
+In this example, we reproduce parts of Fig. 1 in Rosso et al. (2007): We compute the statistical complexity of the Henon, logistic and Schuster map, as well as that of k-noise.
+```@example MAIN
+using ComplexityMeasures
+using Distances
+using DynamicalSystemsBase
+using CairoMakie
+using FFTW
+using Statistics
+
+N = 2^15
+
+function logistic(x0=0.4; r = 4.0)
+    return DeterministicIteratedMap(logistic_rule, SVector(x0), [r])
+end
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1 - x[1]))
+logistic_jacob(x, p, n) = @inbounds SMatrix{1,1}(p[1]*(1 - 2x[1]))
+
+function henon(u0=zeros(2); a = 1.4, b = 0.3)
+    return DeterministicIteratedMap(henon_rule, u0, [a,b])
+end
+henon_rule(x, p, n) = SVector{2}(1.0 - p[1]*x[1]^2 + x[2], p[2]*x[1])
+henon_jacob(x, p, n) = SMatrix{2,2}(-2*p[1]*x[1], p[2], 1.0, 0.0)
+
+function schuster(x0=0.5, z=3.0/2)
+    return DeterministicIteratedMap(schuster_rule, SVector(x0), [z])
+end
+schuster_rule(x, p, n) = @inbounds SVector((x[1]+x[1]^p[1]) % 1)
+
+# generate noise with power spectrum that falls like 1/f^k
+function k_noise(k=3)
+    function f(N)
+        x = rand(Float64, N)
+        # generate power spectrum of random numbers and multiply by f^(-k/2)
+        x_hat = fft(x) .* abs.(vec(fftfreq(length(x)))) .^ (-k/2)
+        # set to zero for frequency zero
+        x_hat[1] = 0
+        return real.(ifft(x_hat))
+    end
+    return f
+end
+
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel=L"H_S", ylabel=L"C_{JS}")
+
+m, τ = 6, 1
+m_kwargs = (
+        (color=:transparent,
+        strokecolor=:red,
+        marker=:utriangle,
+        strokewidth=2),
+        (color=:transparent,
+        strokecolor=:blue,
+        marker=:rect,
+        strokewidth=2),
+        (color=:magenta,
+        marker=:circle),
+        (color=:blue,
+        marker=:rect)
+    )
+
+n = 100
+
+c = StatisticalComplexity(
+    dist=JSDivergence(),
+    est=SymbolicPermutation(; m, τ),
+    entr=Renyi()
+)
+for (j, (ds_gen, sym, ds_name)) in enumerate(zip(
+        (logistic, henon, schuster, k_noise),
+        (:utriangle, :rect, :dtriangle, :diamond),
+        ("Logistic map", "Henon map", "Schuster map", "k-noise (k=3)"),
+    ))
+
+    if j < 4
+        dim = dimension(ds_gen())
+        hs, cs = zeros(n), zeros(n)
+        for k in 1:n
+            ic = rand(dim) * 0.3
+            ds = ds_gen(SVector{dim}(ic))
+            x, t = trajectory(ds, N, Ttr=100)
+            hs[k], cs[k] = entropy_complexity(c, x[:, 1])
+        end
+        scatter!(ax, mean(hs), mean(cs); label="$ds_name", markersize=25, m_kwargs[j]...)
+    else
+        ds = ds_gen()
+        hs, cs = zeros(n), zeros(n)
+        for k in 1:n
+            x = ds(N)
+            hs[k], cs[k] = entropy_complexity(c, x[:, 1])
+        end
+        scatter!(ax, mean(hs), mean(cs); label="$ds_name", markersize=25, m_kwargs[j]...)
+    end
+end
+
+min_curve, max_curve = entropy_complexity_curves(c)
+lines!(ax, min_curve; color=:black)
+lines!(ax, max_curve; color=:black)
+axislegend(; position=:lt)
 fig
 ```

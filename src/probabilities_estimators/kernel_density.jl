@@ -50,7 +50,7 @@ function NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
     return NaiveKernel(ϵ, method, w, metric)
 end
 
-function probabilities_and_outcomes(est::NaiveKernel, x::AbstractDataset)
+function probabilities_and_outcomes(est::NaiveKernel, x::AbstractStateSpaceSet)
     theiler = Theiler(est.w)
     ss = searchstructure(est.method, vec(x), est.metric)
     idxs = bulkisearch(ss, vec(x), WithinRange(est.ϵ), theiler)
