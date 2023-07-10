@@ -83,5 +83,8 @@ end
             [3, 2, 1],
         ]
         @test total_outcomes(est3) == factorial(3)
+
+        @test issorted(outcome_space(est3))
+        @test issorted(outcomes(est3, x))
     end
 end

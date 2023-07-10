@@ -13,6 +13,7 @@ using ComplexityMeasures, Test
         @test length(ps) == 8
         @test ps isa Probabilities
         @test entropy(Renyi(q = 1, base = 2), WaveletOverlap(), x) isa Real
+        @test issorted(outcomes(WaveletOverlap(), x))
     end
 
     @testset "Fourier Spectrum" begin
