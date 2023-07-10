@@ -14,6 +14,9 @@ p_tree = probabilities(est_tree, pts)
 p_direct = probabilities(est_direct, pts)
 @test all(p_tree .== p_direct) == true
 
+@test issorted(outcome_space(est_tree, pts))
+@test issorted(outcomes(est_tree, pts))
+
 @test entropy(Renyi(), est_direct, pts) isa Real
 @test entropy(Renyi(), est_tree, pts) isa Real
 

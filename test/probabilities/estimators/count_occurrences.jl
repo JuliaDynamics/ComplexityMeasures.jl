@@ -13,8 +13,8 @@ for ps in (probs1, probs2, probs3)
     for p in ps; @test 0.49 < p < 0.51; end
 end
 
-@test sort(outs) == [false, true]
-@test sort(outcome_space(CountOccurrences(), x)) == [false, true]
+@test outs == [false, true]
+@test outcome_space(CountOccurrences(), x) == [false, true]
 @test total_outcomes(CountOccurrences(), x) == 2
 
 # Same for 2D sets (outcomes not tested here)

@@ -13,6 +13,7 @@ using ComplexityMeasures, Test
         @test length(ps) == 8
         @test ps isa Probabilities
         @test entropy(Renyi(q = 1, base = 2), WaveletOverlap(), x) isa Real
+        @test issorted(outcome_space(WaveletOverlap(), x))
     end
 
     @testset "Fourier Spectrum" begin
@@ -30,5 +31,6 @@ using ComplexityMeasures, Test
         @test outs[1] ≈ 0 atol=1e-16 # 0 frequency, i.e., mean value
         @test probs[1] ≈ 0 atol=1e-16  # sine wave has 0 mean value
         @test outs[end] == 0.5 # Nyquist frequency, 1/2 the sampling rate (Which is 1)
+        @test issorted(outcome_space(est, x))
     end
 end
