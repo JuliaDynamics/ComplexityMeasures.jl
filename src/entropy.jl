@@ -79,7 +79,7 @@ end
     entropy([e::DiscreteEntropyEstimator,] est::ProbabilitiesEstimator, x)
 
 Compute the **discrete entropy** `h::Real ∈ [0, ∞)`,
-using the estimator `e`, in one of two ways:
+using the estimator `est`, in one of two ways:
 
 1. Directly from existing [`Probabilities`](@ref) `probs`.
 2. From input data `x`, by first estimating a probability mass function using the provided
