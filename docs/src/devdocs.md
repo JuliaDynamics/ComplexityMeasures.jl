@@ -2,6 +2,8 @@
 
 Good practices in developing a code base apply in every Pull Request. The [Good Scientific Code Workshop](https://github.com/JuliaDynamics/GoodScientificCodeWorkshop) is worth checking out for this.
 
+All PRs contributing new functionality must be well tested and well documented. You only need to add tests for methods that you **explicitly** extended.
+
 ## Adding a new `ProbabilitiesEstimator`
 
 ### Mandatory steps
@@ -21,11 +23,6 @@ You may extend any of the following functions if there are potential performance
 1. [`probabilities`](@ref). By default it calls `probabilities_and_outcomes` and returns the first value.
 2. [`outcomes`](@ref). By default calls `probabilities_and_outcomes` and returns the second value.
 3. [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref). This is the function that most typically has performance benefits if implemented explicitly, so most existing estimators extend it by default.
-
-### Tests
-
-You also need to add tests for **all** functions that you **explicitly** extended.
-Non-extended functions do not need to be tested.
 
 ## Adding a new `DifferentialEntropyEstimator`
 
@@ -66,8 +63,3 @@ more elaborate if you want to).
     distribution with a known number of elements, implementing dispatch for
     [`entropy_maximum`](@ref) automatically enables [`entropy_normalized`](@ref) for your
     type.
-
-### Tests
-
-You also need to add tests for **all** functions that you **explicitly** extended.
-Non-extended functions do not need to be tested.
