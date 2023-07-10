@@ -4,6 +4,14 @@ using StaticArrays: SVector
 using ComplexityMeasures: encode, decode
 using Statistics: mean, std
 
+@testset "RectangularBinEncoding" begin
+    x = rand(100)
+    y = Dataset(rand(100, 2))
+    b = FixedRectangularBinning(0:0.2:1.0)
+    @test RectangularBinEncoding(b, x) isa RectangularBinEncoding
+    @test_throws ArgumentError RectangularBinEncoding(b, y)
+end
+
 @testset "Ordinal patterns" begin
     o = OrdinalPatternEncoding(5)
     @test o isa OrdinalPatternEncoding{5}

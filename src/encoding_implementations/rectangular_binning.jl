@@ -146,7 +146,7 @@ function RectangularBinEncoding(b::FixedRectangularBinning, x)
     if length(b.ranges) != dimension(x)
         throw(ArgumentError("""
         The dimensionality of the `FixedRectangularBinning` and input `x` do not match.
-        Got $(e.ranges) and $(dimension(x))."""))
+        Got $(b.ranges) and $(dimension(x))."""))
     end
     return RectangularBinEncoding(b)
 end
