@@ -23,6 +23,45 @@ ax.zticklabelsvisible = false
 fig
 ```
 
+## Probabilities: KL-divergence of histograms
+
+In this example we show how simple it is to compute the [KL-divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence) (or any other distance function for probability distributions) using ComplexityMeasures.jl. For simplicity, we will compute the KL-divergence between the [`ValueHistogram`](@ref)s of two timeseries.
+
+Note that it is **crucial** to use [`allprobabilities`](@ref) instead of [`probabilities`](@ref).
+
+```@example MAIN
+using ComplexityMeasures
+
+N = 1000
+t = range(0, 20π; length=N)
+x = @. clamp(sin(t), -0.5, 1)
+y = @. sin(t + cos(2t))
+
+r = -1:0.1:1
+est = ValueHistogram(FixedRectangularBinning(r))
+px = allprobabilities(est, x)
+py = allprobabilities(est, y)
+
+# Visualize
+using CairoMakie
+bins = r[1:end-1] .+ step(r)/2
+fig, ax = barplot(bins, px; label = L"p_x")
+barplot!(ax, bins, py; label = L"p_y")
+axislegend(ax; labelsize = 30)
+fig
+```
+
+```@example MAIN
+using StatsBase: kldivergence
+
+kldivergence(px, py)
+```
+
+```@example MAIN
+kldivergence(py, px)
+```
+(`Inf` because there are events with 0 probability in `px`)
+
 ## Differential entropy: estimator comparison
 
 Here, we compare how the nearest neighbor differential entropy estimators

@@ -39,6 +39,7 @@ using ComplexityMeasures.DelayEmbeddings: embed
 
     ps = probabilities(est, x)
     @test ps |> sort == ps_paper
+    @test issorted(outcomes(est, x))
 
     # There is probably a typo in Rostaghi & Azami (2016). They state that the
     # non-normalized dispersion entropy is 1.8642. However, with identical probabilies,

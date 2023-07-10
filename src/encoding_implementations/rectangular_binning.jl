@@ -260,7 +260,7 @@ function outcome_space(e::RectangularBinEncoding)
     iter = Iterators.product(reduced_ranges...)
     # Convert to `SVector` because that's the agreed outcome space type
     V = SVector{length(e.ranges), eltype(float(first(e.ranges)))}
-    return V.(iter)
+    return sort!(vec(V.(iter)))
 end
 outcome_space(b::AbstractBinning, args...) =
 outcome_space(RectangularBinEncoding(b, args...))
