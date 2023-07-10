@@ -13,7 +13,7 @@ All PRs contributing new functionality must be well tested and well documented. 
 3. Add a docstring to your type following the style of the docstrings of other estimators.
 4. If suitable, the estimator may be able to operate based on [`Encoding`](@ref)s. If so, it is preferred to implement an `Encoding` subtype and extend the methods [`encode`](@ref) and [`decode`](@ref). This will allow your probabilities estimator to be used with a larger span of entropy and complexity methods without additional effort. Have a look at the file defining [`SymbolicPermutation`](@ref) for an idea of how this works.
 5. Implement dispatch for [`probabilities_and_outcomes`](@ref) and your probabilities estimator type.
-6. Implement dispatch for [`outcome_space`](@ref) and your probabilities estimator type. The return value of `outcome_space` must be sorted.
+6. Implement dispatch for [`outcome_space`](@ref) and your probabilities estimator type. The return value of `outcome_space` must be sorted (as in the default behavior of `sort`, in ascending order).
 7. Add your probabilities estimator type to the table list in the documentation page of probabilities. If you made an encoding, also add it to corresponding table in the encodings section.
 
 ### Optional steps
