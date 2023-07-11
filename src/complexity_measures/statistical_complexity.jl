@@ -8,7 +8,7 @@ export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
     StatisticalComplexity([x]; kwargs...)
 
 An estimator for the statistical complexity and entropy, originally by
-Rosso et al. (2007)[^Rosso2007], but here generalized to work with any probabilities
+Rosso et al. (2007)[^Rosso2007], but here generalized (see [^Rosso2013]) to work with any probabilities
 estimator with a priori known `total_outcomes`, any valid distance metric, and any normalizable entropy definition.
 Used with [`complexity`](@ref).
 
