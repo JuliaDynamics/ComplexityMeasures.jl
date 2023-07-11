@@ -22,7 +22,7 @@ using Test
     # which should also be close to zeros
     c = StatisticalComplexity(
         dist=JSDivergence(),
-        est=SymbolicPermutation(; m=6, τ=1),
+        est=SymbolicPermutation(; m, τ),
         entr=Tsallis()
     )
     # complexity of white noise should be very close to zero
@@ -30,6 +30,11 @@ using Test
     @test 0 < compl < 0.02
     compl = complexity(c, collect(1:100))
     @test compl == 0.0
+
+    # check that error is thrown if we try to call complexity(c, p) with "incomplete" probs vectors
+    # we must have empty bins here because total_outcomes = fatorial(6) ≫ 10
+    p = probabilities(SymbolicPermutation(; m, τ), randn(10))
+    @test_throws ArgumentError complexity(c, p)
 
     # test the wrapper
     entr, compl = entropy_complexity(c, x)

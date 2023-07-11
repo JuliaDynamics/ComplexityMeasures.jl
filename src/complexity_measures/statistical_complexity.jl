@@ -15,6 +15,8 @@ used with [`complexity`](@ref).
 - `est::ProbabilitiesEstimator = SymbolicPermutation()`: which estimator to use to get the probabilities
 - `dist<:SemiMetric = JSDivergence()`: the distance measure between the estimated probability
     distribution and a uniform distribution with the same maximal number of bins
+- `entr::EntropyDefinition = Renyi()`: entropy definition of choice. Any entropy with a defined
+    `entropy_maximum` is valid here.
 
 ## Description
 
@@ -70,7 +72,7 @@ end
 function complexity(c::StatisticalComplexity, x)
     (; est) = c
 
-    p = probabilities(est, x)
+    p = allprobabilities(est, x)
 
     return complexity(c, p)
 end
@@ -91,10 +93,18 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
     (; dist, est, entr) = c
 
     L = total_outcomes(est)
+    if length(p) != L
+        throw(ArgumentError(
+            "`p` must contain the probabilities for every outcome in Ω, but contains only $(length(p))
+            out of $L outcomes.
+            If you are trying to call `complexity(::StatisticalComplexity, p::Probabilities)`,
+            you must set `p = allprobabilities(est, x)`."
+            ))
+    end
     H_q = entropy(entr, p) / entropy_maximum(entr, est)
 
     # calculate distance between calculated distribution and uniform one
-    D_q = evaluate(dist, [vec(p)..., zeros(L-length(p))...], fill(1.0/L, L))
+    D_q = evaluate(dist, vec(p), fill(1.0/L, L))
 
     # generate distribution with just one filled bin
     deterministic = zeros(L)
