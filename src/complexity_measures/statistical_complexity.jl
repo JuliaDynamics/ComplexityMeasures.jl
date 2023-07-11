@@ -7,16 +7,20 @@ export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
     StatisticalComplexity <: ComplexityEstimator
     StatisticalComplexity([x]; kwargs...)
 
-An estimator for the statistical complexity and entropy according to Rosso et al. (2007)[^Rosso2007],
-used with [`complexity`](@ref).
+An estimator for the statistical complexity and entropy, originally by
+Rosso et al. (2007)[^Rosso2007], but here generalized to work with any probabilities
+estimator, any valid distance metric, and any normalizable entropy definition.
+Used with [`complexity`](@ref).
 
 ## Keyword arguments
 
-- `est::ProbabilitiesEstimator = SymbolicPermutation()`: which estimator to use to get the probabilities
-- `dist<:SemiMetric = JSDivergence()`: the distance measure between the estimated probability
-    distribution and a uniform distribution with the same maximal number of bins
-- `entr::EntropyDefinition = Renyi()`: entropy definition of choice. Any entropy with a defined
-    `entropy_maximum` is valid here.
+- `est::ProbabilitiesEstimator = SymbolicPermutation()`: The
+    [`ProbabilitiesEstimator`](@ref) used to estimate probabilities from the input data.
+- `dist<:SemiMetric = JSDivergence()`: The distance measure (from Distances.jl) to use for
+    estimating the distance between the estimated probability distribution and a uniform
+    distribution with the same maximal number of outcomes.
+- `entr::EntropyDefinition = Renyi()`: An [`EntropyDefinition`](@ref) of choice. Any
+    entropy definition that defines `entropy_maximum` is valid here.
 
 ## Description
 
