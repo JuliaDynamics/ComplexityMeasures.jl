@@ -7,14 +7,20 @@ export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
     StatisticalComplexity <: ComplexityEstimator
     StatisticalComplexity([x]; kwargs...)
 
-An estimator for the statistical complexity and entropy according to Rosso et al. (2007)[^Rosso2007](@ref),
-used with [`complexity`](@ref).
+An estimator for the statistical complexity and entropy, originally by
+Rosso et al. (2007)[^Rosso2007], but here generalized (see [^Rosso2013]) to work with any probabilities
+estimator with a priori known `total_outcomes`, any valid distance metric, and any normalizable entropy definition.
+Used with [`complexity`](@ref).
 
 ## Keyword arguments
 
-- `est::ProbabilitiesEstimator = SymbolicPermutation()`: which estimator to use to get the probabilities
-- `dist<:SemiMetric = JSDivergence()`: the distance measure between the estimated probability
-    distribution and a uniform distribution with the same maximal number of bins
+- `est::ProbabilitiesEstimator = SymbolicPermutation()`: The
+    [`ProbabilitiesEstimator`](@ref) used to estimate probabilities from the input data.
+- `dist<:SemiMetric = JSDivergence()`: The distance measure (from Distances.jl) to use for
+    estimating the distance between the estimated probability distribution and a uniform
+    distribution with the same maximal number of outcomes.
+- `entr::EntropyDefinition = Renyi()`: An [`EntropyDefinition`](@ref) of choice. Any
+    entropy definition that defines `entropy_maximum` is valid here.
 
 ## Description
 
@@ -47,7 +53,7 @@ The statistical complexity is exclusively used in combination with the related i
 The entropy can be accessed as a `Ref` value of the struct as
 ```julia
 x = randn(100)
-c = StatisticalComplexity
+c = StatisticalComplexity()
 compl = complexity(c, x)
 entr = c.entr_val[]
 ```
@@ -70,7 +76,7 @@ end
 function complexity(c::StatisticalComplexity, x)
     (; est) = c
 
-    p = probabilities(est, x)
+    p = allprobabilities(est, x)
 
     return complexity(c, p)
 end
@@ -91,11 +97,18 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
     (; dist, est, entr) = c
 
     L = total_outcomes(est)
-    norm = log(entr.base, L)
-    H_q = entropy(entr, p) / norm
+    if length(p) != L
+        throw(ArgumentError(
+            "`p` must contain the probabilities for every outcome in Ω, but contains only $(length(p))
+            out of $L outcomes.
+            If you are trying to call `complexity(::StatisticalComplexity, p::Probabilities)`,
+            you must set `p = allprobabilities(est, x)`."
+            ))
+    end
+    H_q = entropy(entr, p) / entropy_maximum(entr, est)
 
     # calculate distance between calculated distribution and uniform one
-    D_q = evaluate(dist, [vec(p)..., zeros(L-length(p))...], fill(1.0/L, L))
+    D_q = evaluate(dist, vec(p), fill(1.0/L, L))
 
     # generate distribution with just one filled bin
     deterministic = zeros(L)
