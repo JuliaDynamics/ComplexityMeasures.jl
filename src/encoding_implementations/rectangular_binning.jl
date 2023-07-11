@@ -268,10 +268,10 @@ outcome_space(RectangularBinEncoding(b, args...))
 ##################################################################
 # low level histogram call
 ##################################################################
-# This method is called by `probabilities(est::ValueHistogram, x::Array_or_Dataset)`
+# This method is called by `probabilities(est::ValueHistogram, x::Array_or_SSSet)`
 # `fasthist!` is in the `estimators/value_histogram` folder.
 """
-    fasthist(c::RectangularBinEncoding, x::Vector_or_Dataset)
+    fasthist(c::RectangularBinEncoding, x::Vector_or_SSSet)
 Intermediate method that runs `fasthist!` in the encoded space
 and returns the encoded space histogram (counts) and corresponding bins.
 Also skips any instances of out-of-bound points for the histogram.

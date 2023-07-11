@@ -79,7 +79,7 @@ end
     entropy([e::DiscreteEntropyEstimator,] est::ProbabilitiesEstimator, x)
 
 Compute the **discrete entropy** `h::Real ∈ [0, ∞)`,
-using the estimator `e`, in one of two ways:
+using the estimator `est`, in one of two ways:
 
 1. Directly from existing [`Probabilities`](@ref) `probs`.
 2. From input data `x`, by first estimating a probability mass function using the provided
@@ -220,7 +220,7 @@ the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs
 function entropy_normalized(e::EntropyDefinition, est::ProbabilitiesEstimator, x)
     return entropy(e, est, x) / entropy_maximum(e, est, x)
 end
-function entropy_normalized(est::ProbabilitiesEstimator, x::Array_or_Dataset)
+function entropy_normalized(est::ProbabilitiesEstimator, x::Array_or_SSSet)
     return entropy_normalized(Shannon(), est, x)
 end
 entropy_normalized(e::MLEntropy, est, x) = entropy_normalized(e.definition, est, x)

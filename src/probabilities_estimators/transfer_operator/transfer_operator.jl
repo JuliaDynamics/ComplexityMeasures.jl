@@ -443,7 +443,7 @@ function transfermatrix(iv::InvariantMeasure)
     return iv.to.transfermatrix, iv.to.bins
 end
 
-function probabilities_and_outcomes(est::TransferOperator, x::Array_or_Dataset)
+function probabilities_and_outcomes(est::TransferOperator, x::Array_or_SSSet)
     to = transferoperator(x, est.binning)
     probs = invariantmeasure(to).ρ
 
