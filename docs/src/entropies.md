@@ -21,6 +21,7 @@ Tsallis
 Kaniadakis
 Curado
 StretchedExponential
+Identification
 ```
 
 ## Discrete entropy
