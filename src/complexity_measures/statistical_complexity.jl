@@ -9,7 +9,8 @@ export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
 
 An estimator for the statistical complexity and entropy, originally by
 Rosso et al. (2007)[^Rosso2007], but here generalized (see [^Rosso2013]) to work with any probabilities
-estimator with a priori known `total_outcomes`, any valid distance metric, and any normalizable entropy definition.
+estimator with a priori known `total_outcomes`, any valid distance metric, and any normalizable entropy definition,
+or any normalizable extropy definition (not treated in Rosso et al.'s papers).
 Used with [`complexity`](@ref).
 
 ## Keyword arguments
@@ -20,7 +21,9 @@ Used with [`complexity`](@ref).
     estimating the distance between the estimated probability distribution and a uniform
     distribution with the same maximal number of outcomes.
 - `entr::EntropyDefinition = Renyi()`: An [`EntropyDefinition`](@ref) of choice. Any
-    entropy definition that defines `entropy_maximum` is valid here.
+    entropy definition that defines `entropy_maximum` is valid here. Alternatively,
+    an [`ExtropyDefinition`](@ref) can be used, in which case the [`extropy`](@ref) is
+    computed instead.
 
 ## Description
 
@@ -93,6 +96,13 @@ function entropy_complexity(c::StatisticalComplexity, x)
    return (c.entr_val[], compl)
 end
 
+# A small hack to allow both extropy and entropy to be used. This hasn't been done in
+# the literature before.
+entropy_or_extropy(e::ExtropyDefinition, x) = extropy(e, x)
+entropy_or_extropy(e::EntropyDefinition, x) = entropy(e, x)
+entropy_or_extropy_maximum(e::ExtropyDefinition, x) = extropy_maximum(e, x)
+entropy_or_extropy_maximum(e::EntropyDefinition, x) = entropy_maximum(e, x)
+
 function complexity(c::StatisticalComplexity, p::Probabilities)
     (; dist, est, entr) = c
 
@@ -105,7 +115,7 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
             you must set `p = allprobabilities(est, x)`."
             ))
     end
-    H_q = entropy(entr, p) / entropy_maximum(entr, est)
+    H_q = entropy_or_extropy(entr, p) / entropy_or_extropy_maximum(entr, est)
 
     # calculate distance between calculated distribution and uniform one
     D_q = evaluate(dist, vec(p), fill(1.0/L, L))
