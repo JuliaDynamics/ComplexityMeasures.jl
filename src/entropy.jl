@@ -170,10 +170,11 @@ abs(h - 0.5*log(2π) - 0.5) # ≈ 0.001
 """
 function entropy(::DiffEntropyEst, ::Any) end
 
-entropy(est::DiffEntropyEst, ::Probabilities) = error("""
+entropy(est::DiffEntropyEst, p::Probabilities) = throw(
+    ArgumentError("""
     EntropyDefinition estimators like $(nameof(typeof(est)))
     are not called with probabilities.
-""")
+"""))
 
 ###########################################################################################
 # Normalize API
@@ -199,7 +200,7 @@ function entropy_maximum(e::EntropyDefinition, est::ProbabilitiesEstimator)
     return entropy_maximum(e, L)
 end
 function entropy_maximum(e::EntropyDefinition, ::Int)
-    error("not implemented for entropy type $(nameof(typeof(e))).")
+    throw(ArgumentError("not implemented for entropy type $(nameof(typeof(e)))."))
 end
 entropy_maximum(e::MLEntropy, args...) = entropy_maximum(e.definition, args...)
 

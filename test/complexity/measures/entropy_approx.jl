@@ -5,6 +5,10 @@ using Statistics
 @test_throws UndefKeywordError ApproximateEntropy()
 @test_throws ArgumentError complexity(ApproximateEntropy(r = 0.2), StateSpaceSet(rand(100, 3)))
 
+# ApproximateEntropy is not currently normalizable
+x = rand(100)
+@test_throws ArgumentError complexity_normalized(ApproximateEntropy(r = 0.05, m = 2), x)
+
 # Here, we try to reproduce Pincus' results within reasonable accuracy
 # for the Henon map. He doesn't give initial conditions, so we just check that our
 #  results +- 1σ approaches what he gets for this system for time series length 1000).
