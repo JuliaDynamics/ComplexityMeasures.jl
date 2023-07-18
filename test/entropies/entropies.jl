@@ -8,6 +8,7 @@ testfile("entropy_types/tsallis.jl")
 testfile("entropy_types/curado.jl")
 testfile("entropy_types/stretched_exponential.jl")
 testfile("entropy_types/kaniadakis.jl")
+testfile("entropy_types/identification.jl")
 
 # Estimators
 testfile("estimators/estimators.jl")
