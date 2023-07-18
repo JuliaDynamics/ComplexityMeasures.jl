@@ -21,7 +21,7 @@ RenyiExtropy
 TsallisExtropy
 ```
 
-## Discrete xntropy
+## Discrete extropy
 
 ```@docs
 extropy(::ExtropyDefinition, ::ProbabilitiesEstimator, ::Any)

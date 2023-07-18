@@ -2,6 +2,8 @@ export extropy
 export extropy_maximum
 export extropy_normalized
 export ExtropyDefinition
+export DiscreteExtropyEstimator
+export MLExtropy
 
 """
     ExtropyDefinition
@@ -12,8 +14,9 @@ see description below.
 
 Currently implemented extropy definitions are:
 
+- [`RenyiExtropy`](@ref).
 - [`TsallisExtropy`](@ref).
-- [`ShannonExtropy`](@ref), which is a subcase of the above in the limit `q → 1`.
+- [`ShannonExtropy`](@ref), which is a subcase of the two above in the limit `q → 1`.
 
 These types can be given as inputs to [`extropy`](@ref) or [`extropy_normalized`](@ref).
 """
@@ -45,16 +48,31 @@ struct MLExtropy{E<:ExtropyDefinition} <: DiscreteExtropyEstimator
     definition::E
 end
 
-"""
-    extropy(e::ExtropyDefinition, est::ProbabilitiesEstimator, x)
-
-Compute the extropy of type `e` from the probabilities estimated from `x`
-using the given [`ProbabilitiesEstimator`](@ref).
-
-See also: [`ExtropyDefinition`](@ref).
-"""
 function extropy end
 
+"""
+    extropy([e::DiscreteExtropyEstimator,] probs::Probabilities)
+    extropy([e::DiscreteExtropyEstimator,] est::ProbabilitiesEstimator, x)
+
+Compute the **discrete extropy** `h::Real ∈ [0, ∞)`,
+using the estimator `est`, in one of two ways:
+
+1. Directly from existing [`Probabilities`](@ref) `probs`.
+2. From input data `x`, by first estimating a probability mass function using the provided
+   [`ProbabilitiesEstimator`](@ref), and then computing the extropy from that mass fuction
+   using the provided [`DiscreteExtropyEstimator`](@ref).
+
+Instead of providing a [`DiscreteExtropyEstimator`](@ref), an [`ExtropyDefinition`](@ref)
+can be given directly, in which case [`MLExtropy`](@ref) is used as the estimator.
+If `e` is not provided, [`ShannonExtropy`](@ref)`()` is used by default.
+
+## Maximum extropy and normalized extropy
+
+All discrete extropies have a well defined maximum value for a given probability estimator.
+To obtain this value one only needs to call the [`extropy_maximum`](@ref).
+Or, one can use [`extropy_normalized`](@ref)
+to obtain the normalized form of the extropy (divided by the maximum).
+"""
 function extropy(e::ExtropyDefinition, est::ProbabilitiesEstimator, x)
     ps = probabilities(est, x)
     return extropy(e, ps)

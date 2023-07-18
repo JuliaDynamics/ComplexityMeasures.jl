@@ -11,7 +11,7 @@ The Tsallis extropy (Xue & Deng[^Xue2023]).
 `TsallisExtropy` is used with [`extropy`](@ref) to compute
 
 ```math
-J_T(P) = k \\dfrac{n - 1 - \\sum_{i=1}^N ( 1 - p[i])^q}{q - 1}
+J_T(P) = k \\dfrac{N - 1 - \\sum_{i=1}^N ( 1 - p[i])^q}{q - 1}
 ```
 
 for a probability distribution ``P = \\{p_1, p_2, \\ldots, p_N\\}``,
