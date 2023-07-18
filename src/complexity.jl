@@ -7,12 +7,13 @@ export complexity_normalized
 
 Supertype for estimators for various complexity measures that are not entropies
 in the strict mathematical sense.
+
 See [`complexity`](@ref) for all available estimators.
 """
 abstract type ComplexityEstimator end
 
 """
-    complexity(c::ComplexityEstimator, x)
+    complexity(c::ComplexityEstimator, x) → m::Real
 
 Estimate a complexity measure according to `c`
 for [input data](@ref input_data) `x`, where `c` can
@@ -30,7 +31,7 @@ function complexity(c::C, x) where C <: ComplexityEstimator
 end
 
 """
-    complexity_normalized(c::ComplexityEstimator, x) → m ∈ [a, b]
+    complexity_normalized(c::ComplexityEstimator, x) → m::Real ∈ [a, b]
 
 The same as [`complexity`](@ref), but the result is normalized to the interval `[a, b]`,
 where `[a, b]` depends on `c`.
