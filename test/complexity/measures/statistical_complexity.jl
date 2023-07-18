@@ -87,3 +87,21 @@ rng = MersenneTwister(1234)
     )
     @test_throws ErrorException complexity(c, x)
 end
+
+
+@testset "StatisticalComplexity with extropy" begin
+    x = randn(rng, 10000)
+
+    # As with regular entropy, for extropy, the edge case of noise should be close to zeros
+    c = StatisticalComplexity(
+        dist=JSDivergence(),
+        est=SymbolicPermutation(; m, τ),
+        entr=TsallisExtropy(q = 5)
+    )
+
+    # complexity of white noise should be very close to zero
+    compl = complexity(c, x)
+    @test 0 < compl < 0.02
+    compl = complexity(c, collect(1:100))
+    @test compl == 0.0
+end
