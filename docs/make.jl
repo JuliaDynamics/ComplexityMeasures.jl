@@ -6,6 +6,7 @@ pages = [
     "probabilities.md",
     "encodings.md",
     "entropies.md",
+    "extropies.md",
     "complexity.md",
     "convenience.md",
     "examples.md",

@@ -1,6 +1,23 @@
 export extropy
 export extropy_maximum
 export extropy_normalized
+export ExtropyDefinition
+
+"""
+    ExtropyDefinition
+
+`ExtropyDefinition` is the supertype of all types that encapsulate definitions
+of (generalized) extropies. These also serve as estimators of discrete extropies,
+see description below.
+
+Currently implemented extropy definitions are:
+
+- [`TsallisExtropy`](@ref).
+- [`ShannonExtropy`](@ref), which is a subcase of the above in the limit `q → 1`.
+
+These types can be given as inputs to [`extropy`](@ref) or [`extropy_normalized`](@ref).
+"""
+abstract type ExtropyDefinition end
 
 """
     DiscreteExtropyEstimator
@@ -43,11 +60,11 @@ function extropy(e::ExtropyDefinition, est::ProbabilitiesEstimator, x)
     return extropy(e, ps)
 end
 
-# dispatch for `extropy(e::EntropyDefinition, ps::Probabilities)`
+# dispatch for `extropy(e::ExtropyDefinition, ps::Probabilities)`
 # is in the individual extropy definitions files
 
 # Convenience
-extropy(est::ProbabilitiesEstimator, x) = entropy(ShannonExtropy(), est, x)
+extropy(est::ProbabilitiesEstimator, x) = extropy(ShannonExtropy(), est, x)
 extropy(probs::Probabilities) = extropy(ShannonExtropy(), probs)
 extropy(e::MLExtropy, args...) = extropy(e.definition, args...)
 
@@ -63,18 +80,18 @@ function extropy_maximum end
 
 function extropy_maximum(e::ExtropyDefinition, est::ProbabilitiesEstimator, x)
     L = total_outcomes(est, x)
-    return entropy_maximum(e, L)
+    return extropy_maximum(e, L)
 end
 
 function extropy_maximum(e::ExtropyDefinition, est::ProbabilitiesEstimator)
     L = total_outcomes(est)
-    return entropy_maximum(e, L)
+    return extropy_maximum(e, L)
 end
 
 function extropy_maximum(e::ExtropyDefinition, ::Int)
     error("not implemented for extropy type $(nameof(typeof(e))).")
 end
-extropy_maximum(e::MLExtropy, args...) = entropy_maximum(e.definition, args...)
+extropy_maximum(e::MLExtropy, args...) = extropy_maximum(e.definition, args...)
 
 """
     extropy_normalized([e::DiscreteExtropyEstimator,] est::ProbabilitiesEstimator, x) → h̃
@@ -91,7 +108,11 @@ because there is no way to know
 the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs`.
 """
 function extropy_normalized(e::ExtropyDefinition, est::ProbabilitiesEstimator, x)
-    return extropy(e, est, x) / extropy_maximum(e, est, x)
+    jmax = extropy_maximum(e, est, x)
+    if jmax == 0.0
+        return 0.0
+    end
+    return extropy(e, est, x) / jmax
 end
 function extropy_normalized(est::ProbabilitiesEstimator, x::Array_or_SSSet)
     return extropy_normalized(ShannonExtropy(), est, x)

@@ -17,6 +17,7 @@ const Vector_or_SSSet = Union{<:AbstractVector{<:Real}, <:AbstractStateSpaceSet}
 # Core API types and functions
 include("probabilities.jl")
 include("entropy.jl")
+include("extropy.jl")
 include("encodings.jl")
 include("complexity.jl")
 include("multiscale.jl")
@@ -26,6 +27,7 @@ include("convenience.jl")
 include("encoding_implementations/encoding_implementations.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("entropies_definitions/entropies_definitions.jl")
+include("extropies_definitions/extropies_definitions.jl")
 include("entropies_estimators/entropies_estimators.jl")
 include("complexity_measures/complexity_measures.jl")
 

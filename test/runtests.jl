@@ -20,6 +20,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
 
 
     include("entropies/entropies.jl")
+    include("extropies/extropies.jl")
     include("complexity/complexity.jl")
 
     # When multiscale is exported, this should be turned on

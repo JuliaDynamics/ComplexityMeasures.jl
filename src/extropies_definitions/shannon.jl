@@ -10,6 +10,7 @@ The Shannon extropy (Lad et al., 2015[^Lad2015]), used with [`extropy`](@ref) to
 J(x) -\\sum_{i=1}^N (1 - p[i]) \\log{(1 - p[i])},
 ```
 
+for a probability distribution ``P = \\{p_1, p_2, \\ldots, p_N\\}``,
 with the ``\\log`` at the given `base`.
 
 [^Lad2015]:
@@ -19,10 +20,18 @@ Base.@kwdef struct ShannonExtropy{B} <: ExtropyDefinition
     base::B = 2
 end
 
-function extropy(e::ShannonExtropy, p::Probabilities)
-    -sum((1 - pᵢ) * log(e.base, 1 - pᵢ) for pᵢ in p)
+function extropy(e::ShannonExtropy, probs::Probabilities)
+    if length(probs) == 1
+        return 0.0
+    end
+
+    return -sum((1 - pᵢ) * log(e.base, 1 - pᵢ) for pᵢ in probs)
 end
 
 function extropy_maximum(e::ShannonExtropy, L::Int)
+    if L == 1
+        return 0.0
+    end
+
     return (L - 1) * log(e.base, L / (L - 1))
 end
