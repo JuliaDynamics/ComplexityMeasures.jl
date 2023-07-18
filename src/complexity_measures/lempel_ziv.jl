@@ -1,23 +1,23 @@
-export LZ76
+export LempelZiv76
 
 """
-    LZ76 <: ComplexityEstimator
-    LZ76()
+    LempelZiv76 <: ComplexityEstimator
+    LempelZiv76()
 
-The Lempel-Ziv, or `LZ76`, complexity measure (Lempel & Ziv, 1976) [^LempelZiv1976],
+The Lempel-Ziv, or `LempelZiv76`, complexity measure (Lempel & Ziv, 1976) [^LempelZiv1976],
 which is used with [`complexity`](@ref) and [`complexity_normalized`](@ref).
 
 For results to be comparable across sequences with different length, use the normalized
-version. Normalized LZ76-complexity is implemented as given in Amigó et al.
+version. Normalized LempelZiv76-complexity is implemented as given in Amigó et al.
 (2004)[^Amigó2004]. The normalized measure is close to zero for very regular signals, while
 for random sequences, it is close to 1 with high probability[^Amigó2004]. Note: the
-normalized LZ76 complexity can be higher than 1[^Amigó2004].
+normalized LempelZiv76 complexity can be higher than 1[^Amigó2004].
 
-The `LZ76` measure applies only to binary sequences, i.e. sequences with a
-two-element alphabet (precisely two distinct outcomes). No check is performed to count the
-number of unique elements in the input. If your input sequence is not binary, you must
-[`encode`](@ref) it first using one of the implemented [`Encoding`](@ref) schemes (or
-encode your data manually).
+The `LempelZiv76` measure applies only to binary sequences, i.e. sequences with a
+two-element alphabet (precisely two distinct outcomes). For performance optimization,
+we do not check the number of unique elements in the input. If your input sequence is not
+binary, you must [`encode`](@ref) it first using one of the implemented [`Encoding`](@ref)
+schemes (or encode your data manually).
 
 [^LempelZiv1976]:
     Lempel, A., & Ziv, J. (1976). On the complexity of finite sequences. IEEE Transactions
@@ -27,9 +27,9 @@ encode your data manually).
     the entropy rate of spike trains via Lempel-Ziv complexity. Neural Computation, 16(4),
     717-736.
 """
-struct LZ76 <: ComplexityEstimator end
+struct LempelZiv76 <: ComplexityEstimator end
 
-function complexity(est::LZ76, x::AbstractArray{T, N}) where {T, N}
+function complexity(est::LempelZiv76, x::AbstractArray{T, N}) where {T, N}
     # The implementation here is taken directly from
     # https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv_complexity
     i = 0 # `i = p − 1`, `p is the pointer
@@ -62,7 +62,7 @@ function complexity(est::LZ76, x::AbstractArray{T, N}) where {T, N}
 end
 
 # Formula from Amigó et al. (2004)
-function complexity_normalized(est::LZ76, x)
+function complexity_normalized(est::LempelZiv76, x)
     n = length(x)
     c = complexity(est, x)
     return c / (n / log2(n))

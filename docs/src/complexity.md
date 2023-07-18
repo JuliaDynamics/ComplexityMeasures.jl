@@ -49,5 +49,5 @@ entropy_complexity_curves
 ## Lempel-Ziv complexity
 
 ```@docs
-LZ76
+LempelZiv76
 ```
