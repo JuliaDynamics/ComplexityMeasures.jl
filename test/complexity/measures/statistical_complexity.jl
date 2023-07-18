@@ -1,10 +1,12 @@
 using ComplexityMeasures, Distances, DynamicalSystemsBase
 using Test
+using Random
+rng = MersenneTwister(1234)
 
 @testset "Statistical Complexity" begin
 
     m, τ = 6, 1
-    x = randn(10000)
+    x = randn(rng, 10000)
     c = StatisticalComplexity(
         dist=JSDivergence(),
         est=SymbolicPermutation(; m, τ),
