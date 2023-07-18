@@ -140,6 +140,10 @@ Calculate the maximum complexity-entropy curve for the statistical complexity ac
 for `num_max * total_outcomes(c.est)` different values of the normalized information measure of choice (in case of the maximum complexity curves)
 and `num_min` different values of the normalized information measure of choice (in case of the minimum complexity curve).
 
+This function can also be used to compute the maximum "complexity-extropy curve" if
+`c.entr` is an [`ExtropyDefinition`](@ref), which is the equivalent of the
+complexity-entropy curves, but using [`extropy`](@ref) instead of [`entropy`](@ref).
+
 ## Description
 
 The way the statistical complexity is designed, there is a minimum and maximum possible complexity
