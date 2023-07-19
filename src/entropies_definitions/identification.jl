@@ -1,7 +1,7 @@
 export Identification
 
 """
-    Identification <: EntropyDefinition
+    Identification <: InformationMeasureDefinition
     Identification()
 
 Identification entropy (Ahlswede et al., 2006)[^Ahlswede2006].
@@ -25,14 +25,14 @@ Details about this entropy definition can be found in Ahlswede et al. (2021)[^Ah
     Ahlswede, R., Ahlswede, A., Althöfer, I., Deppe, C., & Tamm, U. (2021). Identification
     and Other Probabilistic Models. Springer International Publishing.
 """
-struct Identification <: EntropyDefinition end
+struct Identification <: InformationMeasureDefinition end
 
 # Page 375 in Ahlswede et al. (2021)
-function entropy(e::Identification, probs::Probabilities)
+function information(e::Identification, probs::Probabilities)
     return 2 * (1 - sum(probs .^ 2))
 end
 
 # Page 378 in Ahlswede et al. (2021)
-function entropy_maximum(e::Identification, L::Int)
+function information_maximum(e::Identification, L::Int)
     return 2 * (1 - 1 / L)
 end
