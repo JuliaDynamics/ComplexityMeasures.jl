@@ -16,8 +16,7 @@ Before exploring the features of ComplexityMeasures.jl, it is useful to read thr
 In these scientific literature, words like *probabilities*, *entropies*, and other *complexity measures* are used (and abused) in multiple contexts, and are often used interchangeably to describe similar concepts. The API and documentation of ComplexityMeasures.jl aim to clarify the meaning and usage of these words, and to provide simple ways to obtain probabilities, entropies, or other complexity measures
 from input data.
 
-For ComplexityMeasures.jl _entropies and other information measures are also considered 
-complexity measures_, while sometimes a distinction is made so that "complexity measures" 
+For ComplexityMeasures.jl _information measures such as entropies are also considered complexity measures_, while sometimes a distinction is made so that "complexity measures" 
 means anything beyond information measures such as entropy. However we believe the general nonlinear dynamics community agrees with our take, as most papers that introduce different entropy flavors, call them complexity measures. Example: _"Permutation Entropy: A Natural Complexity Measure for Time Series"_ from Brandt and Pompe 2002.
 
 ### Probabilities
