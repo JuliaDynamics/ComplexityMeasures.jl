@@ -1,6 +1,14 @@
+# Constructors
+m1 = TsallisExtropy(q = 2)
+m2 = TsallisExtropy(2)
+@test m1.q == 2
+@test m2.q == 2
+
 # Minimized for one-element distributions, where there is total order.
 x = [0.1, 0.1, 0.1]
 @test information(TsallisExtropy(q = 2), CountOccurrences(), x) == 0.0
+@test information(TsallisExtropy(2), CountOccurrences(), x) == 0.0
+
 @test information_normalized(TsallisExtropy(q = 2), CountOccurrences(), x) == 0.0
 
 

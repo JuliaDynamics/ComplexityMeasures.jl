@@ -232,7 +232,7 @@ function information_maximum(e::InformationMeasureDefinition, est::Probabilities
     return information_maximum(e, L)
 end
 function information_maximum(e::InformationMeasureDefinition, ::Int)
-    error("not implemented for entropy type $(nameof(typeof(e))).")
+    throw(ErrorException("not implemented for entropy type $(nameof(typeof(e)))."))
 end
 information_maximum(e::ML, args...) = information_maximum(e.definition, args...)
 

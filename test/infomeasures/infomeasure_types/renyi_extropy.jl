@@ -1,3 +1,8 @@
+# Constructors
+m1 = RenyiExtropy(q = 2)
+m2 = RenyiExtropy(2)
+@test m1.q == 2
+@test m2.q == 2
 
 # Minimized for one-element distributions, where there is total order.
 x = [0.1, 0.1, 0.1]

@@ -10,3 +10,4 @@ p = Probabilities([0, 1])
 @test information(Kaniadakis(), p) == 0
 
 # Kaniadakis does not state for which distribution for which Kaniadakis entropy is maximised
+@test_throws ErrorException information_maximum(Kaniadakis(), 2)

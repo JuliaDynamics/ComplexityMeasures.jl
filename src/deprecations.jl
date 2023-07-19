@@ -1,6 +1,6 @@
 # from before histogram-from-ranges rework
 function FixedRectangularBinning(ϵmin::NTuple{D,T}, ϵmax::NTuple{D,T}, N::Int) where {D, T}
-    FixedRectangularBinning(ntuple(x->range(ϵmin[i],ϵmax[i];length=N), D))
+    FixedRectangularBinning(ntuple(i->range(ϵmin[i],ϵmax[i];length=N), D))
 end
 function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N, D::Int = 1)
     if N isa Int
@@ -16,7 +16,7 @@ function entropy(e::InformationMeasureDefinition, est::DiffInfoMeasureEst, x)
     if e isa Shannon
         return information(est, x)
     else
-        error("only shannon entropy supports this deprecated interface")
+        throw(ErrorException("only shannon entropy supports this deprecated interface"))
     end
 end
 
@@ -79,5 +79,5 @@ function genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q = 1.0, bas
     `genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is deprecated.
     Use instead: `information(Renyi(q, base), est, x)`.
     """
-    return information(Renyi(q, base), x, est)
+    return information(Renyi(q, base), est, x)
 end

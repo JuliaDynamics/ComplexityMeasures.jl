@@ -42,5 +42,5 @@ function logκ(base, x, κ)
 end
 
 function information_maximum(e::Kaniadakis, L::Int)
-    error("information_maximum not implemeted for Kaniadakis entropy yet")
+    throw(ErrorException("information_maximum not implemeted for Kaniadakis entropy yet"))
 end
