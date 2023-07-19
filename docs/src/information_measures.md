@@ -1,7 +1,9 @@
 
-# Information measure API
+# [Information measures](@id information_measures)
 
 Please be sure you have read the [Terminology](@ref terminology) section before going through the API here, to have a good idea of the different "flavors" of information measures and how they all come together over the common interface of the [`information`](@ref) function.
+
+## Information measures API
 
 The information measure API is defined by
 
@@ -13,7 +15,7 @@ The information measure API is defined by
 - [`DiscreteInformationMeasureEstimator`](@ref)
 - [`DifferentialInformationMeasureEstimator`](@ref)
 
-## Information measure definitions
+## Information measures definitions
 
 ```@docs
 ProbabilitiesFunctional

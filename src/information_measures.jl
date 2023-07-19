@@ -31,14 +31,17 @@ Any of the following concrete types can be given as inputs to [`information`](@r
 
 - [`RenyiExtropy`](@ref).
 - [`TsallisExtropy`](@ref).
-- [`ShannonExtropy`](@ref), , which is a subcase of the above two in the limit `q → 1`.
+- [`ShannonExtropy`](@ref), which is a subcase of the above two in the limit `q → 1`.
 
 These types can be given as inputs to [`information`](@ref) or [`information_normalized`](@ref).
 
 ## Description
 
-Most information measures are entropy based.
-Mathematically speaking, generalized entropies are just nonnegative functions of
+Information measures are simply functionals of probability mass functions, or of
+probability density functions.
+
+The most commonly used information measures are entropy-based. Mathematically speaking,
+generalized entropies are just nonnegative functions of
 probability distributions that verify certain (entropy-type-dependent) axioms.
 Amigó et al.'s[^Amigó2018] summary paper gives a nice overview.
 
@@ -47,8 +50,11 @@ definitions is not really what matters; **estimators matter**.
 Because in the practical sense, one needs to estimate some information measure from finite
 data, and different ways of estimating a quantity come with their own pros and cons.
 
-That is why the type [`DiscreteInformationMeasureEstimator`](@ref) exists,
-which is what is actually given to [`information`](@ref).
+Since *estimating* an information is different from the *definition* of an information
+measure, we provide the [`DiscreteInformationMeasureEstimator`](@ref) to distinguish
+between different estimators of a [`InformationMeasureDefinition`](@ref). And actually,
+behind the scenes, it is the *estimator* that is given to [`information`](@ref) when
+computing some measure.
 Some ways to estimate a discrete information measure only apply to that specific
 measure definition. For estimators that can be applied to various measure definitions,
 this is specified by providing an instance of [`InformationMeasureDefinition`](@ref) to the

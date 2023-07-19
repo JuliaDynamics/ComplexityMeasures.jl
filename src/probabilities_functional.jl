@@ -5,7 +5,8 @@ export ProbabilitiesFunctionalEstimator
     ProbabilitiesFunctional
 
 The supertype of all probabilities functional *definitions*. To keep naming conventions
-simply, we also use this as the supertype of *probability density functionals*.
+simply, we use this type as the supertype of both *probability mass functionals*, as well
+as *probability density functionals*.
 
 ## Abstract subtypes
 
@@ -18,7 +19,8 @@ abstract type ProbabilitiesFunctional end
 """
     ProbabilitiesFunctionalEstimator
 
-The supertype of all probabilities functionals *estimators*. To keep naming conventions
-simply, we also use this as the supertype of *probability density functional* estimators.
+The supertype of all *estimators* that estimate some [`ProbabilitiesFunctional`](@ref),
+which can either refer to a probability mass functional, or a probability density
+functional.
 """
 abstract type ProbabilitiesFunctionalEstimator end

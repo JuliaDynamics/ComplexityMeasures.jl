@@ -22,23 +22,16 @@ means anything beyond information measures such as entropy. However we believe t
 ### Probabilities
 
 Information measures, and some other complexity measures, are are typically computed based on _probability distributions_,
-which we simply refer to as "probabilities".
-Probabilities can be obtained from input data in a plethora of different ways.
-The central API function that returns a probability distribution
+which we simply refer to as "probabilities". We provide a dedicated
+[`Probabilities`](@ref) API, and probabilities can be obtained from input data in a plethora of different ways.
+The central API function that estimates a probability distribution
 is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref)
 to specify how the probabilities are computed.
 All available estimators can be found in the [estimators page](@ref probabilities_estimators).
 
 ### Information measures
 
-There exist many different information measures, and by far the most famous is entropy.
-Entropy is an established concept in statistics, information theory, and nonlinear dynamics.
-However, it is also an umbrella term that may mean several computationally, and sometimes
-even fundamentally, different quantities.
-In ComplexityMeasures.jl, we provide the generic
-function [`information`](@ref) that tries to both clarify disparate information-related
-measures, while unifying them under a common interface that highlights the modular nature
-of the term  "information measure".
+There exist many different information measures, and by far the most famous is entropy. Entropy is an established concept in statistics, information theory, and nonlinear dynamics. However, it is also an umbrella term that may mean several computationally, and sometimes even fundamentally, different quantities. In ComplexityMeasures.jl, we provide the generic function [`information`](@ref) that tries to both clarify disparate information-related measures, while unifying them under a common interface that highlights the modular nature of the term "information measure".
 
 On the highest level, there are two main types of information measures.
 

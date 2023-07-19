@@ -1,6 +1,8 @@
 # Complexity measures
 
-In this page we document estimators for complexity measures that are not entropies in the strict mathematical sense. The API is almost identical to [`information`](@ref) and is defined by:
+In this page we document estimators for complexity measures that are not [information
+measures](@ref information_measures) in the strict mathematical sense. The API is almost
+identical to the [`information`](@ref) API and is defined by:
 
 - [`complexity`](@ref)
 - [`complexity_normalized`](@ref)
