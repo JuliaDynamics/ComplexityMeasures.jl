@@ -16,3 +16,5 @@ for q in (0, 0.5, 1, 2.0) # independent of q
     # or minimal when only one probability is nonzero and equal to 1.0
     @test information(Renyi(q), Probabilities([1.0, 0.0, 0.0, 0.0])) ≈ 0.0
 end
+
+@test information(Renyi(; q = Inf), Probabilities(rand(3))) > 0

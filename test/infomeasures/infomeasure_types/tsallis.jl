@@ -1,3 +1,9 @@
+# Constructors
+m1 = Tsallis(2.0)
+m2 = Tsallis(q = 2.0)
+@test m1.q == 2.0
+@test m2.q == 2.0
+
 p = Probabilities(repeat([1/5], 5))
 @test round(information(Tsallis(q = -1/2, k = 1), p), digits = 2) ≈ 6.79
 
