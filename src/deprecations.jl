@@ -25,6 +25,9 @@ end
 @deprecate entropy information
 @deprecate entropy_maximum information_maximum
 @deprecate entropy_normalized information_normalized
+@deprecate DifferentialEntropyEstimator DifferentialInformationMeasureEstimator
+@deprecate DiscreteEntropyEstimator DiscreteInformationMeasureEstimator
+@deprecate MLEntropy ML
 
 # From before 2.0:
 @deprecate TimeScaleMODWT WaveletOverlap
