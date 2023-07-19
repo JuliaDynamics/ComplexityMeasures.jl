@@ -4,6 +4,7 @@ include("tsallis.jl")
 include("curado.jl")
 include("streched_exponential.jl")
 include("kaniadakis.jl")
+include("identification.jl")
 
 include("shannon_extropy.jl")
 include("tsallis_extropy.jl")
