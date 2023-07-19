@@ -44,14 +44,14 @@ using ComplexityMeasures.DelayEmbeddings: embed
     # There is probably a typo in Rostaghi & Azami (2016). They state that the
     # non-normalized dispersion entropy is 1.8642. However, with identical probabilies,
     # we obtain non-normalized dispersion entropy of 1.8462.
-    res = entropy(Renyi(base = MathConstants.e, q = 1), est, x)
+    res = information(Renyi(base = MathConstants.e, q = 1), est, x)
     @test round(res, digits = 4) == 1.8462
 
     # Again, probabilities are identical up to this point, but the values we get differ
     # slightly from the paper. They get normalized DE of 0.85, but we get 0.84. 0.85 is
     # the normalized DE you'd get by manually normalizing the (erroneous) value from
     # their previous step.
-    res_norm = entropy_normalized(Renyi(base = MathConstants.e, q = 1), est, x)
+    res_norm = information_normalized(Renyi(base = MathConstants.e, q = 1), est, x)
     @test round(res_norm, digits = 2) == 0.84
 
     @testset "outcomes" begin

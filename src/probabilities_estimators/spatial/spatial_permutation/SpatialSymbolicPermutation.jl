@@ -24,9 +24,9 @@ See below for ways to specify the `stencil`. If `periodic = true`, then the sten
 around at the ends of the array. If `false`, then collected regions with indices
 which exceed the array bounds are skipped.
 
-In combination with [`entropy`](@ref) and [`entropy_normalized`](@ref), this
+In combination with [`information`](@ref) and [`information_normalized`](@ref), this
 probabilities estimator can be used to compute generalized spatiotemporal
-permutation [`EntropyDefinition`](@ref) of any type.
+permutation [`InformationMeasureDefinition`](@ref) of any type.
 
 ## Outcome space
 
@@ -71,7 +71,7 @@ Stencils are passed in one of the following three ways:
     for two-dimensional patterns. https://doi.org/10.1371/journal.pone.0040689
 
 [^Schlemmer2018]:
-    Schlemmer et al. (2018). Spatiotemporal Permutation EntropyDefinition as a Measure for
+    Schlemmer et al. (2018). Spatiotemporal Permutation InformationMeasureDefinition as a Measure for
     Complexity of Cardiac Arrhythmia. https://doi.org/10.3389/fphy.2018.00039
 """
 struct SpatialSymbolicPermutation{D,P,V,M,F} <: SpatialProbEst{D, P}

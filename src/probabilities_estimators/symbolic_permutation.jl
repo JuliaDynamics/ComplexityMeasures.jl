@@ -32,7 +32,7 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     we find its permutation pattern ``\\pi_{i}``. Probabilities are then
     estimated as the frequencies of the encoded permutation symbols
     by using [`CountOccurrences`](@ref). When giving the resulting probabilities to
-    [`entropy`](@ref), the original permutation entropy is computed [^BandtPompe2002].
+    [`information`](@ref), the original permutation entropy is computed [^BandtPompe2002].
 - **Multivariate data**. If applied to a an `D`-dimensional `StateSpaceSet`,
     then no embedding is constructed, `m` must be equal to `D` and `τ` is ignored.
     Each vector ``\\bf{x}_i`` of the dataset is mapped

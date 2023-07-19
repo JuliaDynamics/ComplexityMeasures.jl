@@ -20,10 +20,10 @@ Used with [`complexity`](@ref).
 - `dist<:SemiMetric = JSDivergence()`: The distance measure (from Distances.jl) to use for
     estimating the distance between the estimated probability distribution and a uniform
     distribution with the same maximal number of outcomes.
-- `entr::EntropyDefinition = Renyi()`: An [`EntropyDefinition`](@ref) of choice. Any
-    entropy definition that defines `entropy_maximum` is valid here. Alternatively,
-    an [`ExtropyDefinition`](@ref) can be used, in which case the [`extropy`](@ref) is
-    computed instead.
+- `entr::InformationMeasureDefinition = Renyi()`: An
+    [`InformationMeasureDefinition`](@ref) of choice. Any
+    information measure that defines `information_maximum` is valid here. Typically,
+    an entropy is used, e.g. [`Shannon`](@ref) or [`Renyi`](@ref) is used.
 
 ## Description
 
@@ -50,24 +50,24 @@ the distance measure `dist`.
 
 ## Usage
 
-The statistical complexity is exclusively used in combination with the related information measure
-(entropy).
+The statistical complexity is exclusively used in combination with the related information
+measure (typically an entropy).
 `complexity(c::StatisticalComplexity, x)` returns only the statistical complexity.
-The entropy can be accessed as a `Ref` value of the struct as
+
+The entropy (or other information measure) can be accessed as a `Ref` value of the struct as
 ```julia
 x = randn(100)
 c = StatisticalComplexity()
 compl = complexity(c, x)
 entr = c.entr_val[]
 ```
-To obtain both the entropy and the statistical complexity together as a `Tuple`, use the wrapper
-[`entropy_complexity`](@ref).
+To obtain both the entropy (or other information measure) and the statistical complexit
+ together as a `Tuple`, use the wrapper [`entropy_complexity`](@ref).
 
 [^Rosso2007]: Rosso, O. A., Larrondo, H. A., Martin, M. T., Plastino, A., & Fuentes, M. A. (2007).
             [Distinguishing noise from chaos](https://doi.org/10.1103/PhysRevLett.99.154102).
             Physical review letters, 99(15), 154102.
 [^Rosso2013]: Rosso, O. A. (2013) Generalized Statistical Complexity: A New Tool for Dynamical Systems.
-
 """
 Base.@kwdef struct StatisticalComplexity{E, D, H} <: ComplexityEstimator
     dist::D = JSDivergence()
@@ -96,13 +96,6 @@ function entropy_complexity(c::StatisticalComplexity, x)
    return (c.entr_val[], compl)
 end
 
-# A small hack to allow both extropy and entropy to be used. This hasn't been done in
-# the literature before.
-entropy_or_extropy(e::ExtropyDefinition, x) = extropy(e, x)
-entropy_or_extropy(e::EntropyDefinition, x) = entropy(e, x)
-entropy_or_extropy_maximum(e::ExtropyDefinition, x) = extropy_maximum(e, x)
-entropy_or_extropy_maximum(e::EntropyDefinition, x) = entropy_maximum(e, x)
-
 function complexity(c::StatisticalComplexity, p::Probabilities)
     (; dist, est, entr) = c
 
@@ -115,7 +108,7 @@ function complexity(c::StatisticalComplexity, p::Probabilities)
             you must set `p = allprobabilities(est, x)`."
             ))
     end
-    H_q = entropy_or_extropy(entr, p) / entropy_or_extropy_maximum(entr, est)
+    H_q = information(entr, p) / information_maximum(entr, est)
 
     # calculate distance between calculated distribution and uniform one
     D_q = evaluate(dist, vec(p), fill(1.0/L, L))
@@ -141,8 +134,8 @@ for `num_max * total_outcomes(c.est)` different values of the normalized informa
 and `num_min` different values of the normalized information measure of choice (in case of the minimum complexity curve).
 
 This function can also be used to compute the maximum "complexity-extropy curve" if
-`c.entr` is an [`ExtropyDefinition`](@ref), which is the equivalent of the
-complexity-entropy curves, but using [`extropy`](@ref) instead of [`entropy`](@ref).
+`c.entr` is an [`ProbabilitiesFunctional`](@ref), which is the equivalent of the
+complexity-entropy curves, but using [`extropy`](@ref) instead of [`information`](@ref).
 
 ## Description
 
@@ -173,7 +166,7 @@ function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
     for i in 1:(L - 1)
         vec(p) .= 0.0 # Note 0.0, not 0 (the elements in `p` are floats, so we should re-fill with floats to avoid conversions)
         for k in 1:num_max
-            # Does this function ensure sum(p) == 1? If not, we need to normalize `p` afterwards, because `entropy` requires
+            # Does this function ensure sum(p) == 1? If not, we need to normalize `p` afterwards, because `information` requires
             # normalized probabilities (i.e. summing to 1)
             _fill_probs_k!(p, prob_params, L, i, k)
             compl = complexity(c, p)

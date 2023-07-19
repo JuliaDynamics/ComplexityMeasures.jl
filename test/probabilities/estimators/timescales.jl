@@ -12,7 +12,7 @@ using ComplexityMeasures, Test
         ps = probabilities(est, x)
         @test length(ps) == 8
         @test ps isa Probabilities
-        @test entropy(Renyi(q = 1, base = 2), WaveletOverlap(), x) isa Real
+        @test information(Renyi(q = 1, base = 2), WaveletOverlap(), x) isa Real
         @test issorted(outcome_space(WaveletOverlap(), x))
     end
 
@@ -23,7 +23,7 @@ using ComplexityMeasures, Test
         y = @. sin(t) + sin(sqrt(3)*t)
         z = randn(N)
         est = PowerSpectrum()
-        ents = [entropy(Renyi(), est, w) for w in (x,y,z)]
+        ents = [information(Renyi(), est, w) for w in (x,y,z)]
         @test ents[1] < ents[2] < ents[3]
         # Test event stuff (analytically, using sine wave)
         probs, outs = probabilities_and_outcomes(est, x)

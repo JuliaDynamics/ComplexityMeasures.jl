@@ -7,10 +7,10 @@
 [![Package Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/Entropies)](https://pkgs.genieframework.com?packages=Entropies)
 [![DOI](https://zenodo.org/badge/306859984.svg)](https://zenodo.org/badge/latestdoi/306859984)
 
-A Julia package that provides estimators for probabilities, entropies, and other
-complexity measures, in the context of nonlinear dynamics, nonlinear timeseries
-analysis, and complex systems. It can be used as a standalone package, or as part
-of other projects in the JuliaDynamics organization, such as
+A Julia package that provides estimators for probabilities, information measures (entropies
+and extropies), and other complexity measures, in the context of nonlinear dynamics,
+nonlinear timeseries analysis, and complex systems. It can be used as a standalone package,
+or as part of other projects in the JuliaDynamics organization, such as
 [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/)
 or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 

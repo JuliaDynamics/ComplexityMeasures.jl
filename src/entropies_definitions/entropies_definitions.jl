@@ -1,6 +1,0 @@
-include("shannon.jl")
-include("renyi.jl")
-include("tsallis.jl")
-include("curado.jl")
-include("streched_exponential.jl")
-include("kaniadakis.jl")

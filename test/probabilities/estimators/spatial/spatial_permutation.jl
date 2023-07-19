@@ -14,13 +14,13 @@ ps = probabilities(est, x)
 @test ps isa Probabilities
 @test length(ps) == 3
 @test sort(ps) == [0.25, 0.25, 0.5]
-h = entropy(Renyi(base = 2), est, x)
+h = information(Renyi(base = 2), est, x)
 @test h == 1.5
 # In fact, doesn't matter how we order the stencil,
 # the symbols will always be equal in top-left and bottom-right
 stencil = CartesianIndex.([(0,0), (1,0), (1,1), (0,1)])
 est = SpatialSymbolicPermutation(stencil, x; periodic = false)
-@test entropy(Renyi(base = 2), est, x) == 1.5
+@test information(Renyi(base = 2), est, x) == 1.5
 
 # But for sanity, let's ensure we get a different number
 # for a different stencil
@@ -34,12 +34,12 @@ ps = sort(probabilities(est, x))
 extent = (2, 2)
 lag = (1, 1)
 est = SpatialSymbolicPermutation((extent, lag), x; periodic = false)
-@test entropy(Renyi(base = 2), est, x) == 1.5
+@test information(Renyi(base = 2), est, x) == 1.5
 
 # and let's also test the matrix-way of specifying the stencil
 stencil = [1 1; 1 1];
 est = SpatialSymbolicPermutation(stencil, x; periodic = false)
-@test entropy(Renyi(base = 2), est, x) == 1.5
+@test information(Renyi(base = 2), est, x) == 1.5
 # when the stencil is square, it is also easy to get an analytical set of outcomes.
 # 1 2 1    count column major order and get vectors, starting in top left corner,
 # 8 3 4    [1, 8, 2, 3], [8, 6, 3, 7], [2, 3, 1, 4], [3, 7, 4, 5], which give permutations
@@ -70,12 +70,12 @@ est1 = SpatialSymbolicPermutation(stencil, w; periodic = false)
 extent = (2, 2, 2)
 lag = (1, 1, 1)
 est2 = SpatialSymbolicPermutation((extent, lag), w; periodic = false)
-@test entropy(Renyi(), est1, w) == entropy(Renyi(), est2, w)
+@test information(Renyi(), est1, w) == information(Renyi(), est2, w)
 
 # and to this stencil written as a matrix
 stencil = [1; 1;; 1; 1;;; 1; 1;; 1; 1]
 est3 = SpatialSymbolicPermutation(stencil, w; periodic = false)
-@test entropy(Renyi(), est1, w, ) == entropy(Renyi(), est3, w)
+@test information(Renyi(), est1, w, ) == information(Renyi(), est3, w)
 
 ####################
 # "Analytical" tests
@@ -85,7 +85,7 @@ est3 = SpatialSymbolicPermutation(stencil, w; periodic = false)
 x = rand(100, 100)
 stencil = [1 1; 1 1];
 est = SpatialSymbolicPermutation(stencil, x)
-hsp = entropy_normalized(Renyi(), est, x)
+hsp = information_normalized(Renyi(), est, x)
 @test round(hsp, digits = 2) == 1.00
 
 @test outcome_space(est) == outcome_space(SymbolicPermutation(m = 4))

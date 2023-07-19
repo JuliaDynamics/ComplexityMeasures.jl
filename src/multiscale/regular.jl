@@ -40,7 +40,7 @@ See also: [`Composite`](@ref).
     analysis of complex physiologic time series. Physical review letters, 89(6), 068102.
 [^Costa2015]: Costa, M. D., & Goldberger, A. L. (2015). Generalized multiscale entropy
     analysis: Application to quantifying the complex volatility of human heartbeat time
-    series. EntropyDefinition, 17(3), 1197-1203.
+    series. InformationMeasureDefinition, 17(3), 1197-1203.
 """
 Base.@kwdef struct Regular <: MultiScaleAlgorithm
     f::Function = Statistics.mean
@@ -66,8 +66,8 @@ function downsample(method::Regular, s::Int, x::AbstractVector{T}, args...; kwar
     end
 end
 
-function multiscale(alg::Regular, e::EntropyDefinition,
-        est::Union{ProbabilitiesEstimator, DiffEntropyEst},
+function multiscale(alg::Regular, e::InformationMeasureDefinition,
+        est::Union{ProbabilitiesEstimator, DiffInfoMeasureEst},
         x::AbstractVector;
         maxscale::Int = 8)
 
@@ -75,10 +75,10 @@ function multiscale(alg::Regular, e::EntropyDefinition,
     return entropy.(Ref(e), Ref(est), downscaled_timeseries)
 end
 
-function multiscale_normalized(alg::Regular, e::EntropyDefinition,
+function multiscale_normalized(alg::Regular, e::InformationMeasureDefinition,
         est::ProbabilitiesEstimator, x::AbstractVector,;
         maxscale::Int = 8)
 
     downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
-    return entropy_normalized.(Ref(e), Ref(est), downscaled_timeseries)
+    return information_normalized.(Ref(e), Ref(est), downscaled_timeseries)
 end

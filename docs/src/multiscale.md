@@ -43,6 +43,6 @@ combination.
 [^Costa2015]:
     Costa, M. D., & Goldberger, A. L. (2015). Generalized multiscale entropy
     analysis: Application to quantifying the complex volatility of human heartbeat time
-    series. EntropyDefinition, 17(3), 1197-1203.
+    series. InformationMeasureDefinition, 17(3), 1197-1203.
 
 

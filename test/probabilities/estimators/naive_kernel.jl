@@ -17,8 +17,8 @@ p_direct = probabilities(est_direct, pts)
 @test issorted(outcome_space(est_tree, pts))
 @test issorted(outcomes(est_tree, pts))
 
-@test entropy(Renyi(), est_direct, pts) isa Real
-@test entropy(Renyi(), est_tree, pts) isa Real
+@test information(Renyi(), est_direct, pts) isa Real
+@test information(Renyi(), est_tree, pts) isa Real
 
 probs, z = probabilities_and_outcomes(est_tree, pts)
 @test z == 1:length(pts)

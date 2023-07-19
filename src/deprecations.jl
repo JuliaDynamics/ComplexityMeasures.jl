@@ -12,15 +12,19 @@ end
 
 
 # from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
-function entropy(e::EntropyDefinition, est::DiffEntropyEst, x)
+function entropy(e::InformationMeasureDefinition, est::DiffInfoMeasureEst, x)
     if e isa Shannon
-        return entropy(est, x)
+        return information(est, x)
     else
         error("only shannon entropy supports this deprecated interface")
     end
 end
 
 @deprecate ComplexityMeasure ComplexityEstimator
+@deprecate EntropyDefinition InformationMeasureDefinition
+@deprecate entropy information
+@deprecate entropy_maximum information_maximum
+@deprecate entropy_normalized information_normalized
 
 # From before 2.0:
 @deprecate TimeScaleMODWT WaveletOverlap
@@ -54,23 +58,23 @@ end
 function genentropy(probs::Probabilities; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(probs::Probabilities; q, base)` deprecated.
-    Use instead: `entropy(Renyi(q, base), probs)`.
+    Use instead: `information(Renyi(q, base), probs)`.
     """
-    return entropy(Renyi(q, base), probs)
+    return information(Renyi(q, base), probs)
 end
 
 function genentropy(x::Array_or_SSSet, ε::Real; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(x::Array_or_SSSet, ε::Real; q, base)` is deprecated.
-    Use instead: `entropy(Renyi(q, base), ValueHistogram(ε), x)`.
+    Use instead: `information(Renyi(q, base), ValueHistogram(ε), x)`.
     """
-    return entropy(Renyi(q, base), ValueHistogram(ε), x)
+    return information(Renyi(q, base), ValueHistogram(ε), x)
 end
 
 function genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is deprecated.
-    Use instead: `entropy(Renyi(q, base), est, x)`.
+    Use instead: `information(Renyi(q, base), est, x)`.
     """
-    return entropy(Renyi(q, base), x, est)
+    return information(Renyi(q, base), x, est)
 end

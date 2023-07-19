@@ -11,7 +11,7 @@ This function is just a convenience call to:
 
 ```julia
 est = SymbolicPermutation(; m, τ)
-entropy(Shannon(base), est, x)
+information(Shannon(base), est, x)
 ```
 
 See [`SymbolicPermutation`](@ref) for more info. Similarly, one can use
@@ -20,7 +20,7 @@ for the weighted/amplitude-aware versions.
 """
 function entropy_permutation(x; base = 2, kwargs...)
     est = SymbolicPermutation(; kwargs...)
-    entropy(Shannon(base), est, x)
+    information(Shannon(base), est, x)
 end
 
 """
@@ -30,14 +30,14 @@ Compute the wavelet entropy. This function is just a convenience call to:
 
 ```julia
 est = WaveletOverlap(wavelet)
-entropy(Shannon(base), est, x)
+information(Shannon(base), est, x)
 ```
 
 See [`WaveletOverlap`](@ref) for more info.
 """
 function entropy_wavelet(x; wavelet = Wavelets.WT.Daubechies{12}(), base = 2)
     est = WaveletOverlap(wavelet)
-    entropy(Shannon(base), est, x)
+    information(Shannon(base), est, x)
 end
 
 """
@@ -47,14 +47,14 @@ Compute the dispersion entropy. This function is just a convenience call to:
 
 ```julia
 est = Dispersion(kwargs...)
-entropy(Shannon(base), est, x)
+information(Shannon(base), est, x)
 ```
 
 See [`Dispersion`](@ref) for more info.
 """
 function entropy_dispersion(x; base = 2, kwargs...)
     est = Dispersion(kwargs...)
-    entropy(Shannon(base), est, x)
+    information(Shannon(base), est, x)
 end
 
 """

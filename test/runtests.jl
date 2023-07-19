@@ -18,9 +18,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     # probabilities functions
     testfile("probabilities/api.jl")
 
-
-    include("entropies/entropies.jl")
-    include("extropies/extropies.jl")
+    include("infomeasures/infomeasures.jl")
     include("complexity/complexity.jl")
 
     # When multiscale is exported, this should be turned on
