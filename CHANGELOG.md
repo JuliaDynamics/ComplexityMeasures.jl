@@ -5,7 +5,9 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 ## 2.8.0
 
 - New function `allprobabilities` that is like `probabilities` but also includes 0 entries for possible outcomes that were not present in the data.
-- `StatisticalComplexity` is now compatible with any normalizable `InformationMeasureDefinition`.
+- `StatisticalComplexity` is now compatible with any normalizable `EntropyDefinition`.
+- Add the 1976 Lempel-Ziv complexity measure (`LempelZiv76`).
+- New entropy definition: identification entropy (`Identification`).
 - Minor documentation fixes.
 
 ## 2.7.1
@@ -34,8 +36,8 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 ## 2.3
 
 - Like differential entropies, discrete entropies now also have their own estimator type.
-- The approach of giving both an entropy definition, and an entropy estimator to `information` has been dropped. Now the entropy estimators know what definitions they are applied for. This change is a deprecation, i.e., backwards compatible.
-- Added `ML` discrete entropy estimator.
+- The approach of giving both an entropy definition, and an entropy estimator to `entropy` has been dropped. Now the entropy estimators know what definitions they are applied for. This change is a deprecation, i.e., backwards compatible.
+- Added `MLEntropy` discrete entropy estimator.
 
 ## 2.2
 
@@ -62,15 +64,16 @@ If we missed code that should be working, let us know by opening an issue.
 
 ### Major changes
 
-- Common generic interface function `information`, `information_normalized` and `maximum` (maximum entropy) that dispatches on different definitions of entropies (e.g `Renyi()` `Shannon()`, `Tsallis()`) and estimated probabilities.
+- Common generic interface function `entropy`, `entropy_normalized` and `maximum` (maximum entropy) that dispatches on different definitions of entropies (e.g `Renyi()` `Shannon()`, `Tsallis()`) and estimated probabilities.
 - Convenience functions for common entropies, such as permutation entropy and dispersion entropy still exist.
-- New interface `DifferentialInformationMeasureEstimator` that is also used in `information`.
-- The `base` of the entropy is now a field of the `InformationMeasureDefinition` type, not the estimator.
+- New interface `DifferentialEntropyEstimator` that is also used in `entropy`.
+- The `base` of the entropy is now a field of the `EntropyDefinition` type, not the estimator.
 - An entirely new section of entropy-like complexity measures, such as the reverse dispersion entropy.
 - Many new estimators, such as `SpatialPermutation` and `PowerSpectrum`.
 - Check the online documentation for a comprehensive overview of the changes.
 
 ### Minor changes
+
 - No more deprecation warnings for using the old keyword `α` for Renyi entropy.
 - The `KozachenkoLeonenko` estimator now correctly fixes its neighbor search to the
     *closest* neighbor only, and its constructor does no longer accept `k` as an input. It also uses correct scaling factor and adapts to dimension.
@@ -78,21 +81,27 @@ If we missed code that should be working, let us know by opening an issue.
     for `Kraskov` and `KozachenkoLeonenko`.
 
 ## main
-* New probability estimator `SpatialSymbolicPermutation` suitable for computing spatial permutation entropies
-* Introduce Tsallis entropy.
+
+- New probability estimator `SpatialSymbolicPermutation` suitable for computing spatial permutation entropies
+- Introduce Tsallis entropy.
 
 ## 1.2
-* Added dispersion entropy.
+
+- Added dispersion entropy.
 
 ## 1.1
-* Introduce convenience function `permentropy`.
-* Several type instabilities fixed.
+
+- Introduce convenience function `permentropy`.
+- Several type instabilities fixed.
 
 ## 1.0
+
 No actual changes, just first major version release.
 
 ## 0.12
-* Nearest neighbor searches now use Neighborhood.jl and the Theiler window properly.
+
+- Nearest neighbor searches now use Neighborhood.jl and the Theiler window properly.
 
 ## 0.11.1
-* `probabilities(data, n::Int)` now uses a rectangular binning of `n` bins for each dimension. Before, while not documented as possible in the public API, using integer `n` would take it as the bin size.
+
+- `probabilities(data, n::Int)` now uses a rectangular binning of `n` bins for each dimension. Before, while not documented as possible in the public API, using integer `n` would take it as the bin size.
