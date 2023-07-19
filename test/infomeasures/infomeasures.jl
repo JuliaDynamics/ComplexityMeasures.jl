@@ -8,6 +8,7 @@ testfile("infomeasure_types/tsallis.jl")
 testfile("infomeasure_types/curado.jl")
 testfile("infomeasure_types/stretched_exponential.jl")
 testfile("infomeasure_types/kaniadakis.jl")
+testfile("infomeasure_types/identification.jl")
 
 include("infomeasure_types/shannon_extropy.jl")
 include("infomeasure_types/tsallis_extropy.jl")
