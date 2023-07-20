@@ -40,5 +40,5 @@ est = CountOccurrences()
 @test information_normalized(j2, est, x) ≈ information_normalized(j10, est, x)
 
 # The Rényi extropy should equal the Shannon extropy for q = 1
-jq1 = RenyiExtropy(; q = 2, base = 2)
-@test information(jq1, est, x) ≈ information(ShannonExtropy(; base = 2), est, x)
+@test information(RenyiExtropy(; q = 1, base = 2), est, x) ≈
+    information(ShannonExtropy(; base = 2), est, x)

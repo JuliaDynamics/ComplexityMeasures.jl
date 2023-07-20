@@ -36,3 +36,7 @@ j = information(TsallisExtropy(; q = 2), CountOccurrences(), x)
 x = [0.2, 0.2, 0.4, 0.4, 0.5, 0.5, 0.6, 0.6]
 jn = information_normalized(TsallisExtropy(; q = 2), CountOccurrences(), x)
 @test jn == 1
+
+# Equivalent to Shannon extropy for q == 1
+@test information(TsallisExtropy(q = 1), CountOccurrences(), x) ≈
+    information(ShannonExtropy(), CountOccurrences(), x)
