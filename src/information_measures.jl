@@ -7,20 +7,21 @@ export information, information_maximum, information_normalized, convert_logunit
     InformationMeasure
 
 `InformationMeasure` is the supertype of all information measures, including measures
-such as (generalized) entropies, extropies and other information measures.
+such as (generalized) entropies or extropies.
 
-For the purpose of this software, we have taken the pragmatic choice to categorize *all*
-measures that are functionals of probability mass functions or probability density
-functions as information measures, even though they might not be considered as information
-measures in the literature.
+Within ComplexityMeasures.jl, we have taken the pragmatic choice to label all
+measures that are **functionals of probability mass or density functions**
+as **information measures**, even though they might not be labelled as
+information measures in the literature.
 
-## Implementations
+## Definitions
 
-Any of the following defintions appear in either discrete form, differential form, or
+Any of the following definitions appear in either discrete form, differential form, or
 as both. They can be given as input at least one of the implemented
 [`DiscreteInfoEstimator`](@ref)s or
 [`DifferentialInfoEstimator`](@ref)s. In turn, the estimator is given as
-input to [`information`](@ref) or [`information_normalized`](@ref) to compute the measure.
+input to [`information`](@ref) or [`information_normalized`](@ref) to compute the numeric
+value corresponding to the measure.
 
 ### Entropies
 
@@ -36,17 +37,6 @@ input to [`information`](@ref) or [`information_normalized`](@ref) to compute th
 - [`RenyiExtropy`](@ref).
 - [`TsallisExtropy`](@ref).
 - [`ShannonExtropy`](@ref), which is a subcase of the above two in the limit `q → 1`.
-
-## Example
-
-```julia
-# Estimate differential Shannon entropy using the `KozachenkoLeonenko` estimator.
-x = rand(1000)
-information(KozachenkoLeonenko(Shannon(), x)
-
-# Estimate discrete Shannon entropy using the `PlugIn` estimator.
-information(PlugIn(Shannon()), x)
-```
 
 ## Description
 
@@ -116,7 +106,7 @@ abstract type DiscreteInfoEstimator{I <: InformationMeasure} <: InformationMeasu
 
 The `PlugIn` estimator is also called the empirical/naive/"maximum likelihood" estimator.
 
-This estimator calculates a quantity exactly as given by some formula, using plug-in
+This estimator calculates a quantity exactly as given by its formula, using plug-in
 estimates (i.e. observed frequencies). For information measures, for example, it
 estimates the [`InformationMeasure`](@ref) directly from a probability mass
 function (which is derived from plug-in estimates of the probabilities).
