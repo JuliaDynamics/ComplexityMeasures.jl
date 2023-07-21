@@ -1,4 +1,3 @@
-
 # [Information measures](@id information_measures)
 
 Please be sure you have read the [Terminology](@ref terminology) section before going through the API here, to have a good idea of how we define "information measures" and how they all come together over the common interface of the [`information`](@ref) function.
@@ -25,7 +24,7 @@ TsallisExtropy
 ## Discrete information measures
 
 ```@docs
-information(::Union{InformationMeasure, DiscreteInfoEstimator}, ::ProbabilitiesEstimator, ::Any)
+information(::InformationMeasure, ::ProbabilitiesEstimator, ::Any)
 information_maximum
 information_normalized
 ```

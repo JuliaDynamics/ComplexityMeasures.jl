@@ -36,7 +36,7 @@ h = information(PlugIn(Renyi(2.0)), ps) # also gives 1, order `q` doesn't matter
 h = information(SymbolicPermutation(;m=3), x) # gives about 2, again by definition
 ```
 """
-function information(e::Union{InformationMeasure, DiscreteInfoEstimator}, est::ProbabilitiesEstimator, x)
+function information(e::InformationMeasure, est::ProbabilitiesEstimator, x)
     ps = probabilities(est, x)
     return information(e, ps)
 end
@@ -46,5 +46,4 @@ end
 # Convenience
 information(est::ProbabilitiesEstimator, x) = information(Shannon(), est, x)
 information(probs::Probabilities) = information(Shannon(), probs)
-information(e::PlugIn, est::ProbabilitiesEstimator, x) = information(e.definition, est, x)
-information(e::PlugIn, probs::Probabilities) = information(e.definition, probs)
+information(e::PlugIn, args...) = information(e.definition, args...)
