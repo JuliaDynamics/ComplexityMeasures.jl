@@ -7,7 +7,7 @@ ComplexityMeasures
 ## [Content and terminology](@id terminology)
 
 !!! note
-    The documentation here follows (loosely) chapter 5 of
+    The documentation here was initially inspired by chapter 5 of
     [Nonlinear Dynamics](https://link.springer.com/book/10.1007/978-3-030-91032-7),
     Datseris & Parlitz, Springer 2022.
 
