@@ -54,6 +54,7 @@ to distinguish between different estimators of a discrete and differential varia
 """
 abstract type InformationMeasure end
 
+# This is internal: not exported or in public API
 """
     InformationMeasureEstimator{I <: InformationMeasure}
 

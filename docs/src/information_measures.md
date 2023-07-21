@@ -5,15 +5,7 @@ Please be sure you have read the [Terminology](@ref terminology) section before 
 
 ## Information measures API
 
-The information measure API is defined by
-
-- [`InformationMeasure`](@ref)
-- [`information`](@ref)
-- [`information_maximum`](@ref)
-- [`information_normalized`](@ref)
-- [`InformationMeasureEstimator`](@ref)
-- [`DiscreteInfoEstimator`](@ref)
-- [`DifferentialInfoEstimator`](@ref)
+The information measure API is defined by the [`information`](@ref) function, which may take as an input an [`InformationMeasure`](@ref), or a discrete ( [`DiscreteInfoEstimator`](@ref)) or differential ( [`DifferentialInfoEstimator`](@ref)). The functions [`information_maximum`](@ref) and [`information_normalized`](@ref) are also useful.
 
 ## Information measures definitions
 
@@ -33,7 +25,7 @@ TsallisExtropy
 ## Discrete information measures
 
 ```@docs
-information(::InformationMeasure, ::ProbabilitiesEstimator, ::Any)
+information(::Union{InformationMeasure, DiscreteInfoEstimator}, ::ProbabilitiesEstimator, ::Any)
 information_maximum
 information_normalized
 ```
