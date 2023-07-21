@@ -45,11 +45,14 @@ See also: [`information`](@ref), [`DifferentialInfoEstimator`](@ref).
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct ZhuSingh{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    k::Int = 1
-    w::Int = 0
-    base::B = 2
+struct ZhuSingh{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
+    measure::I
+    k::Int
+    w::Int
+    base::B
+end
+function ZhuSingh(measure = Shannon(); k = 1, w = 0, base = 2)
+    return ZhuSingh(measure, k, w, base)
 end
 
 function information(est::ZhuSingh{<:Shannon}, x::AbstractStateSpaceSet{D, T}) where {D, T}

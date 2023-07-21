@@ -7,7 +7,7 @@ export Gao
 
 """
     Gao <: DifferentialInfoEstimator
-    Gao(; measure = Shannon(), k = 1, w = 0, base = 2, corrected = true)
+    Gao(measure = Shannon(); k = 1, w = 0, base = 2, corrected = true)
 
 The `Gao` estimator (Gao et al., 2015) computes the [`Shannon`](@ref)
 differential [`information`](@ref), using a `k`-th nearest-neighbor approach
@@ -41,12 +41,15 @@ H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct Gao{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    k::Int = 1
-    w::Int = 0
-    base::B = 2
-    corrected::Bool = true
+struct Gao{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
+    measure::I
+    k::Int
+    w::Int
+    base::B
+    corrected::Bool
+end
+function Gao(measure = Shannon(); k = 1, w = 0, base = 2, corrected = true)
+    return Gao(measure, k, w, base, corrected)
 end
 
 function information(est::Gao{<:Shannon}, x::AbstractStateSpaceSet{D}) where D

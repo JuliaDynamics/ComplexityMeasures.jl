@@ -7,7 +7,7 @@ export Goria
 
 """
     Goria <: DifferentialInfoEstimator
-    Goria(; measure = Shannon(), k = 1, w = 0, base = 2)
+    Goria(measure = Shannon(); k = 1, w = 0, base = 2)
 
 The `Goria` estimator computes the [`Shannon`](@ref) differential
 [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref) in the given `base`.
@@ -45,11 +45,14 @@ is the digamma function.
     class of random vector entropy estimators and its applications in testing statistical
     hypotheses. Journal of Nonparametric Statistics, 17(3), 277-297.
 """
-Base.@kwdef struct Goria{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    k::Int = 1
-    w::Int = 0
-    base::B = 2
+struct Goria{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
+    measure::I
+    k::Int
+    w::Int
+    base::B
+end
+function Goria(measure = Shannon(); k = 1, w = 0, base = 2)
+    return Goria(measure, k, w, base)
 end
 
 function information(est::Goria{<:Shannon}, x::AbstractStateSpaceSet{D}) where D

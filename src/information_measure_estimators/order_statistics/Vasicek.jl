@@ -2,7 +2,7 @@ export Vasicek
 
 """
     Vasicek <: DifferentialInfoEstimator
-    Vasicek(; measure = Shannon(), m::Int = 1, base = 2)
+    Vasicek(measure = Shannon(); m::Int = 1, base = 2)
 
 The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`information`](@ref)
 (in the given `base`) of
@@ -55,10 +55,13 @@ written for this package).
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Ebrahimi`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-@Base.kwdef struct Vasicek{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    m::M = 1
-    base::B = 2
+struct Vasicek{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
+    measure::I
+    m::M
+    base::B
+end
+function Vasicek(measure = Shannon(); m = 1, base = 2)
+    return Vasicek(measure, m, base)
 end
 
 function information(est::Vasicek{<:Shannon}, x::AbstractVector{T}) where {T<:Real}

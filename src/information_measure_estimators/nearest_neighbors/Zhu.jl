@@ -31,11 +31,14 @@ See also: [`information`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialInf
     transfer entropy estimation via the k-nearest-neighbors approach. InformationMeasure, 17(6),
     4173-4201.
 """
-Base.@kwdef struct Zhu{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    k::Int = 1
-    w::Int = 0
-    base::B = 2
+struct Zhu{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
+    measure::I
+    k::Int
+    w::Int
+    base::B
+end
+function Zhu(measure = Shannon(); k = 1, w = 0, base = 2)
+    return Zhu(measure, k, w, base)
 end
 
 function information(est::Zhu{<:Shannon}, x::AbstractStateSpaceSet{D, T}) where {D, T}

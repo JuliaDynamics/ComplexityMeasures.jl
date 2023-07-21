@@ -20,7 +20,7 @@ end
     @test_throws MethodError information(x, 0.1)
     # the AlizadehArghami estimator only works for Shannon entropy
     @test_throws ArgumentError information(Tsallis(), AlizadehArghami(), x) # deprecated
-    @test_throws ArgumentError information(AlizadehArghami(measure = Tsallis()), x)
+    @test_throws ArgumentError information(AlizadehArghami(Tsallis()), x)
 
     # some new measure
     struct SomeNewMeasure <: InformationMeasure end

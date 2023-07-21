@@ -2,7 +2,7 @@ export KozachenkoLeonenko
 
 """
     KozachenkoLeonenko <: DifferentialInfoEstimator
-    KozachenkoLeonenko(; measure = Shannon(), w::Int = 0, base = 2)
+    KozachenkoLeonenko(measure = Shannon(); w::Int = 0, base = 2)
 
 The `KozachenkoLeonenko` estimator computes the [`Shannon`](@ref) differential
 [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref) in the given `base`.
@@ -36,10 +36,14 @@ See also: [`information`](@ref), [`Kraskov`](@ref), [`DifferentialInfoEstimator`
 [^KozachenkoLeonenko1987]: Kozachenko, L. F., & Leonenko, N. N. (1987). Sample estimate of
     the entropy of a random vector. Problemy Peredachi Informatsii, 23(2), 9-16.
 """
-@Base.kwdef struct KozachenkoLeonenko{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    w::Int = 0
-    base::B = 2
+struct KozachenkoLeonenko{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
+    measure::I
+    w::Int
+    base::B
+end
+
+function KozachenkoLeonenko(measure = Shannon(); w = 0, base = 2)
+    return KozachenkoLeonenko(measure, w, base)
 end
 
 function information(est::KozachenkoLeonenko{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D}

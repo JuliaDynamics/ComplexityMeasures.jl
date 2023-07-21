@@ -24,7 +24,7 @@ export Lord
 
 """
     Lord <: DifferentialInfoEstimator
-    Lord(; measure = Shannon(), k = 10, w = 0, base = 2)
+    Lord(measure = Shannon(); k = 10, w = 0, base = 2)
 
 `Lord` estimates the [`Shannon`](@ref) differential [`information`](@ref) using a nearest
 neighbor approach with a local nonuniformity correction (LNC).
@@ -69,11 +69,14 @@ makes `Lord` a well-suited entropy estimator for a wide range of systems.
     of entropy and mutual information. Chaos: An Interdisciplinary Journal of Nonlinear
     Science, 28(3), 033114.
 """
-Base.@kwdef struct Lord{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    k::Int = 10
-    w::Int = 0
-    base::B = 2
+struct Lord{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
+    measure::I
+    k::Int
+    w::Int
+    base::B
+end
+function Lord(measure = Shannon(); k = 10, w = 0, base = 2)
+    return Lord(measure, k, w, base)
 end
 
 function information(est::Lord{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D}

@@ -58,10 +58,13 @@ c_i =
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-@Base.kwdef struct Ebrahimi{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    m::M = 1
-    base::B = 2
+struct Ebrahimi{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
+    measure::I
+    m::M
+    base::B
+end
+function Ebrahimi(measure = Shannon(); m = 1, base = 2)
+    return Ebrahimi(measure, m, base)
 end
 
 function ebrahimi_scaling_factor(i, m, n)

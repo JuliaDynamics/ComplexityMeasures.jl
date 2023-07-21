@@ -1,5 +1,8 @@
 using ComplexityMeasures, Test
 
+# Constructors
+@test Correa(Shannon()) isa Correa{<:Shannon}
+
 # -------------------------------------------------------------------------------------
 # Check if the estimator converge to true values for some distributions with
 # analytically derivable entropy.

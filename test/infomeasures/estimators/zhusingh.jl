@@ -1,6 +1,9 @@
 using ComplexityMeasures
 using Test, LinearAlgebra
 
+# Constructors
+@test ZhuSingh(Shannon()) isa ZhuSingh{<:Shannon}
+
 # Test internals in addition to end-product, because designing an exact end-product
 # test is  a mess due to the neighbor searches. If these top-level tests fail, then
 # the issue is probability related to these functions.

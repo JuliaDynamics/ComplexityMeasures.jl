@@ -2,7 +2,7 @@ export Kraskov
 
 """
     Kraskov <: DifferentialInfoEstimator
-    Kraskov(; measure = Shannon(), k::Int = 1, w::Int = 0, base = 2)
+    Kraskov(measure = Shannon(); k::Int = 1, w::Int = 0, base = 2)
 
 The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`information`](@ref) of
 a multi-dimensional [`StateSpaceSet`](@ref) using the `k`-th nearest neighbor
@@ -29,11 +29,14 @@ See also: [`information`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialInf
     Kraskov, A., Stögbauer, H., & Grassberger, P. (2004).
     Estimating mutual information. Physical review E, 69(6), 066138.
 """
-Base.@kwdef struct Kraskov{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    k::Int = 1
-    w::Int = 0
-    base::B = 2
+struct Kraskov{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
+    measure::I
+    k::Int
+    w::Int
+    base::B
+end
+function Kraskov(measure = Shannon(); k = 1, w = 0, base = 2)
+    return Kraskov(measure, k, w, base)
 end
 
 function information(est::Kraskov{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D}

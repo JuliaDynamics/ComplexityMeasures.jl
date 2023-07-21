@@ -1,5 +1,8 @@
 using ComplexityMeasures, Test
 
+# Constructors
+@test Zhu(Shannon()) isa Zhu{<:Shannon}
+
 # To ensure minimal rectangle volumes are correct, we also test internals directly here.
 # It's not feasible to construct an end-product test due to the neighbor searches.
 x = StateSpaceSet([[-1, -2], [0, -2], [3, 2]]);

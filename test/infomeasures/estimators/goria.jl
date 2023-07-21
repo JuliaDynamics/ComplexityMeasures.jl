@@ -1,5 +1,8 @@
 using ComplexityMeasures, Test
 
+# Constructors
+@test Goria(Shannon()) isa Goria{<:Shannon}
+
 # -------------------------------------------------------------------------------------
 # Check if the estimator converge to true values for some distributions with
 # analytically derivable entropy.

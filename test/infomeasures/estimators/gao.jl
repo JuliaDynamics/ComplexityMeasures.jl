@@ -1,5 +1,8 @@
 using ComplexityMeasures, Test
 
+# Constructors
+@test Gao(Shannon()) isa Gao{<:Shannon}
+
 # -------------------------------------------------------------------------------------
 # Check if the estimator converge to true values for some distributions with
 # analytically derivable entropy.

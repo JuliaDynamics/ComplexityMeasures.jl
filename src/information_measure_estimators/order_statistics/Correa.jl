@@ -56,10 +56,13 @@ where
 See also: [`information`](@ref), [`AlizadehArghami`](@ref), [`Ebrahimi`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-@Base.kwdef struct Correa{I <: InformationMeasure, M <: Integer, B} <: DifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    m::M = 1
-    base::B = 2
+struct Correa{I <: InformationMeasure, M <: Integer, B} <: DifferentialInfoEstimator{I}
+    measure::I
+    m::M
+    base::B
+end
+function Correa(measure = Shannon(); m = 1, base = 2)
+    return Correa(measure, m, base)
 end
 
 function information(est::Correa{<:Shannon}, x::AbstractVector{<:Real})

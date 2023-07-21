@@ -1,5 +1,8 @@
 using ComplexityMeasures, Test
 
+# Constructors
+@test AlizadehArghami(Shannon()) isa AlizadehArghami{<:Shannon}
+
 # -------------------------------------------------------------------------------------
 # Check if the estimator converge to true values for some distributions with
 # analytically derivable entropy.
@@ -12,18 +15,7 @@ N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
 
 npts = 1000000
 
-
-ea = information(AlizadehArghami(m = 100), rand(npts))
+ea = information(AlizadehArghami(Shannon(), m = 100), rand(npts))
 ea_n3 = information(AlizadehArghami(m = 100, base = 3), randn(npts))
 @test N_base3 * 0.96 ≤ ea_n3 ≤ N_base3 * 1.02
 @test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
-
-
-# Deprecated
-@testset "deprecated" begin
-    ea = information(AlizadehArghami(m = 100), rand(npts))
-    ea_n3 = information(AlizadehArghami(m = 100, base = 3), randn(npts))
-
-    @test N_base3 * 0.96 ≤ ea_n3 ≤ N_base3 * 1.02
-    @test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
-end

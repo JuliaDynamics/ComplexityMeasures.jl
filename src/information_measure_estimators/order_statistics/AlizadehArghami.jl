@@ -48,10 +48,13 @@ the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correcti
 See also: [`information`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-@Base.kwdef struct AlizadehArghami{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
-    measure::I = Shannon()
-    m::M = 1
-    base::B = 2
+struct AlizadehArghami{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
+    measure::I
+    m::M
+    base::B
+end
+function AlizadehArghami(measure = Shannon(); m = 1, base = 2)
+    return AlizadehArghami(measure, m, base)
 end
 
 function information(est::AlizadehArghami{<:Shannon}, x::AbstractVector{<:Real})
