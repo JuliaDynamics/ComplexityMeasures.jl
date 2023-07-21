@@ -30,17 +30,18 @@ All available probabilities estimators can be found in the
 
 ### Information measures
 
-There exist many different information measures, and by far the most famous is entropy. Entropy is an established concept in statistics, information theory, and nonlinear dynamics. However, it is also an umbrella term that may mean several computationally, and sometimes even fundamentally, different quantities. In ComplexityMeasures.jl, we provide the generic function [`information`](@ref) that tries to both clarify disparate information-related measures, while unifying them under a common interface that highlights the modular nature of the term "information measure".
+Within ComplexityMeasures.jl, we have taken the pragmatic choice to label all measures that are **explicit functionals of probability mass or density functions**
+as **information measures**, even though they might not be labelled as
+information measures in the literature. This is encapsulated by the supertype [`InformationMeasure`](@ref), whose subtypes are known (e.g., [`Shannon`](@ref)) and less-known (e.g., [`Curado`](@ref)) definitions of information measures, the most common of which are entropies.
 
-On the highest level, there are two main types of information measures.
+But even "entropy" is an umbrella term that may mean several computationally, and sometimes even fundamentally, different quantities. In ComplexityMeasures.jl, we provide the generic function [`information`](@ref) that tries to both clarify disparate information-related measures, while unifying them under a common interface that highlights the modular nature of the term "information measure".
 
-- *Discrete* information measures are functions of [probability mass functions](https://en.wikipedia.org/wiki/Probability_mass_function). Computing a discrete information measure boils
+An information measure as defined by a subtype of [`InformationMeasure`](@ref). However, estimating an information measure can be separated, on the highest level, into two main types:
+
+1. **Discrete** information measures are functions of [probability mass functions](https://en.wikipedia.org/wiki/Probability_mass_function). Computing a discrete information measure boils
     down to two simple steps: first estimating a probability distribution, then plugging
-    the estimated probabilities into an estimator of the information measure definition.
-    Internally, this is literally just a few lines of code where we first apply some
-    [`ProbabilitiesEstimator`](@ref) to the input data, and feed the resulting
-    [`probabilities`](@ref) to [`information`](@ref) with some [`DiscreteInfoEstimator`](@ref).
-- *Differential/continuous* information measures are functions of
+    the estimated probabilities into a discrete estimator of the information measure definition.
+2. **Differential/continuous** information measures are functions of
     [probability density functions](https://en.wikipedia.org/wiki/Probability_density_function),
     which are *integrals*. Computing differential information measures therefore rely on estimating
     some density functional. For this task, we provide [`DifferentialInfoEstimator`](@ref)s,
@@ -51,34 +52,19 @@ On the highest level, there are two main types of information measures.
 Crucially, many quantities in the nonlinear dynamics literature that are named as
 entropies, such as "permutation entropy" ([`entropy_permutation`](@ref)) and
 "wavelet entropy" ([`entropy_wavelet`](@ref)), are *not really new entropies*.
-They are the good old discrete Shannon entropy ([`Shannon`](@ref)), but calculated with
-*new probabilities estimators*. In turn, [`Shannon`](@ref) entropy is just one of many
-information measures.
-
-Even though the names of these methods (e.g. "wavelet entropy") sound like names for new
-entropies, what they actually do is to devise novel
-ways of calculating probabilities from data, and then plug those probabilities into formal
-discrete information measure formulas such as
-the Shannon entropy. These probabilities estimators are of course smartly created so that
-they elegantly highlight important complexity-related aspects of the data.
-
-Names for methods such as "permutation entropy" are commonplace, so in
-ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref).
+They are the good old discrete Shannon entropy ([`Shannon`](@ref)), but calculated with *new probabilities estimators*. In turn, [`Shannon`](@ref) entropy is just one of many entropies and entropies are a subset of information measures.
+Nevertheless, we acknolwedge that names such as "permutation entropy" are commonplace, so in ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref).
 However, we emphasize that these functions really aren't anything more than
 2-lines-of-code wrappers that call [`information`](@ref) with the appropriate
 [`ProbabilitiesEstimator`](@ref) and [`InformationMeasure`](@ref).
 
-What are *genuinely different entropies* are different definitions of entropy. And there
-are a lot of them! Examples are [`Shannon`](@ref) (the classic), [`Renyi`](@ref) or
-[`Tsallis`](@ref) entropy. These different definitions can be found in
-[`InformationMeasure`](@ref).
-
 ### Other complexity measures
 
-Other complexity measures, which strictly speaking don't compute entropies or other
-information measures, and may or may not explicitly compute probability distributions,
-are found in [Complexity measures](@ref) page.
-This includes measures like sample entropy and approximate entropy.
+Other complexity measures which are not functionals of probability mass or density functions, yet still output some quantity related with complexity analysis, are called **complexity measures** within ComplexityMeasures.jl. They can be found in [Complexity measures](@ref) page.
+This includes measures like sample entropy and approximate entropy (which, even if named entropies, are not entropies in the formal mathematical sense).
+
+A complexity measure is encapsulated by a [`ComplexityEstimator`](@ref) that can be given to the [`complexity`](@ref) function to obtain the corresponding numerical value.
+We stress that the separation between **information measure** and **complexity measure** is purely pragmatic, to establish a generic and extendable software interface within ComplexityMeasures.jl. One can always argue that _"measure X should have been complexity and/or information"_ but in most cases this separation does not matter, it is only important that a classification choice is done and we stick with it.
 
 ## [Input data for ComplexityMeasures.jl](@id input_data)
 

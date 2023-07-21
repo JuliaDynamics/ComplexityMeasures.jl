@@ -41,7 +41,7 @@ function information(e::Union{InformationMeasure, DiscreteInfoEstimator}, est::P
     return information(e, ps)
 end
 # dispatch for `information(e, ps::Probabilities)`
-# is in the individual discrete entropy definition or estimator files
+# is in the individual information definition or discrete estimator files
 
 # Convenience
 information(est::ProbabilitiesEstimator, x) = information(Shannon(), est, x)

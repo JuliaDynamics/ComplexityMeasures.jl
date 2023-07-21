@@ -84,7 +84,7 @@ Base.@kwdef struct SampleEntropy{R} <: ComplexityEstimator
 end
 
 # See comment in https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/71 for why
-# inrangecount is used and not NeighborHood.bulkisearch.
+# `inrangecount` is used and not NeighborHood.bulkisearch.
 """
     sample_entropy_probs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * Statistics.std(x))
 

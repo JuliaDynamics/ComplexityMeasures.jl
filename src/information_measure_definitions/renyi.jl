@@ -41,7 +41,7 @@ Renyi(q) = Renyi(q, 2)
 function information(e::Renyi, probs::Probabilities)
     q, base = e.q, e.base
     q < 0 && throw(ArgumentError("Order of Renyi entropy must be ≥ 0."))
-    non0_probs = Iterators.filter(!iszero, probs.p)
+    non0_probs = Iterators.filter(!iszero, vec(probs))
     logf = log_with_base(base)
     if q ≈ 0
         return logf(count(!iszero, probs))
