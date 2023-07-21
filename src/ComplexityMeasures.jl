@@ -15,10 +15,11 @@ const Array_or_SSSet = Union{<:AbstractArray{<:Real}, <:AbstractStateSpaceSet}
 const Vector_or_SSSet = Union{<:AbstractVector{<:Real}, <:AbstractStateSpaceSet}
 
 # Core API types and functions
-include("probabilities.jl")
-include("information_measures.jl")
-include("encodings.jl")
-include("complexity.jl")
+include("core/probabilities.jl")
+include("core/information_measures.jl")
+include("core/information_functions.jl")
+include("core/encodings.jl")
+include("core/complexity.jl")
 include("multiscale.jl")
 include("convenience.jl")
 
