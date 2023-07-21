@@ -51,4 +51,7 @@ end
 
     msg = "`entropy_normalized(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.\nFrom 3.0 onwards, use `information_normalized(PlugIn(measure = e), est, x)` instead.\n"
     @test_logs (:warn, msg) entropy_normalized(Shannon(), ValueHistogram(0.1), x)
+
+    msg = "`entropy(est::DifferentialEntropyEstimator, x)` is deprecated.\nUse `information(est, x)` instead.\n"
+    @test_logs (:warn, msg) entropy(Kraskov(), x)
 end

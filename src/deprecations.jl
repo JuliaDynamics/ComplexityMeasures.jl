@@ -25,7 +25,7 @@ end
 @deprecate entropy_maximum information_maximum
 @deprecate DifferentialEntropyEstimator DifferentialInfoEstimator
 @deprecate DiscreteEntropyEstimator DiscreteInfoEstimator
-@deprecate PlugInEntropy PlugIn
+@deprecate MLEntropy PlugIn
 
 # From before 2.0:
 @deprecate TimeScaleMODWT WaveletOverlap
@@ -80,12 +80,15 @@ function genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q = 1.0, bas
     return information(Renyi(q, base), est, x)
 end
 
-
+####################################################################################
 # For 3.0
 ####################################################################################
 export entropy
 entropy(args...) = information(args...)
 
+
+# Discrete
+################################################################################
 function entropy(e::InformationMeasure, est::ProbabilitiesEstimator, x)
     @warn """
     `entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.
@@ -103,4 +106,14 @@ function entropy_normalized(e::InformationMeasure, est::ProbabilitiesEstimator, 
     From 3.0 onwards, use `information_normalized(PlugIn(measure = e), est, x)` instead.
     """
     return information_normalized(PlugIn(e), est, x)
+end
+
+# Differential
+################################################################################
+function entropy(est::DifferentialInfoEstimator, x)
+    @warn """
+    `entropy(est::DifferentialEntropyEstimator, x)` is deprecated.
+    Use `information(est, x)` instead.
+    """
+    return information(est, x)
 end
