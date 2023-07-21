@@ -24,7 +24,7 @@ TsallisExtropy
 ## Discrete information measures
 
 ```@docs
-information(::InformationMeasure, ::ProbabilitiesEstimator, ::Any)
+information(::Union{InformationMeasure, DiscreteInfoEstimator}, ::ProbabilitiesEstimator, ::Any)
 information_maximum
 information_normalized
 ```
