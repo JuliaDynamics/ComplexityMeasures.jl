@@ -224,8 +224,8 @@ in the docs for all differential information measure estimators.
 
 ## Examples
 
-A standard normal distribution has a base-e differential entropy of `0.5*log(2π) + 0.5`
-nats.
+A standard normal distribution has a base-e Shannon differential entropy of
+`0.5*log(2π) + 0.5` nats.
 
 ```julia
 est = Kraskov(measure = Shannon(), k = 5, base = ℯ) # Base `ℯ` for nats.
