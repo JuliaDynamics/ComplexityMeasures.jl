@@ -41,10 +41,9 @@ probability density functions. The most commonly used information measures are
 that verify certain (entropy-type-dependent) axioms. Amigó et al.'s[^Amigó2018] summary
 paper gives a nice overview.
 
-However, in practice, the situation is a bit more complicated, because *estimating* an
-information measure is different from the *definition* of an information measure. A
-measure must be estimated from finite data, and there are many different ways
-of estimating a given quantity, each with its own own pros and cons.
+*Estimating* an information measure may be different from its *definition* due to
+finite data, and there could be are many different ways
+of estimating a measure, each with its own own pros and cons.
 [`DiscreteInfoEstimator`](@ref)s and [`DifferentialInfoEstimator`](@ref)s are provided
 to distinguish between different estimators of a discrete and differential variants of an
 [`InformationMeasure`](@ref), respectively.
