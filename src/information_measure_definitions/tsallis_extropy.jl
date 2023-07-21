@@ -1,7 +1,7 @@
 export TsallisExtropy
 
 """
-    TsallisExtropy <: InformationMeasureDefinition
+    TsallisExtropy <: InformationMeasure
     TsallisExtropy(; base = 2)
 
 The Tsallis extropy (Xue & Deng[^Xue2023]).
@@ -27,7 +27,7 @@ J_T(P) = \\dfrac{(N - 1)N^{q - 1} - (N - 1)^q}{(q - 1)N^{q - 1}}
     Xue, Y., & Deng, Y. (2023). Tsallis extropy. Communications in Statistics-Theory and
     Methods, 52(3), 751-762.
 """
-struct TsallisExtropy{Q,K,B} <: InformationMeasureDefinition
+struct TsallisExtropy{Q,K,B} <: InformationMeasure
     q::Q
     k::K
     base::B

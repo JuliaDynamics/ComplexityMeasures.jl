@@ -91,8 +91,8 @@ function downsample(method::Composite, s::Int, x::AbstractVector{T}, args...;
     end
 end
 
-function multiscale(alg::Composite, e::InformationMeasureDefinition,
-        est::Union{ProbabilitiesEstimator, DiffInfoMeasureEst},
+function multiscale(alg::Composite, e::InformationMeasure,
+        est::Union{ProbabilitiesEstimator, DifferentialInfoEstimator},
         x::AbstractVector;
         maxscale::Int = 8)
 
@@ -105,7 +105,7 @@ function multiscale(alg::Composite, e::InformationMeasureDefinition,
     return hs
 end
 
-function multiscale_normalized(alg::Composite, e::InformationMeasureDefinition, est::ProbabilitiesEstimator,
+function multiscale_normalized(alg::Composite, e::InformationMeasure, est::ProbabilitiesEstimator,
         x::AbstractVector;
         maxscale::Int = 8)
 

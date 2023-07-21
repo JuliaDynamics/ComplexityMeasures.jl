@@ -1,7 +1,7 @@
 export Renyi
 
 """
-    Renyi <: InformationMeasureDefinition
+    Renyi <: InformationMeasure
     Renyi(q, base = 2)
     Renyi(; q = 1.0, base = 2)
 
@@ -32,7 +32,7 @@ uniform distribution with ``L`` the [`total_outcomes`](@ref).
 
 [^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
-Base.@kwdef struct Renyi{Q, B} <: InformationMeasureDefinition
+Base.@kwdef struct Renyi{Q, B} <: InformationMeasure
     q::Q = 1.0
     base::B  = 2.0
 end

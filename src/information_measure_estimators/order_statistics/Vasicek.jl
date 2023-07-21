@@ -1,8 +1,8 @@
 export Vasicek
 
 """
-    Vasicek <: DiffInfoMeasureEst
-    Vasicek(; m::Int = 1, base = 2)
+    Vasicek <: DifferentialInfoEstimator
+    Vasicek(; measure = Shannon(), m::Int = 1, base = 2)
 
 The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`information`](@ref)
 (in the given `base`) of
@@ -53,14 +53,15 @@ written for this package).
     Statistical Society: Series B (Methodological), 38(1), 54-59.
 
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
-[`Ebrahimi`](@ref), [`DifferentialInformationMeasureEstimator`](@ref).
+[`Ebrahimi`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-@Base.kwdef struct Vasicek{I<:Integer, B} <: DiffInfoMeasureEst
-    m::I = 1
+@Base.kwdef struct Vasicek{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
+    measure::I = Shannon()
+    m::M = 1
     base::B = 2
 end
 
-function information(est::Vasicek, x::AbstractVector{T}) where {T<:Real}
+function information(est::Vasicek{<:Shannon}, x::AbstractVector{T}) where {T<:Real}
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))

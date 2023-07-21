@@ -22,23 +22,33 @@ msg = "`probabilities(x, est::ProbabilitiesEstimator)`\nis deprecated, use `prob
 x = StateSpaceSet(rand(100, 3))
 @test genentropy(x, 4) == information(Shannon(MathConstants.e), ValueHistogram(4), x)
 
-# Entropy
-@test entropy(Shannon(MathConstants.e), ValueHistogram(4), x) ==
-    information(Shannon(MathConstants.e), ValueHistogram(4), x)
-
-@test entropy_maximum(Shannon(MathConstants.e), ValueHistogram(4), x) ==
-    information_maximum(Shannon(MathConstants.e), ValueHistogram(4), x)
-
-@test entropy_normalized(Shannon(MathConstants.e), ValueHistogram(4), x) ==
-    information_normalized(Shannon(MathConstants.e), ValueHistogram(4), x)
-
-# Providing information measure as first argument shouldn't work, but does so only for
-# Shannon, for backwards compatibility.
-@test entropy(Shannon(), Kraskov(), x) isa Real
-@test_throws ErrorException entropy(Tsallis(), Kraskov(), x)
 
 @testset "deprecations: binning" begin
     @test FixedRectangularBinning((0, 1), (0, 1), 2) isa FixedRectangularBinning
     @test FixedRectangularBinning(0.1, 0.9, 2) isa FixedRectangularBinning
     @test FixedRectangularBinning(0.1, 0.9, 0.2) isa FixedRectangularBinning
+end
+
+
+@testset "3.0 deprecations" begin
+    # For
+    @test entropy(Shannon(MathConstants.e), ValueHistogram(4), x) ==
+        information(Shannon(MathConstants.e), ValueHistogram(4), x)
+
+    @test entropy_maximum(Shannon(MathConstants.e), ValueHistogram(4), x) ==
+        information_maximum(Shannon(MathConstants.e), ValueHistogram(4), x)
+
+    @test entropy_normalized(Shannon(MathConstants.e), ValueHistogram(4), x) ==
+        information_normalized(Shannon(MathConstants.e), ValueHistogram(4), x)
+
+    # Providing information measure as first argument shouldn't work, but does so only for
+    # Shannon, for backwards compatibility.
+    @test entropy(Shannon(), Kraskov(), x) isa Real
+    @test_throws ErrorException entropy(Tsallis(), Kraskov(), x)
+
+    msg = "`entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.\nFrom 3.0 onwards, use `information(PlugIn(measure = e), est, x)` instead.\n"
+    @test_logs (:warn, msg) entropy(Shannon(), ValueHistogram(0.1), x)
+
+    msg = "`entropy_normalized(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.\nFrom 3.0 onwards, use `information_normalized(PlugIn(measure = e), est, x)` instead.\n"
+    @test_logs (:warn, msg) entropy_normalized(Shannon(), ValueHistogram(0.1), x)
 end

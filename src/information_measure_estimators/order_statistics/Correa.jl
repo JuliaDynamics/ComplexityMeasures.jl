@@ -1,8 +1,8 @@
 export Correa
 
 """
-    Correa <: DiffInfoMeasureEst
-    Correa(; m::Int = 1, base = 2)
+    Correa <: DifferentialInfoEstimator
+    Correa(measure = Shannon(); m::Int = 1, base = 2)
 
 The `Correa` estimator computes the [`Shannon`](@ref) differential [`information`](@ref) (in
 the given `base) of a timeseries using the method from Correa (1995)[^Correa1995].
@@ -54,14 +54,15 @@ where
     and Methods, 24(10), 2439-2449.
 
 See also: [`information`](@ref), [`AlizadehArghami`](@ref), [`Ebrahimi`](@ref),
-[`Vasicek`](@ref), [`DifferentialInformationMeasureEstimator`](@ref).
+[`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-@Base.kwdef struct Correa{I<:Integer, B} <: DiffInfoMeasureEst
-    m::I = 1
+@Base.kwdef struct Correa{I <: InformationMeasure, M <: Integer, B} <: DifferentialInfoEstimator{I}
+    measure::I = Shannon()
+    m::M = 1
     base::B = 2
 end
 
-function information(est::Correa, x::AbstractVector{<:Real})
+function information(est::Correa{<:Shannon}, x::AbstractVector{<:Real})
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))

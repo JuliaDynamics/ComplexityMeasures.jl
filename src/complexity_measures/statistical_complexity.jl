@@ -20,8 +20,8 @@ Used with [`complexity`](@ref).
 - `dist<:SemiMetric = JSDivergence()`: The distance measure (from Distances.jl) to use for
     estimating the distance between the estimated probability distribution and a uniform
     distribution with the same maximal number of outcomes.
-- `entr::InformationMeasureDefinition = Renyi()`: An
-    [`InformationMeasureDefinition`](@ref) of choice. Any
+- `entr::InformationMeasure = Renyi()`: An
+    [`InformationMeasure`](@ref) of choice. Any
     information measure that defines `information_maximum` is valid here. Typically,
     an entropy is used, e.g. [`Shannon`](@ref) or [`Renyi`](@ref) is used.
 

@@ -7,19 +7,18 @@ Please be sure you have read the [Terminology](@ref terminology) section before 
 
 The information measure API is defined by
 
-- [`ProbabilitiesFunctional`](@ref)
-- [`InformationMeasureDefinition`](@ref)
+- [`InformationMeasure`](@ref)
 - [`information`](@ref)
 - [`information_maximum`](@ref)
 - [`information_normalized`](@ref)
-- [`DiscreteInformationMeasureEstimator`](@ref)
-- [`DifferentialInformationMeasureEstimator`](@ref)
+- [`InformationMeasureEstimator`](@ref)
+- [`DiscreteInfoEstimator`](@ref)
+- [`DifferentialInfoEstimator`](@ref)
 
 ## Information measures definitions
 
 ```@docs
-ProbabilitiesFunctional
-InformationMeasureDefinition
+InformationMeasure
 Shannon
 Renyi
 Tsallis
@@ -34,7 +33,7 @@ TsallisExtropy
 ## Discrete information measures
 
 ```@docs
-information(::InformationMeasureDefinition, ::ProbabilitiesEstimator, ::Any)
+information(::InformationMeasure, ::ProbabilitiesEstimator, ::Any)
 information_maximum
 information_normalized
 ```
@@ -42,14 +41,14 @@ information_normalized
 ### Discrete information measure estimators
 
 ```@docs
-DiscreteInformationMeasureEstimator
-ML
+DiscreteInfoEstimator
+PlugIn
 ```
 
 ## Differential information measure
 
 ```@docs
-information(::DifferentialInformationMeasureEstimator, ::Any)
+information(::DifferentialInfoEstimator, ::Any)
 ```
 
 ### [Table of differential information measure estimators](@id table_diff_ent_est)
@@ -57,7 +56,7 @@ information(::DifferentialInformationMeasureEstimator, ::Any)
 The following estimators are *differential* information measure estimators, and can also be used
 with [`information`](@ref).
 
-Each [`DifferentialInformationMeasureEstimator`](@ref)s uses a specialized technique to approximate relevant
+Each [`DifferentialInfoEstimator`](@ref)s uses a specialized technique to approximate relevant
 densities/integrals, and is often tailored to one or a few types of information measures.
 For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 
@@ -76,7 +75,7 @@ For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 | [`AlizadehArghami`](@ref)    | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
 
 ```@docs
-DifferentialInformationMeasureEstimator
+DifferentialInfoEstimator
 ```
 
 ```@docs

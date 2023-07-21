@@ -13,7 +13,7 @@ project [devdocs](https://juliadynamics.github.io/ComplexityMeasures.jl/dev/devd
 Ticking the boxes below will help us provide good feedback and speed up the review process.
 Partial PRs are welcome too, and we're happy to help if you're stuck on something.
 
-- [ ] The new information measure (estimator) subtypes `InformationMeasureDefinition` (`DiffInfoMeasureEst`).
+- [ ] The new information measure (estimator) subtypes `InformationMeasure` (`DifferentialInfoEstimator`).
 - [ ] The new information measure has an informative docstring, which is referenced in
     `docs/src/information_measures.md`.
 - [ ] Relevant sources are cited in the docstring.

@@ -13,21 +13,20 @@ ComplexityMeasures
 
 Before exploring the features of ComplexityMeasures.jl, it is useful to read through this terminology section. Here, we briefly review important complexity-related concepts and names from the scientific literature, and outline how we've structured ComplexityMeasures.jl around these concepts.
 
-In these scientific literature, words like *probabilities*, *entropies*, and other *complexity measures* are used (and abused) in multiple contexts, and are often used interchangeably to describe similar concepts. The API and documentation of ComplexityMeasures.jl aim to clarify the meaning and usage of these words, and to provide simple ways to obtain probabilities, entropies, or other complexity measures
-from input data.
+In these scientific literature, words like *probabilities*, *entropies*, and other *complexity measures* are used (and abused) in multiple contexts, and are often used interchangeably to describe similar concepts. The API and documentation of ComplexityMeasures.jl aim to clarify the meaning and usage of these words, and to provide simple ways to obtain probabilities, information measures, or other complexity measures from input data.
 
-For ComplexityMeasures.jl _information measures such as entropies are also considered complexity measures_, while sometimes a distinction is made so that "complexity measures" 
-means anything beyond information measures such as entropy. However we believe the general nonlinear dynamics community agrees with our take, as most papers that introduce different entropy flavors, call them complexity measures. Example: _"Permutation Entropy: A Natural Complexity Measure for Time Series"_ from Brandt and Pompe 2002.
+For ComplexityMeasures.jl, we use the generic term "complexity measure" for any complexity measure that is not a direct functional of probabilities. "Information measure" is
+used exclusively about measures that are functionals of probability mass functions or probability density functions, for example entropies. We believe the general nonlinear dynamics community agrees with our take, as most papers that introduce different entropy flavors call them complexity measures. Example: *"Permutation Entropy: A Natural Complexity Measure for Time Series"* (Brandt and Pompe, 2002).
 
 ### Probabilities
 
-Information measures, and some other complexity measures, are are typically computed based on _probability distributions_,
-which we simply refer to as "probabilities". We provide a dedicated
-[`Probabilities`](@ref) API, and probabilities can be obtained from input data in a plethora of different ways.
-The central API function that estimates a probability distribution
-is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref)
-to specify how the probabilities are computed.
-All available estimators can be found in the [estimators page](@ref probabilities_estimators).
+Information measures, and some other complexity measures, are are typically computed based
+on *probability distributions*, which we simply refer to as "probabilities". Probabilities
+can be obtained from input data in a plethora of different ways. The central API function
+that estimates a probability distribution is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref) to specify how the probabilities are computed,
+and returns a [`Probabilities`](@ref) instance.
+All available probabilities estimators can be found in the
+[estimators page](@ref probabilities_estimators).
 
 ### Information measures
 
@@ -40,11 +39,11 @@ On the highest level, there are two main types of information measures.
     the estimated probabilities into an estimator of the information measure definition.
     Internally, this is literally just a few lines of code where we first apply some
     [`ProbabilitiesEstimator`](@ref) to the input data, and feed the resulting
-    [`probabilities`](@ref) to [`information`](@ref) with some [`DiscreteInformationMeasureEstimator`](@ref).
+    [`probabilities`](@ref) to [`information`](@ref) with some [`DiscreteInfoEstimator`](@ref).
 - *Differential/continuous* information measures are functions of
     [probability density functions](https://en.wikipedia.org/wiki/Probability_density_function),
     which are *integrals*. Computing differential information measures therefore rely on estimating
-    some density functional. For this task, we provide [`DifferentialInformationMeasureEstimator`](@ref)s,
+    some density functional. For this task, we provide [`DifferentialInfoEstimator`](@ref)s,
     which compute information measures via alternate means, without explicitly computing some
     probability distribution. For example, the [`Correa`](@ref) estimator computes the
     Shannon differential entropy using order statistics.
@@ -67,12 +66,12 @@ Names for methods such as "permutation entropy" are commonplace, so in
 ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref).
 However, we emphasize that these functions really aren't anything more than
 2-lines-of-code wrappers that call [`information`](@ref) with the appropriate
-[`ProbabilitiesEstimator`](@ref) and [`InformationMeasureDefinition`](@ref).
+[`ProbabilitiesEstimator`](@ref) and [`InformationMeasure`](@ref).
 
 What are *genuinely different entropies* are different definitions of entropy. And there
 are a lot of them! Examples are [`Shannon`](@ref) (the classic), [`Renyi`](@ref) or
 [`Tsallis`](@ref) entropy. These different definitions can be found in
-[`InformationMeasureDefinition`](@ref).
+[`InformationMeasure`](@ref).
 
 ### Other complexity measures
 

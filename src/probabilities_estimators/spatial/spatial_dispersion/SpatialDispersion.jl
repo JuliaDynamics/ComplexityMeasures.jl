@@ -22,7 +22,7 @@ conditions.
 
 In combination with [`information`](@ref) and [`information_normalized`](@ref), this probabilities
 estimator can be used to compute (normalized) generalized spatiotemporal dispersion
-[`InformationMeasureDefinition`](@ref) of any type.
+[`InformationMeasure`](@ref) of any type.
 
 ## Arguments
 

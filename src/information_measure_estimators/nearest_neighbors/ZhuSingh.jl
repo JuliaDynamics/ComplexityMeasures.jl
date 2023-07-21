@@ -1,13 +1,13 @@
 using DelayEmbeddings: minmaxima
 using SpecialFunctions: digamma
-using ComplexityMeasures: InformationMeasureDefinition, DiffInfoMeasureEst
+using ComplexityMeasures: InformationMeasure, DifferentialInfoEstimator
 using Neighborhood: KDTree, Chebyshev, bulkisearch, Theiler, NeighborNumber
 
 export ZhuSingh
 
 """
-    ZhuSingh <: DiffInfoMeasureEst
-    ZhuSingh(; k = 1, w = 0, base = 2)
+    ZhuSingh <: DifferentialInfoEstimator
+    ZhuSingh(measure = Shannon(); k = 1, w = 0, base = 2)
 
 The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
 differential [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref)
@@ -33,11 +33,11 @@ This estimator is an extension to the entropy estimator in Singh et al. (2003).
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
 when searching for neighbours).
 
-See also: [`information`](@ref), [`DifferentialInformationMeasureEstimator`](@ref).
+See also: [`information`](@ref), [`DifferentialInfoEstimator`](@ref).
 
 [^Zhu2015]:
     Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to
-    transfer entropy estimation via the k-nearest-neighbors approach. InformationMeasureDefinition, 17(6),
+    transfer entropy estimation via the k-nearest-neighbors approach. InformationMeasure, 17(6),
     4173-4201.
 
 [^Singh2003]:
@@ -45,13 +45,14 @@ See also: [`information`](@ref), [`DifferentialInformationMeasureEstimator`](@re
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-Base.@kwdef struct ZhuSingh{B} <: NNDiffInfoMeasureEst
+Base.@kwdef struct ZhuSingh{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
+    measure::I = Shannon()
     k::Int = 1
     w::Int = 0
     base::B = 2
 end
 
-function information(est::ZhuSingh, x::AbstractStateSpaceSet{D, T}) where {D, T}
+function information(est::ZhuSingh{<:Shannon}, x::AbstractStateSpaceSet{D, T}) where {D, T}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())

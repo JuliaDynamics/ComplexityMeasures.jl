@@ -13,10 +13,10 @@ end
 "Volume of a unit ball in R^d."
 ball_volume(d::Int) = π^(d/2)/gamma((d/2)+1)
 
-abstract type NNDiffInfoMeasureEst <: DiffInfoMeasureEst end
+abstract type NNDifferentialInfoEstimator{I} <: DifferentialInfoEstimator{I} end
 
 # convenience for Nearest-Neighbors based estimators who use datasets
-information(est::NNDiffInfoMeasureEst, x::AbstractVector) = information(est, StateSpaceSet(x))
+information(est::NNDifferentialInfoEstimator, x::AbstractVector) = information(est, StateSpaceSet(x))
 
 include("KozachenkoLeonenko.jl")
 include("Kraskov.jl")

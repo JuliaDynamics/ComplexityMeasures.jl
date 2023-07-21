@@ -24,15 +24,15 @@ You may extend any of the following functions if there are potential performance
 2. [`outcomes`](@ref). By default calls `probabilities_and_outcomes` and returns the second value.
 3. [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref). This is the function that most typically has performance benefits if implemented explicitly, so most existing estimators extend it by default.
 
-## Adding a new `DifferentialInformationMeasureEstimator`
+## Adding a new `DifferentialInfoEstimator`
 
 ### Mandatory steps
 
-1. Define your type and make it subtype [`DifferentialInformationMeasureEstimator`](@ref).
+1. Define your type and make it subtype [`DifferentialInfoEstimator`](@ref).
 2. Add a docstring to your type following the style of the docstrings of other estimators.
     This docstring should contain the formula(s)/integral(s) which it estimates, and a
-    reference to relevant [`InformationMeasureDefinition`](@ref)(s).
-3. Implement dispatch for [`information`](@ref) with the relevant [`InformationMeasureDefinition`](@ref).
+    reference to relevant [`InformationMeasure`](@ref)(s).
+3. Implement dispatch for [`information`](@ref) with the relevant [`InformationMeasure`](@ref).
     If your estimator works for multiple information measures, implement one method for
     [`information`](@ref) for each of them.
 
@@ -44,18 +44,18 @@ applied to data sampled from some known distribution. Have a look in the tests f
 existing estimators for inspiration (you can just copy-paste one of the existing tests, or
 make them more elaborate if you want to).
 
-## Adding a new `InformationMeasureDefinition`
+## Adding a new `InformationMeasure`
 
 ### Mandatory steps
 
-1. Define your information measure definition type and make it subtype [`InformationMeasureDefinition`](@ref).
+1. Define your information measure definition type and make it subtype [`InformationMeasure`](@ref).
 2. Implement dispatch for [`information`](@ref)`(def::YourType, p::Probabilities)`
 3. Add a docstring to your type following the style of the docstrings of other information
     measure definitions, and should include the mathematical definition of the measure.
 4. Add your information measure definition type to the list of definitions in the
     `docs/src/information_measures.md` documentation page.
 5. Add a reference to your information measure definition in the docstring for
-    [`InformationMeasureDefinition`](@ref).
+    [`InformationMeasure`](@ref).
 
 ### Optional steps
 

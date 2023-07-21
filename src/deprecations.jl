@@ -12,7 +12,7 @@ end
 
 
 # from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
-function entropy(e::InformationMeasureDefinition, est::DiffInfoMeasureEst, x)
+function entropy(e::InformationMeasure, est::DifferentialInfoEstimator, x)
     if e isa Shannon
         return information(est, x)
     else
@@ -21,13 +21,11 @@ function entropy(e::InformationMeasureDefinition, est::DiffInfoMeasureEst, x)
 end
 
 @deprecate ComplexityMeasure ComplexityEstimator
-@deprecate EntropyDefinition InformationMeasureDefinition
-@deprecate entropy information
+@deprecate EntropyDefinition InformationMeasure
 @deprecate entropy_maximum information_maximum
-@deprecate entropy_normalized information_normalized
-@deprecate DifferentialEntropyEstimator DifferentialInformationMeasureEstimator
-@deprecate DiscreteEntropyEstimator DiscreteInformationMeasureEstimator
-@deprecate MLEntropy ML
+@deprecate DifferentialEntropyEstimator DifferentialInfoEstimator
+@deprecate DiscreteEntropyEstimator DiscreteInfoEstimator
+@deprecate PlugInEntropy PlugIn
 
 # From before 2.0:
 @deprecate TimeScaleMODWT WaveletOverlap
@@ -80,4 +78,29 @@ function genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q = 1.0, bas
     Use instead: `information(Renyi(q, base), est, x)`.
     """
     return information(Renyi(q, base), est, x)
+end
+
+
+# For 3.0
+####################################################################################
+export entropy
+entropy(args...) = information(args...)
+
+function entropy(e::InformationMeasure, est::ProbabilitiesEstimator, x)
+    @warn """
+    `entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.
+    From 3.0 onwards, use `information(PlugIn(measure = e), est, x)` instead.
+    """
+    return information(PlugIn(e), est, x)
+end
+
+export entropy_normalized
+entropy_normalized(args...) = information_normalized(args...)
+
+function entropy_normalized(e::InformationMeasure, est::ProbabilitiesEstimator, x)
+    @warn """
+    `entropy_normalized(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.
+    From 3.0 onwards, use `information_normalized(PlugIn(measure = e), est, x)` instead.
+    """
+    return information_normalized(PlugIn(e), est, x)
 end

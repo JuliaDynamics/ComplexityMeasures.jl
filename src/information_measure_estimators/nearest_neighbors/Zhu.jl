@@ -1,8 +1,8 @@
 export Zhu
 
 """
-    Zhu <: DiffInfoMeasureEst
-    Zhu(; k = 1, w = 0, base = 2)
+    Zhu <: DifferentialInfoEstimator
+    Zhu(; measure = Shannon(), k = 1, w = 0, base = 2)
 
 The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] is an extension to
 [`KozachenkoLeonenko`](@ref), and computes the [`Shannon`](@ref)
@@ -24,20 +24,21 @@ using `k` nearest neighbor searches. `w` is the Theiler window, which determines
 temporal neighbors are excluded during neighbor searches (defaults to `0`, meaning that
 only the point itself is excluded when searching for neighbours).
 
-See also: [`information`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialInformationMeasureEstimator`](@ref).
+See also: [`information`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialInfoEstimator`](@ref).
 
 [^Zhu2015]:
     Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to
-    transfer entropy estimation via the k-nearest-neighbors approach. InformationMeasureDefinition, 17(6),
+    transfer entropy estimation via the k-nearest-neighbors approach. InformationMeasure, 17(6),
     4173-4201.
 """
-Base.@kwdef struct Zhu{B} <: NNDiffInfoMeasureEst
+Base.@kwdef struct Zhu{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
+    measure::I = Shannon()
     k::Int = 1
     w::Int = 0
     base::B = 2
 end
 
-function information(est::Zhu, x::AbstractStateSpaceSet{D, T}) where {D, T}
+function information(est::Zhu{<:Shannon}, x::AbstractStateSpaceSet{D, T}) where {D, T}
     (; k, w) = est
     N = length(x)
     tree = KDTree(x, Euclidean())

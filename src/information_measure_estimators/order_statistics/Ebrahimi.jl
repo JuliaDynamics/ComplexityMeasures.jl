@@ -1,8 +1,8 @@
 export Ebrahimi
 
 """
-    Ebrahimi <: DiffInfoMeasureEst
-    Ebrahimi(; m::Int = 1, base = 2)
+    Ebrahimi <: DifferentialInfoEstimator
+    Ebrahimi(measure = Shannon(); m::Int = 1, base = 2)
 
 The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`information`](@ref) (in the given
 `base`) of a timeseries using the method from Ebrahimi (1994)[^Ebrahimi1994].
@@ -56,10 +56,11 @@ c_i =
     Statistics & Probability Letters, 20(3), 225-234.
 
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
-[`Vasicek`](@ref), [`DifferentialInformationMeasureEstimator`](@ref).
+[`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-@Base.kwdef struct Ebrahimi{I<:Integer, B} <: DiffInfoMeasureEst
-    m::I = 1
+@Base.kwdef struct Ebrahimi{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
+    measure::I = Shannon()
+    m::M = 1
     base::B = 2
 end
 
@@ -73,7 +74,7 @@ function ebrahimi_scaling_factor(i, m, n)
     end
 end
 
-function information(est::Ebrahimi, x::AbstractVector{<:Real})
+function information(est::Ebrahimi{<:Shannon}, x::AbstractVector{<:Real})
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))

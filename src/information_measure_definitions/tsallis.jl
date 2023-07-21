@@ -1,7 +1,7 @@
 export Tsallis
 
 """
-    Tsallis <: InformationMeasureDefinition
+    Tsallis <: InformationMeasure
     Tsallis(q; k = 1.0, base = 2)
     Tsallis(; q = 1.0, k = 1.0, base = 2)
 
@@ -27,7 +27,7 @@ with ``L`` the [`total_outcomes`](@ref).
     Tsallis, C. (1988). Possible generalization of Boltzmann-Gibbs statistics.
     Journal of statistical physics, 52(1), 479-487.
 """
-struct Tsallis{Q,K,B} <: InformationMeasureDefinition
+struct Tsallis{Q,K,B} <: InformationMeasure
     q::Q
     k::K
     base::B

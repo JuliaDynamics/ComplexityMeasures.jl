@@ -16,9 +16,7 @@ const Vector_or_SSSet = Union{<:AbstractVector{<:Real}, <:AbstractStateSpaceSet}
 
 # Core API types and functions
 include("probabilities.jl")
-include("probabilities_functional.jl")
 include("information_measures.jl")
-include("information_measure_estimators/information_measure_estimators.jl")
 include("encodings.jl")
 include("complexity.jl")
 include("multiscale.jl")
@@ -28,6 +26,7 @@ include("convenience.jl")
 include("encoding_implementations/encoding_implementations.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("information_measure_definitions/information_measure_definitions.jl")
+include("information_measure_estimators/information_measure_estimators.jl")
 include("complexity_measures/complexity_measures.jl")
 
 # deprecations (must be after all declarations)

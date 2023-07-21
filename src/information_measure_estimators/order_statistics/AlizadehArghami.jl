@@ -1,8 +1,8 @@
 export AlizadehArghami
 
 """
-    AlizadehArghami <: DiffInfoMeasureEst
-    AlizadehArghami(; m::Int = 1, base = 2)
+    AlizadehArghami <: DifferentialInfoEstimator
+    AlizadehArghami(measure = Shannon(); m::Int = 1, base = 2)
 
 The `AlizadehArghami`estimator computes the [`Shannon`](@ref) differential
 [`information`](@ref) (in the given `base`) of a timeseries using the
@@ -46,14 +46,15 @@ the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correcti
     Journal of the Iranian Statistical Society (JIRSS).
 
 See also: [`information`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
-[`Vasicek`](@ref), [`DifferentialInformationMeasureEstimator`](@ref).
+[`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-@Base.kwdef struct AlizadehArghami{I<:Integer, B} <: DiffInfoMeasureEst
-    m::I = 1
+@Base.kwdef struct AlizadehArghami{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
+    measure::I = Shannon()
+    m::M = 1
     base::B = 2
 end
 
-function information(est::AlizadehArghami, x::AbstractVector{<:Real})
+function information(est::AlizadehArghami{<:Shannon}, x::AbstractVector{<:Real})
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))

@@ -1,7 +1,7 @@
 # Interface.
 testfile("interface.jl")
 
-# InformationMeasureDefinition types.
+# InformationMeasure types.
 testfile("infomeasure_types/renyi.jl")
 testfile("infomeasure_types/shannon.jl")
 testfile("infomeasure_types/tsallis.jl")

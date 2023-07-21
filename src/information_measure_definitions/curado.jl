@@ -1,7 +1,7 @@
 export Curado
 
 """
-    Curado <: InformationMeasureDefinition
+    Curado <: InformationMeasure
     Curado(; b = 1.0)
 
 The Curado entropy (Curado & Nobre, 2004)[^Curado2004], used with [`information`](@ref) to
@@ -19,7 +19,7 @@ the [`total_outcomes`](@ref).
 [^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
     entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
 """
-Base.@kwdef struct Curado{B} <: InformationMeasureDefinition
+Base.@kwdef struct Curado{B} <: InformationMeasure
     b::B = 1.0
 
     function Curado(b::B) where B <: Real

@@ -27,7 +27,7 @@ J_R(P) = (N - 1)\\log \\left( \\dfrac{n}{n-1} \\right) .
     Liu, J., & Xiao, F. (2021). Renyi extropy. Communications in Statistics-Theory and
     Methods, 1-12.
 """
-struct RenyiExtropy{Q,B} <: InformationMeasureDefinition
+struct RenyiExtropy{Q,B} <: InformationMeasure
     q::Q
     base::B
 end

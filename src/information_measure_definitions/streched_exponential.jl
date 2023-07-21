@@ -3,7 +3,7 @@ using SpecialFunctions: gamma, gamma_inc
 export StretchedExponential
 
 """
-    StretchedExponential <: InformationMeasureDefinition
+    StretchedExponential <: InformationMeasure
     StretchedExponential(; η = 2.0, base = 2)
 
 The stretched exponential, or Anteneodo-Plastino, entropy (Anteneodo &
@@ -26,7 +26,7 @@ incomplete Gamma functions (see source code).
     stretched exponential probability distributions. Journal of Physics A: Mathematical
     and General, 32(7), 1089.
 """
-Base.@kwdef struct StretchedExponential{Q, B} <: InformationMeasureDefinition
+Base.@kwdef struct StretchedExponential{Q, B} <: InformationMeasure
     η::Q = 2.0
     base::B = 2
 
