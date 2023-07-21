@@ -1,14 +1,10 @@
 # Complexity measures
 
-In this page we document estimators for complexity measures that are not [information
-measures](@ref information_measures) in the strict mathematical sense. The API is almost
-identical to the [`information`](@ref) API and is defined by:
-
-- [`complexity`](@ref)
-- [`complexity_normalized`](@ref)
-- [`ComplexityEstimator`](@ref)
+Please be sure you have read the [Terminology](@ref terminology) section before going through the API here, to have a good idea of how we define "complexity measures" and how they all come together over the common interface of the [`complexity`](@ref) function.
 
 ## Complexity measures API
+
+The complexity measure API is defined by the [`complexity`](@ref) function, which may take as an input an [`ComplexityEstimator`](@ref). The function [`complexity_normalized`](@ref) is also useful.
 
 ```@docs
 complexity
