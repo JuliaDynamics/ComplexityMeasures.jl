@@ -38,7 +38,7 @@ This amounts to adding a new definition of an information measure, not an estima
 ### Mandatory steps
 
 1. Define your information measure definition type and make it subtype [`InformationMeasure`](@ref).
-2. Implement dispatch for [`information`](@ref)`(def::YourType, p::Probabilities)`
+2. Implement dispatch for [`information`](@ref)`(def::YourType, p::Probabilities)`. This is the Plug-In estimator for the discrete measure.
 3. Add a docstring to your type following the style of the docstrings of other information
     measure definitions, and should include the mathematical definition of the measure.
 4. Add your information measure definition type to the list of definitions in the
