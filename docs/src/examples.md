@@ -107,7 +107,7 @@ for (i, est) in enumerate(knn_estimators)
     for j = 1:nreps
         pts = randn(maximum(Ns)) |> StateSpaceSet
         for (k, N) in enumerate(Ns)
-            Hs_uniform_knn[i][k][j] = entropy(est, pts[1:N])
+            Hs_uniform_knn[i][k][j] = information(est, pts[1:N])
         end
     end
 end
@@ -125,7 +125,7 @@ for (i, est_os) in enumerate(estimators_os)
         for (k, N) in enumerate(Ns)
             m = floor(Int, N / 100) # Scale `m` to timeseries length
             est = est_os(; m, base = ℯ) # Instantiate estimator with current `m`
-            Hs_uniform_os[i][k][j] = entropy(est, pts[1:N])
+            Hs_uniform_os[i][k][j] = information(est, pts[1:N])
         end
     end
 end
@@ -191,9 +191,9 @@ for (i, r) in enumerate(rs)
     x, t = trajectory(ds, N_ent)
     ## `x` is a 1D dataset, need to recast into a timeseries
     x = columns(x)[1]
-    hs_perm[i] = entropy(SymbolicPermutation(; m, τ), x)
-    hs_wtperm[i] = entropy(SymbolicWeightedPermutation(; m, τ), x)
-    hs_ampperm[i] = entropy(SymbolicAmplitudeAwarePermutation(; m, τ), x)
+    hs_perm[i] = information(SymbolicPermutation(; m, τ), x)
+    hs_wtperm[i] = information(SymbolicWeightedPermutation(; m, τ), x)
+    hs_ampperm[i] = information(SymbolicAmplitudeAwarePermutation(; m, τ), x)
 end
 
 fig = Figure()
@@ -255,7 +255,7 @@ how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a 
 using ComplexityMeasures, CairoMakie
 bs = [1.0, 1.5, 2.0, 3.0, 4.0, 10.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
-hs = [[entropy(Curado(; b = b), p) for p in ps] for b in bs]
+hs = [[information(Curado(; b = b), p) for p in ps] for b in bs]
 fig = Figure()
 ax = Axis(fig[1,1]; xlabel = "p", ylabel = "H(p)")
 pp = [p[1] for p in ps]
@@ -282,7 +282,7 @@ using CairoMakie
 probs = [Probabilities([p, 1-p]) for p in 0.0:0.01:1.0]
 ps = collect(0.0:0.01:1.0);
 κs = [-0.99, -0.66, -0.33, 0, 0.33, 0.66, 0.99];
-Hs = [[entropy(Kaniadakis(κ = κ), p) for p in probs] for κ in κs];
+Hs = [[information(Kaniadakis(κ = κ), p) for p in probs] for κ in κs];
 
 fig = Figure()
 ax = Axis(fig[1, 1], xlabel = "p", ylabel = "H(p)")
@@ -308,7 +308,7 @@ using ComplexityMeasures, SpecialFunctions, CairoMakie
 ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
 ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
 
-hs_norm = [[entropy(StretchedExponential( η = η), p) / gamma((η + 1)/η) for p in ps] for η in ηs]
+hs_norm = [[information(StretchedExponential( η = η), p) / gamma((η + 1)/η) for p in ps] for η in ηs]
 fig = Figure()
 ax = Axis(fig[1,1]; xlabel = "p", ylabel = "H(p)")
 pp = [p[1] for p in ps]
@@ -356,7 +356,7 @@ pes = zeros(length(windows))
 m, c = 2, 6
 est_de = Dispersion(c = c, m = m, τ = 1)
 for (i, window) in enumerate(windows)
-    des[i] = entropy_normalized(Renyi(), est_de, y[window])
+    des[i] = information_normalized(Renyi(), est_de, y[window])
 end
 
 fig = Figure()
@@ -396,8 +396,8 @@ for N in (N1, N2)
     local z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
 
     for q in (x, y, z)
-        h = entropy(PowerSpectrum(), q)
-        n = entropy_normalized(PowerSpectrum(), q)
+        h = information(PowerSpectrum(), q)
+        n = information_normalized(PowerSpectrum(), q)
         println("entropy: $(h), normalized: $(n).")
     end
 end
@@ -416,7 +416,7 @@ using ComplexityMeasures
 x = rand(50, 50) # some image
 stencil = [1 1; 0 1] # or one of the other ways of specifying stencils
 est = SpatialSymbolicPermutation(stencil, x)
-h = entropy(est, x)
+h = information(est, x)
 ```
 
 To apply this to timeseries of spatial data, simply loop over the call, e.g.:
@@ -424,7 +424,7 @@ To apply this to timeseries of spatial data, simply loop over the call, e.g.:
 ```@example MAIN
 data = [rand(50, 50) for i in 1:10] # e.g., evolution of a 2D field of a PDE
 est = SpatialSymbolicPermutation(stencil, first(data))
-h_vs_t = map(d -> entropy(est, d), data)
+h_vs_t = map(d -> information(est, d), data)
 ```
 
 Computing any other generalized spatiotemporal permutation entropy is trivial, e.g. with [`Renyi`](@ref):
@@ -432,7 +432,7 @@ Computing any other generalized spatiotemporal permutation entropy is trivial, e
 ```@example MAIN
 x = reshape(repeat(1:5, 500) .+ 0.1*rand(500*5), 50, 50)
 est = SpatialSymbolicPermutation(stencil, x)
-entropy(Renyi(q = 2), est, x)
+information(Renyi(q = 2), est, x)
 ```
 
 
@@ -460,8 +460,8 @@ stencil = ((2, 2), (1, 1))
 
 est_disp = SpatialDispersion(stencil, original; c = 5, periodic = false)
 est_perm = SpatialSymbolicPermutation(stencil, original; periodic = false)
-hs_disp = [entropy_normalized(est_disp, img) for img in noisy_imgs]
-hs_perm = [entropy_normalized(est_perm, img) for img in noisy_imgs]
+hs_disp = [information_normalized(est_disp, img) for img in noisy_imgs]
+hs_perm = [information_normalized(est_perm, img) for img in noisy_imgs]
 
 # Plot the results
 fig = Figure(size = (800, 1000))
@@ -526,7 +526,7 @@ est_de = Dispersion(; c, m, τ = 1)
 
 for (i, window) in enumerate(windows)
     rdes[i] = complexity_normalized(est_rd, y[window])
-    des[i] = entropy_normalized(Renyi(), est_de, y[window])
+    des[i] = information_normalized(Renyi(), est_de, y[window])
 end
 
 fig = Figure()

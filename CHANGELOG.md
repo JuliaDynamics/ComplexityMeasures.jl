@@ -2,9 +2,14 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
-## 2.8.0
+## 3 (to be released)
+
+This release does not contain strictly breaking changes, because deprecations have been put in place everywhere. The major change that facilitated v2 -> v3 is the large renaming overhaul that we performed: we renamed the concept of "entropy" to "information measure", and `entropy` has been renamed to `information`. Similarly, we now have `DiscreteInfoEstimator` and `DifferentialInfoEstimator`. We consider as "information measures" anything that is a functional of probability mass/density functions.
+
+Further additions to the library in v3:
 
 - New function `allprobabilities` that is like `probabilities` but also includes 0 entries for possible outcomes that were not present in the data.
+- New _extropy_ definitions that count as information measures (and thus can be given to `information`): `ShannonExtropy`, `RenyiExtropy`, `TsallisExtropy`.
 - `StatisticalComplexity` is now compatible with any normalizable `EntropyDefinition`.
 - Add the 1976 Lempel-Ziv complexity measure (`LempelZiv76`).
 - New entropy definition: identification entropy (`Identification`).
@@ -37,7 +42,7 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 
 - Like differential entropies, discrete entropies now also have their own estimator type.
 - The approach of giving both an entropy definition, and an entropy estimator to `entropy` has been dropped. Now the entropy estimators know what definitions they are applied for. This change is a deprecation, i.e., backwards compatible.
-- Added `MLEntropy` discrete entropy estimator.
+- Added `PlugInEntropy` discrete entropy estimator.
 
 ## 2.2
 
@@ -73,6 +78,7 @@ If we missed code that should be working, let us know by opening an issue.
 - Check the online documentation for a comprehensive overview of the changes.
 
 ### Minor changes
+
 - No more deprecation warnings for using the old keyword `α` for Renyi entropy.
 - The `KozachenkoLeonenko` estimator now correctly fixes its neighbor search to the
     *closest* neighbor only, and its constructor does no longer accept `k` as an input. It also uses correct scaling factor and adapts to dimension.
@@ -80,21 +86,27 @@ If we missed code that should be working, let us know by opening an issue.
     for `Kraskov` and `KozachenkoLeonenko`.
 
 ## main
-* New probability estimator `SpatialSymbolicPermutation` suitable for computing spatial permutation entropies
-* Introduce Tsallis entropy.
+
+- New probability estimator `SpatialSymbolicPermutation` suitable for computing spatial permutation entropies
+- Introduce Tsallis entropy.
 
 ## 1.2
-* Added dispersion entropy.
+
+- Added dispersion entropy.
 
 ## 1.1
-* Introduce convenience function `permentropy`.
-* Several type instabilities fixed.
+
+- Introduce convenience function `permentropy`.
+- Several type instabilities fixed.
 
 ## 1.0
+
 No actual changes, just first major version release.
 
 ## 0.12
-* Nearest neighbor searches now use Neighborhood.jl and the Theiler window properly.
+
+- Nearest neighbor searches now use Neighborhood.jl and the Theiler window properly.
 
 ## 0.11.1
-* `probabilities(data, n::Int)` now uses a rectangular binning of `n` bins for each dimension. Before, while not documented as possible in the public API, using integer `n` would take it as the bin size.
+
+- `probabilities(data, n::Int)` now uses a rectangular binning of `n` bins for each dimension. Before, while not documented as possible in the public API, using integer `n` would take it as the bin size.

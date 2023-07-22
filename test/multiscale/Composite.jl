@@ -14,6 +14,6 @@ mcn = ComplexityMeasures.multiscale_normalized(Composite(), e, est, x; maxscale)
 @test length(mc) == 5
 @test length(mcn) == 5
 
-# `DiffEntropyEst`s` should work for `multiscale`, but not `multiscale_normalized`
+# `DifferentialInfoEstimator`s` should work for `multiscale`, but not `multiscale_normalized`
 @test ComplexityMeasures.multiscale(Composite(), e, Kraskov(), x) isa Vector{T} where T <: Real
 @test_throws ErrorException ComplexityMeasures.multiscale_normalized(Composite(), e, Kraskov(), x)

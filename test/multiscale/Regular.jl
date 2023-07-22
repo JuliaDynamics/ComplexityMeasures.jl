@@ -14,6 +14,6 @@ mrn = ComplexityMeasures.multiscale_normalized(Regular(), est, x; maxscale)
 @test length(mr) == 5
 @test length(mrn) == 5
 
-# `DiffEntropyEst`s` should work for `multiscale`, but not `multiscale_normalized`
+# `DifferentialInfoEstimator`s` should work for `multiscale`, but not `multiscale_normalized`
 @test ComplexityMeasures.multiscale(Regular(), e, Kraskov(), x) isa Vector{T} where T <: Real
 @test_throws ErrorException ComplexityMeasures.multiscale_normalized(Regular(), e, Kraskov(), x)

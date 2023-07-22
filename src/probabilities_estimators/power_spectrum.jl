@@ -25,7 +25,7 @@ Input `x` is needed for a well-defined [`outcome_space`](@ref).
     141, EL127 (2017)](https://doi.org/10.1121/1.4976109)
 
 [^Tian2017]:
-    Tian et al, _Spectral EntropyDefinition Can Predict Changes of Working Memory Performance Reduced
+    Tian et al, _Spectral InformationMeasure Can Predict Changes of Working Memory Performance Reduced
     by Short-Time Training in the Delayed-Match-to-Sample Task_,
     [Front. Hum. Neurosci.](https://doi.org/10.3389/fnhum.2017.00437)
 """

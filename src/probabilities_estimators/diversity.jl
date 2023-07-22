@@ -6,7 +6,7 @@ export Diversity
     Diversity(; m::Int, τ::Int, nbins::Int)
 
 A [`ProbabilitiesEstimator`](@ref) based on the cosine similarity.
-It can be used with [`entropy`](@ref) to
+It can be used with [`information`](@ref) to
 compute the diversity entropy of an input timeseries[^Wang2020].
 
 The implementation here allows for `τ != 1`, which was not considered in the original paper.

@@ -24,42 +24,31 @@ You may extend any of the following functions if there are potential performance
 2. [`outcomes`](@ref). By default calls `probabilities_and_outcomes` and returns the second value.
 3. [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref). This is the function that most typically has performance benefits if implemented explicitly, so most existing estimators extend it by default.
 
-## Adding a new `DifferentialEntropyEstimator`
+## Adding a new `InformationMeasureEstimator`
+
+The type implementation should follow the declared API of [`InformationMeasureEstimator`](@ref). If the type is a discrete measure, then extend `information(e::YourType, p::Probabilities)`. If it is a differential measure, then extend `information(e::YourType, x::InputData)`.
+
+```@docs
+InformationMeasureEstimator
+```
+
+## Adding a new `InformationMeasure`
+This amounts to adding a new definition of an information measure, not an estimator. It de-facto means adding a method for the discrete Plug-In estimator.
 
 ### Mandatory steps
 
-1. Define your type and make it subtype [`DifferentialEntropyEstimator`](@ref).
-2. Add a docstring to your type following the style of the docstrings of other estimators.
-    This docstring should contain the formula(s)/integral(s) which it estimates, and a
-    reference to relevant [`EntropyDefinition`](@ref)(s).
-3. Implement dispatch for [`entropy`](@ref) with the relevant [`EntropyDefinition`](@ref).
-    If your estimator works for multiple entropies, implement one method for
-    [`entropy`](@ref) for each of them.
-
-### Tests
-
-You need to add tests verifying that your estimator actually convergences, within
-some reasonable tolerance (that you define), to the true entropy of data from
-some known distribution. Have a look in the tests for existing estimators for
-inspiration (you can just copy-paste one of the existing tests, or make them
-more elaborate if you want to).
-
-## Adding a new `EntropyDefinition`
-
-### Mandatory steps
-
-1. Define your entropy definition type and make it subtype [`EntropyDefinition`](@ref).
-2. Implement dispatch for [`entropy`](@ref)`(def::YourType, p::Probabilities)`
-3. Add a docstring to your type following the style of the docstrings of other entropy
-    definitions, and should include the mathematical definition of the entropy.
-4. Add your entropy definition type to the list of definitions in the
-    `docs/src/entropies.md` documentation page.
-5. Add a reference to your entropy definition in the docstring for
-    [`EntropyDefinition`](@ref).
+1. Define your information measure definition type and make it subtype [`InformationMeasure`](@ref).
+2. Implement dispatch for [`information`](@ref)`(def::YourType, p::Probabilities)`. This is the Plug-In estimator for the discrete measure.
+3. Add a docstring to your type following the style of the docstrings of other information
+    measure definitions, and should include the mathematical definition of the measure.
+4. Add your information measure definition type to the list of definitions in the
+    `docs/src/information_measures.md` documentation page.
+5. Add a reference to your information measure definition in the docstring for
+    [`InformationMeasure`](@ref).
 
 ### Optional steps
 
-1. If the maximum value of your entropy type is analytically computable for a probability
-    distribution with a known number of elements, implementing dispatch for
-    [`entropy_maximum`](@ref) automatically enables [`entropy_normalized`](@ref) for your
-    type.
+1. If the maximum value of your information measure type is analytically computable for a
+    probability distribution with a known number of elements, implementing dispatch for
+    [`information_maximum`](@ref) automatically enables [`information_normalized`](@ref)
+    for your type.

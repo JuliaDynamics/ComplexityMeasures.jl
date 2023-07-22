@@ -31,7 +31,7 @@ where `L = floor((N - s + 1) / s)` and `1 ≤ k ≤ s`, such that ``D_{i, k}(s)`
 element of the `k`-th downsampled time series at scale `s`.
 
 Finally, compute ``\\dfrac{1}{s} \\sum_{k = 1}^s g(D_{k}(s))``, where `g` is some summary
-function, for example [`entropy`](@ref) or [`complexity`](@ref).
+function, for example [`information`](@ref) or [`complexity`](@ref).
 
 !!! note "Relation to Regular"
     The downsampled time series ``D_{t, 1}(s)`` constructed using the composite
@@ -91,8 +91,8 @@ function downsample(method::Composite, s::Int, x::AbstractVector{T}, args...;
     end
 end
 
-function multiscale(alg::Composite, e::EntropyDefinition,
-        est::Union{ProbabilitiesEstimator, DiffEntropyEst},
+function multiscale(alg::Composite, e::InformationMeasure,
+        est::Union{ProbabilitiesEstimator, DifferentialInfoEstimator},
         x::AbstractVector;
         maxscale::Int = 8)
 
@@ -105,14 +105,14 @@ function multiscale(alg::Composite, e::EntropyDefinition,
     return hs
 end
 
-function multiscale_normalized(alg::Composite, e::EntropyDefinition, est::ProbabilitiesEstimator,
+function multiscale_normalized(alg::Composite, e::InformationMeasure, est::ProbabilitiesEstimator,
         x::AbstractVector;
         maxscale::Int = 8)
 
     downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
     hs = zeros(Float64, maxscale)
     for s in 1:maxscale
-        hs[s] = mean(entropy_normalized.(Ref(e), Ref(est), downscaled_timeseries[s]))
+        hs[s] = mean(information_normalized.(Ref(e), Ref(est), downscaled_timeseries[s]))
     end
 
     return hs
