@@ -29,14 +29,14 @@ information_maximum
 information_normalized
 ```
 
-### Discrete information measure estimators
+### Discrete information estimators
 
 ```@docs
 DiscreteInfoEstimator
 PlugIn
 ```
 
-## Differential information measure
+## Differential information estimators
 
 ```@docs
 information(::DifferentialInfoEstimator, ::Any)
