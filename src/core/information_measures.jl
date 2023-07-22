@@ -142,50 +142,6 @@ See [`information`](@ref) for usage.
 """
 abstract type DifferentialInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
 
-# Dispatch for these functions is implemented in individual estimator files in
-# `entropies/estimators/`.
-"""
-    information(est::DifferentialInfoEstimator, x) → h::Real
-
-Approximate a **differential information measure** using the provided
-[`DifferentialInfoEstimator`](@ref) and input data `x`.
-This method doesn't involve explicitly computing (discretized) probabilities first.
-
-The overwhelming majority of information measure estimators estimate the [`Shannon`](@ref)
-entropy. If the same estimator can estimate different information measures (e.g. it can
-estimate both [`Shannon`](@ref) and [`Tsallis`](@ref)), then the information measure
-is provided as an argument to the estimator itself.
-
-See the [table of differential information measure estimators](@ref table_diff_ent_est)
-in the docs for all differential information measure estimators.
-
-## Examples
-
-A standard normal distribution has a base-e Shannon differential entropy of
-`0.5*log(2π) + 0.5` nats.
-
-```julia
-est = Kraskov(measure = Shannon(), k = 5, base = ℯ) # Base `ℯ` for nats.
-h = information(est, randn(2_000_000))
-abs(h - 0.5*log(2π) - 0.5) # ≈ 0.0001
-```
-"""
-function information(est::DifferentialInfoEstimator{<:I}, args...) where I
-    throw(ArgumentError("""$est not implemented for information measure of type $I"""))
-end
-
-information(measure::InformationMeasure,
-    est::DifferentialInfoEstimator, args...) = throw(ArgumentError(
-        """`InformationMeasure` must be given as an argument to `est`, not to `information`.
-        """
-    ))
-
-# TODO: This collides with some other definition. Figure out what.
-# information(est::DifferentialInfoEstimator, ::Probabilities) = throw(ArgumentError("""
-#     InformationMeasure estimators like $(nameof(typeof(est)))
-#     are not called with probabilities.
-# """))
-
 ###########################################################################################
 # Normalize API
 ###########################################################################################
