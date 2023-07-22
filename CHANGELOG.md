@@ -2,9 +2,14 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
-## 2.8.0
+## 3 (to be released)
+
+This release does not contain strictly breaking changes, because deprecations have been put in place everywhere. The major change that facilitated v2 -> v3 is the large renaming overhaul that we performed: we renamed the concept of "entropy" to "information measure", and `entropy` has been renamed to `information`. Similarly, we now have `DiscreteInfoEstimator` and `DifferentialInfoEstimator`. We consider as "information measures" anything that is a functional of probability mass/density functions.
+
+Further additions to the library in v3:
 
 - New function `allprobabilities` that is like `probabilities` but also includes 0 entries for possible outcomes that were not present in the data.
+- New _extropy_ definitions that count as information measures (and thus can be given to `information`): `ShannonExtropy`, `RenyiExtropy`, `TsallisExtropy`.
 - `StatisticalComplexity` is now compatible with any normalizable `EntropyDefinition`.
 - Add the 1976 Lempel-Ziv complexity measure (`LempelZiv76`).
 - New entropy definition: identification entropy (`Identification`).
