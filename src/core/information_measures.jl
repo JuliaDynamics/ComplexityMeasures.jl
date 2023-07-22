@@ -58,19 +58,25 @@ abstract type InformationMeasure end
 """
     InformationMeasureEstimator{I <: InformationMeasure}
 
-The supertype of all information measure estimators. Any concrete subtypes must be
-parametric types where the first type is some [`InformationMeasure`](@ref),
-i.e.
+The supertype of all information measure estimators. Its direct subtypes
+are [`DiscreteInfoEstimator`](@ref) and [`DifferentialInfoEstimator`](@ref).
+
+Since all estimators must reference a measure definition in some way,
+we made the following interface decisions:
+
+1. all estimators have as first type parameter `I <: InformationMeasure`
+2. all estimators reference the information measure in a `definition` field
+3. all estimators are defined using `Base.@kwdef` so that they may be initialized
+   with the syntax `Estimator(; definition = Shannon())` (or any other).
+
+Any concrete subtypes must follow the above, e.g.:
 
 ```julia
-struct MyEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I}
-    e::I
-    params...
+Base.@kwdef struct MyEstimator{I <: InformationMeasure, X} <: DiscreteInfoEstimator{I}
+    definition::I
+    x::X
 end
 ```
-
-We use [`DifferentialInfoEstimator`](@ref) for estimating differential quantities,
-and [`DiscreteInfoEstimator`](@ref) for estimating discrete quantities.
 """
 abstract type InformationMeasureEstimator{E} end
 
