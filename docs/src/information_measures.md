@@ -34,6 +34,9 @@ information_normalized
 ```@docs
 DiscreteInfoEstimator
 PlugIn
+MillerMadow
+Schürmann
+GeneralizedSchürmann
 ```
 
 ## Differential information estimators

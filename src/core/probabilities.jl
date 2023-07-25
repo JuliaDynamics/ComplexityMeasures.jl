@@ -5,6 +5,7 @@ export total_outcomes
 export missing_outcomes
 export outcome_space
 export allprobabilities
+export frequencies, frequencies_and_outcomes
 
 ###########################################################################################
 # Types
@@ -246,3 +247,14 @@ function allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet)
     end
     return Probabilities(allprobs, true)
 end
+
+
+"""
+    Estimate frequencies/counts over the outcomes defined by `est` and the input data `x`.
+"""
+function frequencies(est::ProbabilitiesEstimator, x) end
+
+"""
+The same as `frequencies`, but also returns the outcomes.
+"""
+function frequencies_and_outcomes(est::ProbabilitiesEstimator, x) end
