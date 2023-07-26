@@ -8,6 +8,12 @@ h_singlea = information(GeneralizedSchürmann(Shannon(); a = 1.0), pest, x)
 @test h_singlea isa Real
 @test h_singlea >= 0.0
 
+# Since the plugin estimator is a lower bound for the Shannon entropy (see Arora et al.;
+# https://arxiv.org/pdf/2204.01469.pdf), we should get a larger or equal value with the
+# generalized Schürmann estimator.
+@test h_singlea >= information(PlugIn(Shannon()), pest, x)
+
+
 # `x` has five outcomes, so we need five parameters
 as = fill(0.5, 5)
 h_multiplea = information(GeneralizedSchürmann(Shannon(); a = as), pest, x)
@@ -15,6 +21,11 @@ h_multiplea = information(GeneralizedSchürmann(Shannon(); a = as), pest, x)
 
 # In general, the correction yields different results.
 @test h_singlea != h_multiplea
+
+# Since the plugin estimator is a lower bound for the Shannon entropy (see Arora et al.;
+# https://arxiv.org/pdf/2204.01469.pdf), we should get a larger or equal value with the
+# generalized Schürmann estimator.
+@test h_multiplea >= information(PlugIn(Shannon()), pest, x)
 
 # Mean triplet Shannon entropy estimates; appears just after eq. 28 in Grassberger (2002).
 nreps = 1000
