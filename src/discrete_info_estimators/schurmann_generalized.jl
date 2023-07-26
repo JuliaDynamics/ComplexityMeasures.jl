@@ -8,12 +8,12 @@ The `GeneralizedSchürmann` estimator computes the [`Shannon`](@ref) discrete
 [`information`](@ref) with the bias-corrected estimator
 given in Grassberger (2022)[^Grassberger2022].
 
-The "generalized" part of the name is due to the possibility of picking difference
-parameters ``a_i`` for different outcomes. If different parameters are assigned
-to the different outcomes, `a` must be a vector of parameters (the user can call
-[`probabilities_and_outcomes`](@ref) to get the outcomes, and assign the ``a_i``s according
-to whatever they consider appropriate). In contrast, if `a` is a
-real number, then the estimator reduces to the [`Schürmann`](@ref) estimator.
+The "generalized" part of the name, as opposed to the [`Schürmann2004`](@ref) estimator,
+is due to the possibility of picking difference parameters ``a_i`` for different outcomes.
+If different parameters are assigned to the different outcomes, `a` must be a vector of
+parameters of length `length(outcomes)`, where the outcomes are obtained using
+[`outcomes`](@ref). See Grassberger (2022) for more information. If `a` is a real number,
+then ``a_i = a \\forall i``, and the estimator reduces to the [`Schürmann`](@ref) estimator.
 
 ## Description
 
