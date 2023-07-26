@@ -3,7 +3,7 @@ rng = MersenneTwister(1234)
 x = rand(1:5, 1000)
 pest = CountOccurrences()
 
-h = information(Schürmann(Shannon(); ξ = 1), pest, x)
+h = information(Schürmann(Shannon(); a = 1), pest, x)
 @test h isa Real
 @test h >= 0.0
 
