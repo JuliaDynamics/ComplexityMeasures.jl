@@ -20,9 +20,9 @@ struct Schürmann{I <: InformationMeasure, Ξ} <: DiscreteInfoEstimator{I}
     ξ::Ξ
 end
 
-function Schürmann(measure = Shannon(); base = 2, ξ = 1.0)
+function Schürmann(measure = Shannon(); ξ = 1.0)
     ξ > 0 || throw(ArgumentError("ξ must be strict positive. Got $ξ."))
-    return Schürmann(measure, base, ξ)
+    return Schürmann(measure, ξ)
 end
 
 function information(hest::Schürmann{<:Shannon}, pest::ProbabilitiesEstimator, x)
