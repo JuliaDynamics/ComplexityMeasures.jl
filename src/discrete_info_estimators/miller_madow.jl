@@ -36,7 +36,7 @@ function information(hest::MillerMadow{<:Shannon}, pest::ProbabilitiesEstimator,
     probs = allprobabilities(pest, x)
     # Estimate of the number of bins with nonzero pN-probability; here estimated as
     # in Paninski (2003)
-    m̂ = count(probs .== 0.0)
+    m̂ = count(probs .> 0.0)
 
     h_naive = information(PlugIn(hest.measure), pest, x)
     return h_naive + (m̂ - 1)/(2 * length(x))
