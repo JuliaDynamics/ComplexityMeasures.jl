@@ -37,6 +37,7 @@ PlugIn
 MillerMadow
 Schürmann
 GeneralizedSchürmann
+JackknifeEstimator
 ```
 
 ## Differential information estimators
