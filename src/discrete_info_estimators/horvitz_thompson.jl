@@ -34,6 +34,7 @@ often observed in a sample, for example in power-law distributions.
 struct HorvitzThompson{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
     measure::I
 end
+HorvitzThompson() = HorvitzThompson(Shannon())
 
 function information(hest::HorvitzThompson{<:Shannon}, pest::ProbabilitiesEstimator, x)
     (; measure) = hest
