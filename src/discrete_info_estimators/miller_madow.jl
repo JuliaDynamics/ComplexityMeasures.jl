@@ -27,7 +27,7 @@ where `H_{plugin}` is the Shannon entropy estimated using the [`PlugIn`](@ref) e
     Paninski, L. (2003). Estimation of entropy and mutual information. Neural computation,
     15(6), 1191-1253.
 """
-struct MillerMadow{I <: InformationMeasure} <: DifferentialInfoEstimator{I}
+struct MillerMadow{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
     measure::I
 end
 MillerMadow() = MillerMadow(Shannon())

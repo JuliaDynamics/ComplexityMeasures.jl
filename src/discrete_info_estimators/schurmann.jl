@@ -15,7 +15,7 @@ given in Schürmann (2004)[^Schürmann2004].
     Schürmann, T. (2004). Bias analysis in entropy estimation. Journal of Physics A:
     Mathematical and General, 37(27), L295.
 """
-struct Schürmann{I <: InformationMeasure, Ξ} <: DifferentialInfoEstimator{I}
+struct Schürmann{I <: InformationMeasure, Ξ} <: DiscreteInfoEstimator{I}
     measure::I
     ξ::Ξ
 end

@@ -39,7 +39,7 @@ G_n = \\varphi(n) + (-1)^n \\int_0^1 \\dfrac{x^{n - 1}}{x + 1} dx.
     Grassberger, P. (2022). On generalized Schürmann entropy estimators. Entropy, 24(5),
     680.
 """
-struct GeneralizedSchürmann{I <: InformationMeasure, T} <: DifferentialInfoEstimator{I}
+struct GeneralizedSchürmann{I <: InformationMeasure, T} <: DiscreteInfoEstimator{I}
     measure::I
     # `a[i]` is the parameter for the i-th outcome, and there must be one
     # parameter per outcome. The user should construct
