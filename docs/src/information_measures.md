@@ -38,6 +38,7 @@ MillerMadow
 Schürmann
 GeneralizedSchürmann
 JackknifeEstimator
+HorvitzThompson
 ```
 
 ## Differential information estimators
