@@ -39,6 +39,7 @@ Schürmann
 GeneralizedSchürmann
 JackknifeEstimator
 HorvitzThompson
+ChaoShen
 ```
 
 ## Differential information estimators
