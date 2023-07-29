@@ -11,6 +11,8 @@ The `Schürmann` estimator computes the [`Shannon`](@ref) discrete
 [`information`](@ref) with the bias-corrected estimator
 given in Schürmann (2004)[^Schürmann2004].
 
+See detailed description for [`GeneralizedSchürmann`](@ref) for details.
+
 [^Schürmann2004]:
     Schürmann, T. (2004). Bias analysis in entropy estimation. Journal of Physics A:
     Mathematical and General, 37(27), L295.

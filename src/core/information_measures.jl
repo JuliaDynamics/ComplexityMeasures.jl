@@ -94,10 +94,20 @@ Supertype of all discrete information measure estimators.
 
 ## Implementations
 
-Currently only the [`PlugIn`](@ref) estimator is provided,
-which does not need to be used, as using an [`InformationMeasure`](@ref) directly in
-[`information`](@ref) is possible. But in the future, more advanced estimators will
-be added ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/237)).
+- [`PlugIn`](@ref). The default, generic plug-in estimator of any quantity, which doesn't
+    have to be used directly, since using an [`InformationMeasure`](@ref) directly in
+    [`information`](@ref) is possible.
+
+### [`Shannon`](@ref) entropy estimators
+
+- [`MillerMadow`](@ref).
+- [`HorvitzThompson`](@ref).
+- [`JackknifeEstimator`](@ref).
+- [`Schürmann`](@ref).
+- [`GeneralizedSchürmann`](@ref).
+- [`ChaoShen`](@ref).
+
+More estimators will be added in the future ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/237)).
 """
 abstract type DiscreteInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
 

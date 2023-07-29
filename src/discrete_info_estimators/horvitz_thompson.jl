@@ -10,10 +10,10 @@ to Horvitz and Thompson (1952)[^Horvitz1952].
 
 # Description
 
-The Horvitz-Thompson estimator of Shannon entropy is given by
+The Horvitz-Thompson estimator of [`Shannon`](@ref) entropy is given by
 
 ```math
-H_S^{HT} = -\\sum_i=1^M \\( \\dfrac{p_i \\log(p_i}{1 - (1 - p_i)^N} \\),
+H_S^{HT} = -\\sum_{i=1}^M \\dfrac{p_i \\log(p_i) }{1 - (1 - p_i)^N},
 ```
 
 where ``N`` is the sample size and ``M`` is the number of [`outcomes`](@ref).

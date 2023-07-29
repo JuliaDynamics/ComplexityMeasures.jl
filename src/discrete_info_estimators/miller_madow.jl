@@ -15,8 +15,8 @@ The Miller-Madow estimator of Shannon entropy is given by
 H_S^{MM} = H_S^{plugin} + \\dfrac{m - 1}{2N},
 ```
 
-where `H_{plugin}` is the Shannon entropy estimated using the [`PlugIn`](@ref) estimator,
-`m` is the number of bins with nonzero probability (as defined in Paninski,
+where ``H_S^{plugin}`` is the Shannon entropy estimated using the [`PlugIn`](@ref)
+estimator, `m` is the number of bins with nonzero probability (as defined in Paninski,
 2003[^Paninski2003]), and `N` is the number of observations.
 
 [^Miller1955]:

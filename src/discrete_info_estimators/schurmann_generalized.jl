@@ -20,7 +20,7 @@ then ``a_i = a \\forall i``, and the estimator reduces to the [`Schürmann`](@re
 For a set of ``N`` observations over ``M`` outcomes, the estimator is given by
 
 ```math
-H_S^{opt} = \\digamma{N} - \\dfrac{1}{N} \\sum_{i=1}^M n_i G_{n_i}(a_i),
+H_S^{opt} = \\varphi(N) - \\dfrac{1}{N} \\sum_{i=1}^M n_i G_{n_i}(a_i),
 ```
 
 where ``n_i`` is the observed frequency of the i-th outcome,

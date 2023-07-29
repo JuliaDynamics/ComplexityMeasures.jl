@@ -13,7 +13,7 @@ A generic estimator for discrete information measures using the jackknife princi
 For [`Shannon`](@ref) entropy, the jackknife estimate is
 
 ```math
-H_S^{J} = N H_S^{plugin} - \\ffrac{N-1}{N} \\sum_{i=1}^N {H_S^{plugin}}^{-\\{i\\}},
+H_S^{J} = N H_S^{plugin} - \\dfrac{N-1}{N} \\sum_{i=1}^N {H_S^{plugin}}^{-\\{i\\}},
 ```
 
 where ``N`` is the sample size, ``H_S^{plugin}`` is the plugin estimate of Shannon entropy,
