@@ -1,7 +1,7 @@
 using Test, Random
 rng = MersenneTwister(1234)
 
-x = rand(1:5, 1000)
+x = rand(rng, 1:5, 1000)
 pest = CountOccurrences()
 
 h = information(HorvitzThompson(Shannon()), pest, x)

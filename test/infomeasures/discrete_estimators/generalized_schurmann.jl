@@ -34,8 +34,6 @@ hest = GeneralizedSchürmann(Shannon(; base = 2)) # results are given in bits
 for i = 1:nreps
     hs[i] = information(hest, pest, rand(0:1, 3))
 end
-@show mean(hs)
-
 
 ############################################################################################
 # Mean triplet Shannon entropy estimates; appears just after eq. 28 in Grassberger (2002).
