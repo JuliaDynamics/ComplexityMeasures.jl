@@ -81,7 +81,7 @@ end
 abstract type InformationMeasureEstimator{E} end
 
 function information(est::InformationMeasureEstimator, args...)
-    throw(ArgumentError("""$est not implemented for information measure $(est.measure)"""))
+    throw(ArgumentError("""$est not implemented for information measure $(est.definition)"""))
 end
 
 ###########################################################################################
