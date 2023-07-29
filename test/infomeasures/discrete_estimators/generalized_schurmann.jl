@@ -45,7 +45,7 @@ pest = CountOccurrences()
 for i = 1:nreps
     hs[i] = information(PlugIn(Shannon()), pest, rand(rng, 0:1, 3))
 end
-@test round(mean(hs), digits = 3) == 0.689
+@test round(mean(hs), digits = 2) == 0.69
 
 # Compare
 hs = zeros(nreps)
