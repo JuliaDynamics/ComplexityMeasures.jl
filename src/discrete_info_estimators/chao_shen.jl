@@ -38,7 +38,7 @@ end
 
 # Only works for real-count estimators.
 function information(hest::ChaoShen{<:Shannon}, pest::ProbabilitiesEstimator, x)
-    (; measure) = hest
+    (; definition) = hest
     # Count singletons in the sample
     frequencies, outcomes = frequencies_and_outcomes(pest, x)
     f₁ = 0

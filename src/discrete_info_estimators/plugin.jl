@@ -20,5 +20,6 @@ end
 function information(hest::PlugIn, pest::ProbabilitiesEstimator, x)
     return information(hest.definition, pest, x)
 end
+information(hest::PlugIn, probs::Probabilities) = information(hest.definition, probs)
 information_normalized(e::PlugIn, est, x) = information_normalized(e.definition, est, x)
 information_maximum(e::PlugIn, args...) = information_maximum(e.definition, args...)
