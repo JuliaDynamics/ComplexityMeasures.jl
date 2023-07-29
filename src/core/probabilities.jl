@@ -83,6 +83,9 @@ This only matters for the functions [`outcome_space`](@ref) and [`total_outcomes
 
 All currently implemented probability estimators are listed in a nice table in the
 [probabilities estimators](@ref probabilities_estimators) section of the online documentation.
+
+Currently, all probabilities estimators estimate the *plug-in* (or maximimum likelihood)
+estimates of probabilities.
 """
 abstract type ProbabilitiesEstimator end
 
@@ -132,6 +135,7 @@ See also [`outcomes`](@ref), [`total_outcomes`](@ref).
 function probabilities_and_outcomes(est::ProbabilitiesEstimator, x)
     error("`probabilities_and_outcomes` not implemented for estimator $(typeof(est)).")
 end
+
 
 """
     probabilities!(s, args...)
@@ -197,7 +201,7 @@ Equivalent with `probabilities_and_outcomes(x, est)[2]`, but for some estimators
 it may be explicitly extended for better performance.
 """
 function outcomes(est::ProbabilitiesEstimator, x)
-    return probabilities_and_outcomes(est, x)[2]
+    return last(probabilities_and_outcomes(est, x))
 end
 
 ###########################################################################################
@@ -248,13 +252,19 @@ function allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet)
     return Probabilities(allprobs, true)
 end
 
-
+###########################################################################################
+# Frequencies. Some estimators use frequencies directly, not probabilities.
+###########################################################################################
 """
     Estimate frequencies/counts over the outcomes defined by `est` and the input data `x`.
 """
-function frequencies(est::ProbabilitiesEstimator, x) end
+function frequencies(est::ProbabilitiesEstimator, x)
+    return first(frequencies_and_outcomes(est, x))
+end
 
 """
 The same as `frequencies`, but also returns the outcomes.
 """
-function frequencies_and_outcomes(est::ProbabilitiesEstimator, x) end
+function frequencies_and_outcomes(est::ProbabilitiesEstimator, x)
+    error("`frequencies_and_outcomes` not implemented for estimator $(typeof(est)).")
+end
