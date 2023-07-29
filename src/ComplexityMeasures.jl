@@ -28,6 +28,7 @@ include("encoding_implementations/encoding_implementations.jl")
 include("probabilities_estimators/probabilities_estimators.jl")
 include("information_measure_definitions/information_measure_definitions.jl")
 include("differential_info_estimators/differential_info_estimators.jl")
+include("discrete_info_estimators/discrete_info_estimators.jl")
 include("complexity_measures/complexity_measures.jl")
 
 # deprecations (must be after all declarations)
