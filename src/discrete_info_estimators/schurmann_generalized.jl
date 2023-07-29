@@ -39,21 +39,26 @@ G_n = \\varphi(n) + (-1)^n \\int_0^1 \\dfrac{x^{n - 1}}{x + 1} dx.
     Grassberger, P. (2022). On generalized Schürmann entropy estimators. Entropy, 24(5),
     680.
 """
-struct GeneralizedSchürmann{I <: InformationMeasure, T} <: DiscreteInfoEstimator{I}
-    measure::I
+Base.@kwdef struct GeneralizedSchürmann{I <: InformationMeasure, T} <: DiscreteInfoEstimator{I}
+    definition::I
     # `a[i]` is the parameter for the i-th outcome, and there must be one
     # parameter per outcome. The user should construct
     # `a[i]` by calling `outcomes` with the desired probabilities estimator (with input
     # data, if necessary), and assign one parameter to each outcome.
     a::Union{T, Vector{T}}
 end
-
-GeneralizedSchürmann(measure; a = 1.0) = GeneralizedSchürmann(Shannon(), a)
-
+function GeneralizedSchürmann(definition::I; a::A = 1.0) where {I, A}
+    a > 0 || throw(ArgumentError("a must be strict positive. Got $a."))
+    return GeneralizedSchürmann(; definition, a)
+end
 function information(hest::GeneralizedSchürmann{<:Shannon}, pest::ProbabilitiesEstimator, x)
-    (; measure, a) = hest
+    (; definition, a) = hest
+
     freqs = frequencies(pest, x)
-    N = length(x)
+    # We should be using `N = length(x)`, but since some probabilities estimators
+    # return pseudo counts, we need to consider those instead of counting actual
+    # observations.
+    N = sum(freqs)
 
     if a isa Real
         h = digamma(N) - 1/N * sum(nᵢ * Gₙ(a, nᵢ) for nᵢ in freqs)
@@ -64,7 +69,7 @@ function information(hest::GeneralizedSchürmann{<:Shannon}, pest::Probabilities
 
     # Grassberger's estimate of `h` is based on the natural logarithm, so we must convert
     # to the desired base.
-    return convert_logunit(h, MathConstants.e, measure.base)
+    return convert_logunit(h, MathConstants.e, definition.base)
 end
 
 function Gₙ(a, n::Int)
@@ -85,6 +90,9 @@ end
 
 
 function Gₙ(n::Int)
+    if n == 0
+        return 0.0
+    end
     integ = first(quadgk(x -> f_schurmann(x, n), 0.0, 1.0))
     return digamma(n) + (-1)^n * integ
 end

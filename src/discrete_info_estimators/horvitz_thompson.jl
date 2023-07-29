@@ -31,16 +31,15 @@ often observed in a sample, for example in power-law distributions.
     Arora, A., Meister, C., & Cotterell, R. (2022). Estimating the entropy of linguistic
     distributions. arXiv preprint arXiv:2204.01469.
 """
-struct HorvitzThompson{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
-    measure::I
+Base.@kwdef struct HorvitzThompson{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
+    definition::I = Shannon()
 end
-HorvitzThompson() = HorvitzThompson(Shannon())
 
 function information(hest::HorvitzThompson{<:Shannon}, pest::ProbabilitiesEstimator, x)
-    (; measure) = hest
+    (; definition) = hest
     probs = probabilities(pest, x)
     N = length(x)
-    h = -sum(horwitz_thompsonᵢ(pᵢ, measure.base, N) for pᵢ in probs)
+    h = -sum(horwitz_thompsonᵢ(pᵢ, definition.base, N) for pᵢ in probs)
     return h
 end
 

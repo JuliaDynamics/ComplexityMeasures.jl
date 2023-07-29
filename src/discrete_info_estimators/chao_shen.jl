@@ -4,7 +4,6 @@ export ChaoShen
     ChaoShen <: DiscreteInfoEstimator
     ChaoShen(measure::Shannon = Shannon())
 
-
 The `ChaoShen` estimator computes the [`Shannon`](@ref) discrete entropy according
 to Chao & Shen (2003)[^Chao2003].
 
@@ -33,11 +32,11 @@ et al., 2022)[^Arora2022].
     Arora, A., Meister, C., & Cotterell, R. (2022). Estimating the entropy of linguistic
     distributions. arXiv preprint arXiv:2204.01469.
 """
-struct ChaoShen{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
-    measure::I
+Base.@kwdef struct ChaoShen{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
+    definition::I = Shannon()
 end
-ChaoShen() = ChaoShen(Shannon())
 
+# Only works for real-count estimators.
 function information(hest::ChaoShen{<:Shannon}, pest::ProbabilitiesEstimator, x)
     (; measure) = hest
     # Count singletons in the sample
@@ -48,7 +47,10 @@ function information(hest::ChaoShen{<:Shannon}, pest::ProbabilitiesEstimator, x)
             f₁ += 1
         end
     end
-    N = length(x)
+    # We should be using `N = length(x)`, but since some probabilities estimators
+    # return pseudo counts, we need to consider those instead of counting actual
+    # observations.
+    N = sum(frequencies)
     if f₁ == N
         f₁ == N - 1
     end
@@ -56,7 +58,7 @@ function information(hest::ChaoShen{<:Shannon}, pest::ProbabilitiesEstimator, x)
 
     # Estimate Shannon entropy
     probs = Probabilities(frequencies)
-    h = -sum(chao_shenᵢ(pᵢ, measure.base, N, C) for pᵢ in probs)
+    h = -sum(chao_shenᵢ(pᵢ, definition.base, N, C) for pᵢ in probs)
     return h
 end
 

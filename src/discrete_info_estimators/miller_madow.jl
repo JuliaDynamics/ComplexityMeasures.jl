@@ -27,10 +27,9 @@ where `H_{plugin}` is the Shannon entropy estimated using the [`PlugIn`](@ref) e
     Paninski, L. (2003). Estimation of entropy and mutual information. Neural computation,
     15(6), 1191-1253.
 """
-struct MillerMadow{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
-    measure::I
+Base.@kwdef struct MillerMadow{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
+    definition::I = Shannon()
 end
-MillerMadow() = MillerMadow(Shannon())
 
 function information(hest::MillerMadow{<:Shannon}, pest::ProbabilitiesEstimator, x)
     probs = allprobabilities(pest, x)
@@ -38,6 +37,6 @@ function information(hest::MillerMadow{<:Shannon}, pest::ProbabilitiesEstimator,
     # in Paninski (2003)
     m̂ = count(probs .> 0.0)
 
-    h_naive = information(PlugIn(hest.measure), pest, x)
+    h_naive = information(PlugIn(hest.definition), pest, x)
     return h_naive + (m̂ - 1)/(2 * length(x))
 end
