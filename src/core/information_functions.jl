@@ -80,7 +80,7 @@ h = information(est, randn(2_000_000))
 abs(h - 0.5*log(2π) - 0.5) # ≈ 0.0001
 ```
 """
-function information(est::DifferentialInfoEstimator, args...) where I
+function information(est::DifferentialInfoEstimator, args...)
     throw(ArgumentError("`information` not implemented for $(nameof(typeof(est)))"))
 end
 
