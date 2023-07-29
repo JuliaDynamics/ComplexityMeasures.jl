@@ -46,7 +46,6 @@ end
 # Convenience
 information(est::ProbabilitiesEstimator, x) = information(Shannon(), est, x)
 information(probs::Probabilities) = information(Shannon(), probs)
-information(e::PlugIn, probs::Probabilities) = information(e.definition, probs)
 
 
 # Differential

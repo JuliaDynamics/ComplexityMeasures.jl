@@ -1,5 +1,5 @@
 export InformationMeasure
-export PlugIn, DiscreteInfoEstimator, DiscreteInfoEstimator
+export DiscreteInfoEstimator, DiscreteInfoEstimator
 export DifferentialInfoEstimator, DifferentialInfoEstimator
 export information, information_maximum, information_normalized, convert_logunit
 
@@ -101,20 +101,6 @@ be added ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/2
 """
 abstract type DiscreteInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
 
-# Dummy estimator that doesn't actually change anything from the definitions
-"""
-    PlugIn(e::InformationMeasure) <: DiscreteInfoEstimator
-
-The `PlugIn` estimator is also called the empirical/naive/"maximum likelihood" estimator.
-
-This estimator calculates a quantity exactly as given by its formula, using plug-in
-estimates (i.e. observed frequencies). For information measures, for example, it
-estimates the [`InformationMeasure`](@ref) directly from a probability mass
-function (which is derived from plug-in estimates of the probabilities).
-"""
-struct PlugIn{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
-    definition::I
-end
 
 ###########################################################################################
 # Differential entropy
@@ -174,7 +160,6 @@ end
 function information_maximum(e::InformationMeasure, ::Int)
     throw(ErrorException("not implemented for entropy type $(nameof(typeof(e)))."))
 end
-information_maximum(e::PlugIn, args...) = information_maximum(e.definition, args...)
 
 """
     information_normalized([e::DiscreteInfoEstimator,] est::ProbabilitiesEstimator, x) → h̃
@@ -203,7 +188,6 @@ end
 function information_normalized(est::ProbabilitiesEstimator, x::Array_or_SSSet)
     return information_normalized(Shannon(), est, x)
 end
-information_normalized(e::PlugIn, est, x) = information_normalized(e.definition, est, x)
 
 ###########################################################################################
 # Utils
