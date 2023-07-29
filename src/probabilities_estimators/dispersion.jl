@@ -101,7 +101,7 @@ function symbolize_for_dispersion(est::Dispersion, x)
     return symbols::Vector{Int}
 end
 
-function probabilities_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
+function frequencies_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
     N = length(x)
     symbols = symbolize_for_dispersion(est, x)
     # We must use genembed, not embed, to make sure the zero lag is included
@@ -109,7 +109,15 @@ function probabilities_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
     τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
     dispersion_patterns = genembed(symbols, τs, ones(m))
     hist = dispersion_histogram(dispersion_patterns, N, est.m, est.τ)
-    return Probabilities(hist), dispersion_patterns
+    # `dispersion_patterns` is sorted when computing the histogram, so patterns match
+    # the histogram values, but `dispersion_patterns` still contains repeated values,
+    # so we return the unique values.
+    return floor.(Int, hist .* 10e8), unique(dispersion_patterns.data)
+end
+
+function probabilities_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
+    freqs, outcomes = frequencies_and_outcomes(est, x)
+    return Probabilities(freqs), outcomes
 end
 
 function outcome_space(est::Dispersion)

@@ -228,7 +228,7 @@ function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateS
     return Probabilities(probs)
 end
 
-function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
+function frequencies_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
     # A bit of code duplication here, because we actually need the processed
     # `πs` to invert it with `decode`. This can surely be optimized with some additional
     # function that both maps to integers with `decode` but also keeps track of
@@ -246,7 +246,13 @@ function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) whe
     ps = probabilities!(πs, est, dataset)
     # Okay, now we compute the outcomes. (`πs` is already sorted in `fasthist!`)
     outcomes = decode.(Ref(est.encoding), unique!(πs))
-    return ps, outcomes
+    freqs = floor.(Int, ps .* 10e8)
+    return freqs, outcomes
+end
+
+function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
+    freqs, outcomes = frequencies_and_outcomes(est, x)
+    return Probabilities(freqs), outcomes
 end
 
 # fallback

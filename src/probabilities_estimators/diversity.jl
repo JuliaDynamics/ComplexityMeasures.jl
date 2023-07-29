@@ -47,9 +47,16 @@ function probabilities(est::Diversity, x::AbstractVector{T}) where T <: Real
     return Probabilities(bins)
 end
 
-function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
+function frequencies_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
     ds, rbc = similarities_and_binning(est, x)
-    return probabilities_and_outcomes(rbc, ds)
+    probs, outcomes = probabilities_and_outcomes(rbc, ds)
+    # Convert to pseudo-counts
+    return floor.(Int, probs .* 10e8), outcomes
+end
+
+function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
+    freqs, outcomes = frequencies_and_outcomes(est, x)
+    return Probabilities(freqs), outcomes
 end
 
 outcome_space(est::Diversity) = outcome_space(encoding_for_diversity(est.nbins))

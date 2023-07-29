@@ -56,16 +56,28 @@ function probabilities(est::ValueHistogram, x)
     Probabilities(fasthist(encoding, x)[1])
 end
 
-function probabilities_and_outcomes(est::ValueHistogram, x)
+function frequencies_and_outcomes(est::ValueHistogram, x)
     encoding = RectangularBinEncoding(est.binning, x)
-    return probabilities_and_outcomes(encoding, x)
+    freqs, outcomes = frequencies_and_outcomes(encoding, x)
+    return freqs, outcomes
 end
-function probabilities_and_outcomes(encoding::RectangularBinEncoding, x)
-    probs, bins = fasthist(encoding, x) # bins are integers here
+
+function probabilities_and_outcomes(est::ValueHistogram, x)
+    freqs, outcomes = frequencies_and_outcomes(est, x)
+    return Probabilities(freqs), outcomes
+end
+
+function frequencies_and_outcomes(encoding::RectangularBinEncoding, x)
+    freqs, bins = fasthist(encoding, x) # bins are integers here
     unique!(bins) # `bins` is already sorted from `fasthist!`
     # Here we transfor the cartesian coordinate based bins into data unit bins:
     outcomes = map(b -> decode(encoding, b), bins)
-    return Probabilities(probs), vec(outcomes)
+    return freqs, vec(outcomes)
+end
+
+function probabilities_and_outcomes(encoding::RectangularBinEncoding, x)
+    freqs, outcomes = frequencies_and_outcomes(encoding, x)
+    return Probabilities(freqs), outcomes
 end
 
 outcome_space(est::ValueHistogram, x) = outcome_space(RectangularBinEncoding(est.binning, x))

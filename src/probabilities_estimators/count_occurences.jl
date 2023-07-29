@@ -14,16 +14,16 @@ Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
 struct CountOccurrences <: ProbabilitiesEstimator end
 
-function probabilities_and_outcomes(est::CountOccurrences, x)
-    freqs, outcomes = frequencies_and_outcomes(est, x)
-    return Probabilities(freqs), outcomes
-end
-
 function frequencies_and_outcomes(::CountOccurrences, x)
     z = copy(x)
     freqs = fasthist!(z)
     # notice that `z` is now sorted within `fasthist!` so we can skip sorting
     return freqs, unique!(z)
+end
+
+function probabilities_and_outcomes(est::CountOccurrences, x)
+    freqs, outcomes = frequencies_and_outcomes(est, x)
+    return Probabilities(freqs), outcomes
 end
 
 outcome_space(::CountOccurrences, x) = sort!(unique(x))
