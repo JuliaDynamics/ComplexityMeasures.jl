@@ -40,15 +40,15 @@ G_n = \\varphi(n) + (-1)^n \\int_0^1 \\dfrac{x^{n - 1}}{x + 1} dx.
     680.
 """
 Base.@kwdef struct GeneralizedSchürmann{I <: InformationMeasure, T} <: DiscreteInfoEstimator{I}
-    definition::I
+    definition::I = Shannon()
     # `a[i]` is the parameter for the i-th outcome, and there must be one
     # parameter per outcome. The user should construct
     # `a[i]` by calling `outcomes` with the desired probabilities estimator (with input
     # data, if necessary), and assign one parameter to each outcome.
-    a::Union{T, Vector{T}}
+    a::Union{T, Vector{T}} = 1.0
 end
 function GeneralizedSchürmann(definition::I; a::A = 1.0) where {I, A}
-    a > 0 || throw(ArgumentError("a must be strict positive. Got $a."))
+    all(a .> 0) || throw(ArgumentError("All elements of `a` must be strict positive. Got $a."))
     return GeneralizedSchürmann(; definition, a)
 end
 function information(hest::GeneralizedSchürmann{<:Shannon}, pest::ProbabilitiesEstimator, x)
