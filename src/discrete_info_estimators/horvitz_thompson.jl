@@ -5,8 +5,8 @@ export HorvitzThompson
     HorvitzThompson(measure::Shannon = Shannon())
 
 
-The `HorvitzThompson` estimator computes the [`Shannon`](@ref) discrete entropy according
-to Horvitz and Thompson (1952)[^Horvitz1952].
+The `HorvitzThompson` estimator is used with [`information`](@ref) to compute the
+discrete [`Shannon`](@ref) entropy according to Horvitz and Thompson (1952)[^Horvitz1952].
 
 # Description
 

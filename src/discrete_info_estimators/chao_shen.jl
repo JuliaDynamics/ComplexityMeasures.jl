@@ -4,8 +4,8 @@ export ChaoShen
     ChaoShen <: DiscreteInfoEstimator
     ChaoShen(measure::Shannon = Shannon())
 
-The `ChaoShen` estimator computes the [`Shannon`](@ref) discrete entropy according
-to Chao & Shen (2003)[^Chao2003].
+The `ChaoShen` estimator is used with [`information`](@ref) to compute the
+discrete [`Shannon`](@ref) entropy according to Chao & Shen (2003)[^Chao2003].
 
 ## Description
 

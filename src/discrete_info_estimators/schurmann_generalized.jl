@@ -4,8 +4,8 @@ export GeneralizedSchürmann
     GeneralizedSchürmann <: DiscreteInfoEstimator
     GeneralizedSchürmann(measure::Shannon; a::Union{<:Real, Vector{<:Real}} = 1.0)
 
-The `GeneralizedSchürmann` estimator computes the [`Shannon`](@ref) discrete
-[`information`](@ref) with the bias-corrected estimator
+The `GeneralizedSchürmann` estimator is used with [`information`](@ref) to compute the
+discrete [`Shannon`](@ref) entropy with the bias-corrected estimator
 given in Grassberger (2022)[^Grassberger2022].
 
 The "generalized" part of the name, as opposed to the [`Schürmann2004`](@ref) estimator,

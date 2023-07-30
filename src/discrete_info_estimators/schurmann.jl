@@ -7,8 +7,8 @@ using QuadGK
     Schürmann <: DiscreteInfoEstimator
     Schürmann(definition::Shannon; a = 1.0)
 
-The `Schürmann` estimator computes the [`Shannon`](@ref) discrete
-[`information`](@ref) with the bias-corrected estimator
+The `Schürmann` estimator is used with [`information`](@ref) to compute the
+discrete [`Shannon`](@ref) entropy with the bias-corrected estimator
 given in Schürmann (2004)[^Schürmann2004].
 
 See detailed description for [`GeneralizedSchürmann`](@ref) for details.

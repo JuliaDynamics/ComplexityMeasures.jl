@@ -18,7 +18,7 @@ hests = [
     MillerMadow(h),
     Schürmann(h),
     GeneralizedSchürmann(h),
-    JackknifeEstimator(h),
+    Jackknife(h),
 ]
 
 x = rand(rng, 300)

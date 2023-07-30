@@ -4,8 +4,8 @@ export MillerMadow
     MillerMadow <: DiscreteInfoEstimator
     MillerMadow(measure::Shannon = Shannon())
 
-The `MillerMadow` estimator computes the [`Shannon`](@ref) discrete entropy according
-to Miller (1955)[^Miller1955].
+The `MillerMadow` estimator is used with [`information`](@ref) to compute the
+discrete [`Shannon`](@ref) entropy according to Miller (1955)[^Miller1955].
 
 # Description
 
