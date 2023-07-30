@@ -13,10 +13,7 @@ include measures such as (generalized) entropies or extropies.
 
 Information measures are, in this package, defined as functionals of probability mass
 functions ("discrete" measures), or of probability density functions ("differential"
-measures). The most commonly used information measures are (generalized) entropies,
-which are just nonnegative functions of probability distributions that verify certain
-(entropy-type-dependent) axioms. Amigó et al.'s[^Amigó2018] summary paper gives a nice
-overview.
+measures).
 
 ## Implementations
 
