@@ -16,7 +16,7 @@ of length ``N``, then the sample coverage is ``C = 1 - \\dfrac{f_1}{N}``. The Ch
 estimator of Shannon entropy is then
 
 ```math
-H_S^{HT} = -\\sum_{i=1}^M \\( \\dfrac{C p_i \\log(C p_i}{1 - (1 - C p_i)^N} \\),
+H_S^{HT} = -\\sum_{i=1}^M \\left( \\dfrac{C p_i \\log(C p_i)}{1 - (1 - C p_i)^N} \\right),
 ```
 
 where ``N`` is the sample size and ``M`` is the number of [`outcomes`](@ref). If

@@ -6,14 +6,21 @@ export information, information_maximum, information_normalized, convert_logunit
 """
     InformationMeasure
 
-`InformationMeasure` is the supertype of all information measure definitions, and subtypes
-include measures such as (generalized) entropies or extropies.
+`InformationMeasure` is the supertype of all information measure definitions, such
+as (generalized) entropies or extropies. Subtypes can be used as an input to
+[`information`](@ref), which computes a numerical value for the measure (see
+"Estimation" below).
 
 ## Description
 
-Information measures are, in this package, defined as functionals of probability mass
+In this package, we define "information measures" as functionals of probability mass
 functions ("discrete" measures), or of probability density functions ("differential"
 measures).
+
+A particular information measure may have both a discrete and a continuous/differential
+definition. Estimating either variant can be done using a [`DiscreteInfoEstimator`](@ref)
+or a [`DifferentialInfoEstimator`](@ref). Note that single measure (e.g. [`Shannon`](@ref))
+may have many different estimators.
 
 ## Implementations
 
@@ -34,19 +41,23 @@ measures).
 
 ## Estimation
 
+
 Any of the above measures  may used with [`information`](@ref) to compute a numerical
 value, either
 - directly (e.g. `information(Shannon(), probest, x)`), which uses [`PlugIn`](@ref)
     estimation,
-- with a [`DiscreteInfoEstimator`](@ref) in combination with a [`ProbabilitiesEstimator`](@ref) (e.g. `information(MillerMadow(Shannon()), probest, x)`), or
+- with a [`DiscreteInfoEstimator`](@ref) in combination with a
+    [`ProbabilitiesEstimator`](@ref)
+    (e.g. `information(MillerMadow(Shannon()), probest, x)`), or
 - with a [`DifferentialInfoEstimator`](@ref) (e.g. `information(Kraskov(Shannon()), x)`).
 
-Why separate the *definition* of a measure from *estimators* of a measure?
-In real applications, we generally don't have access to the underlying probability
-mass functions or densities. Therefore, information measures must be *estimated* from
-finite data. Estimating a particular measure, e.g. [`Shannon`](@ref) entropy can be
-done in many ways, each with its own own pros and cons. We aim to provide a complete
-library of literature estimators of the various information measures (PRs are welcome!).
+!!! info "Why separate the *definition* of a measure from *estimators* of a measure?"
+    In real applications, we generally don't have access to the underlying probability
+    mass functions or densities required to compute the various entropy or extropy
+    definitons. Therefore, these information measures must be *estimated* from
+    finite data. Estimating a particular measure (e.g. [`Shannon`](@ref) entropy) can be
+    done in many ways, each with its own own pros and cons. We aim to provide a complete
+    library of literature estimators of the various information measures (PRs are welcome!).
 
 [^Amigó2018]:
     Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
@@ -90,17 +101,18 @@ end
 """
     DiscreteInfoEstimator
 
-The supertype of all discrete information measure estimators, whose
-subtypes of `DiscreteInfoEstimator` are used with [`information`](@ref) to estimate a
-discrete [`InformationMeasure`](@ref).
+The supertype of all discrete information measure estimators.
+
+Subtypes are used, in combination with a [`ProbabilitiesEstimator`](@ref)s, with
+[`information`](@ref) to estimate a discrete [`InformationMeasure`](@ref).
 
 ## Implementations
 
 ### Generic estimators
 
-- [`PlugIn`](@ref). The default, generic plug-in estimator of any quantity. You can
-    actually skip using this estimator, and instead use an [`InformationMeasure`](@ref)
-    directly in [`information`](@ref), which will use plug-in estimation by default.
+- [`PlugIn`](@ref). The default, generic plug-in estimator of any information measure.
+    It computes the measure exactly as stated in the definition, using empirical
+    plug-in estimates of probabilities (i.e. observed relative frequencies).
 - [`Jackknife`](@ref). Uses the jackknife principle to estimate an
     [`InformationMeasure`](@ref).
 

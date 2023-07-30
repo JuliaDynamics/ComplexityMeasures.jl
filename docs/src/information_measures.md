@@ -10,7 +10,7 @@ of the measure.
 
 The functions [`information_maximum`](@ref) and [`information_normalized`](@ref) are also useful.
 
-## Information measures definitions
+## Definitions (entropies and extropies)
 
 ```@docs
 InformationMeasure
@@ -25,7 +25,7 @@ RenyiExtropy
 TsallisExtropy
 ```
 
-## Discrete estimation
+## Estimation (discrete)
 
 ```@docs
 information(::Union{InformationMeasure, DiscreteInfoEstimator}, ::ProbabilitiesEstimator, ::Any)
@@ -46,7 +46,7 @@ HorvitzThompson
 ChaoShen
 ```
 
-## Differential estimation
+## Estimation (differential)
 
 ```@docs
 information(::DifferentialInfoEstimator, ::Any)

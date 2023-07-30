@@ -13,10 +13,11 @@ Estimate a **discrete information measure**, using the estimator `est`, in one o
    [`ProbabilitiesEstimator`](@ref), and then computing the information measure from that
    mass fuction using the provided [`DiscreteInfoEstimator`](@ref).
 
-Instead of providing a [`DiscreteInfoEstimator`](@ref), an
-[`InformationMeasure`](@ref) can be given directly, in which case [`PlugIn`](@ref)
-is used as the estimator. If `e` is not provided, [`Shannon`](@ref)`()` is used by default
-in which case `information` returns the Shannon entropy.
+Recognizing that plug-in estimation is prevalent in the literature, we provide the option
+to give an [`InformationMeasure`](@ref) directly to `information` instead of providing a
+[`DiscreteInfoEstimator`](@ref), in which case [`PlugIn`](@ref) is used as the estimator.
+If `e` is not provided, [`Shannon`](@ref)`()` is used by default,
+in which case `information` returns the plug-in estimate of Shannon entropy.
 
 Most discrete information measures have a well defined maximum value for a given probability
 estimator. To obtain this value, call [`information_maximum`](@ref). Alternatively,
