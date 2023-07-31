@@ -16,6 +16,7 @@ and related functions that you will find in the following documentation blocks:
 ProbabilitiesEstimator
 probabilities
 probabilities!
+allprobabilities
 Probabilities
 ```
 

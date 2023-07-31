@@ -1,10 +1,12 @@
 using ComplexityMeasures, Test
+using Statistics: mean
 
 @testset "interface" begin
     x = ones(3)
     p = probabilities(x)
     @test p isa Probabilities
     @test p == [1]
+    @test mean(p) == 1
 end
 
 @testset "Histogram" begin
