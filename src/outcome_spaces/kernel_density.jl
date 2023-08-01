@@ -3,7 +3,7 @@ using Distances: Metric, Euclidean
 export NaiveKernel, KDTree, BruteForce
 
 """
-    NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean()) <: ProbabilitiesEstimator
+    NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean()) <: OutcomeSpaceModel
 
 Estimate probabilities/entropy using a "naive" kernel density estimation approach (KDE), as
 discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
@@ -39,7 +39,7 @@ not get assigned same probabilities (due to having different neighbors).
     Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis.
     Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
 """
-struct NaiveKernel{KM, M <: Metric} <: ProbabilitiesEstimator
+struct NaiveKernel{KM, M <: Metric} <: OutcomeSpaceModel
     ϵ::Float64
     method::KM
     w::Int
@@ -50,12 +50,11 @@ function NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
     return NaiveKernel(ϵ, method, w, metric)
 end
 
-function probabilities_and_outcomes(est::NaiveKernel, x::AbstractStateSpaceSet)
+function frequencies_and_outcomes(est::NaiveKernel, x::AbstractStateSpaceSet)
     theiler = Theiler(est.w)
     ss = searchstructure(est.method, vec(x), est.metric)
     idxs = bulkisearch(ss, vec(x), WithinRange(est.ϵ), theiler)
-    p = Float64.(length.(idxs))
-    return Probabilities(p), eachindex(x)
+    return length.(idxs), eachindex(x)
 end
 
 outcome_space(::NaiveKernel, x) = eachindex(x)

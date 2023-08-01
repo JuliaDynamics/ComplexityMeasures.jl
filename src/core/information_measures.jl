@@ -1,22 +1,28 @@
 export InformationMeasure
-export PlugIn, DiscreteInfoEstimator, DiscreteInfoEstimator
+export DiscreteInfoEstimator, DiscreteInfoEstimator
 export DifferentialInfoEstimator, DifferentialInfoEstimator
 export information, information_maximum, information_normalized, convert_logunit
 
 """
     InformationMeasure
 
-`InformationMeasure` is the supertype of all information measures, including measures
-such as (generalized) entropies or extropies.
+`InformationMeasure` is the supertype of all information measure definitions, such
+as (generalized) entropies or extropies. Subtypes can be used as an input to
+[`information`](@ref), which computes a numerical value for the measure (see
+"Estimation" below).
 
-## Existing measures
+## Description
 
-Any of the following **measure definitions** may appear in either discrete form,
-differential form, or as both. They can be given as input at least one of the implemented
-[`DiscreteInfoEstimator`](@ref)s or
-[`DifferentialInfoEstimator`](@ref)s. In turn, the estimator is given as
-input to [`information`](@ref) or [`information_normalized`](@ref) to compute the numeric
-value corresponding to the measure.
+In this package, we define "information measures" as functionals of probability mass
+functions ("discrete" measures), or of probability density functions ("differential"
+measures).
+
+A particular information measure may have both a discrete and a continuous/differential
+definition. Estimating either variant can be done using a [`DiscreteInfoEstimator`](@ref)
+or a [`DifferentialInfoEstimator`](@ref). Note that single measure (e.g. [`Shannon`](@ref))
+may have many different estimators.
+
+## Implementations
 
 ### Entropies
 
@@ -33,20 +39,25 @@ value corresponding to the measure.
 - [`TsallisExtropy`](@ref).
 - [`ShannonExtropy`](@ref), which is a subcase of the above two in the limit `q → 1`.
 
-## Description
+## Estimation
 
-Information measures are simply functionals of probability mass functions, or of
-probability density functions. The most commonly used information measures are
-(generalized) entropies, which are just nonnegative functions of probability distributions
-that verify certain (entropy-type-dependent) axioms. Amigó et al.'s[^Amigó2018] summary
-paper gives a nice overview.
 
-*Estimating* an information measure may be different from its *definition* due to
-finite data, and there could be are many different ways
-of estimating a measure, each with its own own pros and cons.
-[`DiscreteInfoEstimator`](@ref)s and [`DifferentialInfoEstimator`](@ref)s are provided
-to distinguish between different estimators of a discrete and differential variants of an
-[`InformationMeasure`](@ref), respectively.
+Any of the above measures  may used with [`information`](@ref) to compute a numerical
+value, either
+- directly (e.g. `information(Shannon(), probest, x)`), which uses [`PlugIn`](@ref)
+    estimation,
+- with a [`DiscreteInfoEstimator`](@ref) in combination with a
+    [`ProbabilitiesEstimator`](@ref)
+    (e.g. `information(MillerMadow(Shannon()), probest, x)`), or
+- with a [`DifferentialInfoEstimator`](@ref) (e.g. `information(Kraskov(Shannon()), x)`).
+
+!!! info "Why separate the *definition* of a measure from *estimators* of a measure?"
+    In real applications, we generally don't have access to the underlying probability
+    mass functions or densities required to compute the various entropy or extropy
+    definitons. Therefore, these information measures must be *estimated* from
+    finite data. Estimating a particular measure (e.g. [`Shannon`](@ref) entropy) can be
+    done in many ways, each with its own own pros and cons. We aim to provide a complete
+    library of literature estimators of the various information measures (PRs are welcome!).
 
 [^Amigó2018]:
     Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
@@ -81,7 +92,7 @@ end
 abstract type InformationMeasureEstimator{E} end
 
 function information(est::InformationMeasureEstimator, args...)
-    throw(ArgumentError("""$est not implemented for information measure $(est.measure)"""))
+    throw(ArgumentError("""$est not implemented for information measure $(est.definition)"""))
 end
 
 ###########################################################################################
@@ -90,31 +101,33 @@ end
 """
     DiscreteInfoEstimator
 
-Supertype of all discrete information measure estimators.
+The supertype of all discrete information measure estimators.
+
+Subtypes are used, in combination with a [`ProbabilitiesEstimator`](@ref)s, with
+[`information`](@ref) to estimate a discrete [`InformationMeasure`](@ref).
 
 ## Implementations
 
-Currently only the [`PlugIn`](@ref) estimator is provided,
-which does not need to be used, as using an [`InformationMeasure`](@ref) directly in
-[`information`](@ref) is possible. But in the future, more advanced estimators will
-be added ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/237)).
+### Generic estimators
+
+- [`PlugIn`](@ref). The default, generic plug-in estimator of any information measure.
+    It computes the measure exactly as stated in the definition, using empirical
+    plug-in estimates of probabilities (i.e. observed relative frequencies).
+- [`Jackknife`](@ref). Uses the jackknife principle to estimate an
+    [`InformationMeasure`](@ref).
+
+### [`Shannon`](@ref) entropy estimators
+
+- [`MillerMadow`](@ref).
+- [`HorvitzThompson`](@ref).
+- [`Schürmann`](@ref).
+- [`GeneralizedSchürmann`](@ref).
+- [`ChaoShen`](@ref).
+
+More estimators will be added in the future ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/237)).
 """
 abstract type DiscreteInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
 
-# Dummy estimator that doesn't actually change anything from the definitions
-"""
-    PlugIn(e::InformationMeasure) <: DiscreteInfoEstimator
-
-The `PlugIn` estimator is also called the empirical/naive/"maximum likelihood" estimator.
-
-This estimator calculates a quantity exactly as given by its formula, using plug-in
-estimates (i.e. observed frequencies). For information measures, for example, it
-estimates the [`InformationMeasure`](@ref) directly from a probability mass
-function (which is derived from plug-in estimates of the probabilities).
-"""
-struct PlugIn{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
-    definition::I
-end
 
 ###########################################################################################
 # Differential entropy
@@ -174,7 +187,6 @@ end
 function information_maximum(e::InformationMeasure, ::Int)
     throw(ErrorException("not implemented for entropy type $(nameof(typeof(e)))."))
 end
-information_maximum(e::PlugIn, args...) = information_maximum(e.definition, args...)
 
 """
     information_normalized([e::DiscreteInfoEstimator,] est::ProbabilitiesEstimator, x) → h̃
@@ -203,7 +215,6 @@ end
 function information_normalized(est::ProbabilitiesEstimator, x::Array_or_SSSet)
     return information_normalized(Shannon(), est, x)
 end
-information_normalized(e::PlugIn, est, x) = information_normalized(e.definition, est, x)
 
 ###########################################################################################
 # Utils

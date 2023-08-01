@@ -12,18 +12,23 @@ estimator to [`probabilities`](@ref).
 The outcome space is the unique sorted values of the input.
 Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-struct CountOccurrences <: ProbabilitiesEstimator end
+struct CountOccurrences <: OutcomeSpaceModel end
 
-function probabilities_and_outcomes(::CountOccurrences, x)
+function frequencies_and_outcomes(::CountOccurrences, x)
     z = copy(x)
-    probs = Probabilities(fasthist!(z))
+    freqs = fasthist!(z)
     # notice that `z` is now sorted within `fasthist!` so we can skip sorting
-    return probs, unique!(z)
+    return freqs, unique!(z)
 end
 
 outcome_space(::CountOccurrences, x) = sort!(unique(x))
 probabilities(::CountOccurrences, x) = probabilities(x)
+frequencies(::CountOccurrences, x) = frequencies(x)
+
 function probabilities(x)
     # Fast histograms code is in the `histograms` folder
-    return Probabilities(fasthist!(copy(x)))
+    return Probabilities(frequencies(x))
+end
+function frequencies(x)
+    return fasthist!(copy(x))
 end

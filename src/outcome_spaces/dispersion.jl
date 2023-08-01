@@ -68,16 +68,16 @@ For a version of this estimator that can be used on high-dimensional arrays, see
     signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale
     dispersion entropy and wavelet threshold denoising. InformationMeasure, 21(1), 11.
 """
-Base.@kwdef struct Dispersion{S <: Encoding} <: ProbabilitiesEstimator
+Base.@kwdef struct Dispersion{S <: Encoding} <: OutcomeSpaceModel
     encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`
     c::Int = 3 # The number of categories to map encoded values to.
     m::Int = 2
     τ::Int = 1
     check_unique::Bool = false
 end
-
+# TODO: the normalization should happen in `probabilities``, not here
 function dispersion_histogram(x::AbstractStateSpaceSet, N, m, τ)
-    return fasthist!(x) ./ (N - (m - 1)*τ)
+    return fasthist!(x) #./ (N - (m - 1)*τ)
 end
 
 # A helper function that makes sure the algorithm doesn't crash when input contains
@@ -101,7 +101,7 @@ function symbolize_for_dispersion(est::Dispersion, x)
     return symbols::Vector{Int}
 end
 
-function probabilities_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
+function frequencies_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
     N = length(x)
     symbols = symbolize_for_dispersion(est, x)
     # We must use genembed, not embed, to make sure the zero lag is included
@@ -109,7 +109,10 @@ function probabilities_and_outcomes(est::Dispersion, x::AbstractVector{<:Real})
     τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
     dispersion_patterns = genembed(symbols, τs, ones(m))
     hist = dispersion_histogram(dispersion_patterns, N, est.m, est.τ)
-    return Probabilities(hist), dispersion_patterns
+    # `dispersion_patterns` is sorted when computing the histogram, so patterns match
+    # the histogram values, but `dispersion_patterns` still contains repeated values,
+    # so we return the unique values.
+    return hist, unique(dispersion_patterns.data)
 end
 
 function outcome_space(est::Dispersion)

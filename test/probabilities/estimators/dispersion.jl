@@ -38,7 +38,7 @@ using ComplexityMeasures.DelayEmbeddings: embed
     ps_paper = ps_paper[findall(ps_paper .> 0)]
 
     ps = probabilities(est, x)
-    @test ps |> sort == ps_paper
+    @test all(sort(ps) .≈ ps_paper)
     @test issorted(outcomes(est, x))
 
     # There is probably a typo in Rostaghi & Azami (2016). They state that the

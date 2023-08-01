@@ -12,14 +12,14 @@ Subtypes must implement fields:
 - `lt::Function`: A function determining how ties are to be broken when constructing
     permutation patterns from embedding vectors.
 """
-abstract type PermutationProbabilitiesEstimator{m} <: ProbabilitiesEstimator end
-const PermProbEst = PermutationProbabilitiesEstimator
+abstract type PermutationOutcomeSpaceModel{m} <: OutcomeSpaceModel end
+const PermProbEst = PermutationOutcomeSpaceModel
 
 ###########################################################################################
 # Types and docstrings
 ###########################################################################################
 """
-    SymbolicPermutation <: ProbabilitiesEstimator
+    SymbolicPermutation <: OutcomeSpaceModel
     SymbolicPermutation(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
 A probabilities estimator based on ordinal permutation patterns.
@@ -97,13 +97,13 @@ p = probabilities!(πs_ts, est, x)
     application for complexity analysis of chaotic systems. Physica A: Statistical
     Mechanics and its Applications, 461, 812-823.
 """
-struct SymbolicPermutation{M,F} <: PermutationProbabilitiesEstimator{M}
+struct SymbolicPermutation{M,F} <: PermutationOutcomeSpaceModel{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
 end
 
 """
-    SymbolicWeightedPermutation <: ProbabilitiesEstimator
+    SymbolicWeightedPermutation <: OutcomeSpaceModel
     SymbolicWeightedPermutation(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
 
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
@@ -136,13 +136,13 @@ of the same pattern.
     measure for time series incorporating amplitude information." Physical Review E 87.2
     (2013): 022911.
 """
-struct SymbolicWeightedPermutation{M,F} <: PermutationProbabilitiesEstimator{M}
+struct SymbolicWeightedPermutation{M,F} <: PermutationOutcomeSpaceModel{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
 end
 
 """
-    SymbolicAmplitudeAwarePermutation <: ProbabilitiesEstimator
+    SymbolicAmplitudeAwarePermutation <: OutcomeSpaceModel
     SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
 
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
@@ -169,7 +169,7 @@ elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is use
     Illustration in spike detection and signal segmentation. Computer methods and programs
     in biomedicine, 128, 40-51.
 """
-struct SymbolicAmplitudeAwarePermutation{M,F} <: PermutationProbabilitiesEstimator{M}
+struct SymbolicAmplitudeAwarePermutation{M,F} <: PermutationOutcomeSpaceModel{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
     A::Float64
@@ -228,7 +228,7 @@ function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateS
     return Probabilities(probs)
 end
 
-function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
+function frequencies_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
     # A bit of code duplication here, because we actually need the processed
     # `πs` to invert it with `decode`. This can surely be optimized with some additional
     # function that both maps to integers with `decode` but also keeps track of
@@ -246,12 +246,13 @@ function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) whe
     ps = probabilities!(πs, est, dataset)
     # Okay, now we compute the outcomes. (`πs` is already sorted in `fasthist!`)
     outcomes = decode.(Ref(est.encoding), unique!(πs))
-    return ps, outcomes
+    #freqs = floor.(Int, ps .* 10e8)
+    return freqs, outcomes
 end
 
 # fallback
-total_outcomes(est::PermutationProbabilitiesEstimator) = total_outcomes(est.encoding)
-outcome_space(est::PermutationProbabilitiesEstimator) = outcome_space(est.encoding)
+total_outcomes(est::PermutationOutcomeSpaceModel) = total_outcomes(est.encoding)
+outcome_space(est::PermutationOutcomeSpaceModel) = outcome_space(est.encoding)
 
 ###########################################################################################
 # Permutation weights definition

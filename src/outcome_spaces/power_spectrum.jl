@@ -2,7 +2,7 @@ export PowerSpectrum
 import FFTW
 
 """
-    PowerSpectrum() <: ProbabilitiesEstimator
+    PowerSpectrum() <: OutcomeSpaceModel
 
 Calculate the power spectrum of a timeseries (amplitude square of its Fourier transform),
 and return the spectrum normalized to sum = 1 as probabilities.
@@ -29,14 +29,17 @@ Input `x` is needed for a well-defined [`outcome_space`](@ref).
     by Short-Time Training in the Delayed-Match-to-Sample Task_,
     [Front. Hum. Neurosci.](https://doi.org/10.3389/fnhum.2017.00437)
 """
-struct PowerSpectrum <: ProbabilitiesEstimator end
+struct PowerSpectrum <: OutcomeSpaceModel end
 
-function probabilities_and_outcomes(est::PowerSpectrum, x)
+function frequencies_and_outcomes(est::PowerSpectrum, x)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
     f = FFTW.rfft(x)
     probs = Probabilities(abs2.(f))
     events = FFTW.rfftfreq(length(x))
-    return probs, events
+    # Convert to pseudo-counts
+    freqs = floor.(Int, probs .* 10e8)
+
+    return freqs, events
 end
 
 outcome_space(::PowerSpectrum, x) = FFTW.rfftfreq(length(x))

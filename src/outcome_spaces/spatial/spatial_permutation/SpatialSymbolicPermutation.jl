@@ -6,7 +6,7 @@ export SpatialSymbolicPermutation
 ###########################################################################################
 
 """
-    SpatialSymbolicPermutation <: ProbabilitiesEstimator
+    SpatialSymbolicPermutation <: OutcomeSpaceModel
     SpatialSymbolicPermutation(stencil, x; periodic = true)
 
 A symbolic, permutation-based probabilities estimator for spatiotemporal systems that

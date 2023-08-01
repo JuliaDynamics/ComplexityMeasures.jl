@@ -17,3 +17,4 @@ include("infomeasure_types/renyi_extropy.jl")
 
 # Estimators
 testfile("estimators/estimators.jl")
+testfile("discrete_estimators/discrete_estimators.jl")

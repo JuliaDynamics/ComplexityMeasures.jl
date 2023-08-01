@@ -9,7 +9,7 @@ export
     transfermatrix
 
 """
-    TransferOperator <: ProbabilitiesEstimator
+    TransferOperator <: OutcomeSpaceModel
     TransferOperator(b::AbstractBinning)
 
 A probability estimator based on binning data into rectangular boxes dictated by
@@ -87,7 +87,7 @@ See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
     Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation
     using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
 """
-struct TransferOperator{R<:AbstractBinning} <: ProbabilitiesEstimator
+struct TransferOperator{R<:AbstractBinning} <: OutcomeSpaceModel
     binning::R
 end
 TransferOperator(ϵ::Union{Real,Vector}) = TransferOperator(RectangularBinning(ϵ))

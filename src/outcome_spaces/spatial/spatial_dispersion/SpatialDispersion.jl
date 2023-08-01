@@ -3,7 +3,7 @@ export SpatialDispersion
 import Base.maximum
 
 """
-    SpatialDispersion <: ProbabilitiesEstimator
+    SpatialDispersion <: OutcomeSpaceModel
     SpatialDispersion(stencil, x::AbstractArray;
         periodic = true,
         c = 5,
