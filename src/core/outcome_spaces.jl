@@ -173,7 +173,7 @@ Thus, we can assign to each outcome ``\\omega_i`` a count ``f(\\omega_i)``, such
 ``\\sum_{i=1}^N f(\\omega_i) = N``, where ``N`` is the number of observations in the
 (encoded) input data.
 `counts_and_outcomes` returns the counts ``f(\\omega_i)_{obs}``
-and outcomes only for the *observed* outcomes ``\\Omega_i^{obs}`` (those outcomes
+and outcomes only for the *observed* outcomes ``\\omega_i^{obs}`` (those outcomes
 that actually appear in the input data). If you need the counts for
 *unobserved* outcomes as well, use [`allcounts_and_outcomes`](@ref).
 
