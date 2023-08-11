@@ -1,39 +1,5 @@
 # Probabilities
 
-## Probabilities API
-
-The probabilities API is defined by
-
-- [`OutcomeSpace`](@ref), which defines a set of possible outcomes onto which input data
-    are mapped (specifies a discretization).
-- [`ProbabilitiesEstimator`](@ref), which maps observed (pseudo-)counts of outcomes to
-    probabilities.
-- [`probabilities`](@ref) and [`allprobabilities`](@ref)
-- [`probabilities_and_outcomes`](@ref) and [`allprobabilities_and_outcomes`](@ref)
-
-and related functions that you will find in the following documentation blocks:
-
-```@docs
-Probabilities
-probabilities
-probabilities_and_outcomes
-probabilities!
-allprobabilities
-allprobabilities_and_outcomes
-counts_and_outcomes
-allcounts_and_outcomes
-counts
-```
-
-## [Probability estimators](@id probability_estimators)
-
-```@docs
-ProbabilitiesEstimator
-MLE
-Bayes
-Shrinkage
-```
-
 ## [Outcome spaces (discretization)](@id outcome_spaces)
 
 ```@docs
@@ -111,6 +77,40 @@ Diversity
 ```@docs
 SpatialSymbolicPermutation
 SpatialDispersion
+```
+
+## Probabilities API
+
+The probabilities API is defined by
+
+- [`OutcomeSpace`](@ref), which defines a set of possible outcomes onto which input data
+    are mapped (specifies a discretization).
+- [`ProbabilitiesEstimator`](@ref), which maps observed (pseudo-)counts of outcomes to
+    probabilities.
+- [`probabilities`](@ref) and [`allprobabilities`](@ref)
+- [`probabilities_and_outcomes`](@ref) and [`allprobabilities_and_outcomes`](@ref)
+
+and related functions that you will find in the following documentation blocks:
+
+```@docs
+Probabilities
+probabilities
+probabilities_and_outcomes
+probabilities!
+allprobabilities
+allprobabilities_and_outcomes
+counts_and_outcomes
+allcounts_and_outcomes
+counts
+```
+
+## [Probability estimators](@id probability_estimators)
+
+```@docs
+ProbabilitiesEstimator
+MLE
+Bayes
+Shrinkage
 ```
 
 ## [Encodings API](@id encodings)
