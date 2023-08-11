@@ -41,6 +41,7 @@ function information(hest::Jackknife, pest::ProbabilitiesEstimator, x)
     i_plugin = information(est_plugin, pest, x)
 
     # The jackknifed estimates
+    # TODO: this can be parallelized
     i_jackknifed = zeros(N)
     for i in eachindex(x)
         idxs = setdiff(1:N, i)

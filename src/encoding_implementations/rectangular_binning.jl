@@ -285,6 +285,9 @@ function fasthist(encoder::RectangularBinEncoding, x)
     return hist, bins
 end
 
+# Convenience compatibility with counting api.
+counts(encoder::RectangularBinEncoding, x) = fasthist(encoder, x)
+
 function discard_minus_ones!(bins)
     idxs = findall(isequal(-1), bins)
     deleteat!(bins, idxs)

@@ -31,7 +31,7 @@ function information(hest::Schürmann{<:Shannon}, pest::ProbabilitiesEstimator, 
     # We should be using `N = length(x)`, but since some probabilities estimators
     # return pseudo counts, we need to consider those instead of counting actual
     # observations.
-    freqs = frequencies(pest, x)
+    freqs = counts(pest, x)
     N = sum(freqs)
 
     h = digamma(N) - 1/N * sum(nᵢ * Sₙ(a, nᵢ) for nᵢ in freqs)

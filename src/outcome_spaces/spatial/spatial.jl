@@ -1,5 +1,5 @@
 """ A convenience abstract type that makes dispatch for pixel retrieval easier."""
-abstract type SpatialProbEst{D, P} <: OutcomeSpaceModel end
+abstract type SpatialProbEst{D, P} <: OutcomeSpace end
 
 include("utils.jl")
 include("spatial_permutation/SpatialSymbolicPermutation.jl")

@@ -8,7 +8,8 @@ using ComplexityMeasures.DelayEmbeddings: embed
     @testset "Internals" begin
         # Li et al. (2018) recommends using at least 1000 data points when estimating
         # dispersion entropy.
-        x = rand(1000)
+        N = 1000
+        x = rand(N)
         c = 4
         m = 4
         τ = 1
@@ -22,7 +23,7 @@ using ComplexityMeasures.DelayEmbeddings: embed
         # Dispersion patterns should have a normalized histogram that sums to 1.0.
         dispersion_patterns = embed(symbols, m, τ)
         hist = ComplexityMeasures.dispersion_histogram(dispersion_patterns, length(x), m, τ)
-        @test sum(hist) ≈ 1.0
+        @test sum(hist ./ (N - (m - 1)*τ)) ≈ 1.0
     end
 
     # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper. The

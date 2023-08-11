@@ -2,6 +2,7 @@ export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
 export probabilities_and_outcomes
 export allprobabilities
+export allprobabilities_and_outcomes
 
 ###########################################################################################
 # Types
@@ -43,85 +44,128 @@ Base.IteratorSize(::Probabilities) = Base.HasLength()
 @inline Base.sum(::Probabilities{T}) where T = one(T)
 
 """
-    ProbabilitiesEstimator{<:Outcome space}
+    ProbabilitiesEstimator
 
 The supertype for all probabilities estimators.
 
-All subtypes takes an [`OutcomeSpaceModel`](@ref) as its first input,
-which defines a set of possible outcomes over which observed frequencies are counted.
-It is the role of a `ProbabilitiesEstimator` to convert these frequencies to
-probabilities.
+The role of the probabilities estimator is to convert (pseudo-)counts to probabilities.
+All subtypes of `ProbabilitiesEstimator` accept an [`OutcomeSpace`](@ref) as the first
+argument.
 
-## implementations
+## Implementations
 
-- [`MLEP`](@ref).
-
+- [`MLE`](@ref). Compatible with any [`OutcomeSpace`](@ref), including those returning
+    pseudo-counts (pre-normalized relative frequencies).
+- [`Bayes`](@ref). Only compatible with counting-based [`OutcomeSpace`](@ref)s.
+- [`Shrinkage`](@ref). Only compatible with counting-based [`OutcomeSpace`](@ref)s.
 
 ## Description
 
 In ComplexityMeasures.jl, probability mass functions
 are estimated from data by defining a set of
-possible outcomes ``\\Omega = \\{\\omega_1, \\omega_2, \\ldots, \\omega_L \\}``, and
+possible outcomes ``\\Omega = \\{\\omega_1, \\omega_2, \\ldots, \\omega_L \\}`` (by
+specifying an [`OutcomeSpace`](@ref)), and
 assigning to each outcome ``\\omega_i`` a probability ``p(\\omega_i)``, such that
-``\\sum_{i=1}^N p(\\omega_i) = 1``.
+``\\sum_{i=1}^N p(\\omega_i) = 1`` (by specifying a `ProbabilitiesEstimator`).
 
-In practice, probability estimation is done by calling [`probabilities`](@ref) with some
-input data and one of the implemented probabilities estimators. The result is a
-[`Probabilities`](@ref) `p` (`Vector`-like), where each element `p[i]` is the probability of
-the outcome `ω[i]`. Use [`probabilities_and_outcomes`](@ref) if you need
-both the probabilities and the outcomes, and use [`outcome_space`](@ref) to obtain
-``\\Omega`` alone.  The cardinality of ``\\Omega`` can be obtained using
-[`total_outcomes`](@ref).
+## Used with
 
-Currently, all probabilities estimators estimate the *plug-in* (or maximimum likelihood)
-estimates of probabilities.
+- [`probabilities`](@ref)/[`probabilities_and_outcomes`](@ref) for estimating a probability
+    distribution over some [`OutcomeSpace`](@ref) from input data.
+- [`allprobabilities`](@ref)/[`allprobabilities_and_outcomes`](@ref) for estimating a
+    probability distribution from input data, guaranteeing inclusion of zero-probability
+    outcomes.
+
+The returned probabilities `p` are a [`Probabilities`](@ref) (`Vector`-like), where each
+element `p[i]` is the probability of the outcome `ω[i]`. Using an [`OutcomeSpace`](@ref)
+directly as input to [`probabilities`](@ref) or related functions is also possible, and is
+equivalent to using the [`MLE`](@ref) estimator.
 """
 abstract type ProbabilitiesEstimator end
 
 # The following methods are defined over the outcome space, not the probabilities
 # estimator, but we provide them for convenience.
-outcome_space(est::ProbabilitiesEstimator) = est.outcome_space
-outcome_space(est::ProbabilitiesEstimator, x) = outcome_space(est.outcome_space, x)
-total_outcomes(esc::ProbabilitiesEstimator) = total_outcomes(est.outcome_space)
-total_outcomes(esc::ProbabilitiesEstimator, x) = total_outcomes(est.outcome_space, x)
-outcomes(est::ProbabilitiesEstimator, x) = outcomes(est.outcome_space, x)
+outcome_space(est::ProbabilitiesEstimator) = est.outcomemodel
+outcome_space(est::ProbabilitiesEstimator, x) = outcome_space(est.outcomemodel, x)
+total_outcomes(est::ProbabilitiesEstimator) = total_outcomes(est.outcomemodel)
+total_outcomes(est::ProbabilitiesEstimator, x) = total_outcomes(est.outcomemodel, x)
+outcomes(est::ProbabilitiesEstimator, x) = outcomes(est.outcomemodel, x)
 
 ###########################################################################################
 # probabilities and combo function
 ###########################################################################################
 """
-    probabilities(o::OutcomeSpaceModel, x::Array_or_SSSet) → p::Probabilities
+    probabilities(o::OutcomeSpace, x::Array_or_SSSet) → p::Probabilities
 
-Syntactically equivalent to using `probabilities(MLEP(o), x)` (see below).
+Compute a probability distribution over the set of possible outcomes
+defined by the [`OutcomeSpace`] `o`, given input data `x`, using maximum likelihood
+probability estimation ([`MLE`](@ref)).
 
-    probabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p::Probabilities
+The input data is typically an `Array` or a `StateSpaceSet` (or `SSSet` for sort); see
+[Input data for ComplexityMeasures.jl](@ref). Configuration options are always given as
+arguments to the chosen outcome space.
 
-Compute a probability distribution over the set of possible outcomes defined by the
-probabilities estimator, given input data `x`, which is typically an
-`Array` or a `StateSpaceSet` (or `SSSet` for sort); see [Input data for
-ComplexityMeasures.jl](@ref). Configuration options are always given as arguments to the
-chosen estimator.
+To obtain the outcomes corresponding to the probabilities `p`, use [`outcomes`](@ref),
+or [`probabilities_and_outcomes`](@ref), which return both the probabilities and the
+outcomes together.
 
-To obtain the outcomes corresponding to these probabilities, use [`outcomes`](@ref).
-
-Due to performance optimizations, whether the returned probablities
-contain `0`s as entries or not depends on the estimator.
+Due to performance optimizations, whether the returned probabilities
+contain `0`s as entries or not depends on the outcome space.
 E.g., in [`ValueHistogram`](@ref) `0`s are skipped, while in
 [`PowerSpectrum`](@ref) `0` are not, because we get them for free.
 Use the function [`allprobabilities`](@ref) for a version with all `0` entries
 that ensures that given an `est`, the indices of `p` will be independent
-of the input data `x`.
+of the input data `x`. Using [`allprobabilities`](@ref)/
+[`allprobabilities_and_outcomes`](@ref) guarantees that zero probabilities
+are also returned.
+
+## Examples
+
+```julia
+x = randn(500)
+ps = probabilities(SymbolicPermutation(m = 3), x)
+ps = probabilities(ValueHistogram(RectangularBinning(5)), x)
+ps = probabilities(WaveletOverlap(), x)
+```
+
+    probabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p::Probabilities
+
+The same as above, but specify which [`ProbabilitiesEstimator`](@ref) `est` to use.
+Using estimators other than [`MLE`](@ref) only works for counting-based
+[`OutcomeSpace`](@ref)s, i.e. those that implement [`counts_and_outcomes`](@ref).
+
+The outcome space is here given as the first argument to `est`.
+
+## Examples
+
+```julia
+x = randn(500)
+
+# Syntactically equivalent to `probabilities(SymbolicPermutation(m = 3), x)`
+ps = probabilities(MLE(SymbolicPermutation(m = 3)), x)
+
+# Some more sophisticated ways of estimating probabilities:
+ps = probabilities(Bayes(SymbolicPermutation(m = 3)), x)
+ps = probabilities(Shrinkage(ValueHistogram(RectangularBinning(5))), x)
+
+# Only the `MLE` estimator works with non-counting based outcome spaces,
+# like for example `WaveletOverlap`.
+ps = probabilities(MLE(WaveletOverlap()), x) # works
+ps = probabilities(Bayes(WaveletOverlap()), x) # errors
+```
 
     probabilities(x::Vector_or_SSSet) → p::Probabilities
 
 Estimate probabilities by using directly counting the elements of `x`, assuming that
 `Ω = sort(unique(x))`, i.e. that the outcome space is the unique elements of `x`.
 This is mostly useful when `x` contains categorical data. It is syntactically equivalent
-to using a [`MLEP`](@ref) estimator.
+to `probabilities(MLE(CountOccurrences()), x)`.
 
-See also: [`Probabilities`](@ref), [`ProbabilitiesEstimator`](@ref).
+See also: [`probabilities_and_outcomes`](@ref), [`allprobabilities`](@ref),
+[`allprobabilities_and_outcomes`](@ref), [`Probabilities`](@ref),
+[`ProbabilitiesEstimator`](@ref).
 """
-function probabilities(est::ProbabilitiesEstimator, x)
+function probabilities(est, x)
     return first(probabilities_and_outcomes(est, x))
 end
 
@@ -153,22 +197,20 @@ function probabilities! end
 ###########################################################################################
 # All probabilities
 ###########################################################################################
+# Each `ProbabilitiesEstimator` subtype must extend this method.
 """
-    allprobabilities(o::OutcomeSpace, x::Array_or_SSSet) → p
+    allprobabilities_and_outcomes(est::ProbabilitiesEstimator, x::Array_or_SSSet) → (p, Ω)
+    allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet) → (p, Ω)
 
-Same as [`probabilities`](@ref), however ensures that outcomes with `0` probability
-are explicitly added in the returned vector. This means that `p[i]` is the probability
-of `ospace[i]`, with `ospace = `[`outcome_space`](@ref)`(est, x)`.
-
-This function is useful in cases where one wants to compare the probability mass functions
-of two different input data `x, y` under the same estimator. E.g., to compute the
-KL-divergence of the two PMFs assumes that the obey the same indexing. This is
-not true for [`probabilities`](@ref) even with the same `est`, due to the skipping
-of 0 entries, but it is true for [`allprobabilities`](@ref).
+The same as [`allprobabilities`](@ref), but also returns the outcome space `Ω`.
 """
-function allprobabilities(o::OutcomeSpaceModel, x::Array_or_SSSet)
-    probs, outs = probabilities_and_outcomes(est, x)
-    ospace = vec(outcome_space(est, x))
+function allprobabilities_and_outcomes(est::ProbabilitiesEstimator, x) end
+
+# If an outcome space model is provided without specifying a probabilities estimator,
+# then naive plug-in estimation is used (the `MLE` estimator).
+function allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
+    probs, outs = probabilities_and_outcomes(o, x)
+    ospace = vec(outcome_space(o, x))
     # We first utilize that the outcome space is sorted and sort probabilities
     # accordingly (just in case we have an estimator that is not sorted)
     s = sortperm(outs)
@@ -195,5 +237,57 @@ function allprobabilities(o::OutcomeSpaceModel, x::Array_or_SSSet)
             break
         end
     end
-    return Probabilities(allprobs, true)
+    return Probabilities(allprobs, true), ospace
 end
+
+"""
+    allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p
+    allprobabilities(o::OutcomeSpace, x::Array_or_SSSet) → p
+
+The same as [`probabilities`](@ref), but ensures that outcomes with `0` probability
+are explicitly added in the returned vector. This means that `p[i]` is the probability
+of `ospace[i]`, with `ospace = `[`outcome_space`](@ref)`(est, x)`.
+
+This function is useful in cases where one wants to compare the probability mass functions
+of two different input data `x, y` under the same estimator. E.g., to compute the
+KL-divergence of the two PMFs assumes that the obey the same indexing. This is
+not true for [`probabilities`](@ref) even with the same `est`, due to the skipping
+of 0 entries, but it is true for [`allprobabilities`](@ref).
+"""
+function allprobabilities(est, x)
+    return first(allprobabilities_and_outcomes(est, x))
+end
+
+counts(est::ProbabilitiesEstimator, x) = counts(est.outcomemodel, x)
+
+"""
+    missing_outcomes(o::ProbabilitiesEstimator, x; all = false) → n_missing::Int
+
+Estimates a probability distribution over the outcomes specified by `o`, given input
+data `x`, using [`MLE`](@ref) probabilities estimation,
+then counts the number of missing (i.e. zero-probability) outcomes.
+
+If `all == true`, then [`allprobabilities`](@ref) is used to compute the probabilities.
+This is useful when using a custom [`ProbabilitiesEstimator`](@ref), which may assign
+non-zero probabilities to outcomes that are not observed in the input data.
+If `all == false`, then [`probabilities`](@ ref) is used to compute the probabilities.
+
+This is syntactically equivalent to `missing_outcomes(MLE(o), x)`.
+
+    missing_outcomes(est::ProbabilitiesEstimator, x) → n_missing::Int
+
+Like above, but specifying a custom [`ProbabilitiesEstimator`](@ref).
+
+See also: [`MissingDispersionPatterns`](@ref).
+"""
+function missing_outcomes(est::ProbabilitiesEstimator, x; all::Bool = false)
+    if all
+        probs = allprobabilities(est, x)
+    else
+        probs = probabilities(est, x)
+    end
+    L = total_outcomes(est, x)
+    O = count(!iszero, probs)
+    return L - O
+end
+missing_outcomes(o::OutcomeSpace, x::Array_or_SSSet) = missing_outcomes(MLE(o), x)

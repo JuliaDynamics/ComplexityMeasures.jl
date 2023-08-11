@@ -54,7 +54,7 @@ end
 function information(hest::GeneralizedSchürmann{<:Shannon}, pest::ProbabilitiesEstimator, x)
     (; definition, a) = hest
 
-    freqs = frequencies(pest, x)
+    freqs = counts(pest, x)
     # We should be using `N = length(x)`, but since some probabilities estimators
     # return pseudo counts, we need to consider those instead of counting actual
     # observations.

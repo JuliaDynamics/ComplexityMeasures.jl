@@ -3,7 +3,7 @@ export SpatialDispersion
 import Base.maximum
 
 """
-    SpatialDispersion <: OutcomeSpaceModel
+    SpatialDispersion <: OutcomeSpace
     SpatialDispersion(stencil, x::AbstractArray;
         periodic = true,
         c = 5,
@@ -184,19 +184,28 @@ function symbol_distribution(est::SpatialDispersion, x::AbstractArray{T, N}) whe
     return symbols
 end
 
-function probabilities(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
+function counts(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
     symbols = symbol_distribution(est, x)
-    return Probabilities(fasthist!(symbols))
+    return fasthist!(symbols)
+end
+
+function probabilities(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
+    return Probabilities(counts(est, x))
+end
+
+function counts_and_outcomes(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
+    symbols = symbol_distribution(est, x)
+
+    # We don't care about the fact that `frequencies!` sorts in-place here, because we
+    # only need the unique values of `symbols` for the outcomes.
+    probs = fasthist!(symbols)
+    outcomes = unique!(symbols)
+    return probs, outcomes
 end
 
 function probabilities_and_outcomes(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
-    symbols = symbol_distribution(est, x)
-
-    # We don't care about the fact that `fasthist!` sorts in-place here, because we
-    # only need the unique values of `symbols` for the outcomes.
-    probs = Probabilities(fasthist!(symbols))
-    outcomes = unique!(symbols)
-    return probs, outcomes
+    probs, outcomes = counts_and_outcomes(est, x)
+    return Probabilities(probs), outcomes
 end
 
 function total_outcomes(est::SpatialDispersion)::Int

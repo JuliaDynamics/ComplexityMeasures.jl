@@ -9,8 +9,8 @@ and is used with [`information`](@ref) to any discrete [`InformationMeasure`](@r
 
 It computes any quantity exactly as given by its formula. When computing an
 information measure, which here is defined as a probabilities functional, it computes
-the quantity directly from a probability mass function, which is derived from plug-in
-estimates of the probabilities.
+the quantity directly from a probability mass function, which is derived from
+maximum-likelihood ([`MLE`](@ref) estimates of the probabilities.
 
 ## Bias of plug-in estimates
 
@@ -39,7 +39,8 @@ end
 # Using the plugin-estimator is the same as plugging probabilities into the
 # relevant definitions.
 function information(hest::PlugIn, pest::ProbabilitiesEstimator, x)
-    return information(hest.definition, pest, x)
+    probs = probabilities(pest, x)
+    return information(hest.definition, probs)
 end
 information(hest::PlugIn, probs::Probabilities) = information(hest.definition, probs)
 information_normalized(e::PlugIn, est, x) = information_normalized(e.definition, est, x)

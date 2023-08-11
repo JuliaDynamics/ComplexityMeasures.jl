@@ -22,7 +22,6 @@ estimator, `m` is the number of bins with nonzero probability (as defined in Pan
 [^Miller1955]:
     Miller, G. (1955). Note on the bias of information estimates. Information theory in
     psychology: Problems and methods.
-
 [^Paninski2003]:
     Paninski, L. (2003). Estimation of entropy and mutual information. Neural computation,
     15(6), 1191-1253.
@@ -32,11 +31,11 @@ Base.@kwdef struct MillerMadow{I <: InformationMeasure} <: DiscreteInfoEstimator
 end
 
 function information(hest::MillerMadow{<:Shannon}, pest::ProbabilitiesEstimator, x)
+    N = length(x)
     probs = allprobabilities(pest, x)
     # Estimate of the number of bins with nonzero pN-probability; here estimated as
     # in Paninski (2003)
     m̂ = count(probs .> 0.0)
-
-    h_naive = information(PlugIn(hest.definition), pest, x)
-    return h_naive + (m̂ - 1)/(2 * length(x))
+    h_naive = information(PlugIn(hest.definition), probs)
+    return h_naive + (m̂ - 1)/(2 * N)
 end

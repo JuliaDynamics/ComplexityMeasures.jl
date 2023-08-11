@@ -3,28 +3,34 @@ export DiscreteInfoEstimator, DiscreteInfoEstimator
 export DifferentialInfoEstimator, DifferentialInfoEstimator
 export information, information_maximum, information_normalized, convert_logunit
 
+
 """
     InformationMeasure
 
-`InformationMeasure` is the supertype of all information measure definitions, such
-as (generalized) entropies or extropies. Subtypes can be used as an input to
-[`information`](@ref), which computes a numerical value for the measure (see
-"Estimation" below).
-
-## Description
+`InformationMeasure` is the supertype of all information measure definitions.
 
 In this package, we define "information measures" as functionals of probability mass
 functions ("discrete" measures), or of probability density functions ("differential"
-measures).
-
+measures). Examples are (generalized) entropies such as [`Shannon`](@ref) or
+[`Renyi`](@ref), or extropies like [`ShannonExtropy`](@ref).
 A particular information measure may have both a discrete and a continuous/differential
-definition. Estimating either variant can be done using a [`DiscreteInfoEstimator`](@ref)
-or a [`DifferentialInfoEstimator`](@ref). Note that single measure (e.g. [`Shannon`](@ref))
-may have many different estimators.
+definition, which are estimated using a [`DifferentialInfoEstimator`](@ref) or
+a [`DifferentialInfoEstimator`](@ref), respectively.
+
+## Used with
+
+Any of the information measures listed below can be used with
+
+- [`information`](@ref), to compute a numerical value for the measure, given some input data.
+- [`information_maximum`](@ref), to compute the maximum possible value for the measure.
+- [`information_normalized`](@ref), to compute the normalized form of the
+    measure (divided by the maximum possible value).
+
+The [`information_maximum`](@ref)/[`information_normalized`](@ref) functions only works
+with the discrete version of the measure. See docstrings for the above functions
+for usage examples.
 
 ## Implementations
-
-### Entropies
 
 - [`Renyi`](@ref).
 - [`Tsallis`](@ref).
@@ -32,32 +38,9 @@ may have many different estimators.
 - [`Kaniadakis`](@ref).
 - [`Curado`](@ref).
 - [`StretchedExponential`](@ref).
-
-### Extropies
-
 - [`RenyiExtropy`](@ref).
 - [`TsallisExtropy`](@ref).
 - [`ShannonExtropy`](@ref), which is a subcase of the above two in the limit `q → 1`.
-
-## Estimation
-
-
-Any of the above measures  may used with [`information`](@ref) to compute a numerical
-value, either
-- directly (e.g. `information(Shannon(), probest, x)`), which uses [`PlugIn`](@ref)
-    estimation,
-- with a [`DiscreteInfoEstimator`](@ref) in combination with a
-    [`ProbabilitiesEstimator`](@ref)
-    (e.g. `information(MillerMadow(Shannon()), probest, x)`), or
-- with a [`DifferentialInfoEstimator`](@ref) (e.g. `information(Kraskov(Shannon()), x)`).
-
-!!! info "Why separate the *definition* of a measure from *estimators* of a measure?"
-    In real applications, we generally don't have access to the underlying probability
-    mass functions or densities required to compute the various entropy or extropy
-    definitons. Therefore, these information measures must be *estimated* from
-    finite data. Estimating a particular measure (e.g. [`Shannon`](@ref) entropy) can be
-    done in many ways, each with its own own pros and cons. We aim to provide a complete
-    library of literature estimators of the various information measures (PRs are welcome!).
 
 [^Amigó2018]:
     Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
@@ -88,10 +71,18 @@ Base.@kwdef struct MyEstimator{I <: InformationMeasure, X} <: DiscreteInfoEstima
     x::X
 end
 ```
+
+!!! info "Why separate the *definition* of a measure from *estimators* of a measure?"
+    In real applications, we generally don't have access to the underlying probability
+    mass functions or densities required to compute the various entropy or extropy
+    definitons. Therefore, these information measures must be *estimated* from
+    finite data. Estimating a particular measure (e.g. [`Shannon`](@ref) entropy) can be
+    done in many ways, each with its own own pros and cons. We aim to provide a complete
+    library of literature estimators of the various information measures (PRs are welcome!).
 """
 abstract type InformationMeasureEstimator{E} end
 
-function information(est::InformationMeasureEstimator, args...)
+function information(est::InformationMeasureEstimator, probest::ProbabilitiesEstimator, args...)
     throw(ArgumentError("""$est not implemented for information measure $(est.definition)"""))
 end
 
@@ -101,28 +92,64 @@ end
 """
     DiscreteInfoEstimator
 
-The supertype of all discrete information measure estimators.
+The supertype of all discrete information measure estimators, which are used in combination
+with a [`ProbabilitiesEstimator`](@ref) as input to  [`information`](@ref) or related
+functions.
 
-Subtypes are used, in combination with a [`ProbabilitiesEstimator`](@ref)s, with
-[`information`](@ref) to estimate a discrete [`InformationMeasure`](@ref).
+The first argument to a discrete estimator is always an [`InformationMeasure`](@ref)
+(defaults to [`Shannon`](@ref)).
+
+## Description
+
+A discrete [`InformationMeasure`](@ref) is a functional of a probability mass function.
+To estimate such a measure from data, we must first estimate a probability mass function
+using a [`ProbabilitiesEstimator`](@ref) from the (encoded/discretized) input data, and then
+apply the estimator to the estimated probabilities. For example, the [`Shannon`](@ref)
+entropy is typically computed using the [`MLE`](@ref) estimator to compute probabilities,
+which are then given to the [`PlugIn`](@ref) estimator. Many other estimators exist, not
+only for [`Shannon`](@ref) entropy, but other information measures as well.
+
+We provide a library of both generic estimators such as [`PlugIn`](@ref) or
+[`Jackknife`](@ref) (which can be applied to any measure), as well as dedicated
+estimators such as [`MillerMadow`](@ref), which computes [`Shannon`](@ref) entropy
+using the Miller-Madow bias correction. The list below gives a complete overview.
 
 ## Implementations
 
-### Generic estimators
+The following estimators are generic and can compute any [`InformationMeasure`](@ref).
 
 - [`PlugIn`](@ref). The default, generic plug-in estimator of any information measure.
-    It computes the measure exactly as stated in the definition, using empirical
-    plug-in estimates of probabilities (i.e. observed relative frequencies).
-- [`Jackknife`](@ref). Uses the jackknife principle to estimate an
-    [`InformationMeasure`](@ref).
+    It computes the measure exactly as stated in the definition, using the provided
+    probabilities.
+- [`Jackknife`](@ref). Uses the a combination of the plug-in estimator and the jackknife
+    principle to estimate an [`InformationMeasure`](@ref).
 
 ### [`Shannon`](@ref) entropy estimators
+
+The following estimators are dedicated [`Shannon`](@ref) entropy estimators, which
+provide improvements over the naive [`PlugIn`](@ref) estimator.
 
 - [`MillerMadow`](@ref).
 - [`HorvitzThompson`](@ref).
 - [`Schürmann`](@ref).
 - [`GeneralizedSchürmann`](@ref).
 - [`ChaoShen`](@ref).
+
+
+!!! info
+    Any of the implemented [`DiscreteInfoEstimator`](@ref)s can be used in combination
+    with *any* [`ProbabilitiesEstimator`](@ref) as input to [`information`](@ref).
+    What this means is that every estimator actually comes in many different variants -
+    one for each [`ProbabilitiesEstimator`](@ref). For example, the [`MillerMadow`](@ref)
+    estimator of [`Shannon`](@ref) entropy is typically calculated with [`MLE`](@ref)
+    probabilities. But here, you can use for example the [`Bayes`](@ref) or the
+    [`Shrinkage`](@ref) probabilities estimators instead, i.e.
+    `information(MillerMadow(), MLE(outcome_space), x)` and
+    `information(MillerMadow(), Bayes(outcomes_space), x)` are distinct estimators.
+    This holds for all [`DiscreteInfoEstimator`](@ref)s. Many of these
+    estimators haven't been explored in the literature before, so feel free to explore,
+    and please cite this software if you use it to explore some new estimator combination!
+
 
 More estimators will be added in the future ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/237)).
 """
@@ -160,61 +187,6 @@ See [`information`](@ref) for usage.
 - [`Ebrahimi`](@ref).
 """
 abstract type DifferentialInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
-
-###########################################################################################
-# Normalize API
-###########################################################################################
-"""
-    information_maximum(e::InformationMeasure, est::ProbabilitiesEstimator, x)
-
-Return the maximum value of a discrete entropy with the given probabilities estimator
-and input data `x`. Like in [`outcome_space`](@ref), for some estimators
-the concrete outcome space is known without knowledge of input `x`,
-in which case the function dispatches to `information_maximum(e, est)`.
-
-    information_maximum(e::InformationMeasure, L::Int)
-
-Same as above, but computed directly from the number of total outcomes `L`.
-"""
-function information_maximum(e::InformationMeasure, est::ProbabilitiesEstimator, x)
-    L = total_outcomes(est, x)
-    return information_maximum(e, L)
-end
-function information_maximum(e::InformationMeasure, est::ProbabilitiesEstimator)
-    L = total_outcomes(est)
-    return information_maximum(e, L)
-end
-function information_maximum(e::InformationMeasure, ::Int)
-    throw(ErrorException("not implemented for entropy type $(nameof(typeof(e)))."))
-end
-
-"""
-    information_normalized([e::DiscreteInfoEstimator,] est::ProbabilitiesEstimator, x) → h̃
-
-Return `h̃ ∈ [0, 1]`, the normalized discrete information measure `e` computed from `x`,
-i.e. the value of [`information`](@ref) divided by the maximum value for `e`, according to the
-given probabilities estimator.
-
-Instead of a discrete information measure estimator, an [`InformationMeasure`](@ref)
-can be given as first argument. If `e` is not given, it defaults to `Shannon()`.
-
-Notice that there is no method
-`information_normalized(e::DiscreteInfoEstimator, probs::Probabilities)`,
-because there is no way to know
-the amount of _possible_ events (i.e., the [`total_outcomes`](@ref)) from `probs`.
-"""
-function information_normalized(e::InformationMeasure, est::ProbabilitiesEstimator, x)
-    # If the maximum information is zero (i.e. only one outcome), then we define
-    # normalized information as 0.0.
-    infomax = information_maximum(e, est, x)
-    if infomax == 0
-        return 0.0
-    end
-    return information(e, est, x) / infomax
-end
-function information_normalized(est::ProbabilitiesEstimator, x::Array_or_SSSet)
-    return information_normalized(Shannon(), est, x)
-end
 
 ###########################################################################################
 # Utils

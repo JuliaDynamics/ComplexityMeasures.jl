@@ -8,8 +8,8 @@ using ComplexityMeasures.DelayEmbeddings: embed
     # many of the tests such as whether "is_less" is used
     # are actually done in the ordinal pattern encoding test suite
     for S in (SymbolicPermutation, SymbolicWeightedPermutation, SymbolicAmplitudeAwarePermutation)
-        @test S() isa ProbabilitiesEstimator
-        @test S(lt = Base.isless) isa ProbabilitiesEstimator
+        @test S() isa OutcomeSpace
+        @test S(lt = Base.isless) isa OutcomeSpace
         @test total_outcomes(S(m = 3)) == factorial(3)
     end
 end

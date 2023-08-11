@@ -2,7 +2,7 @@ export ValueHistogram, VisitationFrequency
 # Binnings are defined in the encoding folder!
 
 """
-    ValueHistogram(b::AbstractBinning) <: OutcomeSpaceModel
+    ValueHistogram(b::AbstractBinning) <: OutcomeSpace
 
 A probability estimator based on binning the values of the data as dictated by
 the binning scheme `b` and formally computing their histogram, i.e.,
@@ -36,7 +36,7 @@ returns the outcomes in the same array format as the underlying binning
 For [`FixedRectangularBinning`](@ref) the [`outcome_space`](@ref) is well-defined from the
 binning, but for [`RectangularBinning`](@ref) input `x` is needed as well.
 """
-struct ValueHistogram{B<:AbstractBinning} <: OutcomeSpaceModel
+struct ValueHistogram{B<:AbstractBinning} <: OutcomeSpace
     binning::B
 end
 ValueHistogram(ϵ::Union{Real,Vector}) = ValueHistogram(RectangularBinning(ϵ))
@@ -49,34 +49,34 @@ An alias for [`ValueHistogram`](@ref).
 const VisitationFrequency = ValueHistogram
 
 # The source code of `ValueHistogram` operates as rather simple calls to
-# the underlying encoding and the `fasthist` function and extensions.
+# the underlying encoding and the `frequencies` function and extensions.
 # See the `rectangular_binning.jl` file for more.
 function probabilities(est::ValueHistogram, x)
     encoding = RectangularBinEncoding(est.binning, x)
     Probabilities(fasthist(encoding, x)[1])
 end
 
-function frequencies_and_outcomes(est::ValueHistogram, x)
+function counts_and_outcomes(est::ValueHistogram, x)
     encoding = RectangularBinEncoding(est.binning, x)
-    freqs, outcomes = frequencies_and_outcomes(encoding, x)
+    freqs, outcomes = counts_and_outcomes(encoding, x)
     return freqs, outcomes
 end
 
 function probabilities_and_outcomes(est::ValueHistogram, x)
-    freqs, outcomes = frequencies_and_outcomes(est, x)
+    freqs, outcomes = counts_and_outcomes(est, x)
     return Probabilities(freqs), outcomes
 end
 
-function frequencies_and_outcomes(encoding::RectangularBinEncoding, x)
+function counts_and_outcomes(encoding::RectangularBinEncoding, x)
     freqs, bins = fasthist(encoding, x) # bins are integers here
-    unique!(bins) # `bins` is already sorted from `fasthist!`
+    unique!(bins) # `bins` is already sorted from `frequencies!`
     # Here we transfor the cartesian coordinate based bins into data unit bins:
     outcomes = map(b -> decode(encoding, b), bins)
     return freqs, vec(outcomes)
 end
 
 function probabilities_and_outcomes(encoding::RectangularBinEncoding, x)
-    freqs, outcomes = frequencies_and_outcomes(encoding, x)
+    freqs, outcomes = counts_and_outcomes(encoding, x)
     return Probabilities(freqs), outcomes
 end
 
@@ -85,3 +85,6 @@ outcome_space(est::ValueHistogram, x) = outcome_space(RectangularBinEncoding(est
 function outcome_space(est::ValueHistogram{<:FixedRectangularBinning})
     return outcome_space(RectangularBinEncoding(est.binning))
 end
+
+# TODO: is this correct when points are discarded due to falling outside the binning?
+encoded_space_cardinality(o::ValueHistogram, x) = length(x)

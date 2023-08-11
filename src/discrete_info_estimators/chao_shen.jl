@@ -2,7 +2,7 @@ export ChaoShen
 
 """
     ChaoShen <: DiscreteInfoEstimator
-    ChaoShen(measure::Shannon = Shannon())
+    ChaoShen(definition::Shannon = Shannon())
 
 The `ChaoShen` estimator is used with [`information`](@ref) to compute the
 discrete [`Shannon`](@ref) entropy according to Chao & Shen (2003)[^Chao2003].
@@ -16,7 +16,7 @@ of length ``N``, then the sample coverage is ``C = 1 - \\dfrac{f_1}{N}``. The Ch
 estimator of Shannon entropy is then
 
 ```math
-H_S^{HT} = -\\sum_{i=1}^M \\left( \\dfrac{C p_i \\log(C p_i)}{1 - (1 - C p_i)^N} \\right),
+H_S^{CS} = -\\sum_{i=1}^M \\left( \\dfrac{C p_i \\log(C p_i)}{1 - (1 - C p_i)^N} \\right),
 ```
 
 where ``N`` is the sample size and ``M`` is the number of [`outcomes`](@ref). If
@@ -40,7 +40,7 @@ end
 function information(hest::ChaoShen{<:Shannon}, pest::ProbabilitiesEstimator, x)
     (; definition) = hest
     # Count singletons in the sample
-    frequencies, outcomes = frequencies_and_outcomes(pest, x)
+    frequencies, outcomes = counts_and_outcomes(pest, x)
     f₁ = 0
     for f in frequencies
         if f == 1

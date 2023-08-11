@@ -1,6 +1,6 @@
 using ComplexityMeasures.DelayEmbeddings.Neighborhood: KDTree
 
-@test NaiveKernel(0.1; method = KDTree) isa ProbabilitiesEstimator
+@test NaiveKernel(0.1; method = KDTree) isa OutcomeSpace
 
 N = 1000
 pts = StateSpaceSet([rand(2) for i = 1:N]);

@@ -12,14 +12,14 @@ Subtypes must implement fields:
 - `lt::Function`: A function determining how ties are to be broken when constructing
     permutation patterns from embedding vectors.
 """
-abstract type PermutationOutcomeSpaceModel{m} <: OutcomeSpaceModel end
-const PermProbEst = PermutationOutcomeSpaceModel
+abstract type PermutationOutcomeSpace{m} <: OutcomeSpace end
+const PermProbEst = PermutationOutcomeSpace
 
 ###########################################################################################
 # Types and docstrings
 ###########################################################################################
 """
-    SymbolicPermutation <: OutcomeSpaceModel
+    SymbolicPermutation <: OutcomeSpace
     SymbolicPermutation(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
 A probabilities estimator based on ordinal permutation patterns.
@@ -97,13 +97,13 @@ p = probabilities!(πs_ts, est, x)
     application for complexity analysis of chaotic systems. Physica A: Statistical
     Mechanics and its Applications, 461, 812-823.
 """
-struct SymbolicPermutation{M,F} <: PermutationOutcomeSpaceModel{M}
+struct SymbolicPermutation{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
 end
 
 """
-    SymbolicWeightedPermutation <: OutcomeSpaceModel
+    SymbolicWeightedPermutation <: OutcomeSpace
     SymbolicWeightedPermutation(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
 
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
@@ -136,13 +136,13 @@ of the same pattern.
     measure for time series incorporating amplitude information." Physical Review E 87.2
     (2013): 022911.
 """
-struct SymbolicWeightedPermutation{M,F} <: PermutationOutcomeSpaceModel{M}
+struct SymbolicWeightedPermutation{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
 end
 
 """
-    SymbolicAmplitudeAwarePermutation <: OutcomeSpaceModel
+    SymbolicAmplitudeAwarePermutation <: OutcomeSpace
     SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
 
 A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
@@ -169,7 +169,7 @@ elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is use
     Illustration in spike detection and signal segmentation. Computer methods and programs
     in biomedicine, 128, 40-51.
 """
-struct SymbolicAmplitudeAwarePermutation{M,F} <: PermutationOutcomeSpaceModel{M}
+struct SymbolicAmplitudeAwarePermutation{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
     A::Float64
@@ -218,17 +218,43 @@ function probabilities!(::Vector{Int}, ::PermProbEst, ::AbstractVector)
     """)
 end
 
-function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceSet{m}) where {m}
+function fasthist!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceSet{m}) where {m}
     # TODO: The following loop can probably be parallelized!
     @inbounds for (i, χ) in enumerate(x)
         πs[i] = encode(est.encoding, χ)
     end
     weights = permutation_weights(est, x)
-    probs = fasthist!(πs, weights)
-    return Probabilities(probs)
+    # careful: the following histogram is normalized if weights are provided,
+    # so it doesn't actually return integer counts!
+    cts = fasthist!(πs, weights)
+    return cts
 end
 
-function frequencies_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
+function symbolize(est::PermProbEst{m}, x) where m
+    if x isa AbstractVector
+        dataset = embed(x, m, est.τ)
+    else
+        dataset = x
+    end
+    m != dimension(dataset) && throw(ArgumentError(
+        "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
+    ))
+    πs = zeros(Int, length(dataset))
+    @inbounds for (i, χ) in enumerate(dataset)
+        πs[i] = encode(est.encoding, χ)
+    end
+    return πs
+end
+
+function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceSet{m}) where {m}
+    return Probabilities(fasthist!(πs, est, x))
+end
+
+# A generic "weighted counts" + outcomes function. We need this because
+# `SymbolicPermutation` is counting-compatible (i.e. returns a true histogram `Vector{Int}`),
+# while `SymbolicWeightedPermutation` and `SymbolicAmplitudeAwarePermutation` returns
+# a normalized histogram, and are thus *not* counting compatible.
+function weighted_counts_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
     # A bit of code duplication here, because we actually need the processed
     # `πs` to invert it with `decode`. This can surely be optimized with some additional
     # function that both maps to integers with `decode` but also keeps track of
@@ -243,16 +269,26 @@ function frequencies_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where
         "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
     ))
     πs = zeros(Int, length(dataset))
-    ps = probabilities!(πs, est, dataset)
+    freqs = fasthist!(πs, est, dataset)
     # Okay, now we compute the outcomes. (`πs` is already sorted in `fasthist!`)
     outcomes = decode.(Ref(est.encoding), unique!(πs))
-    #freqs = floor.(Int, ps .* 10e8)
     return freqs, outcomes
 end
 
+function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
+    freqs, outcomes = weighted_counts_and_outcomes(est, x)
+    return Probabilities(freqs), outcomes
+end
+
 # fallback
-total_outcomes(est::PermutationOutcomeSpaceModel) = total_outcomes(est.encoding)
-outcome_space(est::PermutationOutcomeSpaceModel) = outcome_space(est.encoding)
+total_outcomes(est::PermutationOutcomeSpace) = total_outcomes(est.encoding)
+outcome_space(est::PermutationOutcomeSpace) = outcome_space(est.encoding)
+
+
+function encoded_space_cardinality(o::PermProbEst{m}, x) where {m}
+    N = length(x)
+    return N - (m - 1)*o.τ
+end
 
 ###########################################################################################
 # Permutation weights definition
@@ -285,4 +321,13 @@ Encode relative amplitude information of the elements of `a`.
 """
 function AAPE(x, A::Real = 0.5, m::Int = length(x))
     (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
+end
+
+###########################################################################################
+# `SymbolicPermutation` specific
+###########################################################################################
+# We can actually get raw non-normalized counts for `SymbolicPermutation`. This is not
+# possible for the weighted alternatives.
+function counts_and_outcomes(est::SymbolicPermutation{m}, x::Vector_or_SSSet) where {m}
+    return weighted_counts_and_outcomes(est, x)
 end

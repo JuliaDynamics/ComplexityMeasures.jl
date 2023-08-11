@@ -26,7 +26,7 @@ can be obtained from input data in a plethora of different ways. The central API
 that estimates a probability distribution is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref) to specify how the probabilities are computed,
 and returns a [`Probabilities`](@ref) instance.
 All available probabilities estimators can be found in the
-[estimators page](@ref probabilities_estimators).
+[estimators page](@ref outcome_spaces).
 
 ### Information measures
 
