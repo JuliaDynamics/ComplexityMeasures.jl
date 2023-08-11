@@ -23,8 +23,8 @@ used exclusively about measures that are functionals of probability mass functio
 Information measures, and some other complexity measures, are are typically computed based
 on *probability distributions*, which we simply refer to as "probabilities". Probabilities
 can be obtained from input data in a plethora of different ways. The central API function
-that estimates a probability distribution is [`probabilities`](@ref), which takes in a subtype of [`ProbabilitiesEstimator`](@ref) to specify how the probabilities are computed,
-and returns a [`Probabilities`](@ref) instance.
+that estimates a probability distribution is [`probabilities`](@ref), which takes in a subtype of [`OutcomeSpace`](@ref) (as part of of a [`ProbabilitiesEstimator`](@ref), if using some
+advanced form of estimation) to specify how the input data is [`encode`](@ref)d/discretized, and returns a [`Probabilities`](@ref) instance.
 All available probabilities estimators can be found in the
 [estimators page](@ref outcome_spaces).
 
@@ -39,8 +39,9 @@ But even "entropy" is an umbrella term that may mean several computationally, an
 An information measure as defined by a subtype of [`InformationMeasure`](@ref). However, estimating an information measure can be separated, on the highest level, into two main types:
 
 1. **Discrete** information measures are functions of [probability mass functions](https://en.wikipedia.org/wiki/Probability_mass_function). Computing a discrete information measure boils
-    down to two simple steps: first estimating a probability distribution, then plugging
-    the estimated probabilities into a discrete estimator of the information measure definition.
+    down to two simple steps: defining an outcome space (using [`OutcomeSpace`](@ref)), then
+     estimating a probability distribution (using a [`ProbabilitiesEstimator`](@ref)), then
+     plugging the estimated probabilities into a discrete estimator of the information measure definition ([`DiscreteInfoEstimator`](@ref)).
 2. **Differential/continuous** information measures are functions of
     [probability density functions](https://en.wikipedia.org/wiki/Probability_density_function),
     which are *integrals*. Computing differential information measures therefore rely on estimating
