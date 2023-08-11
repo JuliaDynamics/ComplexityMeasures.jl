@@ -45,8 +45,9 @@ est = SpatialSymbolicPermutation(stencil, x; periodic = false)
 # 8 3 4    [1, 8, 2, 3], [8, 6, 3, 7], [2, 3, 1, 4], [3, 7, 4, 5], which give permutations
 # 6 7 5    [1, 3, 4, 2], [3, 2, 4, 1], [3, 1, 2, 4], [1, 3, 4, 2]
 ps, outs = probabilities_and_outcomes(est, x)
+@test length(ps) == length(outs)
 @test sort(outs) ==
-    sort(SVector{4, Int}.([[1, 3, 4, 2], [3, 2, 4, 1], [3, 1, 2, 4], [1, 3, 4, 2]]))
+    sort(SVector{4, Int}.([[1, 3, 4, 2], [3, 2, 4, 1], [3, 1, 2, 4]]))
 
 # Also test that it works for arbitrarily high-dimensional arrays
 stencil = CartesianIndex.([(0,0,0), (0,1,0), (0,0,1), (1,0,0)])

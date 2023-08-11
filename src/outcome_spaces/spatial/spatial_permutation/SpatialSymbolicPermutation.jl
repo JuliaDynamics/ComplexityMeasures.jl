@@ -92,27 +92,44 @@ function SpatialSymbolicPermutation(stencil, x::AbstractArray{T, D};
     )
 end
 
-function probabilities(est::SpatialSymbolicPermutation, x)
+probabilities(est::SpatialSymbolicPermutation, x) = Probabilities(counts(est, x))
+function probabilities!(est::SpatialSymbolicPermutation, x, s)
     s = zeros(Int, length(est.valid))
-    probabilities!(s, est, x)
+    counts!(s, est, x)
+    return Probabilities(counts(s))
 end
 
-function probabilities!(s, est::SpatialSymbolicPermutation, x)
+function counts(est::SpatialSymbolicPermutation, x)
+    s = zeros(Int, length(est.valid))
+    counts!(s, est, x)
+end
+
+function counts!(s, est::SpatialSymbolicPermutation, x)
     encodings_from_permutations!(s, est, x)
-    return probabilities(s)
+    return counts(s)
 end
 
-function probabilities_and_outcomes(est::SpatialSymbolicPermutation, x)
+function counts_and_outcomes(est::SpatialSymbolicPermutation, x)
     # TODO: This can be literally a call to `symbolize` and then
     # calling probabilities on it. Should do once the `symbolize` refactoring is done.
     s = zeros(Int, length(est.valid))
-    probabilities_and_outcomes!(s, est, x)
+    counts_and_outcomes!(s, est, x)
+end
+
+function counts_and_outcomes!(s, est::SpatialSymbolicPermutation, x)
+    encodings_from_permutations!(s, est, x)
+    observed_outcomes = decode.(Ref(est.encoding), s)
+    return counts(s), sort!(unique(observed_outcomes))
 end
 
 function probabilities_and_outcomes!(s, est::SpatialSymbolicPermutation, x)
-    encodings_from_permutations!(s, est, x)
-    observed_outcomes = decode.(Ref(est.encoding), s)
-    return probabilities(s), observed_outcomes
+    cts, outs = counts_and_outcomes!(s, est, x)
+    return Probabilities(cts), outs
+end
+
+function probabilities_and_outcomes(est::SpatialSymbolicPermutation, x)
+    s = zeros(Int, length(est.valid))
+    return probabilities_and_outcomes!(s, est, x)
 end
 
 # Pretty printing
