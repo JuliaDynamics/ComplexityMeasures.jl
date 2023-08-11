@@ -37,10 +37,10 @@ function probabilities(x::Vector_or_SSSet, ε::Union{Real, Vector{<:Real}})
     probabilities(ValueHistogram(ε), x)
 end
 
-function probabilities(x, est::ProbabilitiesEstimator)
+function probabilities(x, est::OutcomeSpace)
     @warn """
-    `probabilities(x, est::ProbabilitiesEstimator)`
-    is deprecated, use `probabilities(est::ProbabilitiesEstimator, x) instead`.
+    `probabilities(x, est::OutcomeSpace)`
+    is deprecated, use `probabilities(est::OutcomeSpace, x) instead`.
     """
     return probabilities(est, x)
 end
@@ -69,15 +69,15 @@ function genentropy(x::Array_or_SSSet, ε::Real; q = 1.0, base = MathConstants.e
     `genentropy(x::Array_or_SSSet, ε::Real; q, base)` is deprecated.
     Use instead: `information(Renyi(q, base), ValueHistogram(ε), x)`.
     """
-    return information(Renyi(q, base), ValueHistogram(ε), x)
+    return information(Renyi(q, base), MLE(ValueHistogram(ε)), x)
 end
 
-function genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q = 1.0, base = MathConstants.e)
+function genentropy(x::Array_or_SSSet, est::OutcomeSpace; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is deprecated.
     Use instead: `information(Renyi(q, base), est, x)`.
     """
-    return information(Renyi(q, base), est, x)
+    return information(Renyi(q, base), MLE(est), x)
 end
 
 ####################################################################################
@@ -89,24 +89,8 @@ entropy(args...) = information(args...)
 
 # Discrete
 ################################################################################
-function entropy(e::InformationMeasure, est::ProbabilitiesEstimator, x)
-    @warn """
-    `entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.
-    From 3.0 onwards, use `information(PlugIn(measure = e), est, x)` instead.
-    """
-    return information(PlugIn(e), est, x)
-end
-
 export entropy_normalized
 entropy_normalized(args...) = information_normalized(args...)
-
-function entropy_normalized(e::InformationMeasure, est::ProbabilitiesEstimator, x)
-    @warn """
-    `entropy_normalized(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.
-    From 3.0 onwards, use `information_normalized(PlugIn(measure = e), est, x)` instead.
-    """
-    return information_normalized(PlugIn(e), est, x)
-end
 
 # Differential
 ################################################################################
