@@ -19,10 +19,10 @@ The `Bayes` estimator estimates the probability of the ``k``-th outcome ``\\omeg
 is
 
 ```math
-\\omega_{k}^{\\text{Bayes}} = \\dfrac{y_k + a_k}{n + A},
+\\omega_{k}^{\\text{Bayes}} = \\dfrac{n_k + a_k}{n + A},
 ```
 
-where ``n`` is the number of samples in the input data, ``y_k`` is the observed counts
+where ``n`` is the number of samples in the input data, ``n_k`` is the observed counts
 for the outcome ``\\omega_{k}``, and ``A = \\sum_{i=1}^k a_k``.
 
 ## Picking `a`

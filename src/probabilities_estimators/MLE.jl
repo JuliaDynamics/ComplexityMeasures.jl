@@ -14,9 +14,9 @@ Consider a length-`m` outcome space ``\\Omega`` and random sample of length `N`.
 The maximum likelihood estimate of the probability of the `k`-th outcome ``\\omega_k`` is
 
 ```math
-p(\\omega_k) = \\dfrac{f_k}{N},
+p(\\omega_k) = \\dfrac{n_k}{N},
 ```
-where ``f_k`` is the number of times the `k`-th outcome was observed in the (encoded)
+where ``n_k`` is the number of times the `k`-th outcome was observed in the (encoded)
 sample.
 
 `MLE` also serves as the fall-back probabilities estimator for [`OutcomeSpace`](@ref)s
