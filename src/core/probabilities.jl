@@ -96,10 +96,16 @@ outcomes(est::ProbabilitiesEstimator, x) = outcomes(est.outcomemodel, x)
 ###########################################################################################
 """
     probabilities(o::OutcomeSpace, x::Array_or_SSSet) → p::Probabilities
+    probabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p::Probabilities
 
 Compute a probability distribution over the set of possible outcomes
-defined by the [`OutcomeSpace`] `o`, given input data `x`, using maximum likelihood
+defined by the [`OutcomeSpace`](@ref) `o`, given input data `x`, using maximum likelihood
 probability estimation ([`MLE`](@ref)).
+
+To use some other form of probabilities estimation than [`MLE`](@ref), use the second
+signature. In this case, the outcome space is given as the first argument to a
+[`ProbabilitiesEstimator`](@ref). Note that this only works for counting-based outcome
+spaces (see [`OutcomeSpace`](@ref)'s docstring for list of compatible outcome spaces).
 
 The input data is typically an `Array` or a `StateSpaceSet` (or `SSSet` for sort); see
 [Input data for ComplexityMeasures.jl](@ref). Configuration options are always given as
@@ -113,11 +119,8 @@ Due to performance optimizations, whether the returned probabilities
 contain `0`s as entries or not depends on the outcome space.
 E.g., in [`ValueHistogram`](@ref) `0`s are skipped, while in
 [`PowerSpectrum`](@ref) `0` are not, because we get them for free.
-Use the function [`allprobabilities`](@ref) for a version with all `0` entries
-that ensures that given an `est`, the indices of `p` will be independent
-of the input data `x`. Using [`allprobabilities`](@ref)/
-[`allprobabilities_and_outcomes`](@ref) guarantees that zero probabilities
-are also returned.
+Use [`allprobabilities`](@ref)/[`allprobabilities_and_outcomes`](@ref) to guarantee that
+zero probabilities are also returned (may be slower).
 
 ## Examples
 
@@ -127,12 +130,6 @@ ps = probabilities(SymbolicPermutation(m = 3), x)
 ps = probabilities(ValueHistogram(RectangularBinning(5)), x)
 ps = probabilities(WaveletOverlap(), x)
 ```
-
-    probabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p::Probabilities
-
-The same as above, but specify which [`ProbabilitiesEstimator`](@ref) `est` to use.
-Using estimators other than [`MLE`](@ref) only works for counting-based
-[`OutcomeSpace`](@ref)s, i.e. those that implement [`counts_and_outcomes`](@ref).
 
 The outcome space is here given as the first argument to `est`.
 
