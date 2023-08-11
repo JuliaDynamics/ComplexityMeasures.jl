@@ -17,7 +17,7 @@ The supertype for all outcome space models.
 
 In ComplexityMeasures.jl, an outcome space model defines a set of possible outcomes
 ``\\Omega = \\{\\omega_1, \\omega_2, \\ldots, \\omega_L \\}`` (some form of
-discretization). It also defines a set of rules for mapping observed data (1D, 2D, ..., ND)
+discretization). It also defines a set of rules for mapping input data to
 to each outcome ``\\omega_i`` (i.e. [encoding](@ref encodings)/discretizing).
 
 ## Implementations
