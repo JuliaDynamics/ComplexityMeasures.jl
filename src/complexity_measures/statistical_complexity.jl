@@ -8,15 +8,19 @@ export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
     StatisticalComplexity([x]; kwargs...)
 
 An estimator for the statistical complexity and entropy, originally by
-Rosso et al. (2007)[^Rosso2007], but here generalized (see [^Rosso2013]) to work with any probabilities
-estimator with a priori known `total_outcomes`, any valid distance metric, and any normalizable entropy definition,
-or any normalizable extropy definition (not treated in Rosso et al.'s papers).
-Used with [`complexity`](@ref).
+Rosso et al. (2007)[^Rosso2007], but here generalized (see [^Rosso2013]) to work with any
+[`ProbabilitiesEstimator`](@ref) in combination with any [`OutcomeSpace`](@ref)
+with a priori known `total_outcomes`, any valid distance metric, and any
+normalizable discrete information measure (e.g. entropies like [`Shannon`](@ref),
+[`Renyi`](@ref, or extropies like [`ShannonExtropy`](@ref), the latter of which are not
+treated in Rosso et al.'s papers). Used with [`complexity`](@ref).
 
 ## Keyword arguments
 
-- `est::ProbabilitiesEstimator = SymbolicPermutation()`: The
+- `est::ProbabilitiesEstimator = MLE(SymbolicPermutation())`: The
     [`ProbabilitiesEstimator`](@ref) used to estimate probabilities from the input data.
+    An [`OutcomeSpace`](@ref) must be given as the first argument to the estimator to
+    control how discretization within pixel windows is performed.
 - `dist<:SemiMetric = JSDivergence()`: The distance measure (from Distances.jl) to use for
     estimating the distance between the estimated probability distribution and a uniform
     distribution with the same maximal number of outcomes.
@@ -71,7 +75,7 @@ To obtain both the entropy (or other information measure) and the statistical co
 """
 Base.@kwdef struct StatisticalComplexity{E, D, H} <: ComplexityEstimator
     dist::D = JSDivergence()
-    est::E = SymbolicPermutation()
+    est::E = MLE(SymbolicPermutation())
     entr::H = Renyi()
     entr_val::Base.RefValue{Float64} = Ref(0.0)
 end
