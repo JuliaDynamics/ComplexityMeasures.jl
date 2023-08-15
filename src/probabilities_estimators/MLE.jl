@@ -40,24 +40,15 @@ struct MLE{O <: OutcomeSpace} <: ProbabilitiesEstimator
     outcomemodel::O
 end
 
-# # Default to maximum likelihood estimation of probabilities if no other estimator is
-# # specified.
-# function probabilities_and_outcomes(o::OutcomeSpace, x)
-#     return probabilities_and_outcomes(MLE(o), x)
-# end
-
 probabilities(est::MLE, x) = probabilities(est.outcomemodel, x)
 allprobabilities(est::MLE, x) = allprobabilities(est.outcomemodel, x)
 counts_and_outcomes(est::MLE, x) = counts_and_outcomes(est.outcomemodel, x)
 counts(est::MLE, x) = counts(est.outcomemodel, x)
 
 function probabilities_and_outcomes(est::MLE, x)
-    freqs, outcomes = counts_and_outcomes(outcome_space(est), x)
-    return Probabilities(freqs), outcomes
+    return probabilities_and_outcomes(est.outcomemodel, x)
 end
 
 function allprobabilities_and_outcomes(est::MLE, x)
-    freqs, outcomes = allcounts_and_outcomes(outcome_space(est), x)
-
-    return Probabilities(freqs), outcomes
+    return allprobabilities_and_outcomes(est.outcomemodel, x)
 end
