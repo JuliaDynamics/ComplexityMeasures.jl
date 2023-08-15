@@ -145,9 +145,7 @@ Return all (unique) outcomes contained in `x` according to the given outcome spa
 Equivalent to `probabilities_and_outcomes(o, x)[2]`, but for some estimators
 it may be explicitly extended for better performance.
 """
-function outcomes(o::OutcomeSpace, x)
-    return last(counts_and_outcomes(o, x))
-end
+function outcomes(o::OutcomeSpace, x) end
 
 ###########################################################################################
 # Counts.
