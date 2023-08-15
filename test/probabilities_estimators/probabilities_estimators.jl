@@ -60,7 +60,6 @@ pests = [MLE, Bayes, Shrinkage]
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
             est = pests[j](os[i])
-            if os[i] isa NaiveKernel
             ps, Ωobs = probabilities_and_outcomes(est, x)
             @test ps isa Probabilities
 
