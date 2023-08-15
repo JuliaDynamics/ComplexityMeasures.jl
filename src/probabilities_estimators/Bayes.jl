@@ -51,6 +51,11 @@ For [`probabilities`](@ref), `m` is the number of *observed* outcomes.
 For [`allprobabilities`](@ref), `m = total_outcomes(o, x)`, where `o` is the
 [`OutcomeSpace`](@ref) and `x` is the input data.
 
+!!! note
+    If used with [`allprobabilities`](@ref)/[`allprobabilities_and_outcomes`](@ref), then
+    outcomes which have not been observed may be assigned non-zero probabilities.
+    This might affect your results if using e.g. [`missing_outcomes`](@ref).
+
 ## Examples
 
 ```julia
