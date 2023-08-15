@@ -49,8 +49,10 @@ Base.IteratorSize(::Probabilities) = Base.HasLength()
 The supertype for all probabilities estimators.
 
 The role of the probabilities estimator is to convert (pseudo-)counts to probabilities.
-All subtypes of `ProbabilitiesEstimator` accept an [`OutcomeSpace`](@ref) as the first
-argument.
+Currently, the implementation of all probabilities estimators assume *finite* outcome
+space with known cardinality (i.e. the user must *model*/*assume* what this outcome space
+is). Therefore, `ProbabilitiesEstimator` accept an [`OutcomeSpace`](@ref) as the first
+argument, which specifies the set of possible outcomes.
 
 ## Implementations
 
@@ -189,7 +191,6 @@ containers `s`.
 Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
 """
 function probabilities! end
-
 
 ###########################################################################################
 # All probabilities
