@@ -33,6 +33,8 @@ struct PowerSpectrum <: OutcomeSpace end
 
 is_counting_based(o::PowerSpectrum) = false
 
+encoded_space_cardinality(est::PowerSpectrum, x) = length(FFTW.rfftfreq(length(x)))
+
 function probabilities_and_outcomes(est::PowerSpectrum, x)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
     f = FFTW.rfft(x)

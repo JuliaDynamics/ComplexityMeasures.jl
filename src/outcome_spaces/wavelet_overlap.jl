@@ -33,6 +33,8 @@ WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
 
 is_counting_based(o::WaveletOverlap) = false
 
+encoded_space_cardinality(o::WaveletOverlap, x) = length(x)
+
 # MLE estimation on "pseudo-counts"
 function probabilities_and_outcomes(est::WaveletOverlap, x)
     x isa AbstractVector{<:Real} || error("`WaveletOverlap` only works for timeseries input!")

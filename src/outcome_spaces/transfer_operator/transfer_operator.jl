@@ -94,6 +94,9 @@ TransferOperator(Ïµ::Union{Real,Vector}) = TransferOperator(RectangularBinning(Ï
 
 is_counting_based(o::TransferOperator) = false
 
+# All points are mapped to a bin.
+encoded_space_cardinality(est::TransferOperator, x) = length(x)
+
 # If x is not sorted, we need to look at all pairwise comparisons
 function inds_in_terms_of_unique(x)
     U = unique(x)
