@@ -1,5 +1,5 @@
 export Shrinkage
-
+# TODO: make sure we act correctly for `probabilities` and `allprobabilities`.
 """
     Shrinkage{<:OutcomeSpace} <: ProbabilitiesEstimator
     Shrinkage(model::OutcomeSpace, t = nothing, λ = nothing)
@@ -33,6 +33,14 @@ to Hausser & Strimmer (2009)[^Hausser2009]. Hence, you should probably not pick
 The `Shrinkage` estimator assumes a fixed and known number of outcomes `m`. Thus, using
 it with [`probabilities`](@ref) and [`allprobabilities`](@ref) will yield different results,
 depending on whether all outcomes are observed in the input data or not.
+For [`probabilities`](@ref), `m` is the number of *observed* outcomes.
+For [`allprobabilities`](@ref), `m = total_outcomes(o, x)`, where `o` is the
+[`OutcomeSpace`](@ref) and `x` is the input data.
+
+!!! note
+    If used with [`allprobabilities`](@ref)/[`allprobabilities_and_outcomes`](@ref), then
+    outcomes which have not been observed may be assigned non-zero probabilities.
+    This might affect your results if using e.g. [`missing_outcomes`](@ref).
 
 ## Examples
 
@@ -60,85 +68,49 @@ end
 
 Shrinkage(o::OutcomeSpace; t = nothing, λ = nothing) = Shrinkage(o, t, λ)
 
-# We need to implement `probabilities_and_outcomes` and `allprobabilities` separately,
-# because the number of elements in the outcome space determines the factor `A`, since
-# A = sum(aₖ). Explicitly modelling the entire outcome space, instead of considering
-# only the observed outcomes, will therefore affect the estimated probabilities.
 function probabilities_and_outcomes(est::Shrinkage, x)
-    t = est.t
-    M = total_outcomes(est.outcomemodel, x)
-    # Normalization factor is based on the *encoded* data.
-    n = encoded_space_cardinality(est.outcomemodel, x)
-
-    # Maximum likelihood estimates for the *observed* outcomes. Unobserved outcomes
-    # are just ignored, so we need to manually add them
-    observed_freqs, observed_Ω = counts_and_outcomes(est.outcomemodel, x)
-    M_observed = length(observed_Ω)
-    Ω = outcomes(est.outcomemodel, x)
-
-    θMLs = zeros(M) # θMLs[i] is the maximum-likelihood estimate for the outcome Ω[i]
-    for (i, Ωᵢ) in enumerate(Ω)
-        if Ωᵢ ∉ observed_Ω
-            θMLs[i] = 0.0
-        else
-            idx = findfirst(x -> x == Ωᵢ, observed_Ω)
-            θMLs[i] = observed_freqs[idx] / sum(observed_freqs)
-        end
-    end
-
-    λ = get_λ(est, n, θMLs, t, M)
-
-    @assert 0 ≤ λ ≤ 1
-    probs = zeros(M)
-    for i in eachindex(Ω)
-        tᵢ = get_tₖ(est.t, i, M_observed)
-        probs[i] = θₖ_shrink(θMLs[i], λ, tᵢ)
-    end
-    @assert sum(probs) ≈ 1.0
-    idxs = findall(x -> x > 0, probs)
-    return Probabilities(probs[idxs]), observed_Ω[idxs]
+    probs, Ω = probabilities_and_outcomes(est.outcomemodel, x)
+    return probs_and_outs_from_histogram(est, probs, Ω, x)
 end
 
+# TODO: this doesn't work for SymbolicDispersion estimator.
 function allprobabilities_and_outcomes(est::Shrinkage, x)
-    t = est.t
+    probs_all, Ω_all = allprobabilities_and_outcomes(est.outcomemodel, x)
+    return probs_and_outs_from_histogram(est, probs_all, Ω_all, x)
+end
 
-    # Maximum likelihood estimates for *all* outcomes.
-    θₖMLs, ΩMLs = allprobabilities_and_outcomes(est.outcomemodel, x)
-    M = length(ΩMLs)
-
+function probs_and_outs_from_histogram(est::Shrinkage, probs_observed, Ω_observed, x)
+    (; outcomemodel, t) = est
+    n = encoded_space_cardinality(outcomemodel, x) # Normalize based on *encoded* data.
+    m = length(Ω_observed)
+    Ω = outcomes(outcomemodel, x)
+    @show m, n
     if t isa Vector{<:Real}
         length(t) == M || throw(DimensionMismatch("If `t` is a vector, `length(t)` must equal the number of elements in the outcome space (got $M outcomes, but length(t)=$(length(t)))."))
     end
-
-    # Normalization factor is based on the *encoded* data.
-    n = encoded_space_cardinality(est.outcomemodel, x)
-    λ = get_λ(est, n, θₖMLs, t, M)
+    λ = get_λ(est, n, probs_observed, t, m)
     @assert 0 ≤ λ ≤ 1
 
-    # Adjust the maximum likelihood estimates
-    probs = zeros(M)
-    for i in 1:M
-        tᵢ = get_tₖ(t, i, M)
-        Ωᵢ = ΩMLs[i]
-        θᵢML = θₖMLs[i]
-        idx = findfirst(x -> x == Ωᵢ, ΩMLs)
-        probs[idx] = θₖ_shrink(θᵢML, λ, tᵢ)
+    probs = zeros(m)
+    for (k, ωₖ) in enumerate(Ω_observed)
+        tₖ = get_tₖ(t, k, m)
+        pₖ = θₖ_shrink(probs_observed[k], λ, tₖ)
+        idx = findfirst(x -> x == Ω_observed[k], Ω_observed)
+        probs[idx] = θₖ_shrink(probs_observed[k], λ, tₖ)
     end
-
     @assert sum(probs) ≈ 1.0
-    return Probabilities(probs), ΩMLs
+    return Probabilities(probs), Ω_observed
 end
 
-
-function get_λ(est, n, θₖMLs, t, M)
+function get_λ(est, n, probs_observed, t, m)
     # Optimal shrinkage intensity (eq. 5 in Hausser and Strimmer, 2009).
     if est.λ === nothing
         densum = 0.0
-        for k = 1:M
-            tₖ = get_tₖ(t, k, M)
-            densum += (tₖ - θₖMLs[k]) ^ 2
+        for k = 1:m
+            tₖ = get_tₖ(t, k, m)
+            densum += (tₖ - probs_observed[k]) ^ 2
         end
-        λ = (1 - sum(θₖMLs .^ 2)) / (n - 1)*densum
+        λ = (1 - sum(probs_observed .^ 2)) / (n - 1)*densum
     # User-picked shrinkage intensity.
     else
         λ = est.λ
@@ -147,11 +119,11 @@ function get_λ(est, n, θₖMLs, t, M)
     return max(0.0, min(1.0, λ))
 end
 
-function get_tₖ(t, k::Int, M::Int)
+function get_tₖ(t, k::Int, m::Int)
     if t isa Real
         return t
     elseif t === nothing
-        return 1/M
+        return 1/m
     else
         return t[k]
     end
