@@ -10,7 +10,7 @@ using ComplexityMeasures, Test
         wl = ComplexityMeasures.Wavelets.WT.Daubechies{4}()
         est = WaveletOverlap(wl)
         ps = probabilities(est, x)
-        @test length(ps) == 8
+        @test length(ps) == 7
         @test ps isa Probabilities
         @test information(Renyi(q = 1, base = 2), WaveletOverlap(), x) isa Real
         @test issorted(outcome_space(WaveletOverlap(), x))
