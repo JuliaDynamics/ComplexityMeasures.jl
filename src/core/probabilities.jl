@@ -56,10 +56,9 @@ argument, which specifies the set of possible outcomes.
 
 ## Implementations
 
-- [`MLE`](@ref). Compatible with any [`OutcomeSpace`](@ref), including those returning
-    pseudo-counts (pre-normalized relative frequencies).
+- [`MLE`](@ref). Compatible with any [`OutcomeSpace`](@ref))
+- [`Shrinkage`](@ref). Compatible with any [`OutcomeSpace`](@ref))
 - [`Bayes`](@ref). Only compatible with counting-based [`OutcomeSpace`](@ref)s.
-- [`Shrinkage`](@ref). Only compatible with counting-based [`OutcomeSpace`](@ref)s.
 
 ## Description
 
