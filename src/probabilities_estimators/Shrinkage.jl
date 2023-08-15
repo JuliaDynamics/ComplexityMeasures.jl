@@ -84,7 +84,6 @@ function probs_and_outs_from_histogram(est::Shrinkage, probs_observed, Ω_observ
     n = encoded_space_cardinality(outcomemodel, x) # Normalize based on *encoded* data.
     m = length(Ω_observed)
     Ω = outcomes(outcomemodel, x)
-    @show m, n
     if t isa Vector{<:Real}
         length(t) == M || throw(DimensionMismatch("If `t` is a vector, `length(t)` must equal the number of elements in the outcome space (got $M outcomes, but length(t)=$(length(t)))."))
     end
