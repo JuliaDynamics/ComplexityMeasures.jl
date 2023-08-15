@@ -75,10 +75,8 @@ Base.@kwdef struct Dispersion{S <: Encoding} <: OutcomeSpace
     τ::Int = 1
     check_unique::Bool = false
 end
-# TODO: the normalization should happen in `probabilities``, not here
-function dispersion_histogram(x::AbstractStateSpaceSet, N, m, τ)
-    return fasthist!(x) # ./ (N - (m - 1)*τ), but normalization happens in `probabilities_and_outcomes`
-end
+
+is_counting_based(o::Dispersion) = true
 
 # A helper function that makes sure the algorithm doesn't crash when input contains
 # a singular value.
@@ -108,12 +106,12 @@ function counts_and_outcomes(o::Dispersion, x::AbstractVector{<:Real})
     m, τ = o.m, o.τ
     τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
     dispersion_patterns = genembed(symbols, τs, ones(m))
-    hist = dispersion_histogram(dispersion_patterns, N, m, τ)
+    cts = fasthist!(dispersion_patterns) # this sorts `dispersion_patterns`
     # `dispersion_patterns` is sorted when computing the histogram, so patterns match
     # the histogram values, but `dispersion_patterns` still contains repeated values,
     # so we return the unique values.
-    return hist, unique(dispersion_patterns.data)
-end
+    outs = unique(dispersion_patterns.data)
+    return cts, outs
 
 function probabilities_and_outcomes(o::Dispersion, x::AbstractVector{<:Real})
     N = length(x)
