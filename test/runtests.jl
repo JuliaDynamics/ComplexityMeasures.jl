@@ -20,6 +20,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("probabilities/estimators/spatial/spatial_dispersion.jl")
     # probabilities functions
     testfile("probabilities/api.jl")
+    testfile("probabilities_estimators/probabilities_estimators.jl")
 
     include("infomeasures/infomeasures.jl")
     include("complexity/complexity.jl")
