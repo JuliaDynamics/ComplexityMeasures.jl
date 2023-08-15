@@ -41,6 +41,8 @@ struct ValueHistogram{B<:AbstractBinning} <: OutcomeSpace
 end
 ValueHistogram(ϵ::Union{Real,Vector}) = ValueHistogram(RectangularBinning(ϵ))
 
+is_counting_based(o::ValueHistogram) = true
+
 """
     VisitationFrequency
 
@@ -60,11 +62,6 @@ function counts_and_outcomes(est::ValueHistogram, x)
     encoding = RectangularBinEncoding(est.binning, x)
     freqs, outcomes = counts_and_outcomes(encoding, x)
     return freqs, outcomes
-end
-
-function probabilities_and_outcomes(est::ValueHistogram, x)
-    freqs, outcomes = counts_and_outcomes(est, x)
-    return Probabilities(freqs), outcomes
 end
 
 function counts_and_outcomes(encoding::RectangularBinEncoding, x)

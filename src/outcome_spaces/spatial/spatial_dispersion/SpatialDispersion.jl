@@ -184,6 +184,10 @@ function symbol_distribution(est::SpatialDispersion, x::AbstractArray{T, N}) whe
     return symbols
 end
 
+function encoded_space_cardinality(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
+    return length(symbol_distribution(est, x))
+end
+
 function counts(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
     symbols = symbol_distribution(est, x)
     return fasthist!(symbols)
@@ -198,14 +202,9 @@ function counts_and_outcomes(est::SpatialDispersion, x::AbstractArray{T, N}) whe
 
     # We don't care about the fact that `frequencies!` sorts in-place here, because we
     # only need the unique values of `symbols` for the outcomes.
-    probs = fasthist!(symbols)
+    cts = fasthist!(symbols) # fasthist!(x) mutates x --- `symbols` gets sorted here
     outcomes = unique!(symbols)
-    return probs, outcomes
-end
-
-function probabilities_and_outcomes(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
-    probs, outcomes = counts_and_outcomes(est, x)
-    return Probabilities(probs), outcomes
+    return cts, outcomes
 end
 
 function total_outcomes(est::SpatialDispersion)::Int
@@ -217,7 +216,6 @@ function total_outcomes(est::SpatialDispersion)::Int
         return c^m
     end
 end
-
 
 function outcome_space(est::SpatialDispersion)
     if est.skip_encoding

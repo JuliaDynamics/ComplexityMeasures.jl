@@ -92,6 +92,7 @@ struct TransferOperator{R<:AbstractBinning} <: OutcomeSpace
 end
 TransferOperator(ϵ::Union{Real,Vector}) = TransferOperator(RectangularBinning(ϵ))
 
+is_counting_based(o::TransferOperator) = false
 
 # If x is not sorted, we need to look at all pairwise comparisons
 function inds_in_terms_of_unique(x)

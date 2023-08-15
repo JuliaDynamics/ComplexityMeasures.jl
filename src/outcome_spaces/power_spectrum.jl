@@ -31,6 +31,8 @@ Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
 struct PowerSpectrum <: OutcomeSpace end
 
+is_counting_based(o::PowerSpectrum) = false
+
 function probabilities_and_outcomes(est::PowerSpectrum, x)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
     f = FFTW.rfft(x)

@@ -40,6 +40,7 @@ Base.@kwdef struct Diversity <: OutcomeSpace
     τ::Int = 1 # Note: the original paper does not allow τ != 1
     nbins::Int = 5
 end
+is_counting_based(o::Diversity) = true
 
 function counts(est::Diversity, x::AbstractVector{T}) where T <: Real
     ds, rbc = similarities_and_binning(est, x)
@@ -51,11 +52,6 @@ function counts_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Re
     ds, rbc = similarities_and_binning(est, x)
     cts, outcomes = counts_and_outcomes(rbc, ds)
     return cts, outcomes
-end
-
-function probabilities_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
-    cts, outcomes = counts_and_outcomes(est, x)
-    return Probabilities(cts), outcomes
 end
 
 outcome_space(est::Diversity) = outcome_space(encoding_for_diversity(est.nbins))

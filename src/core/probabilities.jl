@@ -203,9 +203,25 @@ The same as [`allprobabilities`](@ref), but also returns the outcome space `Ω`.
 """
 function allprobabilities_and_outcomes(est::ProbabilitiesEstimator, x) end
 
+# This method is overriden by non-counting-based `OutcomeSpace`s. For counting-based
+# `OutcomeSpace`s, we just utilize `counts_and_outcomes` to get the histogram, then
+# normalize it when converting to `Probabilities`.
+function probabilities_and_outcomes(o::OutcomeSpace, x)
+    cts, outcomes = counts_and_outcomes(o, x)
+    return Probabilities(cts), outcomes
+end
+
 # If an outcome space model is provided without specifying a probabilities estimator,
-# then naive plug-in estimation is used (the `MLE` estimator).
+# then naive plug-in estimation is used (the `MLE` estimator). In the case of
+# counting-based `OutcomeSpace`s, we explicitly count occurrences of each
+# outcome in the encoded data. For non-counting-based `OutcomeSpace`s, we
+# just fill in the non-considered outcomes with zero probabilities.
 function allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
+    if is_counting_based(o)
+        cts, outcomes = allcounts_and_outcomes(o, x)
+        return Probabilities(cts), outcomes
+    end
+
     probs, outs = probabilities_and_outcomes(o, x)
     ospace = vec(outcome_space(o, x))
     # We first utilize that the outcome space is sorted and sort probabilities

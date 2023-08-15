@@ -14,6 +14,7 @@ rng = MersenneTwister(1234)
             ValueHistogram(RectangularBinning(3)),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+            @test is_counting_based(os[i]) == true
             cts, Ω = counts_and_outcomes(os[i], x)
             @test length(cts) == length(Ω)
 
@@ -29,6 +30,7 @@ rng = MersenneTwister(1234)
             SpatialSymbolicPermutation([0 1; 1 0], x),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+            @test is_counting_based(os[i]) == true
             cts, Ω = counts_and_outcomes(os[i], x)
             @test length(cts) == length(Ω)
 
@@ -49,6 +51,7 @@ end
         NaiveKernel(0.1),
     ]
     @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+        @test is_counting_based(os[i]) == false
         @test_throws ArgumentError counts_and_outcomes(os[i], x)
     end
 end

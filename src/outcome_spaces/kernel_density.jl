@@ -50,16 +50,13 @@ function NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
     return NaiveKernel(ϵ, method, w, metric)
 end
 
+is_counting_based(o::NaiveKernel) = true
+
 function counts_and_outcomes(est::NaiveKernel, x::AbstractStateSpaceSet)
     theiler = Theiler(est.w)
     ss = searchstructure(est.method, vec(x), est.metric)
     idxs = bulkisearch(ss, vec(x), WithinRange(est.ϵ), theiler)
     return length.(idxs), eachindex(x)
-end
-
-function probabilities_and_outcomes(est::NaiveKernel, x::AbstractStateSpaceSet)
-    cts, outs = counts_and_outcomes(est, x)
-    return Probabilities(cts), outs
 end
 
 outcome_space(::NaiveKernel, x) = eachindex(x)

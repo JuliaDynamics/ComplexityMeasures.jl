@@ -14,16 +14,13 @@ Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
 struct CountOccurrences <: OutcomeSpace end
 
+is_counting_based(o::CountOccurrences) = true
+
 function counts_and_outcomes(::CountOccurrences, x)
     z = copy(x)
     cts = fasthist!(z)
     # notice that `z` is now sorted within `frequencies!` so we can skip sorting
     return cts, unique!(z)
-end
-
-function probabilities_and_outcomes(est::CountOccurrences, x)
-    cts, outcomes = counts_and_outcomes(est, x)
-    return Probabilities(cts), outcomes
 end
 
 outcome_space(::CountOccurrences, x) = sort!(unique(x))

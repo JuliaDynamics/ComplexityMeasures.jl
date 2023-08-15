@@ -112,15 +112,6 @@ function counts_and_outcomes(o::Dispersion, x::AbstractVector{<:Real})
     # so we return the unique values.
     outs = unique(dispersion_patterns.data)
     return cts, outs
-
-function probabilities_and_outcomes(o::Dispersion, x::AbstractVector{<:Real})
-    N = length(x)
-    m, τ = o.m, o.τ
-
-    cts, outcomes = counts_and_outcomes(o, x)
-    probs = Probabilities(cts ./ encoded_space_cardinality(o, x))
-
-    return probs, outcomes
 end
 
 function outcome_space(est::Dispersion)

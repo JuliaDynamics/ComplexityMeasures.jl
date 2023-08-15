@@ -7,6 +7,7 @@ export counts
 export counts_and_outcomes
 export frequencies
 export allcounts_and_outcomes
+export is_counting_based
 
 """
     OutcomeSpace
@@ -17,7 +18,10 @@ The supertype for all outcome space models.
 
 In ComplexityMeasures.jl, an outcome space model defines a set of possible outcomes
 ``\\Omega = \\{\\omega_1, \\omega_2, \\ldots, \\omega_L \\}`` (some form of
-discretization). It also defines a set of rules for mapping input data to
+discretization). In the literature, the outcome space is often called an "alphabet",
+while each outcome is called a "symbol".
+
+An outcome space model also defines a set of rules for mapping input data to
 to each outcome ``\\omega_i`` (i.e. [encoding](@ref encodings)/discretizing).
 
 ## Implementations
@@ -79,6 +83,9 @@ relative frequency of each outcome (formally speaking, the [`MLE`](@ref) estimat
 requires counts, but for the sake of code consistency, we allow it to be used with
 relative frequencies as well).
 
+The function [`is_counting_based`](@ref) can be used to check whether an outcome space
+is based on counting.
+
 ## Deducing the outcome space (from data)
 
 Some outcome space models can deduce ``\\Omega`` without knowledge of the input, such as
@@ -95,9 +102,10 @@ to be _hashable_ and _sortable_. This allows for conveniently tracking the count
 specific event across experimental realizations, by using the outcome as a dictionary key
 and the counts as the value for that key (or, alternatively, the key remains the outcome
 and one has a vector of probabilities, one for each experimental realization).
+
 """
 abstract type OutcomeSpace end
-
+abstract type CountingBasedOutcomeSpace <: OutcomeSpace end
 ###########################################################################################
 # Outcome space
 ###########################################################################################
@@ -192,35 +200,17 @@ where `Ω = outcome_space(o, x)`), are included.
 Returns the `cts` and `Ω` as a tuple where `length(cts) == length(Ω)`.
 """
 function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
-    freqs, outs = counts_and_outcomes(o, x)
+    cts, outs = counts_and_outcomes(o, x)
     ospace = vec(outcome_space(o, x))
-    # We first utilize that the outcome space is sorted and sort probabilities
-    # accordingly (just in case we have an estimator that is not sorted)
-    s = sortperm(outs)
-    sort!(outs)
-    fs = freqs[s]
-    # we now iterate over possible outcomes;
-    # if they exist in the observed outcomes, we push their corresponding frequency
-    # into the frequencies vector. If not, we push 0 into the frequencies vector!
-    allfreqs = eltype(fs)[]
-    observed_index = 1 # index of observed outcomes
-    for j in eachindex(ospace) # we made outcome space a vector on purpose
-        ω = ospace[j]
-        ωobs = outs[observed_index]
-        if ω ≠ ωobs
-            push!(allfreqs, 0)
-        else
-            push!(allfreqs, fs[observed_index])
-            observed_index += 1
-        end
-        # Check whether we have exhausted observed outcomes
-        if observed_index > length(outs)
-            remaining_0s = length(ospace) - j
-            append!(allfreqs, zeros(Int, remaining_0s))
-            break
+    m = length(ospace)
+    allcts = zeros(Int, m)
+    for (i, ω) in enumerate(ospace)
+        idx = findfirst(oⱼ -> oⱼ == ω, outs)
+        if !isnothing(idx)
+            allcts[i] = cts[idx]
         end
     end
-    return allfreqs, ospace
+    return allcts, ospace
 end
 
 """
@@ -238,3 +228,10 @@ Like [`counts_and_outcomes`](@ref), but only returns the counts.
 function counts(o::OutcomeSpace, x)
     return first(counts_and_outcomes(o, x))
 end
+
+"""
+    is_counting_based(o::OutcomeSpace) → ::Bool
+
+Returns `true` if the [`OutcomeSpace`](@ref) `o` is counting-based, and `false` otherwise.
+"""
+function is_counting_based(::OutcomeSpace) end

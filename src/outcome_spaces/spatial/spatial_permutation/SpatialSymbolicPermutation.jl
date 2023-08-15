@@ -92,6 +92,12 @@ function SpatialSymbolicPermutation(stencil, x::AbstractArray{T, D};
     )
 end
 
+function encoded_space_cardinality(est::SpatialSymbolicPermutation, x::AbstractArray{T, N}) where {T, N}
+    s = zeros(Int, length(est.valid))
+    encodings_from_permutations!(s, est, x)
+    return length(s)
+end
+
 probabilities(est::SpatialSymbolicPermutation, x) = Probabilities(counts(est, x))
 function probabilities!(est::SpatialSymbolicPermutation, x, s)
     s = zeros(Int, length(est.valid))
