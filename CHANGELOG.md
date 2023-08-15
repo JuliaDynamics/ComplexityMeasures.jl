@@ -11,6 +11,7 @@ Further additions to the library in v3:
 - New function `allprobabilities` that is like `probabilities` but also includes 0 entries for possible outcomes that were not present in the data.
 - New _extropy_ definitions that count as information measures (and thus can be given to `information`): `ShannonExtropy`, `RenyiExtropy`, `TsallisExtropy`.
 - `StatisticalComplexity` is now compatible with any normalizable `EntropyDefinition`.
+- `StatisticalComplexity` can now estimate probabilities using any combination of `ProbabilitiesEstimator` and `OutcomeSpace`.
 - Add the 1976 Lempel-Ziv complexity measure (`LempelZiv76`).
 - New entropy definition: identification entropy (`Identification`).
 - Minor documentation fixes.
