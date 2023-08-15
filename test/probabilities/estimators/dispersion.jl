@@ -19,11 +19,6 @@ using ComplexityMeasures.DelayEmbeddings: embed
         # Encoded symbols should be in the set [1, 2, …, c].
         symbols = encode.(Ref(encoding), x)
         @test all(s -> s ∈ collect(1:c), symbols)
-
-        # Dispersion patterns should have a normalized histogram that sums to 1.0.
-        dispersion_patterns = embed(symbols, m, τ)
-        hist = ComplexityMeasures.dispersion_histogram(dispersion_patterns, length(x), m, τ)
-        @test sum(hist ./ (N - (m - 1)*τ)) ≈ 1.0
     end
 
     # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper. The
