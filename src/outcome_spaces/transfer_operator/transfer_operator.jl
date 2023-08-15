@@ -457,4 +457,4 @@ function probabilities_and_outcomes(est::TransferOperator, x::Array_or_SSSet)
     return probs, outcomes
 end
 
-outcome_space(est::TransferOperator, x) = outcome_space(est.encoding, x)
+outcome_space(est::TransferOperator, x) = outcome_space(est.binning, x)
