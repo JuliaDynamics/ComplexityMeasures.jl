@@ -15,6 +15,11 @@ Further additions to the library in v3:
 - New entropy definition: identification entropy (`Identification`).
 - Minor documentation fixes.
 
+### Bug fixes
+
+- `outcome_space` for `Dispersion` now correctly returns the all possible **sorted** outcomes
+    (as promised by the `outcome_space` docstring).
+
 ## 2.7.1
 
 - Fix bug in calculation of statistical complexity
