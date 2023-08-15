@@ -53,7 +53,8 @@ end
 function get_modwt(x, wl)
     orthofilter = Wavelets.wavelet(wl)
     nscales = Wavelets.WT.maxmodwttransformlevels(x)
-    return Wavelets.modwt(x, orthofilter, nscales)
+    tr = Wavelets.modwt(x, orthofilter, nscales)
+    return tr[:, 1:end-1] # discard scaling coefficients in last column
 end
 
 function relative_wavelet_energies(W::AbstractMatrix)
