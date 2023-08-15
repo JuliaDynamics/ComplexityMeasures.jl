@@ -102,6 +102,7 @@ allprobabilities_and_outcomes
 counts_and_outcomes
 allcounts_and_outcomes
 counts
+is_counting_based
 ```
 
 ## [Probability estimators](@id probability_estimators)
