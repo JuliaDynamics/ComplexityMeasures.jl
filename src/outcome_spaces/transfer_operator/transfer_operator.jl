@@ -92,8 +92,6 @@ struct TransferOperator{R<:AbstractBinning} <: OutcomeSpace
 end
 TransferOperator(ϵ::Union{Real,Vector}) = TransferOperator(RectangularBinning(ϵ))
 
-is_counting_based(o::TransferOperator) = false
-
 # All points are mapped to a bin.
 encoded_space_cardinality(est::TransferOperator, x) = length(x)
 
