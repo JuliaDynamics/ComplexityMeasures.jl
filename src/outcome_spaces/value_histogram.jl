@@ -82,6 +82,3 @@ outcome_space(est::ValueHistogram, x) = outcome_space(RectangularBinEncoding(est
 function outcome_space(est::ValueHistogram{<:FixedRectangularBinning})
     return outcome_space(RectangularBinEncoding(est.binning))
 end
-
-# TODO: is this correct when points are discarded due to falling outside the binning?
-encoded_space_cardinality(o::ValueHistogram, x) = length(x)

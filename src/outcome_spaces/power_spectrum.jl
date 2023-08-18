@@ -31,8 +31,6 @@ Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
 struct PowerSpectrum <: OutcomeSpace end
 
-encoded_space_cardinality(est::PowerSpectrum, x) = length(FFTW.rfftfreq(length(x)))
-
 function probabilities_and_outcomes(est::PowerSpectrum, x)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
     f = FFTW.rfft(x)

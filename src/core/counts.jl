@@ -90,3 +90,13 @@ end
 Return `true` if the [`OutcomeSpace`](@ref) `o` is counting-based, and `false` otherwise.
 """
 is_counting_based(o::OutcomeSpace) = o isa CountBasedOutcomeSpace
+
+
+# `encoded_space_cardinality` is an internal function that makes the
+# estimation of count-based probability estimators correct. It returns
+# the amount of elements of `x` that are mapped into outcomes. This is
+# NOT the same as `length(outcomes(o, x))`, as this counts the unique outcomes.
+# For almost all cases, the return value is `length(x)`. It only needs to be
+# corrected for few outcome spaces that do e.g., delay embedding first.
+# This function does not need to be implemented for non-count based outcome spaces.
+encoded_space_cardinality(o, x) = length(x)

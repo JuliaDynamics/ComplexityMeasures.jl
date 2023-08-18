@@ -92,9 +92,6 @@ struct TransferOperator{R<:AbstractBinning} <: OutcomeSpace
 end
 TransferOperator(ϵ::Union{Real,Vector}) = TransferOperator(RectangularBinning(ϵ))
 
-# All points are mapped to a bin.
-encoded_space_cardinality(est::TransferOperator, x) = length(x)
-
 # If x is not sorted, we need to look at all pairwise comparisons
 function inds_in_terms_of_unique(x)
     U = unique(x)

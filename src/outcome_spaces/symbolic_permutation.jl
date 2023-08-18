@@ -284,8 +284,9 @@ end
 total_outcomes(est::PermutationOutcomeSpace) = total_outcomes(est.encoding)
 outcome_space(est::PermutationOutcomeSpace) = outcome_space(est.encoding)
 
-
-function encoded_space_cardinality(o::PermProbEst{m}, x) where {m}
+# If `x` is state space set, delay embedding is ignored and all elements
+# are mapped to outcomes. Otherwise, delay embedding is done.
+function encoded_space_cardinality(o::PermProbEst{m}, x::AbstractArray) where {m}
     N = length(x)
     return N - (m - 1)*o.τ
 end

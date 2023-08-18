@@ -34,6 +34,3 @@ end
 function counts(x)
     return fasthist!(copy(x))
 end
-
-
-encoded_space_cardinality(o::CountOccurrences, x) = length(x)
