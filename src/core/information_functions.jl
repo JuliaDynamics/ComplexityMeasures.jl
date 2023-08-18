@@ -5,7 +5,7 @@
 # estimator.
 const InfoMeasureOrEst = Union{InformationMeasure, DiscreteInfoEstimator}
 
-# Using an `OutcomeSpace` directly is the same as using a `MLE` probabilities estimator.
+# Using an `OutcomeSpace` directly is the same as using a `RelativeAmount` probabilities estimator.
 const ProbEstOrOutcomeSpace = Union{OutcomeSpace, ProbabilitiesEstimator}
 
 """
@@ -15,7 +15,7 @@ Estimate a discrete information measure from input data `x` using the provided
 [`DiscreteInfoEstimator`](@ref) and [`ProbabilitiesEstimator`](@ref).
 As an alternative, you can provide an [`InformationMeasure`](@ref)
 for the first argument (which will default to [`PlugIn`](@ref) estimation) or an
-[`OutcomeSpace`](@ref) for the second argument (which will default to the [`MLE`](@ref)
+[`OutcomeSpace`](@ref) for the second argument (which will default to the [`RelativeAmount`](@ref)
 estimator).
 
 All estimators compute [`Shannon`](@ref) entropy by default. To estimate other measures,
@@ -28,7 +28,7 @@ If `e` is not provided, then the default is `information(PlugIn(Shannon()), prob
 The simplest way to estimate a discrete measure is to provide the
 [`InformationMeasure`](@ref) directly in combination with an [`OutcomeSpace`](@ref).
 This will use the "naive" [`PlugIn`](@ref) estimator for the measure, and the "naive"
-[`MLE`](@ref) estimator for the probabilities.
+[`RelativeAmount`](@ref) estimator for the probabilities.
 
 ```julia
 x = randn(100) # some input data
@@ -50,7 +50,7 @@ h = information(SymbolicPermutation(;m=3), x) # gives about 2, again by definiti
 
 ## Examples (bias-corrected estimation)
 
-It is known that both [`PlugIn`](@ref) and [`MLE`](@ref) estimation are biased. The
+It is known that both [`PlugIn`](@ref) and [`RelativeAmount`](@ref) estimation are biased. The
 scientific literature abounds with estimators that correct for this bias, both on the
 measure-estimation level and on the probability-estimation level.
 We thus provide the option to use any [`DiscreteInfoEstimator`](@ref) in combination with
@@ -62,14 +62,14 @@ x = randn(100)
 o = ValueHistogram(RectangularBinning(5))
 
 # Estimate Shannon entropy estimation using various dedicated estimators
-h_s = information(MillerMadow(Shannon()), MLE(o), x)
+h_s = information(MillerMadow(Shannon()), RelativeAmount(o), x)
 h_s = information(HorvitzThompson(Shannon()), Shrinkage(o), x)
 h_s = information(Schürmann(Shannon()), Shrinkage(o), x)
 
 # Estimate information measures using the generic `Jackknife` estimator
 h_r = information(Jackknife(Renyi()), Shrinkage(o), x)
 j_t = information(Jackknife(TsallisExtropy()), Bayes(o), x)
-j_r = information(Jackknife(RenyiExtropy()), MLE(o), x)
+j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(o), x)
 ```
 
 ## Maximum/normalized information
@@ -88,13 +88,13 @@ Like above, but estimate the information measure from the pre-computed
 See also: [`information_maximum`](@ref), [`information_normalized`](@ref).
 """
 function information(e::InformationMeasure, o::OutcomeSpace, x)
-    return information(PlugIn(e), MLE(o), x)
+    return information(PlugIn(e), RelativeAmount(o), x)
 end
 function information(e::InformationMeasure, est::ProbabilitiesEstimator, x)
     return information(PlugIn(e), est, x)
 end
 function information(e::DiscreteInfoEstimator, o::OutcomeSpace, x)
-    return information(e, MLE(o), x)
+    return information(e, RelativeAmount(o), x)
 end
 
 # dispatch for `information(e, ps::Probabilities)`

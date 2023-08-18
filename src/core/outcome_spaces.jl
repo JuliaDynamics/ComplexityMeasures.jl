@@ -79,8 +79,8 @@ There are two main types of outcome spaces.
 Counting-compatible outcome spaces can be used with *any* [`ProbabilitiesEstimator`](@ref)
 to convert counts into probability mass functions.
 Non-counting-compatible outcome spaces can only be used with the maximum likelihood
-([`MLE`](@ref)) probabilities estimator, which estimates probabilities precisely by the
-relative frequency of each outcome (formally speaking, the [`MLE`](@ref) estimator also
+([`RelativeAmount`](@ref)) probabilities estimator, which estimates probabilities precisely by the
+relative frequency of each outcome (formally speaking, the [`RelativeAmount`](@ref) estimator also
 requires counts, but for the sake of code consistency, we allow it to be used with
 relative frequencies as well).
 
@@ -165,7 +165,7 @@ end
 # a certain outcome is observed in the input data. These counts are then translated into
 # probability mass functions by dedicated `ProbabilitiesEstimator`s.
 #
-# For example, the most basic probabilities estimator is [`MLE`](@ref) - the maximum
+# For example, the most basic probabilities estimator is [`RelativeAmount`](@ref) - the maximum
 # likelihood estimator - and it take the relative proportions of counts as the
 # probabilities.
 #
@@ -239,8 +239,8 @@ function counts(o::OutcomeSpace, x)
 end
 
 """
-    is_counting_based(o::OutcomeSpace) → ::Bool
+    is_counting_based(o::OutcomeSpace)
 
-Returns `true` if the [`OutcomeSpace`](@ref) `o` is counting-based, and `false` otherwise.
+Return `true` if the [`OutcomeSpace`](@ref) `o` is counting-based, and `false` otherwise.
 """
 is_counting_based(o::OutcomeSpace) = o isa CountBasedOutcomeSpace

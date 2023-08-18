@@ -6,7 +6,7 @@ function verify_counting_based(o)
     end
 end
 
-include("MLE.jl")
+include("RelativeAmount.jl")
 include("Bayes.jl")
 include("Shrinkage.jl")
 include("AddConstant.jl")

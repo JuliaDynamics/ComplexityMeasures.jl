@@ -1,5 +1,5 @@
 include("api.jl")
-include("MLE.jl")
+include("RelativeAmount.jl")
 include("Shrinkage.jl")
 include("Bayes.jl")
 include("AddConstant.jl")

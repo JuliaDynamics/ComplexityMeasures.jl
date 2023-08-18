@@ -113,7 +113,7 @@ is_counting_based
 
 ```@docs
 ProbabilitiesEstimator
-MLE
+RelativeAmount
 Bayes
 Shrinkage
 ```

@@ -7,7 +7,7 @@ os = [
     ValueHistogram(RectangularBinning(3)),
 ]
 @testset "`ProbabilitiesEstimator` constructors: $(typeof(os[i]).name.name)" for i in eachindex(os)
-    @test MLE(os[i]) isa MLE
+    @test RelativeAmount(os[i]) isa RelativeAmount
     @test Bayes(os[i]) isa Bayes
     @test Shrinkage(os[i]) isa Shrinkage
     @test AddConstant(os[i]) isa AddConstant
@@ -23,7 +23,7 @@ os = [
     NaiveKernel(0.1),
 ]
 @testset "`ProbabilitiesEstimator` constructors: $(typeof(os[i]).name.name)" for i in eachindex(os)
-    @test MLE(os[i]) isa MLE
+    @test RelativeAmount(os[i]) isa RelativeAmount
     @test_throws ArgumentError Bayes(WaveletOverlap())
     @test_throws ArgumentError Shrinkage(WaveletOverlap())
     @test_throws ArgumentError AddConstant(WaveletOverlap())

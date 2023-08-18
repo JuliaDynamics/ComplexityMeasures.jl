@@ -15,7 +15,7 @@ Hausser & Strimmer (2009)[^Hausser2009].
 The `Shrinkage` estimator estimates a cell probability ``\\theta_{k}^{\\text{Shrink}}`` as
 
 ```math
-\\theta_{k}^{\\text{Shrink}} = \\lambda t_k + (1-\\lambda) \\hat{\\theta}_k^{MLE},
+\\theta_{k}^{\\text{Shrink}} = \\lambda t_k + (1-\\lambda) \\hat{\\theta}_k^{RelativeAmount},
 ```
 
 where ``\\lambda \\in [0, 1]`` is the shrinkage intensity (``\\lambda = 0`` means
@@ -51,7 +51,7 @@ x = cumsum(randn(100))
 ps_shrink = probabilities(Shrinkage(SymbolicPermutation(m = 3)), x)
 ```
 
-See also: [`MLE`](@ref), [`Bayes`](@ref).
+See also: [`RelativeAmount`](@ref), [`Bayes`](@ref).
 
 [^JamesStein1961]:
     James, W., & Stein, C. (1992). Estimation with quadratic loss. In Breakthroughs in

@@ -56,7 +56,7 @@ argument, which specifies the set of possible outcomes.
 
 ## Implementations
 
-The default probabilities estimator is [`MLE`](@ref), which is compatible with any
+The default probabilities estimator is [`RelativeAmount`](@ref), which is compatible with any
 [`OutcomeSpace`](@ref). The following estimators only support counting-based outcomes.
 
 - [`Shrinkage`](@ref).
@@ -83,7 +83,7 @@ assigning to each outcome ``\\omega_i`` a probability ``p(\\omega_i)``, such tha
 The returned probabilities `p` are a [`Probabilities`](@ref) (`Vector`-like), where each
 element `p[i]` is the probability of the outcome `ω[i]`. Using an [`OutcomeSpace`](@ref)
 directly as input to [`probabilities`](@ref) or related functions is also possible, and is
-equivalent to using the [`MLE`](@ref) estimator.
+equivalent to using the [`RelativeAmount`](@ref) estimator.
 """
 abstract type ProbabilitiesEstimator end
 
@@ -112,9 +112,9 @@ counts(est::ProbabilitiesEstimator, x) = counts(est.outcomemodel, x)
 
 Compute a probability distribution over the set of possible outcomes
 defined by the [`OutcomeSpace`](@ref) `o`, given input data `x`, using maximum likelihood
-probability estimation ([`MLE`](@ref)).
+probability estimation ([`RelativeAmount`](@ref)).
 
-To use some other form of probabilities estimation than [`MLE`](@ref), use the second
+To use some other form of probabilities estimation than [`RelativeAmount`](@ref), use the second
 signature. In this case, the outcome space is given as the first argument to a
 [`ProbabilitiesEstimator`](@ref). Note that this only works for counting-based outcome
 spaces (see [`OutcomeSpace`](@ref)'s docstring for list of compatible outcome spaces).
@@ -151,15 +151,15 @@ The outcome space is here given as the first argument to `est`.
 x = randn(500)
 
 # Syntactically equivalent to `probabilities(SymbolicPermutation(m = 3), x)`
-ps = probabilities(MLE(SymbolicPermutation(m = 3)), x)
+ps = probabilities(RelativeAmount(SymbolicPermutation(m = 3)), x)
 
 # Some more sophisticated ways of estimating probabilities:
 ps = probabilities(Bayes(SymbolicPermutation(m = 3)), x)
 ps = probabilities(Shrinkage(ValueHistogram(RectangularBinning(5))), x)
 
-# Only the `MLE` estimator works with non-counting based outcome spaces,
+# Only the `RelativeAmount` estimator works with non-counting based outcome spaces,
 # like for example `WaveletOverlap`.
-ps = probabilities(MLE(WaveletOverlap()), x) # works
+ps = probabilities(RelativeAmount(WaveletOverlap()), x) # works
 ps = probabilities(Bayes(WaveletOverlap()), x) # errors
 ```
 
@@ -168,7 +168,7 @@ ps = probabilities(Bayes(WaveletOverlap()), x) # errors
 Estimate probabilities by using directly counting the elements of `x`, assuming that
 `Ω = sort(unique(x))`, i.e. that the outcome space is the unique elements of `x`.
 This is mostly useful when `x` contains categorical data. It is syntactically equivalent
-to `probabilities(MLE(CountOccurrences()), x)`.
+to `probabilities(RelativeAmount(CountOccurrences()), x)`.
 
 See also: [`probabilities_and_outcomes`](@ref), [`allprobabilities`](@ref),
 [`allprobabilities_and_outcomes`](@ref), [`Probabilities`](@ref),
@@ -223,7 +223,7 @@ function probabilities_and_outcomes(o::OutcomeSpace, x)
 end
 
 # If an outcome space model is provided without specifying a probabilities estimator,
-# then naive plug-in estimation is used (the `MLE` estimator). In the case of
+# then naive plug-in estimation is used (the `RelativeAmount` estimator). In the case of
 # counting-based `OutcomeSpace`s, we explicitly count occurrences of each
 # outcome in the encoded data. For non-counting-based `OutcomeSpace`s, we
 # just fill in the non-considered outcomes with zero probabilities.
@@ -286,7 +286,7 @@ end
     missing_outcomes(o::ProbabilitiesEstimator, x; all = false) → n_missing::Int
 
 Estimates a probability distribution over the outcomes specified by `o`, given input
-data `x`, using [`MLE`](@ref) probabilities estimation,
+data `x`, using [`RelativeAmount`](@ref) probabilities estimation,
 then counts the number of missing (i.e. zero-probability) outcomes.
 
 If `all == true`, then [`allprobabilities`](@ref) is used to compute the probabilities.
@@ -294,7 +294,7 @@ This is useful when using a custom [`ProbabilitiesEstimator`](@ref), which may a
 non-zero probabilities to outcomes that are not observed in the input data.
 If `all == false`, then [`probabilities`](@ ref) is used to compute the probabilities.
 
-This is syntactically equivalent to `missing_outcomes(MLE(o), x)`.
+This is syntactically equivalent to `missing_outcomes(RelativeAmount(o), x)`.
 
     missing_outcomes(est::ProbabilitiesEstimator, x) → n_missing::Int
 
@@ -312,4 +312,4 @@ function missing_outcomes(est::ProbabilitiesEstimator, x; all::Bool = false)
     O = count(!iszero, probs)
     return L - O
 end
-missing_outcomes(o::OutcomeSpace, x::Array_or_SSSet) = missing_outcomes(MLE(o), x)
+missing_outcomes(o::OutcomeSpace, x::Array_or_SSSet) = missing_outcomes(RelativeAmount(o), x)

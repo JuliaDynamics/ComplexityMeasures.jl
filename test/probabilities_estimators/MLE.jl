@@ -1,7 +1,7 @@
 using Random
 using Test
 rng = MersenneTwister(1234)
-@testset "MLE: Counting-based outcome space" begin
+@testset "RelativeAmount: Counting-based outcome space" begin
     @testset "1D estimators" begin
         x = rand(rng, 1:10., 100)
 
@@ -13,7 +13,7 @@ rng = MersenneTwister(1234)
             ValueHistogram(RectangularBinning(3)),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
-            est = MLE(os[i])
+            est = RelativeAmount(os[i])
 
             cts, Ωobs = allcounts_and_outcomes(est, x)
             @test sort(Ωobs) == sort(outcome_space(est, x))
@@ -46,7 +46,7 @@ rng = MersenneTwister(1234)
             SpatialSymbolicPermutation([0 1; 1 0], x),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
-            est = MLE(os[i])
+            est = RelativeAmount(os[i])
             ps, Ωobs = probabilities_and_outcomes(est, x)
             @test ps isa Probabilities
             @test outcomes(est, x) == Ωobs
@@ -62,7 +62,7 @@ end
 
 # If counting isn't well-defined for the outcome space, then all relevant functions
 # just return an argument error.
-@testset "MLE: Non-counting-based outcome spaces" begin
+@testset "RelativeAmount: Non-counting-based outcome spaces" begin
     x = rand(rng, 100)
     os = [
         WaveletOverlap(),
@@ -73,7 +73,7 @@ end
         NaiveKernel(0.1),
     ]
     @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
-        est = MLE(os[i])
+        est = RelativeAmount(os[i])
         ps, Ωobs = probabilities_and_outcomes(est, x)
         @test ps isa Probabilities
         @test outcomes(est, x) == Ωobs

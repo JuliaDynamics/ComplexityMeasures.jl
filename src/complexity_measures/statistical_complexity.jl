@@ -17,7 +17,7 @@ treated in Rosso et al.'s papers). Used with [`complexity`](@ref).
 
 ## Keyword arguments
 
-- `est::ProbabilitiesEstimator = MLE(SymbolicPermutation())`: The
+- `est::ProbabilitiesEstimator = RelativeAmount(SymbolicPermutation())`: The
     [`ProbabilitiesEstimator`](@ref) used to estimate probabilities from the input data.
     An [`OutcomeSpace`](@ref) must be given as the first argument to the estimator to
     control how discretization within pixel windows is performed.
@@ -75,7 +75,7 @@ To obtain both the entropy (or other information measure) and the statistical co
 """
 Base.@kwdef struct StatisticalComplexity{E, D, H} <: ComplexityEstimator
     dist::D = JSDivergence()
-    est::E = MLE(SymbolicPermutation())
+    est::E = RelativeAmount(SymbolicPermutation())
     entr::H = Renyi()
     entr_val::Base.RefValue{Float64} = Ref(0.0)
 end

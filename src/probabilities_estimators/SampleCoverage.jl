@@ -17,7 +17,7 @@ information about unobserved outcomes.
 
 is used with [`probabilities`](@ref) to estimates
 probabilities over the given [`OutcomeSpaceModel`](@ref) using empirical plug-in estimates
-(also called "maximum likelihood estimation"; hence "MLE").
+(also called "maximum likelihood estimation"; hence "RelativeAmount").
 """
 struct SampleCoverage{O <: OutcomeSpaceModel} <: ProbabilitiesEstimator
     outcome_space::O

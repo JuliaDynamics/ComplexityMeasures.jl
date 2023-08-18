@@ -30,7 +30,7 @@ for the outcome ``\\omega_{k}``, and ``A = \\sum_{i=1}^k a_k``.
 There are many common choices of priors, some of which are listed in
 Hausser & Strimmer (2009)[^Hausser2009]. They include
 
-- `a == 0`, which is equivalent to the [`MLE`](@ref) estimator.
+- `a == 0`, which is equivalent to the [`RelativeAmount`](@ref) estimator.
 - `a == 0.5` (Jeffrey's prior)
 - `a == 1` (Bayes-Laplace uniform prior)
 
@@ -64,7 +64,7 @@ x = cumsum(randn(100))
 ps_bayes = probabilities(Bayes(SymbolicPermutation(m = 3), a = 0.5), x)
 ```
 
-See also: [`MLE`](@ref), [`Shrinkage`](@ref).
+See also: [`RelativeAmount`](@ref), [`Shrinkage`](@ref).
 
 [^Hausser2009]:
     Hausser, J., & Strimmer, K. (2009). Entropy inference and the James-Stein estimator,

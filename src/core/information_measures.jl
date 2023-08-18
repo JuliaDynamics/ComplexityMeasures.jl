@@ -105,7 +105,7 @@ A discrete [`InformationMeasure`](@ref) is a functional of a probability mass fu
 To estimate such a measure from data, we must first estimate a probability mass function
 using a [`ProbabilitiesEstimator`](@ref) from the (encoded/discretized) input data, and then
 apply the estimator to the estimated probabilities. For example, the [`Shannon`](@ref)
-entropy is typically computed using the [`MLE`](@ref) estimator to compute probabilities,
+entropy is typically computed using the [`RelativeAmount`](@ref) estimator to compute probabilities,
 which are then given to the [`PlugIn`](@ref) estimator. Many other estimators exist, not
 only for [`Shannon`](@ref) entropy, but other information measures as well.
 
@@ -141,10 +141,10 @@ provide improvements over the naive [`PlugIn`](@ref) estimator.
     with *any* [`ProbabilitiesEstimator`](@ref) as input to [`information`](@ref).
     What this means is that every estimator actually comes in many different variants -
     one for each [`ProbabilitiesEstimator`](@ref). For example, the [`MillerMadow`](@ref)
-    estimator of [`Shannon`](@ref) entropy is typically calculated with [`MLE`](@ref)
+    estimator of [`Shannon`](@ref) entropy is typically calculated with [`RelativeAmount`](@ref)
     probabilities. But here, you can use for example the [`Bayes`](@ref) or the
     [`Shrinkage`](@ref) probabilities estimators instead, i.e.
-    `information(MillerMadow(), MLE(outcome_space), x)` and
+    `information(MillerMadow(), RelativeAmount(outcome_space), x)` and
     `information(MillerMadow(), Bayes(outcomes_space), x)` are distinct estimators.
     This holds for all [`DiscreteInfoEstimator`](@ref)s. Many of these
     estimators haven't been explored in the literature before, so feel free to explore,

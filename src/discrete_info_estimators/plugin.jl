@@ -10,7 +10,7 @@ and is used with [`information`](@ref) to any discrete [`InformationMeasure`](@r
 It computes any quantity exactly as given by its formula. When computing an
 information measure, which here is defined as a probabilities functional, it computes
 the quantity directly from a probability mass function, which is derived from
-maximum-likelihood ([`MLE`](@ref) estimates of the probabilities.
+maximum-likelihood ([`RelativeAmount`](@ref) estimates of the probabilities.
 
 ## Bias of plug-in estimates
 
