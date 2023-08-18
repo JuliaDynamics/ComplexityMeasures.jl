@@ -7,6 +7,7 @@ export counts
 export counts_and_outcomes
 export frequencies
 export allcounts_and_outcomes
+export allcounts
 export is_counting_based
 
 """
