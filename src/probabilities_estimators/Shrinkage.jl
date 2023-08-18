@@ -1,8 +1,9 @@
 export Shrinkage
+
 # TODO: make sure we act correctly for `probabilities` and `allprobabilities`.
 """
     Shrinkage{<:OutcomeSpace} <: ProbabilitiesEstimator
-    Shrinkage(model::OutcomeSpace, t = nothing, λ = nothing)
+    Shrinkage(model::OutcomeSpace; t = nothing, λ = nothing)
 
 The `Shrinkage` estimator is used with [`probabilities`](@ref) and related functions
 to estimate probabilities over the given `m`-element counting-based
