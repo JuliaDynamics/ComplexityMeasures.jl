@@ -1,10 +1,16 @@
-include("count_occurences.jl")
-include("value_histogram.jl")
-include("symbolic_permutation.jl")
-include("kernel_density.jl")
-include("power_spectrum.jl")
-include("wavelet_overlap.jl")
-include("transfer_operator/transfer_operator.jl")
-include("dispersion.jl")
-include("diversity.jl")
-include("spatial/spatial.jl")
+function verify_counting_based(o, name = "Bayes")
+    if !is_counting_based(o)
+        s = "Outcome space $(o) isn't counting based."*
+            "`$(name)` requires a counting-based outcome space."
+        throw(ArgumentError(s))
+    end
+end
+
+include("RelativeAmount.jl")
+include("Bayes.jl")
+include("Shrinkage.jl")
+include("AddConstant.jl")
+
+# These don't actually result in probability distributions.
+#include("SampleCoverage.jl")
+#include("GoodTuring.jl")

@@ -4,7 +4,6 @@ using ComplexityMeasures
 pages = [
     "index.md",
     "probabilities.md",
-    "encodings.md",
     "information_measures.md",
     "complexity.md",
     "convenience.md",

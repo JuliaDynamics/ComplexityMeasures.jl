@@ -16,7 +16,7 @@ msg = "`genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is 
 @test_logs (:warn, msg) genentropy(x, ValueHistogram(0.1))
 
 @test probabilities(x, 0.1) == probabilities(ValueHistogram(0.1), x)
-msg = "`probabilities(x, est::ProbabilitiesEstimator)`\nis deprecated, use `probabilities(est::ProbabilitiesEstimator, x) instead`.\n"
+msg = "`probabilities(x, est::OutcomeSpace)`\nis deprecated, use `probabilities(est::OutcomeSpace, x) instead`.\n"
 @test_logs (:warn, msg) probabilities(x, ValueHistogram(0.1))
 
 x = StateSpaceSet(rand(100, 3))
@@ -45,12 +45,6 @@ end
     # Shannon, for backwards compatibility.
     @test entropy(Shannon(), Kraskov(), x) isa Real
     @test_throws ErrorException entropy(Tsallis(), Kraskov(), x)
-
-    msg = "`entropy(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.\nFrom 3.0 onwards, use `information(PlugIn(measure = e), est, x)` instead.\n"
-    @test_logs (:warn, msg) entropy(Shannon(), ValueHistogram(0.1), x)
-
-    msg = "`entropy_normalized(e::EntropyDefinition, est::ProbabilitiesEstimator, x)` is deprecated.\nFrom 3.0 onwards, use `information_normalized(PlugIn(measure = e), est, x)` instead.\n"
-    @test_logs (:warn, msg) entropy_normalized(Shannon(), ValueHistogram(0.1), x)
 
     msg = "`entropy(est::DifferentialEntropyEstimator, x)` is deprecated.\nUse `information(est, x)` instead.\n"
     @test_logs (:warn, msg) entropy(Kraskov(), x)

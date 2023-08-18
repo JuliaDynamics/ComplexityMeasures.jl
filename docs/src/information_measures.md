@@ -1,12 +1,17 @@
 # [Information measures](@id information_measures)
 
-Please be sure you have read the [Terminology](@ref terminology) section before going through the API here, to have a good idea of how we define "information measures" and how they all come together over the common interface of the [`information`](@ref) function.
+!!! note
+    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here.
 
 ## Information measures API
 
-The information measure API is defined by the [`information`](@ref) function, which may take as an input an [`InformationMeasure`](@ref), or a discrete ( [`DiscreteInfoEstimator`](@ref)) or differential ( [`DifferentialInfoEstimator`](@ref)). The functions [`information_maximum`](@ref) and [`information_normalized`](@ref) are also useful.
+The information measure API is defined by the [`information`](@ref) function, which takes
+as an input an [`InformationMeasure`](@ref), or some specialized [`DiscreteInfoEstimator`](@ref) or [`DifferentialInfoEstimator`](@ref) for estimating the discrete or differential variant
+of the measure.
 
-## Information measures definitions
+The functions [`information_maximum`](@ref) and [`information_normalized`](@ref) are also useful.
+
+## Definitions (entropies and extropies)
 
 ```@docs
 InformationMeasure
@@ -21,10 +26,10 @@ RenyiExtropy
 TsallisExtropy
 ```
 
-## Discrete information measures
+## Estimation (discrete)
 
 ```@docs
-information(::Union{InformationMeasure, DiscreteInfoEstimator}, ::ProbabilitiesEstimator, ::Any)
+information(::InformationMeasure, ::OutcomeSpace, ::Any)
 information_maximum
 information_normalized
 ```
@@ -34,12 +39,38 @@ information_normalized
 ```@docs
 DiscreteInfoEstimator
 PlugIn
+MillerMadow
+Schürmann
+GeneralizedSchürmann
+Jackknife
+HorvitzThompson
+ChaoShen
 ```
 
-## Differential information estimators
+## Estimation (differential)
 
 ```@docs
 information(::DifferentialInfoEstimator, ::Any)
+```
+
+### Differential information estimators
+
+```@docs
+DifferentialInfoEstimator
+```
+
+```@docs
+Kraskov
+KozachenkoLeonenko
+Zhu
+ZhuSingh
+Gao
+Goria
+Lord
+Vasicek
+AlizadehArghami
+Ebrahimi
+Correa
 ```
 
 ### [Table of differential information measure estimators](@id table_diff_ent_est)
@@ -64,21 +95,3 @@ For example, [`Kraskov`](@ref) estimates the [`Shannon`](@ref) entropy.
 | [`Ebrahimi`](@ref)           | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
 | [`Correa`](@ref)             | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
 | [`AlizadehArghami`](@ref)    | Order statistics  | `Vector`   |        ✓         |        x        |         x         |          x           |        x         |               x                |
-
-```@docs
-DifferentialInfoEstimator
-```
-
-```@docs
-Kraskov
-KozachenkoLeonenko
-Zhu
-ZhuSingh
-Gao
-Goria
-Lord
-Vasicek
-AlizadehArghami
-Ebrahimi
-Correa
-```

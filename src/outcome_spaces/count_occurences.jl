@@ -1,0 +1,36 @@
+export CountOccurrences
+
+"""
+    CountOccurrences()
+
+An [`OutcomeSpace`](@ref) based on straight-forward counting of distinct elements in
+a univariate time series or multivariate dataset. This is the same as giving no
+estimator to [`probabilities`](@ref).
+
+## Outcome space
+
+The outcome space is the unique sorted values of the input.
+Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
+"""
+struct CountOccurrences <: CountBasedOutcomeSpace end
+
+is_counting_based(o::CountOccurrences) = true
+
+function counts_and_outcomes(::CountOccurrences, x)
+    z = copy(x)
+    cts = fasthist!(z)
+    # notice that `z` is now sorted within `frequencies!` so we can skip sorting
+    return cts, unique!(z)
+end
+
+outcome_space(::CountOccurrences, x) = sort!(unique(x))
+probabilities(::CountOccurrences, x) = probabilities(x)
+counts(::CountOccurrences, x) = counts(x)
+
+function probabilities(x)
+    # Fast histograms code is in the `histograms` folder
+    return Probabilities(counts(x))
+end
+function counts(x)
+    return fasthist!(copy(x))
+end
