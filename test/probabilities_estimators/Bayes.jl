@@ -12,6 +12,7 @@ rng = MersenneTwister(1234)
             CountOccurrences(),
             SymbolicPermutation(m = 3),
             Dispersion(),
+            Diversity(),
             ValueHistogram(RectangularBinning(3)),
             NaiveKernel(0.1),
         ]
