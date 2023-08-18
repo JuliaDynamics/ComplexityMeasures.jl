@@ -45,15 +45,15 @@ struct NaiveKernel{KM, M <: Metric} <: OutcomeSpace
     w::Int
     metric::M
 end
-function NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
-    ϵ ≤ 0 && throw(ArgumentError("Radius ϵ must be larger than zero!"))
-    return NaiveKernel(ϵ, method, w, metric)
-end
 
 # Although we do count for NaiveKernel, there is a potential many-to-one mapping for each
 # point, so that the counts won't add up to the total number of points. Therefore,
 # we can't use this estimator for counting-based probabilities estimation.
-is_counting_based(o::NaiveKernel) = false
+
+function NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
+    ϵ ≤ 0 && throw(ArgumentError("Radius ϵ must be larger than zero!"))
+    return NaiveKernel(ϵ, method, w, metric)
+end
 
 function probabilities_and_outcomes(est::NaiveKernel, x::AbstractVector{<:Real})
     probabilities_and_outcomes(est, StateSpaceSet(x))

@@ -35,12 +35,11 @@ and the return configuration is the same as in [`ValueHistogram`](@ref) (left bi
     dynamical measure for fault diagnosis of rotating machinery. IEEE Transactions on
     Industrial Informatics, 17(8), 5419-5429.
 """
-Base.@kwdef struct Diversity <: OutcomeSpace
+Base.@kwdef struct Diversity <: CountBasedOutcomeSpace
     m::Int = 2
     τ::Int = 1 # Note: the original paper does not allow τ != 1
     nbins::Int = 5
 end
-is_counting_based(o::Diversity) = true
 
 function counts(est::Diversity, x::AbstractVector{T}) where T <: Real
     ds, rbc = similarities_and_binning(est, x)

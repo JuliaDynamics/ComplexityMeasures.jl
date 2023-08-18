@@ -108,7 +108,7 @@ and one has a vector of probabilities, one for each experimental realization).
 abstract type OutcomeSpace end
 
 # Use this subtype instead for outcome spaces that support counting
-abstract type CountingBasedOutcomeSpace <: OutcomeSpace end
+abstract type CountBasedOutcomeSpace <: OutcomeSpace end
 
 ###########################################################################################
 # Outcome space
@@ -243,4 +243,4 @@ end
 
 Returns `true` if the [`OutcomeSpace`](@ref) `o` is counting-based, and `false` otherwise.
 """
-is_counting_based(o::OutcomeSpace) = o isa CountingBasedOutcomeSpace
+is_counting_based(o::OutcomeSpace) = o isa CountBasedOutcomeSpace

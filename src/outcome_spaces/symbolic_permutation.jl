@@ -12,7 +12,7 @@ Subtypes must implement fields:
 - `lt::Function`: A function determining how ties are to be broken when constructing
     permutation patterns from embedding vectors.
 """
-abstract type PermutationOutcomeSpace{m} <: OutcomeSpace end
+abstract type PermutationOutcomeSpace{m} <: CountBasedOutcomeSpace end
 const PermProbEst = PermutationOutcomeSpace
 
 ###########################################################################################
@@ -102,8 +102,6 @@ struct SymbolicPermutation{M,F} <: PermutationOutcomeSpace{M}
     τ::Int
 end
 
-is_counting_based(o::SymbolicPermutation) = true
-
 """
     SymbolicWeightedPermutation <: OutcomeSpace
     SymbolicWeightedPermutation(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
@@ -143,8 +141,6 @@ struct SymbolicWeightedPermutation{M,F} <: PermutationOutcomeSpace{M}
     τ::Int
 end
 
-is_counting_based(o::SymbolicWeightedPermutation) = false
-
 """
     SymbolicAmplitudeAwarePermutation <: OutcomeSpace
     SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
@@ -178,8 +174,6 @@ struct SymbolicAmplitudeAwarePermutation{M,F} <: PermutationOutcomeSpace{M}
     τ::Int
     A::Float64
 end
-
-is_counting_based(o::SymbolicAmplitudeAwarePermutation) = false
 
 # Initializations
 function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}

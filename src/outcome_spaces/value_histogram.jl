@@ -36,12 +36,10 @@ returns the outcomes in the same array format as the underlying binning
 For [`FixedRectangularBinning`](@ref) the [`outcome_space`](@ref) is well-defined from the
 binning, but for [`RectangularBinning`](@ref) input `x` is needed as well.
 """
-struct ValueHistogram{B<:AbstractBinning} <: OutcomeSpace
+struct ValueHistogram{B<:AbstractBinning} <: CountBasedOutcomeSpace
     binning::B
 end
 ValueHistogram(ϵ::Union{Real,Vector}) = ValueHistogram(RectangularBinning(ϵ))
-
-is_counting_based(o::ValueHistogram) = true
 
 """
     VisitationFrequency

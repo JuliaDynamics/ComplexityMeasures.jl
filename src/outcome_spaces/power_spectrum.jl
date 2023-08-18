@@ -31,8 +31,6 @@ Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
 struct PowerSpectrum <: OutcomeSpace end
 
-is_counting_based(o::PowerSpectrum) = false
-
 encoded_space_cardinality(est::PowerSpectrum, x) = length(FFTW.rfftfreq(length(x)))
 
 function probabilities_and_outcomes(est::PowerSpectrum, x)

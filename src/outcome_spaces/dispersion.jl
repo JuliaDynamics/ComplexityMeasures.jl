@@ -68,15 +68,13 @@ For a version of this estimator that can be used on high-dimensional arrays, see
     signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale
     dispersion entropy and wavelet threshold denoising. InformationMeasure, 21(1), 11.
 """
-Base.@kwdef struct Dispersion{S <: Encoding} <: OutcomeSpace
+Base.@kwdef struct Dispersion{S <: Encoding} <: CountBasedOutcomeSpace
     encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`
     c::Int = 3 # The number of categories to map encoded values to.
     m::Int = 2
     τ::Int = 1
     check_unique::Bool = false
 end
-
-is_counting_based(o::Dispersion) = true
 
 # A helper function that makes sure the algorithm doesn't crash when input contains
 # a singular value.

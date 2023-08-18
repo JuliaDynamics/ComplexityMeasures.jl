@@ -12,7 +12,7 @@ estimator to [`probabilities`](@ref).
 The outcome space is the unique sorted values of the input.
 Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-struct CountOccurrences <: OutcomeSpace end
+struct CountOccurrences <: CountBasedOutcomeSpace end
 
 is_counting_based(o::CountOccurrences) = true
 
