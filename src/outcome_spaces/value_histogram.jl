@@ -58,6 +58,8 @@ function probabilities(est::ValueHistogram, x)
     Probabilities(fasthist(encoding, x)[1])
 end
 
+outcomes(est::ValueHistogram, x) = last(counts_and_outcomes(est, x))
+
 function counts_and_outcomes(est::ValueHistogram, x)
     encoding = RectangularBinEncoding(est.binning, x)
     freqs, outcomes = counts_and_outcomes(encoding, x)
