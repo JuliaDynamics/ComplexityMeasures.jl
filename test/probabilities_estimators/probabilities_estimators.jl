@@ -4,3 +4,4 @@ include("Shrinkage.jl")
 
 # Counting-based
 include("Bayes.jl")
+include("AddConstant.jl")
