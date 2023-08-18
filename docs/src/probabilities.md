@@ -1,5 +1,9 @@
 # Probabilities
 
+!!! note
+    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here.
+
+
 ## [Outcome spaces (discretization)](@id outcome_spaces)
 
 ```@docs
