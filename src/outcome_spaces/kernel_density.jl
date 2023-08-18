@@ -50,17 +50,19 @@ function NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
     return NaiveKernel(ϵ, method, w, metric)
 end
 
-is_counting_based(o::NaiveKernel) = true
-function counts_and_outcomes(est::NaiveKernel, x::AbstractVector{<:Real})
-    counts_and_outcomes(est, StateSpaceSet(x))
+# Although we do count for NaiveKernel, there is a potential many-to-one mapping for each
+# point, so that the counts won't add up to the total number of points. Therefore,
+# we can't use this estimator for counting-based probabilities estimation.
+is_counting_based(o::NaiveKernel) = false
+
+function probabilities_and_outcomes(est::NaiveKernel, x::AbstractVector{<:Real})
+    probabilities_and_outcomes(est, StateSpaceSet(x))
 end
-function counts_and_outcomes(est::NaiveKernel, x::AbstractStateSpaceSet)
+function probabilities_and_outcomes(est::NaiveKernel, x::AbstractStateSpaceSet)
     theiler = Theiler(est.w)
     ss = searchstructure(est.method, vec(x), est.metric)
     idxs = bulkisearch(ss, vec(x), WithinRange(est.ϵ), theiler)
-    return length.(idxs), eachindex(x)
+    return Probabilities(length.(idxs)), eachindex(x)
 end
-
-encoded_space_cardinality(est::NaiveKernel, x) = length(x)
 
 outcome_space(::NaiveKernel, x) = eachindex(x)

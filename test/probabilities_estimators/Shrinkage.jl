@@ -1,7 +1,7 @@
 using Random
 using Test
 rng = MersenneTwister(1234)
-@testset "Counting-based outcome space" begin
+@testset "Shrinkage: counting-based outcome space" begin
     @testset "1D estimators" begin
         x = rand(rng, 1:10., 100)
 
@@ -11,7 +11,6 @@ rng = MersenneTwister(1234)
             Dispersion(),
             Diversity(),
             ValueHistogram(RectangularBinning(3)),
-            NaiveKernel(0.1),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
             est = Shrinkage(os[i])
@@ -63,7 +62,7 @@ end
 
 # If counting isn't well-defined for the outcome space, then all relevant functions
 # just return an argument error.
-@testset "Non-counting-based outcome spaces" begin
+@testset "Shrinkage: Non-counting-based outcome spaces" begin
     x = rand(rng, 100)
     os = [
         WaveletOverlap(),
@@ -71,6 +70,7 @@ end
         PowerSpectrum(),
         SymbolicAmplitudeAwarePermutation(),
         SymbolicWeightedPermutation(),
+        NaiveKernel(0.1),
     ]
     @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
         est = Shrinkage(os[i])

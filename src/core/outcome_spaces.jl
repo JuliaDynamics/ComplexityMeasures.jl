@@ -32,7 +32,7 @@ to each outcome ``\\omega_i`` (i.e. [encoding](@ref encodings)/discretizing).
 | [`CountOccurrences`](@ref)                  | Count of unique elements     | `Any`                     | ✔                  |
 | [`ValueHistogram`](@ref)                    | Binning (histogram)          | `Vector`, `StateSpaceSet` | ✔                  |
 | [`TransferOperator`](@ref)                  | Binning (transfer operator)  | `Vector`, `StateSpaceSet` | ✖                  |
-| [`NaiveKernel`](@ref)                       | Kernel density estimation    | `StateSpaceSet`           | ✔                  |
+| [`NaiveKernel`](@ref)                       | Kernel density estimation    | `StateSpaceSet`           | ✖                  |
 | [`SymbolicPermutation`](@ref)               | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✔                  |
 | [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
 | [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
