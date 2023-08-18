@@ -5,10 +5,8 @@ export SampleCoverage
     SampleCoverage(outcome_space::OutcomeSpaceModel)
 
 A probabilities estimator based on the Good-Turing correction, which uses the
-observation that the number of singletons (i.e. outcomes with frequency 1) contains
+observation that the number of singletons (i.e. outcomes with count 1) contains
 information about unobserved outcomes.
-
-
 
 [^Chao2003]:
     Chao, A., & Shen, T. J. (2003). Nonparametric estimation of Shannon’s index of
@@ -25,7 +23,7 @@ end
 
 function probabilities_and_outcomes(est::SampleCoverage, x)
     # Count singletons in the sample
-    freqs, outcomes = frequencies_and_outcomes(outcome_space(est), x)
+    freqs, outs = counts_and_outcomes(est.o, x)
     f₁ = 0
     for f in freqs
         if f == 1
@@ -37,5 +35,5 @@ function probabilities_and_outcomes(est::SampleCoverage, x)
         f₁ == N - 1
     end
     C = 1 - (f₁ / N)
-    return (freqs ./ N) .* C
+    return Probabilities((freqs ./ N) .* C), outs
 end
