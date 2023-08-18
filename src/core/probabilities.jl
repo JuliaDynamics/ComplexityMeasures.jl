@@ -91,6 +91,14 @@ outcome_space(est::ProbabilitiesEstimator, x) = outcome_space(est.outcomemodel, 
 total_outcomes(est::ProbabilitiesEstimator) = total_outcomes(est.outcomemodel)
 total_outcomes(est::ProbabilitiesEstimator, x) = total_outcomes(est.outcomemodel, x)
 outcomes(est::ProbabilitiesEstimator, x) = outcomes(est.outcomemodel, x)
+function allcounts_and_outcomes(est::ProbabilitiesEstimator, x)
+    return allcounts_and_outcomes(est.outcomemodel, x)
+end
+allcounts(est::ProbabilitiesEstimator, x) = allcounts(est.outcomemodel, x)
+function counts_and_outcomes(est::ProbabilitiesEstimator, x)
+    return counts_and_outcomes(est.outcomemodel, x)
+end
+counts(est::ProbabilitiesEstimator, x) = counts(est.outcomemodel, x)
 
 ###########################################################################################
 # probabilities and combo function
@@ -270,8 +278,6 @@ of 0 entries, but it is true for [`allprobabilities`](@ref).
 function allprobabilities(est, x)
     return first(allprobabilities_and_outcomes(est, x))
 end
-
-counts(est::ProbabilitiesEstimator, x) = counts(est.outcomemodel, x)
 
 """
     missing_outcomes(o::ProbabilitiesEstimator, x; all = false) → n_missing::Int
