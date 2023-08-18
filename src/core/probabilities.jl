@@ -56,9 +56,12 @@ argument, which specifies the set of possible outcomes.
 
 ## Implementations
 
-- [`MLE`](@ref). Compatible with any [`OutcomeSpace`](@ref))
-- [`Shrinkage`](@ref). Compatible with any [`OutcomeSpace`](@ref))
-- [`Bayes`](@ref). Only compatible with counting-based [`OutcomeSpace`](@ref)s.
+The default probabilities estimator is [`MLE`](@ref), which is compatible with any
+[`OutcomeSpace`](@ref). The following estimators only support counting-based outcomes.
+
+- [`Shrinkage`](@ref).
+- [`Bayes`](@ref).
+- [`AddConstant`](@ref).
 
 ## Description
 
