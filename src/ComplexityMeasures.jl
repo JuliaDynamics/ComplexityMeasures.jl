@@ -16,6 +16,7 @@ const Vector_or_SSSet = Union{<:AbstractVector{<:Real}, <:AbstractStateSpaceSet}
 
 # Core API types and functions
 include("core/outcome_spaces.jl")
+include("core/counts.jl")
 include("core/probabilities.jl")
 include("core/information_measures.jl")
 include("core/information_functions.jl")
