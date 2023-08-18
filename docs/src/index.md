@@ -20,21 +20,22 @@ We believe the general nonlinear dynamics community agrees with our take, as mos
 ### Probabilities and Outcome Spaces
 
 Information measures, and some other complexity measures, are are typically computed based on **probability distributions** derived from input data.
-Probabilities can be either discrete (mass functions) or continuous (densities).
-In order to derive probabilities from data, an **outcome space** needs to be defined: a way to transform data into elements $\omega$ of an outcome space $\omega \in \Omega$, and assign probabilities to each outcome $p(\omega)$.
+Probabilities can be either discrete ([mass functions](https://en.wikipedia.org/wiki/Probability_mass_function)) or continuous ([density functions](https://en.wikipedia.org/wiki/Probability_density_function)).
+ComplexityMeasures.jl implements an interface for probabilities that exactly follows the mathematically rigorous formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space).
+In order to derive probabilities from data, an **outcome space** needs to be defined: a way to transform data into elements $\omega$ of an outcome space $\omega \in \Omega$, and assign probabilities to each outcome $p(\omega)$, such that $p(\Omega)=1$. $\omega$ are called _outcomes_ or _events_.
 
 If $\Omega$ is countable, this process is also called _discretization_ of the input data. During discretization, each element of input data $\chi \in x$ is [`encode`](@ref)d (discretized) into an element of the outcome space $\omega \in \Omega$.
-Currently in ComplexityMeasures.jl, only countable $\Omega$ are implemented explicitly. Quantities that are estimated from probability density functions are done so in a one-step processes without the intermediate estimation of probabilities.
+Currently in ComplexityMeasures.jl, only countable $\Omega$ are implemented explicitly. Quantities that are estimated from probability density functions (i.e., uncountable $\Omega$) also exist. However, these are estimated by a one-step processes without the intermediate estimation of probabilities.
 
-Once an outcome space (subtype of [`OutcomeSpace`](@ref)) is defined, probabilities are estimated from input data using the [`probabilities`](@ref) function.
+Once an outcome space (subtype of [`OutcomeSpace`](@ref)) is defined in ComplexityMeasures.jl, probabilities are estimated from input data using the [`probabilities`](@ref) function.
 The simplest way to do this is simply to assign a probability to each outcome as its _relative count_ with respect to the total outcomes (i.e., normalizing the output of the [`counts`](@ref) function). This is also the default way.
 However, more advanced versions to estimate probabilities exist, that may account for known estimation biases. These **probabilities estimators** are subtypes of [`ProbabilitiesEstimator`](@ref).
 
 ### Information measures
 
-Within ComplexityMeasures.jl, we have taken the pragmatic choice to label all measures that are **explicit functionals of probability mass or density functions**
-as **information measures**, even though they might not be labelled as
-information measures in the literature. This is encapsulated by the supertype [`InformationMeasure`](@ref), whose subtypes are known (e.g., [`Shannon`](@ref)) and less-known (e.g., [`Curado`](@ref)) definitions of information measures, the most common of which are entropies.
+Within ComplexityMeasures.jl, we have taken the pragmatic choice to label all measures that are _explicit functionals of probability mass or probability density functions_ as **information measures**, even though they might not be labelled as
+information measures in the literature.
+This is encapsulated by the supertype [`InformationMeasure`](@ref), whose subtypes are known (e.g., [`Shannon`](@ref)) and less-known (e.g., [`Curado`](@ref)) definitions of information measures, the most common of which are entropies.
 
 But even "entropy" is an umbrella term that may mean several computationally, and sometimes even fundamentally, different quantities. In ComplexityMeasures.jl, we provide the generic function [`information`](@ref) that tries to both clarify disparate information-related measures, while unifying them under a common interface that highlights the modular nature of the term "information measure".
 
@@ -44,7 +45,7 @@ An information measure as defined by a subtype of [`InformationMeasure`](@ref). 
     down to two simple steps: defining an outcome space (using [`OutcomeSpace`](@ref)), then
      estimating a probability distribution (using a [`ProbabilitiesEstimator`](@ref)), then
      plugging the estimated probabilities into a discrete estimator of the information measure definition ([`DiscreteInfoEstimator`](@ref)).
-2. **Differential/continuous** information measures are functions of
+2. **Differential or continuous** information measures are functions of
     [probability density functions](https://en.wikipedia.org/wiki/Probability_density_function),
     which are *integrals*. Computing differential information measures therefore rely on estimating
     some density functional. For this task, we provide [`DifferentialInfoEstimator`](@ref)s,
