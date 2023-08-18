@@ -40,7 +40,7 @@ struct AddConstant{O <: OutcomeSpace, A} <: ProbabilitiesEstimator
     c::A
 
     function AddConstant(o::O, c::A) where {O <: OutcomeSpace, A}
-        verify_counting_based(o)
+        verify_counting_based(o, "AddConstant")
         new{O, A}(o, c)
     end
 end

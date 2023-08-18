@@ -66,7 +66,7 @@ struct Shrinkage{O <: OutcomeSpace, T <: Union{Nothing, Real, Vector{<:Real}}, L
     t::T
     λ::L
     function Shrinkage(o::O, t::T, λ::L) where {O <: OutcomeSpace, T, L}
-        verify_counting_based(o)
+        verify_counting_based(o, "Shrinkage")
         new{O, T, L}(o, t, λ)
     end
 end

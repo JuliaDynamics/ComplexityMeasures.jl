@@ -75,7 +75,7 @@ struct Bayes{O <: OutcomeSpace, A} <: ProbabilitiesEstimator
     outcomemodel::O
     a::A
     function Bayes(o::O, c::A) where {O <: OutcomeSpace, A}
-        verify_counting_based(o)
+        verify_counting_based(o, "Bayes")
         new{O, A}(o, c)
     end
 end

@@ -1,7 +1,7 @@
-function verify_counting_based(o)
+function verify_counting_based(o, name = "Bayes")
     if !is_counting_based(o)
         s = "Outcome space $(o) isn't counting based."*
-            "AddConstant requires a counting-based outcome space."
+            "`$(name)` requires a counting-based outcome space."
         throw(ArgumentError(s))
     end
 end
