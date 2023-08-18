@@ -52,7 +52,7 @@ x = cumsum(randn(100))
 ps_shrink = probabilities(Shrinkage(SymbolicPermutation(m = 3)), x)
 ```
 
-See also: [`RelativeAmount`](@ref), [`Bayes`](@ref).
+See also: [`RelativeAmount`](@ref), [`BayesianRegularization`](@ref).
 
 [^JamesStein1961]:
     James, W., & Stein, C. (1992). Estimation with quadratic loss. In Breakthroughs in

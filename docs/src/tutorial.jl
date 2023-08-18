@@ -51,7 +51,8 @@ using CairoMakie
 left_edges = first.(outs) # covert `Vector{SVector}` into `Vector{Real}`
 barplot(left_edges, probs; axis = (ylabel = "probability",))
 
-# Naturally, there are other outcome spaces one may use. A prominent example used in the NLTS literature are ordinal patterns. The outcome space for it is [`SymbolicPermutation`](@ref), and can be particularly useful with timeseries that come from nonlinear dynamical systems. For example, if we simulate a logistic map timeseries
+# Naturally, there are other outcome spaces one may use. A prominent example used in the NLTS literature are ordinal patterns.
+# The outcome space for it is [`SymbolicPermutation`](@ref), and can be particularly useful with timeseries that come from nonlinear dynamical systems. For example, if we simulate a logistic map timeseries
 
 using PredefinedDynamicalSystems
 
@@ -75,7 +76,12 @@ hcat(probsx, outsx)
 
 total_outcomes(o)
 
-# The reason for less outcomes in the `y` results is that one was never encountered in the `y` data. This is a common theme in ComplexityMeasures.jl: outcomes that are not in the data are skipped. This can save huge amounts of memory for outcome spaces with very large numbers of outcomes. To explicitly obtain all outcomes, by assigning 0 probability to not encountered outcomes, use [`allprobabilities`](@ref) or [`allprobabilities_and_outcomes`](@ref). For [`SymbolicPermutation`](@ref) the outcome space does not depend on input data and is always the same. Hence, the corresponding outcomes matching to [`allprobabilities`](@ref), coincide for `x` and `y`, and also coincide with the output of the function [`outcome_space`](@ref):
+# The reason for less outcomes in the `y` results is that one was never encountered in the `y` data.
+# This is a common theme in ComplexityMeasures.jl: outcomes that are not in the data are skipped.
+# This can save huge amounts of memory for outcome spaces with very large numbers of outcomes.
+# To explicitly obtain all outcomes, by assigning 0 probability to not encountered outcomes, use [`allprobabilities`](@ref) or [`allprobabilities_and_outcomes`](@ref).
+# For [`SymbolicPermutation`](@ref) the outcome space does not depend on input data and is always the same.
+# Hence, the corresponding outcomes matching to [`allprobabilities`](@ref), coincide for `x` and `y`, and also coincide with the output of the function [`outcome_space`](@ref):
 
 o = SymbolicPermutation()
 
@@ -85,17 +91,24 @@ outsx = outsy = outcome_space(o)
 
 hcat(probsx, probsy, outsx)
 
-# So far we have been estimating probabilities by counting the amount of times each possible outcome was encountered in the data. This simplified approach is called "maximum likelihood estimation". The direct counts themselves may be obtained using [`counts`](@ref)
+# So far we have been estimating probabilities by counting the amount of times each possible outcome was encountered in the data.
+# This simplified approach is called "maximum likelihood estimation".
+# The direct counts themselves may be obtained using [`counts`](@ref)
 
 countsy = counts(o, y)
 probsy = probabilities(o, y)
 hcat(countsy, countsy ./ sum(countsy), probsy)
 
-# By definition columns 2 and 3 are identical. However, there are other ways to estimate probabilities that may account for biases in counting outcomes from finite data. Alternative estimators for probabilities are subtypes of [`ProbabilitiesEstimator`](@ref).
-# `ProbabilitiesEstimator`s wrap outcome space instances and dictate alternative ways to estiamte probabilities. For example, one could use [`Bayes`](@ref)
+# By definition columns 2 and 3 are identical.
+# However, there are other ways to estimate probabilities that may account for biases in counting outcomes from finite data. Alternative estimators for probabilities are subtypes of [`ProbabilitiesEstimator`](@ref).
+# `ProbabilitiesEstimator`s wrap outcome space instances and dictate alternative ways to estiamte probabilities.
+# For example, one could use [`BayesianRegularization`](@ref)
 
-probsy_bayes = probabilities(Bayes(o), y)
+probsy_bayes = probabilities(BayesianRegularization(o), y)
 
 probsy_bayes .- probsy
 
-# While the corrections of [`Bayes`](@ref) are small, they are nevertheless measurable. In truth, when calling [`probabilities`](@ref) with an outcome space instance, the default [`RelativeAmount`](@ref) probabilities estimator is used to extract the probabilities.
+# While the corrections of [`BayesianRegularization`](@ref) are small, they are nevertheless measurable. In truth, when calling [`probabilities`](@ref) with an outcome space instance, the default [`RelativeAmount`](@ref) probabilities estimator is used to extract the probabilities.
+
+# ## Entropies and information measures
+

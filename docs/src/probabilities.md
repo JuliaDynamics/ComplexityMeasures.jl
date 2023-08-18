@@ -117,7 +117,7 @@ is_counting_based
 ```@docs
 ProbabilitiesEstimator
 RelativeAmount
-Bayes
+BayesianRegularization
 Shrinkage
 ```
 

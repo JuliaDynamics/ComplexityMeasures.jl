@@ -142,10 +142,10 @@ provide improvements over the naive [`PlugIn`](@ref) estimator.
     What this means is that every estimator actually comes in many different variants -
     one for each [`ProbabilitiesEstimator`](@ref). For example, the [`MillerMadow`](@ref)
     estimator of [`Shannon`](@ref) entropy is typically calculated with [`RelativeAmount`](@ref)
-    probabilities. But here, you can use for example the [`Bayes`](@ref) or the
+    probabilities. But here, you can use for example the [`BayesianRegularization`](@ref) or the
     [`Shrinkage`](@ref) probabilities estimators instead, i.e.
     `information(MillerMadow(), RelativeAmount(outcome_space), x)` and
-    `information(MillerMadow(), Bayes(outcomes_space), x)` are distinct estimators.
+    `information(MillerMadow(), BayesianRegularization(outcomes_space), x)` are distinct estimators.
     This holds for all [`DiscreteInfoEstimator`](@ref)s. Many of these
     estimators haven't been explored in the literature before, so feel free to explore,
     and please cite this software if you use it to explore some new estimator combination!

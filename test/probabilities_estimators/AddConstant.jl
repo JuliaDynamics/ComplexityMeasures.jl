@@ -2,7 +2,7 @@ using Random
 using Test
 rng = MersenneTwister(1234)
 
-# The Bayes estimator is only defined for counting-based `ProbabilitiesEstimators`.
+# The BayesianRegularization estimator is only defined for counting-based `ProbabilitiesEstimators`.
 
 @testset "AddConstant: Counting-based outcome space" begin
     x = rand(rng, 1:10., 100)
