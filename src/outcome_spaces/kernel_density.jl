@@ -5,7 +5,7 @@ export NaiveKernel, KDTree, BruteForce
 """
     NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean()) <: OutcomeSpace
 
-Estimate probabilities/entropy using a "naive" kernel density estimation approach (KDE), as
+An [`OutcomeSpace`](@ref) based on a "naive" kernel density estimation approach (KDE), as
 discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
 
 Probabilities ``P(\\mathbf{x}, \\epsilon)`` are assigned to every point ``\\mathbf{x}`` by

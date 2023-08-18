@@ -4,7 +4,7 @@ export ValueHistogram, VisitationFrequency
 """
     ValueHistogram(b::AbstractBinning) <: OutcomeSpace
 
-A probability estimator based on binning the values of the data as dictated by
+An [`OutcomeSpace`](@ref) based on binning the values of the data as dictated by
 the binning scheme `b` and formally computing their histogram, i.e.,
 the frequencies of points in the bins. An alias to this is `VisitationFrequency`.
 Available binnings are subtypes of [`AbstractBinning`](@ref).

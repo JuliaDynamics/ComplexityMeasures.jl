@@ -12,10 +12,13 @@ export
     TransferOperator <: OutcomeSpace
     TransferOperator(b::AbstractBinning)
 
-A probability estimator based on binning data into rectangular boxes dictated by
-the given binning scheme `b`, then approximating the transfer (Perron-Frobenius) operator
-over the bins, then taking the invariant measure associated with that transfer operator
-as the bin probabilities. Assumes that the input data are sequential (time-ordered).
+An [`OutcomeSpace`](@ref) based on binning data into rectangular boxes dictated by
+the given binning scheme `b`.
+
+When used with [`probabilities`](@ref), then the transfer (Perron-Frobenius) operator
+is approximated over the bins, then bin probabilities are estimated as the invariant measure
+associated with that transfer operator. Assumes that the input data are sequential
+(time-ordered).
 
 This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
 

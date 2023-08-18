@@ -4,8 +4,10 @@ import Wavelets
 """
     WaveletOverlap([wavelet]) <: OutcomeSpace
 
-Apply the maximal overlap discrete wavelet transform (MODWT) to a
-signal, then compute probabilities as the (normalized) energies at different
+An [`OutcomeSpace`](@ref) based on the maximal overlap discrete wavelet transform (MODWT).
+
+When used with [`probabilities`](@ref), the MODWT is applied to a
+signal, then probabilities are computed as the (normalized) energies at different
 wavelet scales. These probabilities are used to compute the wavelet entropy,
 according to Rosso et al. (2001)[^Rosso2001].
 Input timeseries `x` is needed for a well-defined outcome space.

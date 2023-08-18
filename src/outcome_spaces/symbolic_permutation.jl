@@ -22,7 +22,7 @@ const PermProbEst = PermutationOutcomeSpace
     SymbolicPermutation <: OutcomeSpace
     SymbolicPermutation(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
-A probabilities estimator based on ordinal permutation patterns.
+An [`OutcomeSpace`](@ref) based on ordinal permutation patterns.
 
 When passed to [`probabilities`](@ref) the output depends on the input data type:
 

@@ -5,7 +5,7 @@ export Dispersion
 """
     Dispersion(; c = 5, m = 2, τ = 1, check_unique = true)
 
-A probability estimator based on dispersion patterns, originally used by
+An [`OutcomeSpace`](@ref) based on dispersion patterns, originally used by
 Rostaghi & Azami, 2016[^Rostaghi2016] to compute the "dispersion entropy", which
 characterizes the complexity and irregularity of a time series.
 

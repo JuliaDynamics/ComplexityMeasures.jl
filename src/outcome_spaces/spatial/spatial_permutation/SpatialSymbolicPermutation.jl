@@ -9,7 +9,7 @@ export SpatialSymbolicPermutation
     SpatialSymbolicPermutation <: OutcomeSpaceModel
     SpatialSymbolicPermutation(stencil, x; periodic = true)
 
-A symbolic, permutation-based probabilities estimator for spatiotemporal systems that
+A symbolic, permutation-based [`OutcomeSpace`](@ref) for spatiotemporal systems that
 generalises [`SymbolicPermutation`](@ref) to high-dimensional arrays.
 The order `m` of the permutation pattern is extracted from the `stencil`, see below.
 

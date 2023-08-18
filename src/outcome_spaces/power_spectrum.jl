@@ -4,8 +4,11 @@ import FFTW
 """
     PowerSpectrum() <: OutcomeSpace
 
-Calculate the power spectrum of a timeseries (amplitude square of its Fourier transform),
-and return the spectrum normalized to sum = 1 as probabilities.
+An [`OutcomeSpace`](@ref) based on the power spectrum of a timeseries (amplitude square of
+its Fourier transform).
+
+If used with [`probabilities`](@ref), then the spectrum normalized to sum = 1
+is returned as probabilities.
 The Shannon entropy of these probabilities is typically referred in the literature as
 _spectral entropy_, e.g. [^Llanos2016],[^Tian2017].
 

@@ -11,7 +11,7 @@ import Base.maximum
         L = nothing,
     )
 
-A dispersion-based probabilities estimator that generalises [`Dispersion`](@ref) for
+A dispersion-based [`OutcomeSpace`](@ref) that generalises [`Dispersion`](@ref) for
 input data that are high-dimensional arrays.
 
 `SpatialDispersion` is based on Azami et al. (2019)[^Azami2019]'s 2D square dispersion
