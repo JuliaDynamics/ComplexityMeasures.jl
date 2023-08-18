@@ -3,6 +3,7 @@ export probabilities, probabilities!
 export probabilities_and_outcomes
 export allprobabilities
 export allprobabilities_and_outcomes
+export missing_outcomes
 
 ###########################################################################################
 # Types
@@ -205,15 +206,6 @@ function probabilities! end
 ###########################################################################################
 # All probabilities
 ###########################################################################################
-# Each `ProbabilitiesEstimator` subtype must extend this method.
-"""
-    allprobabilities_and_outcomes(est::ProbabilitiesEstimator, x::Array_or_SSSet) → (p, Ω)
-    allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet) → (p, Ω)
-
-The same as [`allprobabilities`](@ref), but also returns the outcome space `Ω`.
-"""
-function allprobabilities_and_outcomes(est::ProbabilitiesEstimator, x) end
-
 # This method is overriden by non-counting-based `OutcomeSpace`s. For counting-based
 # `OutcomeSpace`s, we just utilize `counts_and_outcomes` to get the histogram, then
 # normalize it when converting to `Probabilities`.
@@ -222,11 +214,39 @@ function probabilities_and_outcomes(o::OutcomeSpace, x)
     return Probabilities(cts), outcomes
 end
 
+"""
+    allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p
+    allprobabilities(o::OutcomeSpace, x::Array_or_SSSet) → p
+
+The same as [`probabilities`](@ref), but ensures that outcomes with `0` probability
+are explicitly added in the returned vector. This means that `p[i]` is the probability
+of `ospace[i]`, with `ospace = `[`outcome_space`](@ref)`(est, x)`.
+
+This function is useful in cases where one wants to compare the probability mass functions
+of two different input data `x, y` under the same estimator. E.g., to compute the
+KL-divergence of the two PMFs assumes that the obey the same indexing. This is
+not true for [`probabilities`](@ref) even with the same `est`, due to the skipping
+of 0 entries, but it is true for [`allprobabilities`](@ref).
+"""
+function allprobabilities(est, x)
+    return first(allprobabilities_and_outcomes(est, x))
+end
+
+
 # If an outcome space model is provided without specifying a probabilities estimator,
 # then naive plug-in estimation is used (the `RelativeAmount` estimator). In the case of
 # counting-based `OutcomeSpace`s, we explicitly count occurrences of each
 # outcome in the encoded data. For non-counting-based `OutcomeSpace`s, we
 # just fill in the non-considered outcomes with zero probabilities.
+
+# Each `ProbabilitiesEstimator` subtype must extend this method explicitly.
+
+"""
+    allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet) → (p, Ω)
+    allprobabilities_and_outcomes(est::ProbabilitiesEstimator, x::Array_or_SSSet) → (p, Ω)
+
+The same as [`allprobabilities`](@ref), but also returns the outcome space `Ω`.
+"""
 function allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
     if is_counting_based(o)
         cts, outcomes = allcounts_and_outcomes(o, x)
@@ -265,25 +285,7 @@ function allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
 end
 
 """
-    allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p
-    allprobabilities(o::OutcomeSpace, x::Array_or_SSSet) → p
-
-The same as [`probabilities`](@ref), but ensures that outcomes with `0` probability
-are explicitly added in the returned vector. This means that `p[i]` is the probability
-of `ospace[i]`, with `ospace = `[`outcome_space`](@ref)`(est, x)`.
-
-This function is useful in cases where one wants to compare the probability mass functions
-of two different input data `x, y` under the same estimator. E.g., to compute the
-KL-divergence of the two PMFs assumes that the obey the same indexing. This is
-not true for [`probabilities`](@ref) even with the same `est`, due to the skipping
-of 0 entries, but it is true for [`allprobabilities`](@ref).
-"""
-function allprobabilities(est, x)
-    return first(allprobabilities_and_outcomes(est, x))
-end
-
-"""
-    missing_outcomes(o::ProbabilitiesEstimator, x; all = false) → n_missing::Int
+    missing_outcomes(o::OutcomeSpace, x; all = false) → n_missing::Int
 
 Estimates a probability distribution over the outcomes specified by `o`, given input
 data `x`, using [`RelativeAmount`](@ref) probabilities estimation,

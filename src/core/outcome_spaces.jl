@@ -1,7 +1,6 @@
 export OutcomeSpace
 export outcome_space
 export total_outcomes
-export missing_outcomes
 export outcomes
 export counts
 export counts_and_outcomes
