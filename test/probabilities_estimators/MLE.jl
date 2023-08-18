@@ -37,9 +37,9 @@ rng = MersenneTwister(1234)
             @test allprobabilities(est, x) isa Probabilities
             @test sort(outcome_space(est, x)) == sort(Ωall)
         end
-    end
 
-    @testset "ND estimators" begin
+        # Spatial estimators (all of them are currently counting-based)
+        # -------------------------------------------------------------
         x = rand(50, 50)
         os = [
             SpatialDispersion([0 1; 1 0], x, c = 2),
@@ -49,10 +49,13 @@ rng = MersenneTwister(1234)
             est = MLE(os[i])
             ps, Ωobs = probabilities_and_outcomes(est, x)
             @test ps isa Probabilities
+            @test outcomes(est, x) == Ωobs
+            @test probabilities(est, x) == ps
 
             ps, Ωall = allprobabilities_and_outcomes(est, x)
             @test ps isa Probabilities
             @test sort(Ωall) == sort(outcome_space(est, x))
+            @test allprobabilities(est, x) == ps
         end
     end
 end
@@ -72,9 +75,14 @@ end
         est = MLE(os[i])
         ps, Ωobs = probabilities_and_outcomes(est, x)
         @test ps isa Probabilities
+        @test outcomes(est, x) == Ωobs
+        @test probabilities(est, x) ≈ ps
 
         ps, Ωall = allprobabilities_and_outcomes(est, x)
         @test ps isa Probabilities
         @test sort(Ωall) == sort(outcome_space(est, x))
+
+        # `TransferOperator` uses randomization, so exact comparison sometimes fails
+        @test allprobabilities(est, x) ≈ ps
     end
 end
