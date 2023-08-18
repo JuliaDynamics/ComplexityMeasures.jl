@@ -141,11 +141,18 @@ total_outcomes(o::OutcomeSpace) = length(outcome_space(o))
 """
     outcomes(o::OutcomeSpace, x)
 
-Return all (unique) outcomes contained in `x` according to the given outcome space.
+Return all (unique) outcomes that appears in the (encoded) input data `x`,
+according to the given [`OutcomeSpace`](@ref).
 Equivalent to `probabilities_and_outcomes(o, x)[2]`, but for some estimators
 it may be explicitly extended for better performance.
 """
-function outcomes(o::OutcomeSpace, x) end
+function outcomes(o::OutcomeSpace, x)
+    if is_counting_based(o)
+        return last(counts_and_outcomes(o, x))
+    else
+        return last(probabilities_and_outcomes(o, x))
+    end
+end
 
 ###########################################################################################
 # Counts.
