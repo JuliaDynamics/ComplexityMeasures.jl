@@ -14,12 +14,28 @@ rng = MersenneTwister(1234)
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
             est = MLE(os[i])
+
+            cts, Ωobs = allcounts_and_outcomes(est, x)
+            @test sort(Ωobs) == sort(outcome_space(est, x))
+            @test length(cts) == total_outcomes(est, x)
+            @test allcounts(est, x) == cts
+
+            cts, Ωobs = counts_and_outcomes(est, x)
+            @test cts isa Vector{Int}
+            @test length(cts) <= total_outcomes(est, x)
+            @test length(Ωobs) <= total_outcomes(est, x)
+            @test counts(est, x) == cts
+
             ps, Ωobs = probabilities_and_outcomes(est, x)
             @test ps isa Probabilities
+            @test probabilities(est, x) == ps
+            @test outcomes(est, x) == Ωobs
 
             ps, Ωall = allprobabilities_and_outcomes(est, x)
             @test ps isa Probabilities
             @test sort(Ωall) == outcome_space(est, x)
+            @test allprobabilities(est, x) isa Probabilities
+            @test sort(outcome_space(est, x)) == sort(Ωall)
         end
     end
 
