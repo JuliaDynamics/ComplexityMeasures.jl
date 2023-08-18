@@ -11,22 +11,24 @@ ComplexityMeasures
     [Nonlinear Dynamics](https://link.springer.com/book/10.1007/978-3-030-91032-7),
     Datseris & Parlitz, Springer 2022.
 
-Before exploring the features of ComplexityMeasures.jl, it is useful to read through this terminology section. Here, we briefly review important complexity-related concepts and names from the scientific literature, and outline how we've structured ComplexityMeasures.jl around these concepts.
+Before exploring the features of ComplexityMeasures.jl, it is useful to read through this terminology section. In the scientific literature, words like **probabilities**, **entropy**, and **complexity measure** are used (and abused) in multiple contexts, and are often used interchangeably to describe similar concepts. The API and documentation of ComplexityMeasures.jl aim to clarify the meaning and usage of these words, and to provide simple ways to obtain probabilities, information measures, or other complexity measures from input data.
 
-In these scientific literature, words like *probabilities*, *entropies*, and other *complexity measures* are used (and abused) in multiple contexts, and are often used interchangeably to describe similar concepts. The API and documentation of ComplexityMeasures.jl aim to clarify the meaning and usage of these words, and to provide simple ways to obtain probabilities, information measures, or other complexity measures from input data.
+For ComplexityMeasures.jl, we use the generic term "complexity measure" for any complexity measure that is not a direct functional of probabilities.
+"Information measure" is used exclusively about measures that are functionals of probability mass functions or probability density functions, for example entropies.
+We believe the general nonlinear dynamics community agrees with our take, as most papers that introduce different entropy flavors call them complexity measures. Example: *"Permutation Entropy: A Natural Complexity Measure for Time Series"* (Brandt and Pompe, 2002).
 
-For ComplexityMeasures.jl, we use the generic term "complexity measure" for any complexity measure that is not a direct functional of probabilities. "Information measure" is
-used exclusively about measures that are functionals of probability mass functions or probability density functions, for example entropies. We believe the general nonlinear dynamics community agrees with our take, as most papers that introduce different entropy flavors call them complexity measures. Example: *"Permutation Entropy: A Natural Complexity Measure for Time Series"* (Brandt and Pompe, 2002).
+### Probabilities and Outcome Spaces
 
-### Probabilities
+Information measures, and some other complexity measures, are are typically computed based on **probability distributions** derived from input data.
+Probabilities can be either discrete (mass functions) or continuous (densities).
+In order to derive probabilities from data, an **outcome space** needs to be defined: a way to transform data into elements $\omega$ of an outcome space $\omega \in \Omega$, and assign probabilities to each outcome $p(\omega)$.
 
-Information measures, and some other complexity measures, are are typically computed based
-on *probability distributions*, which we simply refer to as "probabilities". Probabilities
-can be obtained from input data in a plethora of different ways. The central API function
-that estimates a probability distribution is [`probabilities`](@ref), which takes in a subtype of [`OutcomeSpace`](@ref) (as part of of a [`ProbabilitiesEstimator`](@ref), if using some
-advanced form of estimation) to specify how the input data is [`encode`](@ref)d/discretized, and returns a [`Probabilities`](@ref) instance.
-All available probabilities estimators can be found in the
-[estimators page](@ref outcome_spaces).
+If $\Omega$ is countable, this process is also called _discretization_ of the input data. During discretization, each element of input data $\chi \in x$ is [`encode`](@ref)d (discretized) into an element of the outcome space $\omega \in \Omega$.
+Currently in ComplexityMeasures.jl, only countable $\Omega$ are implemented explicitly. Quantities that are estimated from probability density functions are done so in a one-step processes without the intermediate estimation of probabilities.
+
+Once an outcome space (subtype of [`OutcomeSpace`](@ref)) is defined, probabilities are estimated from input data using the [`probabilities`](@ref) function.
+The simplest way to do this is simply to assign a probability to each outcome as its _relative count_ with respect to the total outcomes (i.e., normalizing the output of the [`counts`](@ref) function). This is also the default way.
+However, more advanced versions to estimate probabilities exist, that may account for known estimation biases. These **probabilities estimators** are subtypes of [`ProbabilitiesEstimator`](@ref).
 
 ### Information measures
 

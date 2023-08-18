@@ -1,6 +1,7 @@
 # [Information measures](@id information_measures)
 
-Please be sure you have read the [Terminology](@ref terminology) section before going through the API here, to have a good idea of how we define "information measures" and how they all come together over the common interface of the [`information`](@ref) function.
+!!! note
+    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here.
 
 ## Information measures API
 
