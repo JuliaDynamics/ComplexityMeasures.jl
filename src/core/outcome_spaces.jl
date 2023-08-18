@@ -106,7 +106,10 @@ and one has a vector of probabilities, one for each experimental realization).
 
 """
 abstract type OutcomeSpace end
+
+# Use this subtype instead for outcome spaces that support counting
 abstract type CountingBasedOutcomeSpace <: OutcomeSpace end
+
 ###########################################################################################
 # Outcome space
 ###########################################################################################
@@ -116,13 +119,13 @@ abstract type CountingBasedOutcomeSpace <: OutcomeSpace end
 Return a sorted container containing all _possible_ outcomes of `o` for input `x`.
 
 For some estimators the concrete outcome space is known without knowledge of input `x`,
-in which case the function dispatches to `outcome_space(est)`.
+in which case the function dispatches to `outcome_space(o)`.
 In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
-function outcome_space(est::OutcomeSpace)
+function outcome_space(o::OutcomeSpace)
     error(ErrorException("""
-    `outcome_space(est)` not implemented for estimator $(typeof(est)).
-    Try calling `outcome_space(est, input_data)`, and if you get the same error, open an issue.
+    `outcome_space(o)` not implemented for outcome space $(typeof(o)).
+    Try calling `outcome_space(o, input_data)`, and if you get the same error, open an issue.
     """))
 end
 outcome_space(o::OutcomeSpace, x) = outcome_space(o)
@@ -240,4 +243,4 @@ end
 
 Returns `true` if the [`OutcomeSpace`](@ref) `o` is counting-based, and `false` otherwise.
 """
-function is_counting_based(::OutcomeSpace) end
+is_counting_based(o::OutcomeSpace) = o isa CountingBasedOutcomeSpace
