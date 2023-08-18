@@ -4,7 +4,7 @@ export Bayes
     Bayes <: ProbabilitiesEstimator
     Bayes(outcome_space::OutcomeSpace, a = 1.0)
 
-The `BayesProbs` estimator is used with [`probabilities`](@ref) and related functions to
+The `Bayes` estimator is used with [`probabilities`](@ref) and related functions to
 estimate probabilities over the given `m`-element counting-based [`OutcomeSpace`](@ref)
 using Bayesian regularization of cell counts (Hausser & Strimmer, 2009)[^Hausser2009].
 See [`ProbabilitiesEstimator`](@ref) for usage.

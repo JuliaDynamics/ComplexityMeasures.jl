@@ -1,10 +1,19 @@
-# Probabilities
+# [Probabilities](@ref probabilities)
 
 !!! note
-    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here.
+    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
 
 
-## [Outcome spaces (discretization)](@id outcome_spaces)
+ComplexityMeasures.jl implements an interface for probabilities that exactly follows the mathematically rigorous formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space).
+It is formalized by [`OutcomeSpace`](@ref), [`counts`](@ref), [`probabilities`](@ref) and derivative functions such as  [`allprobabilities_and_outcomes`](@ref).
+The mathematical formulation of probabilities spaces is further enhanced by [`ProbabilitiesEstimator`](@ref) and its subtypes, which may correct theoretically known biases when estimating probabilities from finite data.
+
+In reality, probabilities can be either discrete ([mass functions](https://en.wikipedia.org/wiki/Probability_mass_function)) or continuous ([density functions](https://en.wikipedia.org/wiki/Probability_density_function)).
+Currently in ComplexityMeasures.jl, only probability mass functions (i.e., countable $\Omega$) are implemented explicitly. Quantities that are estimated from probability density functions (i.e., uncountable $\Omega$) also exist and are implemented in ComplexityMeasures.jl. However, these are estimated by a one-step processes without the intermediate estimation of probabilities.
+
+If $\Omega$ is countable, the process of estimating the outcomes from input data is also called _discretization_ of the input data.
+
+## [Outcome spaces](@id outcome_spaces)
 
 ```@docs
 OutcomeSpace
@@ -83,18 +92,7 @@ SpatialSymbolicPermutation
 SpatialDispersion
 ```
 
-## Probabilities API
-
-The probabilities API is defined by
-
-- [`OutcomeSpace`](@ref), which defines a set of possible outcomes onto which input data
-    are mapped (specifies a discretization).
-- [`ProbabilitiesEstimator`](@ref), which maps observed (pseudo-)counts of outcomes to
-    probabilities.
-- [`probabilities`](@ref) and [`allprobabilities`](@ref)
-- [`probabilities_and_outcomes`](@ref) and [`allprobabilities_and_outcomes`](@ref)
-
-and related functions that you will find in the following documentation blocks:
+## Probabilities
 
 ```@docs
 Probabilities
@@ -103,9 +101,14 @@ probabilities_and_outcomes
 probabilities!
 allprobabilities
 allprobabilities_and_outcomes
+```
+
+## Counts
+
+```@docs
+counts
 counts_and_outcomes
 allcounts_and_outcomes
-counts
 is_counting_based
 ```
 
@@ -120,8 +123,8 @@ Shrinkage
 
 ## [Encodings API](@id encodings)
 
-Some [`OutcomeSpace`](@ref)s first "encode" input data into an intermediate representation
-indexed by the positive integers. This intermediate representation is called an "encoding".
+Count-based [`OutcomeSpace`](@ref)s first "encode" input data into an intermediate representation indexed by the positive integers.
+This intermediate representation is called an "encoding".
 
 The encodings API is defined by:
 

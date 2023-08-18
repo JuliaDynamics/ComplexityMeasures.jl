@@ -4,32 +4,13 @@
 ComplexityMeasures
 ```
 
-## [Content and terminology](@id terminology)
+## Documentation contents
 
-!!! note
-    The documentation here was initially inspired by chapter 5 of
-    [Nonlinear Dynamics](https://link.springer.com/book/10.1007/978-3-030-91032-7),
-    Datseris & Parlitz, Springer 2022.
-
-Before exploring the features of ComplexityMeasures.jl, it is useful to read through this terminology section. In the scientific literature, words like **probabilities**, **entropy**, and **complexity measure** are used (and abused) in multiple contexts, and are often used interchangeably to describe similar concepts. The API and documentation of ComplexityMeasures.jl aim to clarify the meaning and usage of these words, and to provide simple ways to obtain probabilities, information measures, or other complexity measures from input data.
-
-For ComplexityMeasures.jl, we use the generic term "complexity measure" for any complexity measure that is not a direct functional of probabilities.
-"Information measure" is used exclusively about measures that are functionals of probability mass functions or probability density functions, for example entropies.
-We believe the general nonlinear dynamics community agrees with our take, as most papers that introduce different entropy flavors call them complexity measures. Example: *"Permutation Entropy: A Natural Complexity Measure for Time Series"* (Brandt and Pompe, 2002).
-
-### Probabilities and Outcome Spaces
-
-Information measures, and some other complexity measures, are are typically computed based on **probability distributions** derived from input data.
-Probabilities can be either discrete ([mass functions](https://en.wikipedia.org/wiki/Probability_mass_function)) or continuous ([density functions](https://en.wikipedia.org/wiki/Probability_density_function)).
-ComplexityMeasures.jl implements an interface for probabilities that exactly follows the mathematically rigorous formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space).
-In order to derive probabilities from data, an **outcome space** needs to be defined: a way to transform data into elements $\omega$ of an outcome space $\omega \in \Omega$, and assign probabilities to each outcome $p(\omega)$, such that $p(\Omega)=1$. $\omega$ are called _outcomes_ or _events_.
-
-If $\Omega$ is countable, this process is also called _discretization_ of the input data. During discretization, each element of input data $\chi \in x$ is [`encode`](@ref)d (discretized) into an element of the outcome space $\omega \in \Omega$.
-Currently in ComplexityMeasures.jl, only countable $\Omega$ are implemented explicitly. Quantities that are estimated from probability density functions (i.e., uncountable $\Omega$) also exist. However, these are estimated by a one-step processes without the intermediate estimation of probabilities.
-
-Once an outcome space (subtype of [`OutcomeSpace`](@ref)) is defined in ComplexityMeasures.jl, probabilities are estimated from input data using the [`probabilities`](@ref) function.
-The simplest way to do this is simply to assign a probability to each outcome as its _relative count_ with respect to the total outcomes (i.e., normalizing the output of the [`counts`](@ref) function). This is also the default way.
-However, more advanced versions to estimate probabilities exist, that may account for known estimation biases. These **probabilities estimators** are subtypes of [`ProbabilitiesEstimator`](@ref).
+* Before anything else, we recommend users to go through our overarching [Tutorial](@ref), which teaches not only central API functions, but also terminology and crucial core concepts
+* [Probabilities](@ref probabilities) lists all outcome spaces and probabilities estimators
+* [Information measures](@ref information_measures) lists all implemented information measure definitions and estimators (both discrete and differential)
+* [Complexity measures](@ref complexity_measures) lists all implemented complexity measures that are not functionals of probabilities (unlike information measures)
+* The [Examples](@ref examples) page lists dozens of runnable example code snippets along with their outputs.
 
 ### Information measures
 

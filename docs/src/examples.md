@@ -1,4 +1,4 @@
-# ComplexityMeasures.jl Examples
+# [ComplexityMeasures.jl Examples](@ref examples)
 
 ## Probabilities: kernel density
 
