@@ -118,7 +118,7 @@ function outcome_space(est::Dispersion)
     c, m = 1:est.c, est.m
     cart = CartesianIndices(ntuple(i -> c, m))
     V = SVector{m, Int}
-    return sort(map(i -> V(Tuple(i)), vec(cart)))
+    return sort!(map(i -> V(Tuple(i)), vec(cart)))
 end
 # Performance extension
 total_outcomes(est::Dispersion)::Int = est.c ^ est.m
