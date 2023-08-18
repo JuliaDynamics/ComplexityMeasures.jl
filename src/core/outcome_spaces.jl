@@ -13,16 +13,16 @@ export is_counting_based
 """
     OutcomeSpace
 
-The supertype for all outcome space models.
+The supertype for all outcome space implementation.
 
 ## Description
 
-In ComplexityMeasures.jl, an outcome space model defines a set of possible outcomes
+In ComplexityMeasures.jl, an outcome space defines a set of possible outcomes
 ``\\Omega = \\{\\omega_1, \\omega_2, \\ldots, \\omega_L \\}`` (some form of
 discretization). In the literature, the outcome space is often called an "alphabet",
-while each outcome is called a "symbol".
+while each outcome is called a "symbol" or an "event".
 
-An outcome space model also defines a set of rules for mapping input data to
+An outcome space also defines a set of rules for mapping input data to
 to each outcome ``\\omega_i`` (i.e. [encoding](@ref encodings)/discretizing).
 
 ## Implementations
@@ -49,17 +49,14 @@ In the column "input data" it is assumed that the `eltype` of the input is `<: R
 
 Outcome spaces are used as input to
 
-- [`probabilities`](@ref)/[`probabilities_and_outcomes`](@ref), for computing probability
+- [`probabilities`](@ref)/[`allprobabilities`](@ref) for computing probability
     mass functions.
-- [`allprobabilities`](@ref)/[`allprobabilities_and_outcomes`](@ref), for computing
-    probability mass functions, guaranteeing that also zero-probability outcomes are
-    are included.
 - [`outcome_space`](@ref), which returns the elements of the outcome space.
 - [`total_outcomes`](@ref), which returns the cardinality of the outcome space.
-- [`counts`](@ref)/[`counts_and_outcomes`](@ref), for obtaining raw counts instead
+- [`counts`](@ref)/[`allcounts`](@ref), for obtaining raw counts instead
     of probabilities (only for counting-compatible outcome spaces).
 
-# Counting-compatible vs. non-counting compatible outcome spaces
+## Counting-compatible vs. non-counting compatible outcome spaces
 
 There are two main types of outcome spaces.
 
