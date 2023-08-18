@@ -4,11 +4,11 @@ export AddConstant
     AddConstant <: ProbabilitiesEstimator
     AddConstant(o::OutcomeSpace, c = 1.0)
 
-A generic add-constant probabilities estimator, where several literature estimators can
-be obtained tuning `c`. Currently ``c`` can only be a scalar.
+A generic add-constant probabilities estimator for counting-based [`OutcomeSpace`](@ref)s,
+where several literature estimators can be obtained tuning `c`. Currently ``c``
+can only be a scalar.
 
 - `c = 1.0` is the Laplace estimator, or the "add-one" estimator.
-
 
 ## Description
 
@@ -38,6 +38,11 @@ the number of *possible* outcomes.
 struct AddConstant{O <: OutcomeSpace, A} <: ProbabilitiesEstimator
     outcomemodel::O
     c::A
+
+    function AddConstant(o::O, c::A) where {O <: OutcomeSpace, A}
+        verify_counting_based(o)
+        new{O, A}(o, c)
+    end
 end
 AddConstant(outcomemodel::OutcomeSpace; c = 1.0) = AddConstant(outcomemodel, c)
 

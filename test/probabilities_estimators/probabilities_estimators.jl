@@ -1,7 +1,5 @@
-# Generic
+include("api.jl")
 include("MLE.jl")
 include("Shrinkage.jl")
-
-# Counting-based
 include("Bayes.jl")
 include("AddConstant.jl")

@@ -5,7 +5,7 @@ export Bayes
     Bayes(outcome_space::OutcomeSpace, a = 1.0)
 
 The `BayesProbs` estimator is used with [`probabilities`](@ref) and related functions to
-estimate probabilities over the given `m`-element [`OutcomeSpace`](@ref)
+estimate probabilities over the given `m`-element counting-based [`OutcomeSpace`](@ref)
 using Bayesian regularization of cell counts (Hausser & Strimmer, 2009)[^Hausser2009].
 See [`ProbabilitiesEstimator`](@ref) for usage.
 
@@ -74,6 +74,10 @@ See also: [`MLE`](@ref), [`Shrinkage`](@ref).
 struct Bayes{O <: OutcomeSpace, A} <: ProbabilitiesEstimator
     outcomemodel::O
     a::A
+    function Bayes(o::O, c::A) where {O <: OutcomeSpace, A}
+        verify_counting_based(o)
+        new{O, A}(o, c)
+    end
 end
 Bayes(outcomemodel::OutcomeSpace; a = 1.0) = Bayes(outcomemodel, a)
 
@@ -110,6 +114,7 @@ end
 
 function allprobabilities_and_outcomes(est::Bayes, x)
     (; outcomemodel, a) = est
+
     # Normalization factor is based on the *encoded* data.
     n = encoded_space_cardinality(outcomemodel, x)
 
