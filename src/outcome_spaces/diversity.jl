@@ -70,6 +70,13 @@ function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T 
     return ds, rbc
 end
 
+function encoded_space_cardinality(est::Diversity, x::AbstractVector{<:Real})
+    n_pts_embedded = length(x) - (est.m - 1)*est.τ
+    # Since we consider cosine similarities for consecutive pairs of embedding points,
+    # the last point isn't considered for the histogram.
+    return n_pts_embedded - 1
+end
+
 cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
 
 function encoding_for_diversity(nbins::Int)
