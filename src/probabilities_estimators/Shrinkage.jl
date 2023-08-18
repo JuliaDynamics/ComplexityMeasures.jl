@@ -5,9 +5,10 @@ export Shrinkage
     Shrinkage(model::OutcomeSpace, t = nothing, λ = nothing)
 
 The `Shrinkage` estimator is used with [`probabilities`](@ref) and related functions
-to estimate probabilities over the given `m`-element [`OutcomeSpace`](@ref) using
-James-Stein-type shrinkage (James & Stein, 1961)[^JamesStein1961], as presented in
-Hausser & Strimmer (2009)[^Hausser2009]. See [`ProbabilitiesEstimator`](@ref) for usage.
+to estimate probabilities over the given `m`-element counting-based
+[`OutcomeSpace`](@ref) using James-Stein-type shrinkage
+(James & Stein, 1961)[^JamesStein1961], as presented in
+Hausser & Strimmer (2009)[^Hausser2009].
 
 ## Description
 
@@ -64,6 +65,10 @@ struct Shrinkage{O <: OutcomeSpace, T <: Union{Nothing, Real, Vector{<:Real}}, L
     outcomemodel::O
     t::T
     λ::L
+    function Shrinkage(o::O, t::T, λ::L) where {O <: OutcomeSpace, T, L}
+        verify_counting_based(o)
+        new{O, T, L}(o, t, λ)
+    end
 end
 
 Shrinkage(o::OutcomeSpace; t = nothing, λ = nothing) = Shrinkage(o, t, λ)
@@ -81,6 +86,7 @@ end
 
 function probs_and_outs_from_histogram(est::Shrinkage, probs_observed, Ω_observed, x)
     (; outcomemodel, t) = est
+
     n = encoded_space_cardinality(outcomemodel, x) # Normalize based on *encoded* data.
     m = length(Ω_observed)
     Ω = outcomes(outcomemodel, x)

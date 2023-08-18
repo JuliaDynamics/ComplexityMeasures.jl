@@ -4,7 +4,7 @@ rng = MersenneTwister(1234)
 
 # The Bayes estimator is only defined for counting-based `ProbabilitiesEstimators`.
 
-@testset "Counting-based outcome space" begin
+@testset "Bayes: Counting-based outcome space" begin
     @testset "1D estimators" begin
         x = rand(rng, 1:10., 100)
 
@@ -14,7 +14,6 @@ rng = MersenneTwister(1234)
             Dispersion(),
             Diversity(),
             ValueHistogram(RectangularBinning(3)),
-            NaiveKernel(0.1),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
             est = Bayes(os[i])
@@ -53,22 +52,6 @@ rng = MersenneTwister(1234)
     end
 end
 
-# The Bayes estimator is only defined for counting-based `ProbabilitiesEstimators`.
-# An `ArgumentError` should be return for non-counting-compatible `OutcomeSpace`s.
-@testset "Non-counting-based outcome spaces" begin
-    x = rand(rng, 100)
-    os = [
-        WaveletOverlap(),
-        TransferOperator(RectangularBinning(3)),
-        PowerSpectrum(),
-        SymbolicAmplitudeAwarePermutation(),
-        SymbolicWeightedPermutation(),
-    ]
-    @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
-        est = Bayes(os[i])
-        @test_throws ArgumentError probabilities(est, x)
-        @test_throws ArgumentError allprobabilities(est, x)
-        @test_throws ArgumentError probabilities_and_outcomes(est, x)
-        @test_throws ArgumentError allprobabilities_and_outcomes(est, x)
-    end
-end
+# We don't need to test for non-counting based outcome spaces, because the
+# Bayes constructor prevents us from combining such outcome spaces with
+# the estimator.

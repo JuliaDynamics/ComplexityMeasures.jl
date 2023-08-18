@@ -61,7 +61,6 @@ end
             SymbolicPermutation(m = 3),
             Dispersion(),
             ValueHistogram(RectangularBinning(3)),
-            NaiveKernel(0.1),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
             @test is_counting_based(os[i]) == true
@@ -98,6 +97,7 @@ end
         PowerSpectrum(),
         SymbolicAmplitudeAwarePermutation(),
         SymbolicWeightedPermutation(),
+        NaiveKernel(0.1),
     ]
     @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
         @test is_counting_based(os[i]) == false
