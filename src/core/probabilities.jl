@@ -305,10 +305,11 @@ See also: [`MissingDispersionPatterns`](@ref).
 function missing_outcomes(est::ProbabilitiesEstimator, x; all::Bool = true)
     if all
         probs = allprobabilities(est, x)
+        L = length(probs)
     else
         probs = probabilities(est, x)
+        L = total_outcomes(est, x)
     end
-    L = total_outcomes(est, x)
     O = count(!iszero, probs)
     return L - O
 end
