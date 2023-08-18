@@ -285,15 +285,13 @@ function allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
 end
 
 """
-    missing_outcomes(o::OutcomeSpace, x; all = false) → n_missing::Int
+    missing_outcomes(o::OutcomeSpace, x; all = true) → n_missing::Int
 
-Estimates a probability distribution over the outcomes specified by `o`, given input
-data `x`, using [`RelativeAmount`](@ref) probabilities estimation,
-then counts the number of missing (i.e. zero-probability) outcomes.
+Count the number of missing (i.e., zero-probability) outcomes
+specified by `o`, given input data `x`, using [`RelativeAmount`](@ref)
+probabilities estimation.
 
 If `all == true`, then [`allprobabilities`](@ref) is used to compute the probabilities.
-This is useful when using a custom [`ProbabilitiesEstimator`](@ref), which may assign
-non-zero probabilities to outcomes that are not observed in the input data.
 If `all == false`, then [`probabilities`](@ ref) is used to compute the probabilities.
 
 This is syntactically equivalent to `missing_outcomes(RelativeAmount(o), x)`.
@@ -304,7 +302,7 @@ Like above, but specifying a custom [`ProbabilitiesEstimator`](@ref).
 
 See also: [`MissingDispersionPatterns`](@ref).
 """
-function missing_outcomes(est::ProbabilitiesEstimator, x; all::Bool = false)
+function missing_outcomes(est::ProbabilitiesEstimator, x; all::Bool = true)
     if all
         probs = allprobabilities(est, x)
     else
