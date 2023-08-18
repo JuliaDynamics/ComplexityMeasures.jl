@@ -141,6 +141,8 @@ struct SymbolicWeightedPermutation{M,F} <: PermutationOutcomeSpace{M}
     τ::Int
 end
 
+is_counting_based(o::SymbolicWeightedPermutation) = false
+
 """
     SymbolicAmplitudeAwarePermutation <: OutcomeSpace
     SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
@@ -174,6 +176,8 @@ struct SymbolicAmplitudeAwarePermutation{M,F} <: PermutationOutcomeSpace{M}
     τ::Int
     A::Float64
 end
+
+is_counting_based(o::SymbolicAmplitudeAwarePermutation) = false
 
 # Initializations
 function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
