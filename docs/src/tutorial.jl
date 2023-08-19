@@ -164,7 +164,22 @@ perm_ext_y_jack = information(Jackknife(extdef), ospace, y)
 
 # ## Beyond discrete: differential entropies
 
+# Discrete entropies are the entropies of probability mass functions.
+# It is also possible to compute entropies of probability density functions.
+# In ComplexityMeasures.jl, this is done by calling [`entropy`](@ref) (or the more general [`information`](@ref)) with a differential information estimator, a subtype of [`DiffInfoEstimator`](@ref).
+# These estimators are given directly to [`information`](@ref) without assigning an outcome space, because the probability density is approximated implicitly, not explicitly.
+# For example, the [`Correa`](@ref) estimator approximates the differential Shannon entropy by utilizing order statistics of the timeseries data:
+
+diffest = Correa()
+diffent = entropy(diffest, x)
+
 
 # ## Beyond information: other complexity measures
 
 # As discussed at the very beginning of this tutorial, there are some complexity measures that are not explicit functionals of probabilities, and hence cannot be straightforwardly related to an outcome space, in the sense of providing an instance of [`OutcomeSpace`](@ref) to the estimation function.
+# These are estimated with the [`complexity`](@ref) function, by providing it a subtype of [`ComplexityEstimator`](@ref).
+# An example here is the well-known _sample entropy_ (which isn't actually an entropy in the formal mathematical sense).
+# It can be computed like
+
+complest = SampleEntropy(;r = 0.1)
+sampent = complexity(complest, y)
