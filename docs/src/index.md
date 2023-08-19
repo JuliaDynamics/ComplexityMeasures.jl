@@ -6,10 +6,10 @@ ComplexityMeasures
 
 ## Documentation contents
 
-* Before anything else, we recommend users to go through our overarching [Tutorial](@ref), which teaches not only central API functions, but also terminology and crucial core concepts
-* [Probabilities](@ref probabilities) lists all outcome spaces and probabilities estimators
-* [Information measures](@ref information_measures) lists all implemented information measure definitions and estimators (both discrete and differential)
-* [Complexity measures](@ref complexity_measures) lists all implemented complexity measures that are not functionals of probabilities (unlike information measures)
+* Before anything else, we recommend users to go through our overarching [Tutorial](@ref), which teaches not only central API functions, but also terminology and crucial core concepts:
+* [Probabilities](@ref probabilities) lists all outcome spaces and probabilities estimators.
+* [Information measures](@ref information_measures) lists all implemented information measure definitions and estimators (both discrete and differential).
+* [Complexity measures](@ref complexity_measures) lists all implemented complexity measures that are not functionals of probabilities (unlike information measures).
 * The [Examples](@ref examples) page lists dozens of runnable example code snippets along with their outputs.
 
 ### Information measures
