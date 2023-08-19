@@ -9,7 +9,7 @@ rng = MersenneTwister(1234)
     x = randn(rng, 10000)
     c = StatisticalComplexity(
         dist=JSDivergence(),
-        est=SymbolicPermutation(; m, τ),
+        est=OrdinalPatterns(; m, τ),
         entr=Renyi()
     )
     # complexity of white noise should be very close to zero
@@ -24,7 +24,7 @@ rng = MersenneTwister(1234)
     # which should also be close to zeros
     c = StatisticalComplexity(
         dist=JSDivergence(),
-        est=SymbolicPermutation(; m, τ),
+        est=OrdinalPatterns(; m, τ),
         entr=Tsallis()
     )
     # complexity of white noise should be very close to zero
@@ -35,7 +35,7 @@ rng = MersenneTwister(1234)
 
     # check that error is thrown if we try to call complexity(c, p) with "incomplete" probs vectors
     # we must have empty bins here because total_outcomes = fatorial(6) ≫ 10
-    p = probabilities(SymbolicPermutation(; m, τ), randn(10))
+    p = probabilities(OrdinalPatterns(; m, τ), randn(10))
     @test_throws ArgumentError complexity(c, p)
 
     # test the wrapper
@@ -64,7 +64,7 @@ rng = MersenneTwister(1234)
     m, τ = 6, 1
     c = StatisticalComplexity(
         dist=JSDivergence(),
-        est=SymbolicPermutation(; m, τ),
+        est=OrdinalPatterns(; m, τ),
         entr=Renyi()
     )
     ds = schuster()
@@ -95,7 +95,7 @@ end
     # As with regular entropy, for extropy, the edge case of noise should be close to zeros
     c = StatisticalComplexity(
         dist=JSDivergence(),
-        est=SymbolicPermutation(; m, τ),
+        est=OrdinalPatterns(; m, τ),
         entr=TsallisExtropy(q = 5)
     )
 

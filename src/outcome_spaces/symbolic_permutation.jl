@@ -1,6 +1,6 @@
-export SymbolicPermutation
-export SymbolicWeightedPermutation
-export SymbolicAmplitudeAwarePermutation
+export OrdinalPatterns
+export WeightedOrdinalPatterns
+export AmplitudeAwareOrdinalPatterns
 using DelayEmbeddings: embed
 
 """
@@ -19,8 +19,8 @@ const PermProbEst = PermutationOutcomeSpace
 # Types and docstrings
 ###########################################################################################
 """
-    SymbolicPermutation <: OutcomeSpace
-    SymbolicPermutation(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
+    OrdinalPatterns <: OutcomeSpace
+    OrdinalPatterns(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
 An [`OutcomeSpace`](@ref) based on ordinal permutation patterns.
 
@@ -43,14 +43,14 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     entropy[^He2016], although here we don't perform any further subdivision
     of the permutation patterns (as in Figure 3 of[^He2016]).
 
-Internally, [`SymbolicPermutation`](@ref) uses the [`OrdinalPatternEncoding`](@ref)
+Internally, [`OrdinalPatterns`](@ref) uses the [`OrdinalPatternEncoding`](@ref)
 to represent ordinal patterns as integers for efficient computations.
 
-See [`SymbolicWeightedPermutation`](@ref) and [`SymbolicAmplitudeAwarePermutation`](@ref)
+See [`WeightedOrdinalPatterns`](@ref) and [`AmplitudeAwareOrdinalPatterns`](@ref)
 for estimators that not only consider ordinal (sorting) patterns, but also incorporate
 information about within-state-vector amplitudes.
 For a version of this estimator that can be used on spatial data, see
-[`SpatialSymbolicPermutation`](@ref).
+[`SpatialOrdinalPatterns`](@ref).
 
 !!! note "Handling equal values in ordinal patterns"
     In Bandt & Pompe (2002), equal values are ordered after their order of appearance, but
@@ -62,7 +62,7 @@ For a version of this estimator that can be used on spatial data, see
 
 ## Outcome space
 
-The outcome space `Ω` for `SymbolicPermutation` is the set of length-`m` ordinal
+The outcome space `Ω` for `OrdinalPatterns` is the set of length-`m` ordinal
 patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`.
 There are `factorial(m)` such patterns.
 
@@ -73,7 +73,7 @@ See also [`OrdinalPatternEncoding`(@ref).
 
 ## In-place symbolization
 
-`SymbolicPermutation` also implements the in-place [`probabilities!`](@ref)
+`OrdinalPatterns` also implements the in-place [`probabilities!`](@ref)
 for `StateSpaceSet` input (or embedded vector input) for reducing allocations in looping scenarios.
 The length of the pre-allocated symbol vector must be the length of the dataset.
 For example
@@ -81,7 +81,7 @@ For example
 ```julia
 using ComplexityMeasures
 m, N = 2, 100
-est = SymbolicPermutation(; m, τ)
+est = OrdinalPatterns(; m, τ)
 x = StateSpaceSet(rand(N, m)) # some input dataset
 πs_ts = zeros(Int, N) # length must match length of `x`
 p = probabilities!(πs_ts, est, x)
@@ -97,18 +97,18 @@ p = probabilities!(πs_ts, est, x)
     application for complexity analysis of chaotic systems. Physica A: Statistical
     Mechanics and its Applications, 461, 812-823.
 """
-struct SymbolicPermutation{M,F} <: PermutationOutcomeSpace{M}
+struct OrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
 end
 
 """
-    SymbolicWeightedPermutation <: OutcomeSpace
-    SymbolicWeightedPermutation(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
+    WeightedOrdinalPatterns <: OutcomeSpace
+    WeightedOrdinalPatterns(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
 
-A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
+A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
 based on the weighted permutation entropy[^Fadlallah2013]. The outcome space and keywords
-are the same as in [`SymbolicPermutation`](@ref).
+are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 
@@ -136,24 +136,24 @@ of the same pattern.
     measure for time series incorporating amplitude information." Physical Review E 87.2
     (2013): 022911.
 """
-struct SymbolicWeightedPermutation{M,F} <: PermutationOutcomeSpace{M}
+struct WeightedOrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
 end
 
-is_counting_based(o::SymbolicWeightedPermutation) = false
+is_counting_based(o::WeightedOrdinalPatterns) = false
 
 """
-    SymbolicAmplitudeAwarePermutation <: OutcomeSpace
-    SymbolicAmplitudeAwarePermutation(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
+    AmplitudeAwareOrdinalPatterns <: OutcomeSpace
+    AmplitudeAwareOrdinalPatterns(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
 
-A variant of [`SymbolicPermutation`](@ref) that also incorporates amplitude information,
+A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
 based on the amplitude-aware permutation entropy[^Azami2016]. The outcome space and keywords
-are the same as in [`SymbolicPermutation`](@ref).
+are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 
-Similarly to [`SymbolicWeightedPermutation`](@ref), a weight ``w_i`` is attached to each
+Similarly to [`WeightedOrdinalPatterns`](@ref), a weight ``w_i`` is attached to each
 ordinal pattern extracted from each state (or delay) vector
 ``\\mathbf{x}_i = (x_1^i, x_2^i, \\ldots, x_m^i)`` as
 
@@ -171,26 +171,26 @@ elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is use
     Illustration in spike detection and signal segmentation. Computer methods and programs
     in biomedicine, 128, 40-51.
 """
-struct SymbolicAmplitudeAwarePermutation{M,F} <: PermutationOutcomeSpace{M}
+struct AmplitudeAwareOrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
     A::Float64
 end
 
-is_counting_based(o::SymbolicAmplitudeAwarePermutation) = false
+is_counting_based(o::AmplitudeAwareOrdinalPatterns) = false
 
 # Initializations
-function SymbolicPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function OrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return SymbolicPermutation{m, F}(OrdinalPatternEncoding{m}(lt), τ)
+    return OrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function SymbolicWeightedPermutation(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function WeightedOrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return SymbolicWeightedPermutation{m, F}(OrdinalPatternEncoding{m}(lt), τ)
+    return WeightedOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function SymbolicAmplitudeAwarePermutation(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return SymbolicAmplitudeAwarePermutation{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
+    return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
 
 ###########################################################################################
@@ -216,7 +216,7 @@ end
 
 function probabilities!(::Vector{Int}, ::PermProbEst, ::AbstractVector)
     error("""
-    In-place `probabilities!` for `SymbolicPermutation` can only be used by
+    In-place `probabilities!` for `OrdinalPatterns` can only be used by
     StateSpaceSet input, not timeseries. First embed the timeseries or use the
     normal version `probabilities`.
     """)
@@ -255,8 +255,8 @@ function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateS
 end
 
 # A generic "weighted counts" + outcomes function. We need this because
-# `SymbolicPermutation` is counting-compatible (i.e. returns a true histogram `Vector{Int}`),
-# while `SymbolicWeightedPermutation` and `SymbolicAmplitudeAwarePermutation` returns
+# `OrdinalPatterns` is counting-compatible (i.e. returns a true histogram `Vector{Int}`),
+# while `WeightedOrdinalPatterns` and `AmplitudeAwareOrdinalPatterns` returns
 # a normalized histogram, and are thus *not* counting compatible.
 function weighted_counts_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
     # A bit of code duplication here, because we actually need the processed
@@ -298,9 +298,9 @@ end
 ###########################################################################################
 # Permutation weights definition
 ###########################################################################################
-permutation_weights(::SymbolicPermutation, ::Any) = nothing
+permutation_weights(::OrdinalPatterns, ::Any) = nothing
 
-function permutation_weights(::SymbolicWeightedPermutation{m}, x::AbstractStateSpaceSet) where {m}
+function permutation_weights(::WeightedOrdinalPatterns{m}, x::AbstractStateSpaceSet) where {m}
     weights_from_variance.(vec(x), m)
 end
 
@@ -310,7 +310,7 @@ function weights_from_variance(χ, m::Int)
     return s/m
 end
 
-function permutation_weights(est::SymbolicAmplitudeAwarePermutation{m}, x::AbstractStateSpaceSet) where {m}
+function permutation_weights(est::AmplitudeAwareOrdinalPatterns{m}, x::AbstractStateSpaceSet) where {m}
     AAPE.(vec(x), est.A, m)
 end
 
@@ -329,10 +329,10 @@ function AAPE(x, A::Real = 0.5, m::Int = length(x))
 end
 
 ###########################################################################################
-# `SymbolicPermutation` specific
+# `OrdinalPatterns` specific
 ###########################################################################################
-# We can actually get raw non-normalized counts for `SymbolicPermutation`. This is not
+# We can actually get raw non-normalized counts for `OrdinalPatterns`. This is not
 # possible for the weighted alternatives.
-function counts_and_outcomes(est::SymbolicPermutation{m}, x::Vector_or_SSSet) where {m}
+function counts_and_outcomes(est::OrdinalPatterns{m}, x::Vector_or_SSSet) where {m}
     return weighted_counts_and_outcomes(est, x)
 end

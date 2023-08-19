@@ -20,21 +20,21 @@ to each outcome ``\\omega_i`` (i.e. [encoding](@ref encodings)/discretizing).
 
 ## Implementations
 
-| Outcome space                               | Principle                    | Input data                | Counting-compatible |
-| :------------------------------------------ | :--------------------------- | :------------------------ | :------------------ |
-| [`CountOccurrences`](@ref)                  | Count of unique elements     | `Any`                     | ✔                  |
-| [`ValueHistogram`](@ref)                    | Binning (histogram)          | `Vector`, `StateSpaceSet` | ✔                  |
-| [`TransferOperator`](@ref)                  | Binning (transfer operator)  | `Vector`, `StateSpaceSet` | ✖                  |
-| [`NaiveKernel`](@ref)                       | Kernel density estimation    | `StateSpaceSet`           | ✖                  |
-| [`SymbolicPermutation`](@ref)               | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✔                  |
-| [`SymbolicWeightedPermutation`](@ref)       | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
-| [`SymbolicAmplitudeAwarePermutation`](@ref) | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
-| [`SpatialSymbolicPermutation`](@ref)        | Ordinal patterns in space    | `Array`                   | ✔                  |
-| [`Dispersion`](@ref)                        | Dispersion patterns          | `Vector`                  | ✔                  |
-| [`SpatialDispersion`](@ref)                 | Dispersion patterns in space | `Array`                   | ✔                  |
-| [`Diversity`](@ref)                         | Cosine similarity            | `Vector`                  | ✔                  |
-| [`WaveletOverlap`](@ref)                    | Wavelet transform            | `Vector`                  | ✖                  |
-| [`PowerSpectrum`](@ref)                     | Fourier transform            | `Vector`                  | ✖                  |
+| Outcome space                           | Principle                    | Input data                | Counting-compatible |
+| :-------------------------------------- | :--------------------------- | :------------------------ | :------------------ |
+| [`CountOccurrences`](@ref)              | Count of unique elements     | `Any`                     | ✔                  |
+| [`ValueHistogram`](@ref)                | Binning (histogram)          | `Vector`, `StateSpaceSet` | ✔                  |
+| [`TransferOperator`](@ref)              | Binning (transfer operator)  | `Vector`, `StateSpaceSet` | ✖                  |
+| [`NaiveKernel`](@ref)                   | Kernel density estimation    | `StateSpaceSet`           | ✖                  |
+| [`OrdinalPatterns`](@ref)               | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✔                  |
+| [`WeightedOrdinalPatterns`](@ref)       | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
+| [`AmplitudeAwareOrdinalPatterns`](@ref) | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
+| [`SpatialOrdinalPatterns`](@ref)        | Ordinal patterns in space    | `Array`                   | ✔                  |
+| [`Dispersion`](@ref)                    | Dispersion patterns          | `Vector`                  | ✔                  |
+| [`SpatialDispersion`](@ref)             | Dispersion patterns in space | `Array`                   | ✔                  |
+| [`Diversity`](@ref)                     | Cosine similarity            | `Vector`                  | ✔                  |
+| [`WaveletOverlap`](@ref)                | Wavelet transform            | `Vector`                  | ✖                  |
+| [`PowerSpectrum`](@ref)                 | Fourier transform            | `Vector`                  | ✖                  |
 
 In the column "input data" it is assumed that the `eltype` of the input is `<: Real`.
 
@@ -57,7 +57,7 @@ There are two main types of outcome spaces.
     way of counting how often each point in the (encoded) input data is mapped to a
     particular outcome ``\\omega_i``. These outcome spaces use
     [`encode`](@ref) to discretize the input data. Examples are
-    [`SymbolicPermutation`](@ref) (which encodes input data into ordinal patterns) or
+    [`OrdinalPatterns`](@ref) (which encodes input data into ordinal patterns) or
     [`ValueHistogram`](@ref) (which discretizes points onto a regular grid).
     The table below lists which outcome spaces are counting compatible.
 - Non-counting compatible outcome spaces have no well-defined way of counting explicitly
@@ -80,7 +80,7 @@ is based on counting.
 ## Deducing the outcome space (from data)
 
 Some outcome space models can deduce ``\\Omega`` without knowledge of the input, such as
-[`SymbolicPermutation`](@ref). Other outcome spaces require knowledge of the input data
+[`OrdinalPatterns`](@ref). Other outcome spaces require knowledge of the input data
 for concretely specifying ``\\Omega``, such as [`ValueHistogram`](@ref) with
 [`RectangularBinning`](@ref). If `o` is some outcome space model and `x` some input data, then
 [`outcome_space`](@ref)`(o, x)` returns the possible outcomes ``\\Omega``. To get the

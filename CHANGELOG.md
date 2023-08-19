@@ -21,6 +21,13 @@ Further additions to the library in v3:
 - `outcome_space` for `Dispersion` now correctly returns the all possible **sorted** outcomes
     (as promised by the `outcome_space` docstring).
 
+### Renaming
+
+- `SymbolicPermutation` is now `OrdinalPatterns`.
+- `SymbolicWeightedPermutation` is now `WeightedOrdinalPatterns`.
+- `SymbolicAmplitudeAwarePermutation` is now `AmplitudeAwareOrdinalPatterns`.
+- `SpatialSymbolicPermutation` is now `SpatialOrdinalPatterns`.
+
 ## 2.7.1
 
 - Fix bug in calculation of statistical complexity

@@ -169,8 +169,8 @@ are negatively biased for small sample sizes.
 
 ## Discrete entropy: permutation entropy
 
-This example plots permutation entropy for time series of the chaotic logistic map. Entropy estimates using [`SymbolicWeightedPermutation`](@ref)
-and [`SymbolicAmplitudeAwarePermutation`](@ref) are added here for comparison.
+This example plots permutation entropy for time series of the chaotic logistic map. Entropy estimates using [`WeightedOrdinalPatterns`](@ref)
+and [`AmplitudeAwareOrdinalPatterns`](@ref) are added here for comparison.
 The entropy behaviour can be parallelized with the `ChaosTools.lyapunov` of the map.
 
 ```@example MAIN
@@ -191,9 +191,9 @@ for (i, r) in enumerate(rs)
     x, t = trajectory(ds, N_ent)
     ## `x` is a 1D dataset, need to recast into a timeseries
     x = columns(x)[1]
-    hs_perm[i] = information(SymbolicPermutation(; m, τ), x)
-    hs_wtperm[i] = information(SymbolicWeightedPermutation(; m, τ), x)
-    hs_ampperm[i] = information(SymbolicAmplitudeAwarePermutation(; m, τ), x)
+    hs_perm[i] = information(OrdinalPatterns(; m, τ), x)
+    hs_wtperm[i] = information(WeightedOrdinalPatterns(; m, τ), x)
+    hs_ampperm[i] = information(AmplitudeAwareOrdinalPatterns(; m, τ), x)
 end
 
 fig = Figure()
@@ -408,14 +408,14 @@ For the regular signals, the entropy decreases nevertheless because the noise co
 
 ## Spatiotemporal permutation entropy
 
-Usage of a [`SpatialSymbolicPermutation`](@ref) estimator is straightforward.
+Usage of a [`SpatialOrdinalPatterns`](@ref) estimator is straightforward.
 Here we get the spatial permutation entropy of a 2D array (e.g., an image):
 
 ```@example MAIN
 using ComplexityMeasures
 x = rand(50, 50) # some image
 stencil = [1 1; 0 1] # or one of the other ways of specifying stencils
-est = SpatialSymbolicPermutation(stencil, x)
+est = SpatialOrdinalPatterns(stencil, x)
 h = information(est, x)
 ```
 
@@ -423,7 +423,7 @@ To apply this to timeseries of spatial data, simply loop over the call, e.g.:
 
 ```@example MAIN
 data = [rand(50, 50) for i in 1:10] # e.g., evolution of a 2D field of a PDE
-est = SpatialSymbolicPermutation(stencil, first(data))
+est = SpatialOrdinalPatterns(stencil, first(data))
 h_vs_t = map(d -> information(est, d), data)
 ```
 
@@ -431,7 +431,7 @@ Computing any other generalized spatiotemporal permutation entropy is trivial, e
 
 ```@example MAIN
 x = reshape(repeat(1:5, 500) .+ 0.1*rand(500*5), 50, 50)
-est = SpatialSymbolicPermutation(stencil, x)
+est = SpatialOrdinalPatterns(stencil, x)
 information(Renyi(q = 2), est, x)
 ```
 
@@ -459,7 +459,7 @@ noisy_imgs = [i == 1 ? original : original .+ rand(Uniform(0, nL), size(original
 stencil = ((2, 2), (1, 1))
 
 est_disp = SpatialDispersion(stencil, original; c = 5, periodic = false)
-est_perm = SpatialSymbolicPermutation(stencil, original; periodic = false)
+est_perm = SpatialOrdinalPatterns(stencil, original; periodic = false)
 hs_disp = [information_normalized(est_disp, img) for img in noisy_imgs]
 hs_perm = [information_normalized(est_perm, img) for img in noisy_imgs]
 
@@ -481,12 +481,12 @@ end
 fig
 ```
 
-While the normalized [`SpatialSymbolicPermutation`](@ref) entropy quickly approaches its
+While the normalized [`SpatialOrdinalPatterns`](@ref) entropy quickly approaches its
 maximum value, the normalized [`SpatialDispersion`](@ref) entropy much better
 resolves the increase in entropy as the image gets noiser. This can probably be explained
 by the fact that the number of possible
 states (or [`total_outcomes`](@ref)) for any given `stencil` is larger for [`SpatialDispersion`](@ref) than for
-[`SpatialSymbolicPermutation`](@ref), so the dispersion approach is much less sensitive
+[`SpatialOrdinalPatterns`](@ref), so the dispersion approach is much less sensitive
 to noise addition (i.e. noise saturation over the possible states is slower
 for [`SpatialDispersion`](@ref)).
 
@@ -842,7 +842,7 @@ n = 100
 
 c = StatisticalComplexity(
     dist=JSDivergence(),
-    est=SymbolicPermutation(; m, τ),
+    est=OrdinalPatterns(; m, τ),
     entr=Renyi()
 )
 for (j, (ds_gen, sym, ds_name)) in enumerate(zip(
