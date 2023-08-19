@@ -48,4 +48,8 @@ end
 
     msg = "`entropy(est::DifferentialEntropyEstimator, x)` is deprecated.\nUse `information(est, x)` instead.\n"
     @test_logs (:warn, msg) entropy(Kraskov(), x)
+
+    @test SymbolicPermutation() isa OrdinalPatterns
+    @test SymbolicWeightedPermutation() isa WeightedOrdinalPatterns
+    @test SymbolicAmplitudeAwarePermutation() isa AmplitudeAwareOrdinalPatterns
 end
