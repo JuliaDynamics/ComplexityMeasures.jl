@@ -155,7 +155,7 @@ x = randn(500)
 ps = probabilities(RelativeAmount(OrdinalPatterns(m = 3)), x)
 
 # Some more sophisticated ways of estimating probabilities:
-ps = probabilities(BayesianRegularization(SymbolicPermutation(m = 3)), x)
+ps = probabilities(BayesianRegularization(OrdinalPatterns(m = 3)), x)
 ps = probabilities(Shrinkage(ValueHistogram(RectangularBinning(5))), x)
 
 # Only the `RelativeAmount` estimator works with non-counting based outcome spaces,

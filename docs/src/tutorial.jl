@@ -55,7 +55,7 @@ barplot(left_edges, probs; axis = (ylabel = "probability",))
 
 # Naturally, there are other outcome spaces one may use, and one can find the list of implemented ones in [`OutcomeSpace`](@ref).
 # A prominent example used in the NLTS literature are ordinal patterns.
-# The outcome space for it is [`SymbolicPermutation`](@ref), and can be particularly useful with timeseries that come from nonlinear dynamical systems. For example, if we simulate a logistic map timeseries
+# The outcome space for it is [`OrdinalPatterns`](@ref), and can be particularly useful with timeseries that come from nonlinear dynamical systems. For example, if we simulate a logistic map timeseries
 
 using DynamicalSystemsBase
 
@@ -67,7 +67,7 @@ summary(y)
 
 # we can estimate the probabilities corresponding to the ordinal patterns
 
-o = SymbolicPermutation()
+o = OrdinalPatterns()
 probsy, outsy = probabilities_and_outcomes(o, y)
 hcat(probsy, outsy)
 
@@ -84,10 +84,10 @@ total_outcomes(o)
 # This is a common theme in ComplexityMeasures.jl: outcomes that are not in the data are skipped.
 # This can save huge amounts of memory for outcome spaces with very large numbers of outcomes.
 # To explicitly obtain all outcomes, by assigning 0 probability to not encountered outcomes, use [`allprobabilities`](@ref) or [`allprobabilities_and_outcomes`](@ref).
-# For [`SymbolicPermutation`](@ref) the outcome space does not depend on input data and is always the same.
+# For [`OrdinalPatterns`](@ref) the outcome space does not depend on input data and is always the same.
 # Hence, the corresponding outcomes matching to [`allprobabilities`](@ref), coincide for `x` and `y`, and also coincide with the output of the function [`outcome_space`](@ref):
 
-o = SymbolicPermutation()
+o = OrdinalPatterns()
 
 probsx = allprobabilities(o, x)
 probsy = allprobabilities(o, y)
@@ -119,8 +119,8 @@ probsy_bayes .- probsy
 # Many compexity measures are a straightforward estimation of Shannon entropy with a given outcome space.
 # For example, the well known _permutation entropy_ is exactly the Shannon entropy of the probabilities `probsy` we computed above based on ordinal patterns.
 
-perm_ent_x = entropy(SymbolicPermutation(), x)
-perm_ent_y = entropy(SymbolicPermutation(), y)
+perm_ent_x = entropy(OrdinalPatterns(), x)
+perm_ent_y = entropy(OrdinalPatterns(), y)
 (perm_ent_x, perm_ent_y)
 
 # As expected, the permutation entropy of the `x` signal is higher, because the signal is "more random".
@@ -130,17 +130,17 @@ perm_ent_y = entropy(SymbolicPermutation(), y)
 # Another commonly used entropy is the Renyi or generalized entropy.
 # We can use [`Renyi`](@ref) as an additional first argument to the [`entropy`](@ref) function
 
-perm_ent_y_q2 = entropy(Renyi(;q = 2.0), SymbolicPermutation(), y)
+perm_ent_y_q2 = entropy(Renyi(;q = 2.0), OrdinalPatterns(), y)
 (perm_ent_y_q2, perm_ent_y)
 
-# In fact, when we called `entropy(SymbolicPermutation(), y)`, this dispatch to the default call of `entropy(Shannon(), SymbolicPermutation(), y)`.
+# In fact, when we called `entropy(OrdinalPatterns(), y)`, this dispatch to the default call of `entropy(Shannon(), OrdinalPatterns(), y)`.
 
 # ## More than entropies: estimators and other information measures
 
 # The estimation of an entropy truly parallelizes the estimation of probabilities: in the latter, we could decide an outcome space _and_ an _estimator_ to estimate probabilities.
 # The same happes for entropy: we can decide an entropy definition and an _estimator_ of how to estimate the entropy. For example, instead of the default [`PlugIn`](@ref) estimator that we used above implicitly, we could use [`Jackknife`](@ref)
 
-ospace = SymbolicPermutation()
+ospace = OrdinalPatterns()
 entdef = Renyi(;q = 2.0)
 entest = Jackknife(entdef)
 perm_ent_y_q2_jack = entropy(entest, ospace, y)
