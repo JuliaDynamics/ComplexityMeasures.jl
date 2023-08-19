@@ -24,6 +24,7 @@ StretchedExponential
 ShannonExtropy
 RenyiExtropy
 TsallisExtropy
+ElectronicEntropy
 ```
 
 ## Estimation (discrete)
