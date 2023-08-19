@@ -45,7 +45,7 @@ h = information(ps) # gives 1, about 1 bit by definition (Shannon entropy by def
 h = information(Shannon(), ps) # syntactically equivalent to the above
 h = information(Shannon(), CountOccurrences(), x) # syntactically equivalent to above
 h = information(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin toss
-h = information(SymbolicPermutation(;m=3), x) # gives about 2, again by definition
+h = information(OrdinalPatterns(;m=3), x) # gives about 2, again by definition
 ```
 
 ## Examples (bias-corrected estimation)

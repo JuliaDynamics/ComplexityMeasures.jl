@@ -101,3 +101,9 @@ function entropy(est::DifferentialInfoEstimator, x)
     """
     return information(est, x)
 end
+
+
+# 3.0
+@deprecate SymbolicPermutation OrdinalPatterns
+@deprecate SymbolicWeightedPermutation WeightedOrdinalPatterns
+@deprecate SymbolicAmplitudeAwarePermutation AmplitudeAwareOrdinalPatterns

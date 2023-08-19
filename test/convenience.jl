@@ -4,7 +4,7 @@ using Test
 @testset "Common literature names" begin
     x = randn(1000)
 
-    @test entropy_permutation(x) == information(SymbolicPermutation(), x)
+    @test entropy_permutation(x) == information(OrdinalPatterns(), x)
     @test entropy_wavelet(x) == information(WaveletOverlap(), x)
     @test entropy_dispersion(x) == information(Dispersion(), x)
     @test entropy_sample(x) == complexity_normalized(SampleEntropy(x), x)

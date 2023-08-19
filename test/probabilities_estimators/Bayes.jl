@@ -10,7 +10,7 @@ rng = MersenneTwister(1234)
 
         os = [
             CountOccurrences(),
-            SymbolicPermutation(m = 3),
+            OrdinalPatterns(m = 3),
             Dispersion(),
             Diversity(),
             ValueHistogram(RectangularBinning(3)),
@@ -35,7 +35,7 @@ rng = MersenneTwister(1234)
         x = rand(50, 50)
         os = [
             SpatialDispersion([0 1; 1 0], x, c = 2),
-            SpatialSymbolicPermutation([0 1; 1 0], x),
+            SpatialOrdinalPatterns([0 1; 1 0], x),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
             est = BayesianRegularization(os[i])

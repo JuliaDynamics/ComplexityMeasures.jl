@@ -31,7 +31,7 @@ end
     # except the final one that is the 312. That permutation is
     # fourth in the order of the ordinal patterns for m=3
     x = [1, 2, 3, 4, 5, 6, 1]
-    est = SymbolicPermutation(m = 3)
+    est = OrdinalPatterns(m = 3)
     probs, outs = probabilities_and_outcomes(est, x)
     correct = [4, 0, 0, 0, 1, 0]
     correct = correct ./ sum(correct)
@@ -57,7 +57,7 @@ end
 
         os = [
             CountOccurrences(),
-            SymbolicPermutation(m = 3),
+            OrdinalPatterns(m = 3),
             Dispersion(),
             ValueHistogram(RectangularBinning(3)),
         ]
@@ -75,7 +75,7 @@ end
         x = rand(30, 30)
         os = [
             SpatialDispersion([0 1; 1 0], x),
-            SpatialSymbolicPermutation([0 1; 1 0], x),
+            SpatialOrdinalPatterns([0 1; 1 0], x),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
             @test typeof(os[i]) <: ComplexityMeasures.CountBasedOutcomeSpace
@@ -94,8 +94,8 @@ end
         WaveletOverlap(),
         TransferOperator(RectangularBinning(3)),
         PowerSpectrum(),
-        SymbolicAmplitudeAwarePermutation(),
-        SymbolicWeightedPermutation(),
+        AmplitudeAwareOrdinalPatterns(),
+        WeightedOrdinalPatterns(),
         NaiveKernel(0.1),
     ]
     @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
