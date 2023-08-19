@@ -10,16 +10,16 @@ Compute the permutation entropy of `x` of order `m` with delay/lag `τ`.
 This function is just a convenience call to:
 
 ```julia
-est = SymbolicPermutation(; m, τ)
+est = OrdinalPatterns(; m, τ)
 information(Shannon(base), est, x)
 ```
 
-See [`SymbolicPermutation`](@ref) for more info. Similarly, one can use
-`SymbolicWeightedPermutation` or `SymbolicAmplitudeAwarePermutation`
+See [`OrdinalPatterns`](@ref) for more info. Similarly, one can use
+[`WeightedOrdinalPatterns`](@ref) or [`AmplitudeAwareOrdinalPatterns`](@ref)
 for the weighted/amplitude-aware versions.
 """
 function entropy_permutation(x; base = 2, kwargs...)
-    est = SymbolicPermutation(; kwargs...)
+    est = OrdinalPatterns(; kwargs...)
     information(Shannon(base), est, x)
 end
 

@@ -9,7 +9,7 @@ using Random: Xoshiro
     # Maximum likelihood is the default estimator for discrete information measures.
     s = Shannon()
     e1 = PowerSpectrum()
-    e2 = SymbolicPermutation(; m = 2)
+    e2 = OrdinalPatterns(; m = 2)
     x = rand(Xoshiro(1234), 10_000)
     @test information_maximum(PlugIn(s), e2) == information_maximum(s, e2)
     @test information_normalized(PlugIn(s), e1, x) == information_normalized(s, e1, x)
@@ -32,7 +32,7 @@ end
     # space without given the data
     s = Shannon()
     e1 = PowerSpectrum()
-    e2 = SymbolicPermutation(; m = 2)
+    e2 = OrdinalPatterns(; m = 2)
     x = rand(Xoshiro(1234), 10_000)
     # Maximum
     @test_throws ErrorException information_maximum(s, e1)

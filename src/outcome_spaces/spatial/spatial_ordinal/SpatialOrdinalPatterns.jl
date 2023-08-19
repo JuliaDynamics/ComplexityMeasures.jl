@@ -1,19 +1,19 @@
 using StaticArrays: @MVector
 
-export SpatialSymbolicPermutation
+export SpatialOrdinalPatterns
 ###########################################################################################
 # type creation
 ###########################################################################################
 
 """
-    SpatialSymbolicPermutation <: OutcomeSpaceModel
-    SpatialSymbolicPermutation(stencil, x; periodic = true)
+    SpatialOrdinalPatterns <: OutcomeSpaceModel
+    SpatialOrdinalPatterns(stencil, x; periodic = true)
 
 A symbolic, permutation-based [`OutcomeSpace`](@ref) for spatiotemporal systems that
-generalises [`SymbolicPermutation`](@ref) to high-dimensional arrays.
+generalises [`OrdinalPatterns`](@ref) to high-dimensional arrays.
 The order `m` of the permutation pattern is extracted from the `stencil`, see below.
 
-`SpatialSymbolicPermutation` is based on the 2D and 3D *spatiotemporal permutation entropy*
+`SpatialOrdinalPatterns` is based on the 2D and 3D *spatiotemporal permutation entropy*
 estimators by by Ribeiro et al. (2012)[^Ribeiro2012] and Schlemmer et al.
 (2018)[^Schlemmer2018]), respectively, but is here implemented as a pure probabilities
 probabilities estimator that is generalized for `D`-dimensional input array `x`,
@@ -30,7 +30,7 @@ permutation [`InformationMeasure`](@ref) of any type.
 
 ## Outcome space
 
-The outcome space `Ω` for `SpatialSymbolicPermutation` is the set of length-`m` ordinal
+The outcome space `Ω` for `SpatialOrdinalPatterns` is the set of length-`m` ordinal
 patterns (i.e. permutations) that can be formed by the integers `1, 2, …, m`,
 ordered lexicographically. There are `factorial(m)` such patterns.
 Here `m` refers to the number of points included in `stencil`.
@@ -39,7 +39,7 @@ Here `m` refers to the number of points included in `stencil`.
 
 The `stencil` defines what local area to use to group hypervoxels. Each grouping
 of hypervoxels is mapped to an order-`m` permutation pattern,
-which is then mapped to an integer as in [`SymbolicPermutation`](@ref).
+which is then mapped to an integer as in [`OrdinalPatterns`](@ref).
 The `stencil` is moved around the input array, in a sense "scanning" the input array,
 to collect all possible groupings allowed by the boundary condition (periodic or not).
 
@@ -74,7 +74,7 @@ Stencils are passed in one of the following three ways:
     Schlemmer et al. (2018). Spatiotemporal Permutation InformationMeasure as a Measure for
     Complexity of Cardiac Arrhythmia. https://doi.org/10.3389/fphy.2018.00039
 """
-struct SpatialSymbolicPermutation{D,P,V,M,F} <: SpatialProbEst{D, P}
+struct SpatialOrdinalPatterns{D,P,V,M,F} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
@@ -82,74 +82,74 @@ struct SpatialSymbolicPermutation{D,P,V,M,F} <: SpatialProbEst{D, P}
     encoding::OrdinalPatternEncoding{M,F}
 end
 
-function SpatialSymbolicPermutation(stencil, x::AbstractArray{T, D};
+function SpatialOrdinalPatterns(stencil, x::AbstractArray{T, D};
         periodic::Bool = true, lt::F = isless_rand) where {T, D, F}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
     m = stencil_length(stencil)
     encoding = OrdinalPatternEncoding{m}(lt)
-    return SpatialSymbolicPermutation{D,periodic,typeof(valid),m,F}(
+    return SpatialOrdinalPatterns{D,periodic,typeof(valid),m,F}(
         stencil, copy(stencil), arraysize, valid, encoding
     )
 end
 
-function encoded_space_cardinality(est::SpatialSymbolicPermutation, x::AbstractArray{T, N}) where {T, N}
+function encoded_space_cardinality(est::SpatialOrdinalPatterns, x::AbstractArray{T, N}) where {T, N}
     s = zeros(Int, length(est.valid))
     encodings_from_permutations!(s, est, x)
     return length(s)
 end
 
-probabilities(est::SpatialSymbolicPermutation, x) = Probabilities(counts(est, x))
-function probabilities!(est::SpatialSymbolicPermutation, x, s)
+probabilities(est::SpatialOrdinalPatterns, x) = Probabilities(counts(est, x))
+function probabilities!(est::SpatialOrdinalPatterns, x, s)
     s = zeros(Int, length(est.valid))
     counts!(s, est, x)
     return Probabilities(counts(s))
 end
 
-function counts(est::SpatialSymbolicPermutation, x)
+function counts(est::SpatialOrdinalPatterns, x)
     s = zeros(Int, length(est.valid))
     counts!(s, est, x)
 end
 
-function counts!(s, est::SpatialSymbolicPermutation, x)
+function counts!(s, est::SpatialOrdinalPatterns, x)
     encodings_from_permutations!(s, est, x)
     return counts(s)
 end
 
-function counts_and_outcomes(est::SpatialSymbolicPermutation, x)
+function counts_and_outcomes(est::SpatialOrdinalPatterns, x)
     # TODO: This can be literally a call to `symbolize` and then
     # calling probabilities on it. Should do once the `symbolize` refactoring is done.
     s = zeros(Int, length(est.valid))
     counts_and_outcomes!(s, est, x)
 end
 
-function counts_and_outcomes!(s, est::SpatialSymbolicPermutation, x)
+function counts_and_outcomes!(s, est::SpatialOrdinalPatterns, x)
     encodings_from_permutations!(s, est, x)
     observed_outcomes = decode.(Ref(est.encoding), s)
     return counts(s), sort!(unique(observed_outcomes))
 end
 
-function probabilities_and_outcomes!(s, est::SpatialSymbolicPermutation, x)
+function probabilities_and_outcomes!(s, est::SpatialOrdinalPatterns, x)
     cts, outs = counts_and_outcomes!(s, est, x)
     return Probabilities(cts), outs
 end
 
-function probabilities_and_outcomes(est::SpatialSymbolicPermutation, x)
+function probabilities_and_outcomes(est::SpatialOrdinalPatterns, x)
     s = zeros(Int, length(est.valid))
     return probabilities_and_outcomes!(s, est, x)
 end
 
 # Pretty printing
-function Base.show(io::IO, est::SpatialSymbolicPermutation{D,P,V,M}) where {D,P,V,M}
+function Base.show(io::IO, est::SpatialOrdinalPatterns{D,P,V,M}) where {D,P,V,M}
     print(io, "Spatial symbolic permutation probabilities estimator"*
               "of order $(M) and for $D-dimensional data. Periodic: $(P). Stencil:")
     print(io, "\n")
     show(io, MIME"text/plain"(), est.stencil)
 end
 
-outcome_space(est::SpatialSymbolicPermutation) = outcome_space(est.encoding)
-total_outcomes(est::SpatialSymbolicPermutation) = total_outcomes(est.encoding)
+outcome_space(est::SpatialOrdinalPatterns) = outcome_space(est.encoding)
+total_outcomes(est::SpatialOrdinalPatterns) = total_outcomes(est.encoding)
 
-function encodings_from_permutations!(πs, est::SpatialSymbolicPermutation, x::AbstractArray)
+function encodings_from_permutations!(πs, est::SpatialOrdinalPatterns, x::AbstractArray)
     check_preallocated_length!(πs, est, x)
     for (i, pixel) in enumerate(est.valid)
         pixels = pixels_in_stencil(est, pixel)
@@ -160,7 +160,7 @@ function encodings_from_permutations!(πs, est::SpatialSymbolicPermutation, x::A
 end
 
 function check_preallocated_length!(
-        πs, est::SpatialSymbolicPermutation{D, periodic}, x::AbstractArray{T, N}
+        πs, est::SpatialOrdinalPatterns{D, periodic}, x::AbstractArray{T, N}
     ) where {D, periodic, T, N}
     if periodic
         # If periodic boundary conditions, then each pixel has a well-defined neighborhood,

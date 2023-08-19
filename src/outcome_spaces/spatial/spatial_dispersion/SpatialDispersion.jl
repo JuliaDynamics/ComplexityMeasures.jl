@@ -29,7 +29,7 @@ estimator can be used to compute (normalized) generalized spatiotemporal dispers
 - `stencil`. Defines what local area (hyperrectangle), or which points within this area,
     to include around each hypervoxel (i.e. pixel in 2D). The examples below demonstrate
     different ways of specifying stencils. For details, see
-    [`SpatialSymbolicPermutation`](@ref). See [`SpatialSymbolicPermutation`](@ref) for
+    [`SpatialOrdinalPatterns`](@ref). See [`SpatialOrdinalPatterns`](@ref) for
     more information about stencils.
 -  `x::AbstractArray`. The input data. Must be provided because we need to know its size
     for optimization and bound checking.
@@ -111,7 +111,7 @@ est = SpatialDispersion(stencil, x)
 information(Renyi(q = 2), est, x)
 ```
 
-See also: [`SpatialSymbolicPermutation`](@ref), [`GaussianCDFEncoding`](@ref),
+See also: [`SpatialOrdinalPatterns`](@ref), [`GaussianCDFEncoding`](@ref),
 [`symbolize`](@ref).
 
 [^Azami2019]: Azami, H., da Silva, L. E. V., Omoto, A. C. M., & Humeau-Heurtier, A. (2019).

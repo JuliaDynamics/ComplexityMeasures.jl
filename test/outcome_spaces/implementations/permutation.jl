@@ -7,7 +7,7 @@ using ComplexityMeasures.DelayEmbeddings: embed
     # Since all these estimators initialize an encoding,
     # many of the tests such as whether "is_less" is used
     # are actually done in the ordinal pattern encoding test suite
-    for S in (SymbolicPermutation, SymbolicWeightedPermutation, SymbolicAmplitudeAwarePermutation)
+    for S in (OrdinalPatterns, WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
         @test S() isa OutcomeSpace
         @test S(lt = Base.isless) isa OutcomeSpace
         @test total_outcomes(S(m = 3)) == factorial(3)
@@ -15,7 +15,7 @@ using ComplexityMeasures.DelayEmbeddings: embed
 end
 
 @testset "Analytic, symbolic" begin
-    est = SymbolicPermutation(m = 3, τ = 1)
+    est = OrdinalPatterns(m = 3, τ = 1)
     N = 1000
     x = StateSpaceSet(repeat([1.1 2.2 3.3], 10))
     y = StateSpaceSet(rand(Random.MersenneTwister(123), N, 3))
@@ -51,8 +51,8 @@ end
     τ = 1
     x = rand(Random.MersenneTwister(1234), 100_000)
     D = embed(x, m, τ)
-    @testset "$(S)" for S in (SymbolicPermutation,
-        SymbolicWeightedPermutation, SymbolicAmplitudeAwarePermutation)
+    @testset "$(S)" for S in (OrdinalPatterns,
+        WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
         est = S(m = m, τ = τ)
         p1 = probabilities(est, x)
         p2 = probabilities(est, D)
@@ -66,8 +66,8 @@ end
     # [1, 2] => 3
     # [2, 1] => 2
     x = [1, 2, 1, 2, 1, 2]
-    @testset "$(S)" for S in (SymbolicPermutation,
-        SymbolicWeightedPermutation, SymbolicAmplitudeAwarePermutation)
+    @testset "$(S)" for S in (OrdinalPatterns,
+        WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
         # don't randomize in the case of equal values, so use Base.isless
         est = S(m = 2, lt = Base.isless)
         probs, πs = probabilities_and_outcomes(est, x)

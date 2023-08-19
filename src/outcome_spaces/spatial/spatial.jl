@@ -2,5 +2,5 @@
 abstract type SpatialProbEst{D, P} <: CountBasedOutcomeSpace end
 
 include("utils.jl")
-include("spatial_permutation/SpatialSymbolicPermutation.jl")
+include("spatial_ordinal/SpatialOrdinalPatterns.jl")
 include("spatial_dispersion/SpatialDispersion.jl")

@@ -18,6 +18,6 @@ b = 2
 # An experimental time series and probabilities estimator that gives a uniform
 # probability distribution.
 x = [repeat([0, 1], 5); 0]
-est = SymbolicPermutation(m = 2)
+est = OrdinalPatterns(m = 2)
 @test information(StretchedExponential(η = η, base = b), est, x) ≈
     information_maximum(StretchedExponential(η = η, base = b), total_outcomes(est))

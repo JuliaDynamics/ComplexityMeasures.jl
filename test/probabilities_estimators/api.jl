@@ -1,7 +1,7 @@
 # Counting-basedoutcome spaces work with any estimator
 os = [
     CountOccurrences(),
-    SymbolicPermutation(m = 3),
+    OrdinalPatterns(m = 3),
     Dispersion(),
     Diversity(),
     ValueHistogram(RectangularBinning(3)),
@@ -18,8 +18,8 @@ os = [
     WaveletOverlap(),
     TransferOperator(RectangularBinning(3)),
     PowerSpectrum(),
-    SymbolicAmplitudeAwarePermutation(),
-    SymbolicWeightedPermutation(),
+    AmplitudeAwareOrdinalPatterns(),
+    WeightedOrdinalPatterns(),
     NaiveKernel(0.1),
 ]
 @testset "`ProbabilitiesEstimator` constructors: $(typeof(os[i]).name.name)" for i in eachindex(os)
