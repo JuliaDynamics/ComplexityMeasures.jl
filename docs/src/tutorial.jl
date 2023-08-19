@@ -2,9 +2,9 @@
 
 # The goal of this tutorial is threefold:
 
-# 1. To convey the _terminology_ used by ComplexityMeasures.jl: key terms, what they mean, and how they are used within the codebase
-# 2. To provide a _rough overview_ of the overall features provided by ComplexityMeasures.jl
-# 3. To introduce the _main API functions_ of ComplexityMeasures.jl in a single, self-contained document: how these functions connect to key terms, what are their main inputs and outputs, and how they are used in realistic scientific scripting
+# 1. To convey the _terminology_ used by ComplexityMeasures.jl: key terms, what they mean, and how they are used within the codebase.
+# 2. To provide a _rough overview_ of the overall features provided by ComplexityMeasures.jl.
+# 3. To introduce the _main API functions_ of ComplexityMeasures.jl in a single, self-contained document: how these functions connect to key terms, what are their main inputs and outputs, and how they are used in realistic scientific scripting.
 
 # !!! note
 #     The documentation and exposition of ComplexityMeasures.jl is inspired by chapter 5 of
@@ -38,7 +38,7 @@ x = randn(10_000)
 o = ValueHistogram(ε)
 o isa OutcomeSpace
 
-# such outcome spaces may be given to [`probabilities`](@ref) to estimate the corresponding probabilities.
+# Such outcome spaces may be given to [`probabilities`](@ref) to estimate the corresponding probabilities.
 
 probs = probabilities(o, x)
 
@@ -47,7 +47,7 @@ probs = probabilities(o, x)
 probs, outs = probabilities_and_outcomes(o, x)
 outs
 
-# here the outcomes are the left edges of each bin. This allows us to straightforwardly visualize the results
+# Here the outcomes are the left edges of each bin. This allows us to straightforwardly visualize the results.
 
 using CairoMakie
 left_edges = first.(outs) # covert `Vector{SVector}` into `Vector{Real}`
@@ -55,7 +55,7 @@ barplot(left_edges, probs; axis = (ylabel = "probability",))
 
 # Naturally, there are other outcome spaces one may use, and one can find the list of implemented ones in [`OutcomeSpace`](@ref).
 # A prominent example used in the NLTS literature are ordinal patterns.
-# The outcome space for it is [`OrdinalPatterns`](@ref), and can be particularly useful with timeseries that come from nonlinear dynamical systems. For example, if we simulate a logistic map timeseries
+# The outcome space for it is [`OrdinalPatterns`](@ref), and can be particularly useful with timeseries that come from nonlinear dynamical systems. For example, if we simulate a logistic map timeseries,
 
 using DynamicalSystemsBase
 
@@ -65,22 +65,22 @@ Y, t = trajectory(ds, 10_000; Ttr = 100)
 y = Y[:, 1]
 summary(y)
 
-# we can estimate the probabilities corresponding to the ordinal patterns
+# then we can estimate the probabilities corresponding to the ordinal patterns
 
 o = OrdinalPatterns()
 probsy, outsy = probabilities_and_outcomes(o, y)
 hcat(probsy, outsy)
 
-# and compare them with those for the purely random timeseries `x`:
+# and compare them with those for the purely random timeseries `x`.
 
 probsx, outsx = probabilities_and_outcomes(o, x)
 hcat(probsx, outsx)
 
-# You will notice that there are more outcomes for the `x` timeseries than the `y`. All _possible_ outcomes, i.e., the cardinality of the outcome space, can be found with [`total_outcomes`](@ref)
+# You will notice that there are more outcomes for the `x` timeseries than the `y`. All _possible_ outcomes, i.e., the cardinality of the outcome space, can be found with [`total_outcomes`](@ref).
 
 total_outcomes(o)
 
-# The reason for less outcomes in the `y` results is that one was never encountered in the `y` data.
+# The reason that there are less outcomes in the `y` results is that one outome was never encountered in the `y` data.
 # This is a common theme in ComplexityMeasures.jl: outcomes that are not in the data are skipped.
 # This can save huge amounts of memory for outcome spaces with very large numbers of outcomes.
 # To explicitly obtain all outcomes, by assigning 0 probability to not encountered outcomes, use [`allprobabilities`](@ref) or [`allprobabilities_and_outcomes`](@ref).
@@ -95,8 +95,9 @@ outsx = outsy = outcome_space(o)
 
 hcat(probsx, probsy, outsx)
 
-# So far we have been estimating probabilities by counting the amount of times each possible outcome was encountered in the data.
-# This simplified approach is called "maximum likelihood estimation".
+# So far we have been estimating probabilities by counting the amount of times each possible outcome was encountered in the data,
+# then normalizing.
+# This  is called "maximum likelihood estimation".
 # The direct counts themselves may be obtained using [`counts`](@ref)
 
 countsy = counts(o, y)
@@ -105,14 +106,14 @@ hcat(countsy, countsy ./ sum(countsy), probsy)
 
 # By definition columns 2 and 3 are identical.
 # However, there are other ways to estimate probabilities that may account for biases in counting outcomes from finite data. Alternative estimators for probabilities are subtypes of [`ProbabilitiesEstimator`](@ref).
-# `ProbabilitiesEstimator`s wrap outcome space instances and dictate alternative ways to estiamte probabilities.
-# For example, one could use [`BayesianRegularization`](@ref)
+# `ProbabilitiesEstimator`s wrap outcome space instances and dictate alternative ways to estimate probabilities.
+# For example, one could use [`BayesianRegularization`](@ref).
 
 probsy_bayes = probabilities(BayesianRegularization(o), y)
 
 probsy_bayes .- probsy
 
-# While the corrections of [`BayesianRegularization`](@ref) are small, they are nevertheless measurable. In truth, when calling [`probabilities`](@ref) with an outcome space instance, the default [`RelativeAmount`](@ref) probabilities estimator is used to extract the probabilities.
+# While the corrections of [`BayesianRegularization`](@ref) are small, they are nevertheless measurable. When calling [`probabilities`](@ref) with an outcome space instance, the default [`RelativeAmount`](@ref) probabilities estimator is used to extract the probabilities.
 
 # ## Entropies
 
@@ -126,11 +127,11 @@ perm_ent_y = entropy(OrdinalPatterns(), y)
 # As expected, the permutation entropy of the `x` signal is higher, because the signal is "more random".
 # We crucially realize here that many quantities in the nonlinear dynamics literature that are named as entropies, such as "permutation entropy", are _not really new entropies_.
 # They are the good old Shannon entropy ([`Shannon`](@ref)), but calculated with _new outcome spaces_ that smartly quantify some dynamic property in the data.
-# Nevertheless, we acknolwedge that names such as "permutation entropy" are commonplace, so in ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref). More convenience functions can be found in the [convenience](@ref convenience) documentation page.
+# Nevertheless, we acknowledge that names such as "permutation entropy" are commonplace, so in ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref). More convenience functions can be found in the [convenience](@ref convenience) documentation page.
 
 # ## Beyond Shannon: more entropies
 
-# Just like the previous section discussing the possibility of many different outcome spaces, the same concept applies to entropy. There are many _actually different_, Shannon is not the only one, just the one used most often.
+# Just like the previous section discussing the possibility of many different outcome spaces, the same concept applies to entropy. There are many _actually different_ entropies. Shannon entropy is not the only one, just the one used most often.
 # Each entropy is a subtype of [`EntropyDefinition`](@ref).
 # Another commonly used entropy is the Renyi or generalized entropy.
 # We can use [`Renyi`](@ref) as an additional first argument to the [`entropy`](@ref) function
@@ -143,7 +144,7 @@ perm_ent_y_q2 = entropy(Renyi(;q = 2.0), OrdinalPatterns(), y)
 # ## Beyond entropies: discrete estimators
 
 # The estimation of an entropy truly parallelizes the estimation of probabilities: in the latter, we could decide an outcome space _and_ an _estimator_ to estimate probabilities.
-# The same happes for entropy: we can decide an entropy definition and an _estimator_ of how to estimate the entropy. For example, instead of the default [`PlugIn`](@ref) estimator that we used above implicitly, we could use [`Jackknife`](@ref)
+# The same happes for entropy: we can decide an entropy definition and an _estimator_ of how to estimate the entropy. For example, instead of the default [`PlugIn`](@ref) estimator that we used above implicitly, we could use the [`Jackknife`](@ref) estimator.
 
 ospace = OrdinalPatterns()
 entdef = Renyi(;q = 2.0)
@@ -158,12 +159,12 @@ perm_ent_y_q2_jack = entropy(entest, ospace, y)
 
 # Recall that at the very beginning of this notebook we mentioned a code separation of [`information`](@ref) and [`complexity`](@ref).
 # We did this because there are other measures, besides entropy, that are explicit functionals of some probability mass function.
-# One example is the Shannon _extropy_ [`ShannonExtropy`](@ref), the completent of _entropy_, which could be computed as
+# One example is the Shannon _extropy_ [`ShannonExtropy`](@ref), the complementary dual of _entropy_, which could be computed as follows.
 
 extdef = ShannonExtropy()
 perm_ext_y = information(extdef, ospace, y)
 
-# and, just like the Shannon _entropy_, it could also be estimated with a different estimator such as [`Jackknife`](@ref)
+# Just like the Shannon _entropy_, the extropy could also be estimated with a different estimator such as [`Jackknife`](@ref).
 
 perm_ext_y_jack = information(Jackknife(extdef), ospace, y)
 
