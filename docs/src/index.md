@@ -77,7 +77,7 @@ In general though, the standard DynamicalSystems.jl approach is taken and as suc
 
 - *Timeseries*, which are `AbstractVector{<:Real}`, used in e.g. with [`WaveletOverlap`](@ref).
 - *Multi-variate timeseries, or datasets, or state space sets*, which are [`StateSpaceSet`](@ref)s, used e.g. with [`NaiveKernel`](@ref). The short syntax `SSSet` may be used instead of `StateSpaceSet`.
-- *Spatial data*, which are higher dimensional standard `Array`s, used e.g. with  [`SpatialSymbolicPermutation`](@ref).
+- *Spatial data*, which are higher dimensional standard `Array`s, used e.g. with  [`SpatialOrdinalPatterns`](@ref).
 
 ```@docs
 StateSpaceSet

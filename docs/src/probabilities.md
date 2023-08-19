@@ -32,9 +32,9 @@ FixedRectangularBinning
 ### Symbolic permutations
 
 ```@docs
-SymbolicPermutation
-SymbolicWeightedPermutation
-SymbolicAmplitudeAwarePermutation
+OrdinalPatterns
+WeightedOrdinalPatterns
+AmplitudeAwareOrdinalPatterns
 ```
 
 ### Dispersion patterns
@@ -79,7 +79,7 @@ Diversity
 ### Spatial outcome spaces
 
 ```@docs
-SpatialSymbolicPermutation
+SpatialOrdinalPatterns
 SpatialDispersion
 ```
 
