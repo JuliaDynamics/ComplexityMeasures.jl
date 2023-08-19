@@ -124,8 +124,13 @@ perm_ent_y = entropy(OrdinalPatterns(), y)
 (perm_ent_x, perm_ent_y)
 
 # As expected, the permutation entropy of the `x` signal is higher, because the signal is "more random".
+# We crucially realize here that many quantities in the nonlinear dynamics literature that are named as entropies, such as "permutation entropy", are _not really new entropies_.
+# They are the good old Shannon entropy ([`Shannon`](@ref)), but calculated with _new outcome spaces_ that smartly quantify some dynamic property in the data.
+# Nevertheless, we acknolwedge that names such as "permutation entropy" are commonplace, so in ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref). More convenience functions can be found in the [convenience](@ref convenience) documentation page.
 
-# Just like above with the possibility of many different outcome spaces, the same concept applies to entropy. There are many different entropies, Shannon is not the only one!
+# ## Beyond Shannon: more entropies
+
+# Just like the previous section discussing the possibility of many different outcome spaces, the same concept applies to entropy. There are many _actually different_, Shannon is not the only one, just the one used most often.
 # Each entropy is a subtype of [`EntropyDefinition`](@ref).
 # Another commonly used entropy is the Renyi or generalized entropy.
 # We can use [`Renyi`](@ref) as an additional first argument to the [`entropy`](@ref) function
@@ -133,9 +138,9 @@ perm_ent_y = entropy(OrdinalPatterns(), y)
 perm_ent_y_q2 = entropy(Renyi(;q = 2.0), OrdinalPatterns(), y)
 (perm_ent_y_q2, perm_ent_y)
 
-# In fact, when we called `entropy(OrdinalPatterns(), y)`, this dispatch to the default call of `entropy(Shannon(), OrdinalPatterns(), y)`.
+# In fact, when we called `entropy(OrdinalPatterns(), y)`, this dispatched to the default call of `entropy(Shannon(), OrdinalPatterns(), y)`.
 
-# ## More than entropies: estimators and other information measures
+# ## Beyond entropies: discrete estimators
 
 # The estimation of an entropy truly parallelizes the estimation of probabilities: in the latter, we could decide an outcome space _and_ an _estimator_ to estimate probabilities.
 # The same happes for entropy: we can decide an entropy definition and an _estimator_ of how to estimate the entropy. For example, instead of the default [`PlugIn`](@ref) estimator that we used above implicitly, we could use [`Jackknife`](@ref)
@@ -149,7 +154,9 @@ perm_ent_y_q2_jack = entropy(entest, ospace, y)
 
 # It is up to the researcher to read the documentation of the plethora of estimators implemented and decide what is most suitable for their data at hand. They all can be found in [`DiscreteInfoEstimator`](@ref).
 
-# Now, recall that at the very beginning of this notebook we mentioned a code separation of [`information`](@ref) and [`complexity`](@ref).
+# ## Beyond entropies: other information measures
+
+# Recall that at the very beginning of this notebook we mentioned a code separation of [`information`](@ref) and [`complexity`](@ref).
 # We did this because there are other measures, besides entropy, that are explicit functionals of some probability mass function.
 # One example is the Shannon _extropy_ [`ShannonExtropy`](@ref), the completent of _entropy_, which could be computed as
 
@@ -173,8 +180,7 @@ perm_ext_y_jack = information(Jackknife(extdef), ospace, y)
 diffest = Correa()
 diffent = entropy(diffest, x)
 
-
-# ## Beyond information: other complexity measures
+# ## Beyond `information`: other complexity measures
 
 # As discussed at the very beginning of this tutorial, there are some complexity measures that are not explicit functionals of probabilities, and hence cannot be straightforwardly related to an outcome space, in the sense of providing an instance of [`OutcomeSpace`](@ref) to the estimation function.
 # These are estimated with the [`complexity`](@ref) function, by providing it a subtype of [`ComplexityEstimator`](@ref).

@@ -34,15 +34,6 @@ An information measure as defined by a subtype of [`InformationMeasure`](@ref). 
     probability distribution. For example, the [`Correa`](@ref) estimator computes the
     Shannon differential entropy using order statistics.
 
-Crucially, many quantities in the nonlinear dynamics literature that are named as
-entropies, such as "permutation entropy" ([`entropy_permutation`](@ref)) and
-"wavelet entropy" ([`entropy_wavelet`](@ref)), are *not really new entropies*.
-They are the good old discrete Shannon entropy ([`Shannon`](@ref)), but calculated with *new probabilities estimators*. In turn, [`Shannon`](@ref) entropy is just one of many entropies and entropies are a subset of information measures.
-Nevertheless, we acknolwedge that names such as "permutation entropy" are commonplace, so in ComplexityMeasures.jl we provide convenience functions like [`entropy_permutation`](@ref).
-However, we emphasize that these functions really aren't anything more than
-2-lines-of-code wrappers that call [`information`](@ref) with the appropriate
-[`ProbabilitiesEstimator`](@ref) and [`InformationMeasure`](@ref).
-
 ### Other complexity measures
 
 Other complexity measures which are not functionals of probability mass or density functions, yet still output some quantity related with complexity analysis, are called **complexity measures** within ComplexityMeasures.jl. They can be found in [Complexity measures](@ref) page.
