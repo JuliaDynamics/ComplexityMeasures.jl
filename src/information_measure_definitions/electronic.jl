@@ -8,10 +8,10 @@ The ["electronic entropy"](https://en.wikipedia.org/wiki/Electronic_entropy) mea
 defined in discrete form in Lad et al. (2015)[^Lad2015] as
 
 ```math
-H_{EL}^S(p) = H(p) + J(P),
+H{EL}(p) = H_S(p) + J_S(P),
 ```
 
-where ``H(p)`` is the [`Shannon`](@ref) entropy and ``J(p)`` is the [`Shannon`](@ref)
+where ``H_S(p)`` is the [`Shannon`](@ref) entropy and ``J_S(p)`` is the [`Shannon`](@ref)
 extropy of the probability vector ``p``.
 
 [^Lad2015]:
