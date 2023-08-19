@@ -16,17 +16,19 @@ abstract type ComplexityEstimator end
     complexity(c::ComplexityEstimator, x) → m::Real
 
 Estimate a complexity measure according to `c`
-for [input data](@ref input_data) `x`, where `c` can
-be any of the following estimators:
+for [input data](@ref input_data) `x`, where `c` is an instance of
+any subtype of [`ComplexityEstimator`](@ref):
 
-- [`ReverseDispersion`](@ref).
 - [`ApproximateEntropy`](@ref).
-- [`SampleEntropy`](@ref).
+- [`LempelZiv76`](@ref).
 - [`MissingDispersionPatterns`](@ref).
+- [`ReverseDispersion`](@ref).
+- [`SampleEntropy`](@ref).
+- [`StatisticalComplexity`](@ref).
 """
-function complexity(c::C, x) where C <: ComplexityEstimator
+function complexity(c::ComplexityEstimator, x)
     T = typeof(x)
-    msg = "`complexity` not implemented for $C and input data of type $T."
+    msg = "`complexity` not implemented for $(typeof(c)) and input data of type $T."
     throw(ArgumentError(msg))
 end
 
