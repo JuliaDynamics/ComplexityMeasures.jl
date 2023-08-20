@@ -1,7 +1,8 @@
-# [Information measures](@id information_measures)
+# [Information measures (entropies and co.)](@id information_measures)
 
 !!! note
-    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
+    Be sure you have gone through the [Tutorial](@ref) before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
+
 
 ## Information measures API
 
@@ -11,7 +12,7 @@ of the measure.
 
 The functions [`information_maximum`](@ref) and [`information_normalized`](@ref) are also useful.
 
-## Definitions (entropies and extropies)
+## Entropy definitions
 
 ```@docs
 InformationMeasure
@@ -21,6 +22,11 @@ Tsallis
 Kaniadakis
 Curado
 StretchedExponential
+```
+
+## Other information measures
+
+```@docs
 ShannonExtropy
 RenyiExtropy
 TsallisExtropy

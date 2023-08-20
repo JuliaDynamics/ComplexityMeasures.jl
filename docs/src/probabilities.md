@@ -1,8 +1,7 @@
 # [Probabilities](@ref probabilities)
 
 !!! note
-    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
-
+    Be sure you have gone through the [Tutorial](@ref) before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
 
 ComplexityMeasures.jl implements an interface for probabilities that exactly follows the mathematically rigorous formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space).
 It is formalized by [`OutcomeSpace`](@ref), [`counts`](@ref), [`probabilities`](@ref) and derivative functions such as  [`allprobabilities_and_outcomes`](@ref).

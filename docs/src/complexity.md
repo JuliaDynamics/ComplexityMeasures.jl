@@ -1,7 +1,7 @@
 # Complexity measures
 
 !!! note
-    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
+    Be sure you have gone through the [Tutorial](@ref) before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
 
 ## Complexity measures API
 
