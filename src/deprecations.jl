@@ -10,16 +10,6 @@ function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N, D::Int = 1)
     end
 end
 
-
-# from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
-function entropy(e::InformationMeasure, est::DifferentialInfoEstimator, x)
-    if e isa Shannon
-        return information(est, x)
-    else
-        throw(ErrorException("only shannon entropy supports this deprecated interface"))
-    end
-end
-
 @deprecate ComplexityMeasure ComplexityEstimator
 @deprecate EntropyDefinition InformationMeasure
 @deprecate entropy_maximum information_maximum

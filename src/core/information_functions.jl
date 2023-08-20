@@ -1,4 +1,5 @@
 export information, information_maximum, information_normalized, convert_logunit
+export entropy
 
 ###########################################################################################
 # Discrete
@@ -105,6 +106,42 @@ end
 # Convenience
 information(est::OutcomeSpace, x) = information(Shannon(), est, x)
 information(probs::Probabilities) = information(Shannon(), probs)
+
+# from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
+"""
+    entropy([edef,] est::ProbabilitiesEstimator, x)
+
+Compute the discrete entropy of `x` according to the given probabilities estimator
+and entropy definition, or entropy discrete estimator `edef`.
+`edef` defaults to `Shannon()`.
+
+    entropy(diffest::DifferentialInfoEstimator, x)
+
+Compute the differential entropy of `x` using the given estimator.
+
+`entropy` is nothing more beyond a wrapper of [`information`](@ref) that will
+simply throw an error if used with an information measure that is not an entropy.
+"""
+function entropy(args...)
+    e = first(args)
+    # Check the condition for throwing an error (if false)
+    cond = if e isa ProbEstOrOutcomeSpace
+        # Shannon
+        true
+    elseif e isa InformationMeasure
+        # Any subtype of entropy
+        e isa Entropy
+    elseif e isa InformationMeasureEstimator
+        # Estimator is for any subtype of entropy
+        e.definition isa Entropy
+    else
+        false
+    end
+    cond || throw(error("""
+        You have used `entropy` without an entropy definition
+        ($(typeof(e))). Use `information` instead."""))
+    return information(args...)
+end
 
 
 ###########################################################################################
