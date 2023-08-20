@@ -37,17 +37,18 @@ TsallisExtropy(; q = 1.0, k = 1.0, base = 2) = TsallisExtropy(q, k, base)
 
 function information(e::TsallisExtropy, probs::Probabilities)
     (; q, k, base) = e
+    non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
 
-    if length(probs) == 1
+    if length(non0_probs) == 1
         return 0.0
     end
 
     if q ≈ 1
-        return information(ShannonExtropy(; base), probs)
+        return information(ShannonExtropy(; base), Probabilities(non0_probs))
     else
-        N = length(probs)
+        N = length(non0_probs)
         c = k / (q - 1)
-        return c * (N - 1 - sum((1 - pᵢ)^q for pᵢ in probs))
+        return c * (N - 1 - sum((1 - pᵢ)^q for pᵢ in non0_probs))
     end
 end
 

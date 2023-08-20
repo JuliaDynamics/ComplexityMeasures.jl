@@ -35,6 +35,7 @@ StretchedExponential
 ShannonExtropy
 RenyiExtropy
 TsallisExtropy
+ElectronicEntropy
 ```
 
 ## Discrete information estimators
