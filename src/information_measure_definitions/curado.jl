@@ -19,7 +19,7 @@ the [`total_outcomes`](@ref).
 [^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
     entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
 """
-Base.@kwdef struct Curado{B} <: InformationMeasure
+Base.@kwdef struct Curado{B} <: Entropy
     b::B = 1.0
 
     function Curado(b::B) where B <: Real

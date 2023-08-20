@@ -1,3 +1,5 @@
+export information, information_maximum, information_normalized, convert_logunit
+
 ###########################################################################################
 # Discrete
 ###########################################################################################
@@ -20,7 +22,7 @@ estimator).
 
 All estimators compute [`Shannon`](@ref) entropy by default. To estimate other measures,
 give them as an argument to the estimator, e.g.
-`information(Jackknife(Renyi()), probest, x)`.
+`information(Jackknife(Tsallis()), probest, x)`.
 If `e` is not provided, then the default is `information(PlugIn(Shannon()), probs)`.
 
 ## Examples (naive estimation)
@@ -235,4 +237,37 @@ function information(::InformationMeasure, ::DifferentialInfoEstimator, args...)
         """`InformationMeasure` must be given as an argument to `est`, not to `information`.
         """
     ))
+end
+
+
+###########################################################################################
+# Utils
+###########################################################################################
+"""
+    log_with_base(base) → f
+
+Return a function that computes the logarithm at a given base.
+This definitely increases accuracy, and probably also performance.
+"""
+function log_with_base(base)
+    if base == 2
+        log2
+    elseif base == MathConstants.e
+        log
+    elseif base == 10
+        log10
+    else
+        x -> log(base, x)
+    end
+end
+
+"""
+    convert_logunit(h_a::Real, base_from, base_to) → h_b
+
+Convert a number `h_a` computed with logarithms to base `base_from` to an entropy `h_b`
+computed with logarithms to base `base_to`.
+This can be used to convert the "unit" of an entropy.
+"""
+function convert_logunit(h_a::Real, base_from, base_to)
+    h_a / log(base_from, base_to)
 end

@@ -29,7 +29,7 @@ schemes (or encode your data manually).
 """
 struct LempelZiv76 <: ComplexityEstimator end
 
-function complexity(est::LempelZiv76, x::AbstractArray{T, N}) where {T, N}
+function complexity(::LempelZiv76, x::AbstractArray{T, N}) where {T, N}
     # The implementation here is taken directly from
     # https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv_complexity
     i = 0 # `i = p − 1`, `p is the pointer

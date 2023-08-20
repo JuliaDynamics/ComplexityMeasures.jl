@@ -20,7 +20,7 @@ where if ``\\kappa = 0``, regular logarithm to the given `base` is used, and
     Tsallis, C. (2009). Introduction to nonextensive statistical mechanics: approaching a
     complex world. Springer, 1(1), 2-1.
 """
-Base.@kwdef struct Kaniadakis{K <: Real, B <: Real} <: InformationMeasure
+Base.@kwdef struct Kaniadakis{K <: Real, B <: Real} <: Entropy
     κ::K = 1.0
     base::B = 2.0
 end
