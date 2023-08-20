@@ -2,10 +2,11 @@ export Correa
 
 """
     Correa <: DifferentialInfoEstimator
-    Correa(measure = Shannon(); m::Int = 1, base = 2)
+    Correa(definition = Shannon(); m::Int = 1)
 
-The `Correa` estimator computes the [`Shannon`](@ref) differential [`information`](@ref) (in
-the given `base) of a timeseries using the method from Correa (1995)[^Correa1995].
+The `Correa` estimator computes the [`Shannon`](@ref) differential [`information`](@ref)
+of a timeseries using the method from Correa (1995)[^Correa1995], with logarithms to the
+`base` specified in `definition`.
 
 The `Correa` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
@@ -56,13 +57,12 @@ where
 See also: [`information`](@ref), [`AlizadehArghami`](@ref), [`Ebrahimi`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-struct Correa{I <: InformationMeasure, M <: Integer, B} <: DifferentialInfoEstimator{I}
-    measure::I
+struct Correa{I <: InformationMeasure, M <: Integer} <: DifferentialInfoEstimator{I}
+    definition::I
     m::M
-    base::B
 end
-function Correa(measure = Shannon(); m = 1, base = 2)
-    return Correa(measure, m, base)
+function Correa(definition = Shannon(); m = 1)
+    return Correa(definition, m)
 end
 
 function information(est::Correa{<:Shannon}, x::AbstractVector{<:Real})
@@ -84,10 +84,10 @@ function information(est::Correa{<:Shannon}, x::AbstractVector{<:Real})
         den *= n
         HCₘₙ += log(num / den)
     end
+
     # The estimated entropy has "unit" [nats]
     h = -HCₘₙ / n
-    return convert_logunit(h, ℯ, est.base)
-
+    return convert_logunit(h, ℯ, est.definition.base)
 end
 
 function local_scaled_mean(ex, i::Int, m::Int, n::Int = length(x))

@@ -2,10 +2,11 @@ export Ebrahimi
 
 """
     Ebrahimi <: DifferentialInfoEstimator
-    Ebrahimi(measure = Shannon(); m::Int = 1, base = 2)
+    Ebrahimi(definition = Shannon(); m::Int = 1)
 
-The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`information`](@ref) (in the given
-`base`) of a timeseries using the method from Ebrahimi (1994)[^Ebrahimi1994].
+The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`information`](@ref) of a
+timeseries using the method from Ebrahimi (1994)[^Ebrahimi1994], with logarithms to the
+`base` specified in `definition`.
 
 The `Ebrahimi` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
@@ -58,13 +59,12 @@ c_i =
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-struct Ebrahimi{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
-    measure::I
+struct Ebrahimi{I <: InformationMeasure, M<:Integer} <: DifferentialInfoEstimator{I}
+    definition::I
     m::M
-    base::B
 end
-function Ebrahimi(measure = Shannon(); m = 1, base = 2)
-    return Ebrahimi(measure, m, base)
+function Ebrahimi(definition = Shannon(); m = 1)
+    return Ebrahimi(definition, m)
 end
 
 function ebrahimi_scaling_factor(i, m, n)
@@ -94,5 +94,5 @@ function information(est::Ebrahimi{<:Shannon}, x::AbstractVector{<:Real})
 
     # The estimated entropy has "unit" [nats]
     h = HVₘₙ / n
-    return convert_logunit(h, ℯ, est.base)
+    return convert_logunit(h, ℯ, est.definition.base)
 end

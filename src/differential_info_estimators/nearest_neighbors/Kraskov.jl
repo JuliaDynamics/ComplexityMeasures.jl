@@ -2,11 +2,11 @@ export Kraskov
 
 """
     Kraskov <: DifferentialInfoEstimator
-    Kraskov(measure = Shannon(); k::Int = 1, w::Int = 0, base = 2)
+    Kraskov(definition = Shannon(); k::Int = 1, w::Int = 0)
 
 The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`information`](@ref) of
 a multi-dimensional [`StateSpaceSet`](@ref) using the `k`-th nearest neighbor
-searches method from [^Kraskov2004] at the given `base`.
+searches method from [^Kraskov2004], with logarithms to the `base` specified in `definition`.
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
@@ -30,13 +30,13 @@ See also: [`information`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialInf
     Estimating mutual information. Physical review E, 69(6), 066138.
 """
 struct Kraskov{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I
+    definition::I
     k::Int
     w::Int
     base::B
 end
-function Kraskov(measure = Shannon(); k = 1, w = 0, base = 2)
-    return Kraskov(measure, k, w, base)
+function Kraskov(definition = Shannon(); k = 1, w = 0, base = 2)
+    return Kraskov(definition, k, w, base)
 end
 
 function information(est::Kraskov{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D}
@@ -47,5 +47,5 @@ function information(est::Kraskov{<:Shannon}, x::AbstractStateSpaceSet{D}) where
     h = -digamma(k) + digamma(N) +
         log(MathConstants.e, ball_volume(D)) +
         D/N*sum(log.(MathConstants.e, ρs))
-    return convert_logunit(h, ℯ, est.base)
+    return convert_logunit(h, ℯ, est.definition.base)
 end

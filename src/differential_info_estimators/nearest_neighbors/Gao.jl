@@ -7,11 +7,12 @@ export Gao
 
 """
     Gao <: DifferentialInfoEstimator
-    Gao(measure = Shannon(); k = 1, w = 0, base = 2, corrected = true)
+    Gao(definition = Shannon(); k = 1, w = 0, corrected = true)
 
 The `Gao` estimator (Gao et al., 2015) computes the [`Shannon`](@ref)
 differential [`information`](@ref), using a `k`-th nearest-neighbor approach
-based on Singh et al. (2003)[^Singh2003].
+based on Singh et al. (2003)[^Singh2003], with logarithms to the `base` specified in
+`definition`.
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
@@ -29,7 +30,7 @@ density function``f : \\mathbb{R}^d \\to \\mathbb{R}``. `KozachenkoLeonenko` est
 the [Shannon](@ref) differential entropy
 
 ```math
-H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
+H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))].
 ```
 
 [^Gao2015]:
@@ -41,15 +42,14 @@ H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-struct Gao{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I
+struct Gao{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
+    definition::I
     k::Int
     w::Int
-    base::B
     corrected::Bool
 end
-function Gao(measure = Shannon(); k = 1, w = 0, base = 2, corrected = true)
-    return Gao(measure, k, w, base, corrected)
+function Gao(definition = Shannon(); k = 1, w = 0, corrected = true)
+    return Gao(definition, k, w, corrected)
 end
 
 function information(est::Gao{<:Shannon}, x::AbstractStateSpaceSet{D}) where D
@@ -66,5 +66,5 @@ function information(est::Gao{<:Shannon}, x::AbstractStateSpaceSet{D}) where D
         h -= correction
     end
 
-    return convert_logunit(h, ℯ, est.base) # convert to target unit *after* correction
+    return convert_logunit(h, ℯ, est.definition.base) # convert to target unit *after* correction
 end
