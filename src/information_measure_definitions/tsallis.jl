@@ -27,7 +27,7 @@ with ``L`` the [`total_outcomes`](@ref).
     Tsallis, C. (1988). Possible generalization of Boltzmann-Gibbs statistics.
     Journal of statistical physics, 52(1), 479-487.
 """
-struct Tsallis{Q,K,B} <: InformationMeasure
+struct Tsallis{Q,K,B} <: Entropy
     q::Q
     k::K
     base::B

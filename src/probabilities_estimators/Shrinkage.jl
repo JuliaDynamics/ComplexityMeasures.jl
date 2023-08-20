@@ -49,10 +49,10 @@ For [`allprobabilities`](@ref), `m = total_outcomes(o, x)`, where `o` is the
 ```julia
 using ComplexityMeasures
 x = cumsum(randn(100))
-ps_shrink = probabilities(Shrinkage(SymbolicPermutation(m = 3)), x)
+ps_shrink = probabilities(Shrinkage(OrdinalPatterns(m = 3)), x)
 ```
 
-See also: [`RelativeAmount`](@ref), [`Bayes`](@ref).
+See also: [`RelativeAmount`](@ref), [`BayesianRegularization`](@ref).
 
 [^JamesStein1961]:
     James, W., & Stein, C. (1992). Estimation with quadratic loss. In Breakthroughs in

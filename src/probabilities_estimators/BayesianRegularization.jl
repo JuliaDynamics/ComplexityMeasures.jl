@@ -1,10 +1,10 @@
-export Bayes
+export BayesianRegularization
 
 """
-    Bayes <: ProbabilitiesEstimator
-    Bayes(outcome_space::OutcomeSpace, a = 1.0)
+    BayesianRegularization <: ProbabilitiesEstimator
+    BayesianRegularization(outcome_space::OutcomeSpace, a = 1.0)
 
-The `BayesProbs` estimator is used with [`probabilities`](@ref) and related functions to
+The `BayesianRegularization` estimator is used with [`probabilities`](@ref) and related functions to
 estimate probabilities over the given `m`-element counting-based [`OutcomeSpace`](@ref)
 using Bayesian regularization of cell counts (Hausser & Strimmer, 2009)[^Hausser2009].
 See [`ProbabilitiesEstimator`](@ref) for usage.
@@ -15,11 +15,11 @@ This estimator only works with counting-compatible outcome spaces.
 
 ## Description
 
-The `Bayes` estimator estimates the probability of the ``k``-th outcome ``\\omega_{k}``
+The `BayesianRegularization` estimator estimates the probability of the ``k``-th outcome ``\\omega_{k}``
 is
 
 ```math
-\\omega_{k}^{\\text{Bayes}} = \\dfrac{n_k + a_k}{n + A},
+\\omega_{k}^{\\text{BayesianRegularization}} = \\dfrac{n_k + a_k}{n + A},
 ```
 
 where ``n`` is the number of samples in the input data, ``n_k`` is the observed counts
@@ -32,7 +32,7 @@ Hausser & Strimmer (2009)[^Hausser2009]. They include
 
 - `a == 0`, which is equivalent to the [`RelativeAmount`](@ref) estimator.
 - `a == 0.5` (Jeffrey's prior)
-- `a == 1` (Bayes-Laplace uniform prior)
+- `a == 1` (BayesianRegularization-Laplace uniform prior)
 
 `a` can also be chosen as a vector of real numbers. Then, if used with
 [`allprobabilities`](@ref), it is required that `length(a) == total_outcomes(o, x)`,
@@ -44,7 +44,7 @@ and the errors depend both on the choice of `a` and on the sampling scenario[^Ha
 
 ## Assumptions
 
-The `Bayes` estimator assumes a fixed and known `m`. Thus, using it with
+The `BayesianRegularization` estimator assumes a fixed and known `m`. Thus, using it with
 [`probabilities`](@ref) and [`allprobabilities`](@ref) will yield different results,
 depending on whether all outcomes are observed in the input data or not.
 For [`probabilities`](@ref), `m` is the number of *observed* outcomes.
@@ -61,7 +61,7 @@ For [`allprobabilities`](@ref), `m = total_outcomes(o, x)`, where `o` is the
 ```julia
 using ComplexityMeasures
 x = cumsum(randn(100))
-ps_bayes = probabilities(Bayes(SymbolicPermutation(m = 3), a = 0.5), x)
+ps_bayes = probabilities(BayesianRegularization(OrdinalPatterns(m = 3), a = 0.5), x)
 ```
 
 See also: [`RelativeAmount`](@ref), [`Shrinkage`](@ref).
@@ -71,21 +71,21 @@ See also: [`RelativeAmount`](@ref), [`Shrinkage`](@ref).
     with application to nonlinear gene association networks. Journal of Machine Learning
     Research, 10(7).
 """
-struct Bayes{O <: OutcomeSpace, A} <: ProbabilitiesEstimator
+struct BayesianRegularization{O <: OutcomeSpace, A} <: ProbabilitiesEstimator
     outcomemodel::O
     a::A
-    function Bayes(o::O, c::A) where {O <: OutcomeSpace, A}
-        verify_counting_based(o, "Bayes")
+    function BayesianRegularization(o::O, c::A) where {O <: OutcomeSpace, A}
+        verify_counting_based(o, "BayesianRegularization")
         new{O, A}(o, c)
     end
 end
-Bayes(outcomemodel::OutcomeSpace; a = 1.0) = Bayes(outcomemodel, a)
+BayesianRegularization(outcomemodel::OutcomeSpace; a = 1.0) = BayesianRegularization(outcomemodel, a)
 
 # We need to implement `probabilities_and_outcomes` and `allprobabilities` separately,
 # because the number of elements in the outcome space determines the factor `A`, since
 # A = sum(aₖ). Explicitly modelling the entire outcome space, instead of considering
 # only the observed outcomes, will therefore affect the estimated probabilities.
-function probabilities_and_outcomes(est::Bayes, x)
+function probabilities_and_outcomes(est::BayesianRegularization, x)
     (; outcomemodel, a) = est
 
     observed_counts, observed_outcomes = counts_and_outcomes(outcomemodel, x)
@@ -112,7 +112,7 @@ function probabilities_and_outcomes(est::Bayes, x)
     return Probabilities(probs), observed_outcomes
 end
 
-function allprobabilities_and_outcomes(est::Bayes, x)
+function allprobabilities_and_outcomes(est::BayesianRegularization, x)
     (; outcomemodel, a) = est
 
     # Normalization factor is based on the *encoded* data.

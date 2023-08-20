@@ -1,4 +1,4 @@
-function verify_counting_based(o, name = "Bayes")
+function verify_counting_based(o, name = "BayesianRegularization")
     if !is_counting_based(o)
         s = "Outcome space $(o) isn't counting based."*
             "`$(name)` requires a counting-based outcome space."
@@ -7,7 +7,7 @@ function verify_counting_based(o, name = "Bayes")
 end
 
 include("RelativeAmount.jl")
-include("Bayes.jl")
+include("BayesianRegularization.jl")
 include("Shrinkage.jl")
 include("AddConstant.jl")
 

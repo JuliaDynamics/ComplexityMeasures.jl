@@ -61,7 +61,7 @@ The default probabilities estimator is [`RelativeAmount`](@ref), which is compat
 [`OutcomeSpace`](@ref). The following estimators only support counting-based outcomes.
 
 - [`Shrinkage`](@ref).
-- [`Bayes`](@ref).
+- [`BayesianRegularization`](@ref).
 - [`AddConstant`](@ref).
 
 ## Description
@@ -139,7 +139,7 @@ zero probabilities are also returned (may be slower).
 
 ```julia
 x = randn(500)
-ps = probabilities(SymbolicPermutation(m = 3), x)
+ps = probabilities(OrdinalPatterns(m = 3), x)
 ps = probabilities(ValueHistogram(RectangularBinning(5)), x)
 ps = probabilities(WaveletOverlap(), x)
 ```
@@ -151,17 +151,17 @@ The outcome space is here given as the first argument to `est`.
 ```julia
 x = randn(500)
 
-# Syntactically equivalent to `probabilities(SymbolicPermutation(m = 3), x)`
-ps = probabilities(RelativeAmount(SymbolicPermutation(m = 3)), x)
+# Syntactically equivalent to `probabilities(OrdinalPatterns(m = 3), x)`
+ps = probabilities(RelativeAmount(OrdinalPatterns(m = 3)), x)
 
 # Some more sophisticated ways of estimating probabilities:
-ps = probabilities(Bayes(SymbolicPermutation(m = 3)), x)
+ps = probabilities(BayesianRegularization(OrdinalPatterns(m = 3)), x)
 ps = probabilities(Shrinkage(ValueHistogram(RectangularBinning(5))), x)
 
 # Only the `RelativeAmount` estimator works with non-counting based outcome spaces,
 # like for example `WaveletOverlap`.
 ps = probabilities(RelativeAmount(WaveletOverlap()), x) # works
-ps = probabilities(Bayes(WaveletOverlap()), x) # errors
+ps = probabilities(BayesianRegularization(WaveletOverlap()), x) # errors
 ```
 
     probabilities(x::Vector_or_SSSet) → p::Probabilities
@@ -199,7 +199,7 @@ end
 Similar to `probabilities(args...)`, but allows pre-allocation of temporarily used
 containers `s`.
 
-Only works for certain estimators. See for example [`SymbolicPermutation`](@ref).
+Only works for certain estimators. See for example [`OrdinalPatterns`](@ref).
 """
 function probabilities! end
 

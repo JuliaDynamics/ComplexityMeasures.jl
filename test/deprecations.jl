@@ -30,10 +30,8 @@ x = StateSpaceSet(rand(100, 3))
 end
 
 
-@testset "3.0 deprecations" begin
+@testset "2.9 deprecations" begin
     # For
-    @test entropy(Shannon(MathConstants.e), ValueHistogram(4), x) ==
-        information(Shannon(MathConstants.e), ValueHistogram(4), x)
 
     @test entropy_maximum(Shannon(MathConstants.e), ValueHistogram(4), x) ==
         information_maximum(Shannon(MathConstants.e), ValueHistogram(4), x)
@@ -41,11 +39,7 @@ end
     @test entropy_normalized(Shannon(MathConstants.e), ValueHistogram(4), x) ==
         information_normalized(Shannon(MathConstants.e), ValueHistogram(4), x)
 
-    # Providing information measure as first argument shouldn't work, but does so only for
-    # Shannon, for backwards compatibility.
-    @test entropy(Shannon(), Kraskov(), x) isa Real
-    @test_throws ErrorException entropy(Tsallis(), Kraskov(), x)
-
-    msg = "`entropy(est::DifferentialEntropyEstimator, x)` is deprecated.\nUse `information(est, x)` instead.\n"
-    @test_logs (:warn, msg) entropy(Kraskov(), x)
+    @test SymbolicPermutation() isa OrdinalPatterns
+    @test SymbolicWeightedPermutation() isa WeightedOrdinalPatterns
+    @test SymbolicAmplitudeAwarePermutation() isa AmplitudeAwareOrdinalPatterns
 end

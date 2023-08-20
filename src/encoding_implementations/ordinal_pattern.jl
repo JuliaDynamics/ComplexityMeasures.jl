@@ -9,7 +9,7 @@ export OrdinalPatternEncoding
 
 An encoding scheme that [`encode`](@ref)s length-`m` vectors into
 their permutation/ordinal patterns and then into the integers based on the Lehmer
-code. It is used by [`SymbolicPermutation`](@ref) and similar estimators, see that for
+code. It is used by [`OrdinalPatterns`](@ref) and similar estimators, see that for
 a description of the outcome space.
 
 The ordinal/permutation pattern of a vector `χ` is simply `sortperm(χ)`, which gives the

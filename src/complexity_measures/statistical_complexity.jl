@@ -17,7 +17,7 @@ treated in Rosso et al.'s papers). Used with [`complexity`](@ref).
 
 ## Keyword arguments
 
-- `est::ProbabilitiesEstimator = RelativeAmount(SymbolicPermutation())`: The
+- `est::ProbabilitiesEstimator = RelativeAmount(OrdinalPatterns())`: The
     [`ProbabilitiesEstimator`](@ref) used to estimate probabilities from the input data.
     An [`OutcomeSpace`](@ref) must be given as the first argument to the estimator to
     control how discretization within pixel windows is performed.
@@ -75,7 +75,7 @@ To obtain both the entropy (or other information measure) and the statistical co
 """
 Base.@kwdef struct StatisticalComplexity{E, D, H} <: ComplexityEstimator
     dist::D = JSDivergence()
-    est::E = RelativeAmount(SymbolicPermutation())
+    est::E = RelativeAmount(OrdinalPatterns())
     entr::H = Renyi()
     entr_val::Base.RefValue{Float64} = Ref(0.0)
 end
@@ -149,11 +149,12 @@ The calculation time of the maximum complexity curve grows as `O(total_outcomes(
 very long for high numbers of outcomes.
 This function is inspired by S. Sippels implementation in statcomp [^statcomp].
 
-This function will work with any `ProbabilitiesEstimator` where `total_outcomes`(@ref) is known a priori.
+This function will work with any `ProbabilitiesEstimator` where [`total_outcomes`](@ref) is known a priori.
 
 [^Rosso2007]: Rosso, O. A., Larrondo, H. A., Martin, M. T., Plastino, A., & Fuentes, M. A. (2007).
             [Distinguishing noise from chaos](https://doi.org/10.1103/PhysRevLett.99.154102).
             Physical review letters, 99(15), 154102.
+
 [^statcomp]: Sippel, S., Lange, H., Gans, F. (2019).
             [statcomp: Statistical Complexity and Information Measures for Time Series Analysis](https://cran.r-project.org/web/packages/statcomp/index.html)
 """

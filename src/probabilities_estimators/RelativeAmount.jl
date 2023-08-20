@@ -31,12 +31,12 @@ Hence, this estimator is called `RelativeAmount`.
 ```julia
 using ComplexityMeasures
 x = cumsum(randn(100))
-ps = probabilities(SymbolicPermutation(m = 3), x) # RelativeAmount is the default estimator
-ps_mle = probabilities(RelativeAmount(SymbolicPermutation(m = 3)), x) # equivalent
+ps = probabilities(OrdinalPatterns(m = 3), x) # RelativeAmount is the default estimator
+ps_mle = probabilities(RelativeAmount(OrdinalPatterns(m = 3)), x) # equivalent
 ps == ps_mle # true
 ```
 
-See also: [`Bayes`](@ref), [`Shrinkage`](@ref).
+See also: [`BayesianRegularization`](@ref), [`Shrinkage`](@ref).
 """
 struct RelativeAmount{O <: OutcomeSpace} <: ProbabilitiesEstimator
     outcomemodel::O

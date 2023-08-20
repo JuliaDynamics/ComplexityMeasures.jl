@@ -1,6 +1,7 @@
 # Complexity measures
 
-Please be sure you have read the [Terminology](@ref terminology) section before going through the API here, to have a good idea of how we define "complexity measures" and how they all come together over the common interface of the [`complexity`](@ref) function.
+!!! note
+    Be sure you have gone through the [Tutorial](@ref) before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
 
 ## Complexity measures API
 

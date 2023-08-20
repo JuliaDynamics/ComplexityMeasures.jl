@@ -1,14 +1,14 @@
 # Counting-basedoutcome spaces work with any estimator
 os = [
     CountOccurrences(),
-    SymbolicPermutation(m = 3),
+    OrdinalPatterns(m = 3),
     Dispersion(),
     Diversity(),
     ValueHistogram(RectangularBinning(3)),
 ]
 @testset "`ProbabilitiesEstimator` constructors: $(typeof(os[i]).name.name)" for i in eachindex(os)
     @test RelativeAmount(os[i]) isa RelativeAmount
-    @test Bayes(os[i]) isa Bayes
+    @test BayesianRegularization(os[i]) isa BayesianRegularization
     @test Shrinkage(os[i]) isa Shrinkage
     @test AddConstant(os[i]) isa AddConstant
 end
@@ -18,13 +18,13 @@ os = [
     WaveletOverlap(),
     TransferOperator(RectangularBinning(3)),
     PowerSpectrum(),
-    SymbolicAmplitudeAwarePermutation(),
-    SymbolicWeightedPermutation(),
+    AmplitudeAwareOrdinalPatterns(),
+    WeightedOrdinalPatterns(),
     NaiveKernel(0.1),
 ]
 @testset "`ProbabilitiesEstimator` constructors: $(typeof(os[i]).name.name)" for i in eachindex(os)
     @test RelativeAmount(os[i]) isa RelativeAmount
-    @test_throws ArgumentError Bayes(WaveletOverlap())
+    @test_throws ArgumentError BayesianRegularization(WaveletOverlap())
     @test_throws ArgumentError Shrinkage(WaveletOverlap())
     @test_throws ArgumentError AddConstant(WaveletOverlap())
 end

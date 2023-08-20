@@ -3,9 +3,9 @@ rng = Random.MersenneTwister(1234)
 
 probests = [
     Dispersion(),
-    SymbolicPermutation(),
-    SymbolicAmplitudeAwarePermutation(),
-    SymbolicWeightedPermutation(),
+    OrdinalPatterns(),
+    AmplitudeAwareOrdinalPatterns(),
+    WeightedOrdinalPatterns(),
     WaveletOverlap(),
     PowerSpectrum(),
     ValueHistogram(RectangularBinning(3)),
