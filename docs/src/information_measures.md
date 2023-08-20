@@ -6,16 +6,21 @@
 
 ## Information measures API
 
-The information measure API is defined by the [`information`](@ref) function, which takes
-as an input an [`InformationMeasure`](@ref), or some specialized [`DiscreteInfoEstimator`](@ref) or [`DifferentialInfoEstimator`](@ref) for estimating the discrete or differential variant
-of the measure.
-
+The information measure API is defined by the [`information`](@ref) function, which takes as an input an [`InformationMeasure`](@ref), or some specialized [`DiscreteInfoEstimator`](@ref) or [`DifferentialInfoEstimator`](@ref) for estimating the discrete or differential variant of the measure.
 The functions [`information_maximum`](@ref) and [`information_normalized`](@ref) are also useful.
-
-## Entropy definitions
 
 ```@docs
 InformationMeasure
+information(::InformationMeasure, ::OutcomeSpace, ::Any)
+information(::DifferentialInfoEstimator, ::Any)
+information_maximum
+information_normalized
+```
+
+## Entropies
+
+```@docs
+entropy
 Shannon
 Renyi
 Tsallis
@@ -32,14 +37,6 @@ RenyiExtropy
 TsallisExtropy
 ```
 
-## Estimation (discrete)
-
-```@docs
-information(::InformationMeasure, ::OutcomeSpace, ::Any)
-information_maximum
-information_normalized
-```
-
 ### Discrete information estimators
 
 ```@docs
@@ -53,19 +50,10 @@ HorvitzThompson
 ChaoShen
 ```
 
-## Estimation (differential)
-
-```@docs
-information(::DifferentialInfoEstimator, ::Any)
-```
-
 ### Differential information estimators
 
 ```@docs
 DifferentialInfoEstimator
-```
-
-```@docs
 Kraskov
 KozachenkoLeonenko
 Zhu
