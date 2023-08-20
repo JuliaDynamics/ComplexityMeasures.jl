@@ -39,14 +39,6 @@ end
     @test entropy_normalized(Shannon(MathConstants.e), ValueHistogram(4), x) ==
         information_normalized(Shannon(MathConstants.e), ValueHistogram(4), x)
 
-    # Providing information measure as first argument shouldn't work, but does so only for
-    # Shannon, for backwards compatibility.
-    @test entropy(Shannon(), Kraskov(), x) isa Real
-    @test_throws ErrorException entropy(Tsallis(), Kraskov(), x)
-
-    msg = "`entropy(est::DifferentialEntropyEstimator, x)` is deprecated.\nUse `information(est, x)` instead.\n"
-    @test_logs (:warn, msg) entropy(Kraskov(), x)
-
     @test SymbolicPermutation() isa OrdinalPatterns
     @test SymbolicWeightedPermutation() isa WeightedOrdinalPatterns
     @test SymbolicAmplitudeAwarePermutation() isa AmplitudeAwareOrdinalPatterns
