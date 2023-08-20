@@ -14,8 +14,8 @@ N = round(0.5*log(2π) + 0.5, digits = 2)
 N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
 
 npts = 1000000
-ea_n = information(Goria(k = 5, base = ℯ), randn(npts))
-ea_n3 = information(Goria(k = 5, base = 3), randn(npts))
+ea_n = information(Goria(Shannon(base = ℯ), k = 5), randn(npts))
+ea_n3 = information(Goria(Shannon(base = 3), k = 5), randn(npts))
 
 @test N * 0.98 ≤ ea_n ≤ N * 1.02
 @test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
