@@ -128,7 +128,7 @@ function entropy(args...)
     else
         false
     end
-    cond || throw(error("""
+    cond || throw(ArgumentError("""
         You have used `entropy` without an entropy definition
         ($(typeof(e))). Use `information` instead."""))
     return information(args...)

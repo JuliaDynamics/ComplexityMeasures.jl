@@ -80,7 +80,7 @@ hcat(probsx, outsx)
 
 total_outcomes(o)
 
-# The reason that there are less outcomes in the `y` results is that one outome was never encountered in the `y` data.
+# The reason that there are less outcomes in the `y` is because one outcome was never encountered in the `y` data.
 # This is a common theme in ComplexityMeasures.jl: outcomes that are not in the data are skipped.
 # This can save huge amounts of memory for outcome spaces with very large numbers of outcomes.
 # To explicitly obtain all outcomes, by assigning 0 probability to not encountered outcomes, use [`allprobabilities`](@ref) or [`allprobabilities_and_outcomes`](@ref).
@@ -95,6 +95,8 @@ outsx = outsy = outcome_space(o)
 
 hcat(probsx, probsy, outsx)
 
+# ## Beyond probabilities: estimators
+
 # So far we have been estimating probabilities by counting the amount of times each possible outcome was encountered in the data,
 # then normalizing.
 # This  is called "maximum likelihood estimation".
@@ -105,7 +107,8 @@ probsy = probabilities(o, y)
 hcat(countsy, countsy ./ sum(countsy), probsy)
 
 # By definition columns 2 and 3 are identical.
-# However, there are other ways to estimate probabilities that may account for biases in counting outcomes from finite data. Alternative estimators for probabilities are subtypes of [`ProbabilitiesEstimator`](@ref).
+# However, there are other ways to estimate probabilities that may account for biases in counting outcomes from finite data.
+# Alternative estimators for probabilities are subtypes of [`ProbabilitiesEstimator`](@ref).
 # `ProbabilitiesEstimator`s wrap outcome space instances and dictate alternative ways to estimate probabilities.
 # For example, one could use [`BayesianRegularization`](@ref).
 
@@ -113,7 +116,8 @@ probsy_bayes = probabilities(BayesianRegularization(o), y)
 
 probsy_bayes .- probsy
 
-# While the corrections of [`BayesianRegularization`](@ref) are small, they are nevertheless measurable. When calling [`probabilities`](@ref) with an outcome space instance, the default [`RelativeAmount`](@ref) probabilities estimator is used to extract the probabilities.
+# While the corrections of [`BayesianRegularization`](@ref) are small, they are nevertheless measurable.
+# When calling [`probabilities`](@ref) with an outcome space instance, the default [`RelativeAmount`](@ref) probabilities estimator is used to extract the probabilities.
 
 # ## Entropies
 
