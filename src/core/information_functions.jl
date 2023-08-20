@@ -21,10 +21,14 @@ for the first argument (which will default to [`PlugIn`](@ref) estimation) or an
 [`OutcomeSpace`](@ref) for the second argument (which will default to the [`RelativeAmount`](@ref)
 estimator).
 
-All estimators compute [`Shannon`](@ref) entropy by default. To estimate other measures,
-give them as an argument to the estimator, e.g.
-`information(Jackknife(Tsallis()), probest, x)`.
-If `e` is not provided, then the default is `information(PlugIn(Shannon()), probs)`.
+
+    information([e::DiscreteInfoEstimator,] p::Probabilities) → h::Real
+
+Like above, but estimate the information measure from the pre-computed
+[`Probabilities`](@ref) `p`.
+
+See also: [`information_maximum`](@ref), [`information_normalized`](@ref)
+for a normalized version.
 
 ## Examples (naive estimation)
 
@@ -74,21 +78,6 @@ h_r = information(Jackknife(Renyi()), Shrinkage(o), x)
 j_t = information(Jackknife(TsallisExtropy()), BayesianRegularization(o), x)
 j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(o), x)
 ```
-
-## Maximum/normalized information
-
-Most discrete [`InformationMeasure`](@ref)s have a well-defined maximum for a given
-[`OutcomeSpace`](@ref). You can use [`information_maximum`](@ref) to get this
-maximum value, and [`information_normalized`](@ref) to obtain a normalized version of the
-measure (divided by the maximum value).
-
-
-    information([e::DiscreteInfoEstimator,] p::Probabilities) → h::Real
-
-Like above, but estimate the information measure from the pre-computed
-[`Probabilities`](@ref) `p`.
-
-See also: [`information_maximum`](@ref), [`information_normalized`](@ref).
 """
 function information(e::InformationMeasure, o::OutcomeSpace, x)
     return information(PlugIn(e), RelativeAmount(o), x)
@@ -109,17 +98,19 @@ information(probs::Probabilities) = information(Shannon(), probs)
 
 # from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
 """
-    entropy([edef,] est::ProbabilitiesEstimator, x)
+    entropy([disce,] probest, x)
 
-Compute the discrete entropy of `x` according to the given probabilities estimator
-and entropy definition, or entropy discrete estimator `edef`.
-`edef` defaults to `Shannon()`.
+Compute the discrete entropy of `x` according to the given [`ProbabilitiesEstimator`](@ref)
+or [`OutcomeSpace`](@ref) `probest`.
+The first optional argument can be an entropy definition (see [`InformationMeasure`](@ref))
+or a discrete estimator, see [`DiscreteInfoEstimator`](@ref).
+If not given, `disce` defaults to `Shannon()`.
 
-    entropy(diffest::DifferentialInfoEstimator, x)
+    entropy(diffe::DifferentialInfoEstimator, x)
 
-Compute the differential entropy of `x` using the given estimator.
+Compute the differential entropy of `x` using a [`DifferentialInfoEstimator`](@ref).
 
-`entropy` is nothing more beyond a wrapper of [`information`](@ref) that will
+`entropy` is nothing more than a wrapper of [`information`](@ref) that will
 simply throw an error if used with an information measure that is not an entropy.
 """
 function entropy(args...)
@@ -201,7 +192,6 @@ the number of _possible_ outcomes (i.e., the [`total_outcomes`](@ref)) from `pro
 For the [`PlugIn`](@ref) estimator, it is guaranteed that `h̃ ∈ [0, 1]`. For any other
 estimator, we can't guarantee this, since the estimator might over-correct. You should know
 what you're doing if using anything but [`PlugIn`](@ref) to estimate normalized values.
-
 """
 function information_normalized(e::InformationMeasure, o::OutcomeSpace, x)
     # If the maximum information is zero (i.e. only one outcome), then we define
