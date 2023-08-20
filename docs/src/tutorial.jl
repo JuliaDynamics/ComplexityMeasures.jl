@@ -170,9 +170,9 @@ perm_ext_y_jack = information(Jackknife(extdef), ospace, y)
 
 # In truth, when we called `entropy(e, o, y)` it dispatched automatically to `information(e, o, y)`, as all "information measures" are part of the same function interface.
 
-# ## Beyond discrete: differential entropies
+# ## Beyond discrete: differential or continuous
 
-# Discrete entropies are the entropies of probability mass functions.
+# Discrete entropies (or in general, information measures) are functions of probability mass functions.
 # It is also possible to compute entropies of probability density functions.
 # In ComplexityMeasures.jl, this is done by calling [`entropy`](@ref) (or the more general [`information`](@ref)) with a differential information estimator, a subtype of [`DiffInfoEstimator`](@ref).
 # These estimators are given directly to [`information`](@ref) without assigning an outcome space, because the probability density is approximated implicitly, not explicitly.
@@ -188,5 +188,5 @@ diffent = entropy(diffest, x)
 # An example here is the well-known _sample entropy_ (which isn't actually an entropy in the formal mathematical sense).
 # It can be computed like
 
-complest = SampleEntropy(;r = 0.1)
+complest = SampleEntropy(r = 0.1)
 sampent = complexity(complest, y)
