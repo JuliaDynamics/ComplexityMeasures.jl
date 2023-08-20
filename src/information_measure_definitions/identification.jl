@@ -25,7 +25,7 @@ Details about this entropy definition can be found in Ahlswede et al. (2021)[^Ah
     Ahlswede, R., Ahlswede, A., Althöfer, I., Deppe, C., & Tamm, U. (2021). Identification
     and Other Probabilistic Models. Springer International Publishing.
 """
-struct Identification <: InformationMeasure end
+struct Identification <: Entropy end
 
 # Page 375 in Ahlswede et al. (2021)
 function information(e::Identification, probs::Probabilities)

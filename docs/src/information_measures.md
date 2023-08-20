@@ -1,40 +1,43 @@
-# [Information measures](@id information_measures)
+# [Information measures (entropies and co.)](@id information_measures)
 
 !!! note
-    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here.
+    Be sure you have gone through the [Tutorial](@ref) before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
+
 
 ## Information measures API
 
-The information measure API is defined by the [`information`](@ref) function, which takes
-as an input an [`InformationMeasure`](@ref), or some specialized [`DiscreteInfoEstimator`](@ref) or [`DifferentialInfoEstimator`](@ref) for estimating the discrete or differential variant
-of the measure.
-
+The information measure API is defined by the [`information`](@ref) function, which takes as an input an [`InformationMeasure`](@ref), or some specialized [`DiscreteInfoEstimator`](@ref) or [`DifferentialInfoEstimator`](@ref) for estimating the discrete or differential variant of the measure.
 The functions [`information_maximum`](@ref) and [`information_normalized`](@ref) are also useful.
-
-## Definitions (entropies and extropies)
 
 ```@docs
 InformationMeasure
+information(::InformationMeasure, ::OutcomeSpace, ::Any)
+information(::DifferentialInfoEstimator, ::Any)
+information_maximum
+information_normalized
+```
+
+## Entropies
+
+```@docs
+entropy
 Shannon
 Renyi
 Tsallis
 Kaniadakis
 Curado
 StretchedExponential
+```
+
+## Other information measures
+
+```@docs
 ShannonExtropy
 RenyiExtropy
 TsallisExtropy
 ```
 
-## Estimation (discrete)
-
-```@docs
-information(::InformationMeasure, ::OutcomeSpace, ::Any)
-information_maximum
-information_normalized
-```
-
-### Discrete information estimators
+## Discrete information estimators
 
 ```@docs
 DiscreteInfoEstimator
@@ -47,19 +50,10 @@ HorvitzThompson
 ChaoShen
 ```
 
-## Estimation (differential)
-
-```@docs
-information(::DifferentialInfoEstimator, ::Any)
-```
-
-### Differential information estimators
+## Differential information estimators
 
 ```@docs
 DifferentialInfoEstimator
-```
-
-```@docs
 Kraskov
 KozachenkoLeonenko
 Zhu

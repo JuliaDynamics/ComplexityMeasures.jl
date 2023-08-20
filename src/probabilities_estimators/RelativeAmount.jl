@@ -36,7 +36,7 @@ ps_mle = probabilities(RelativeAmount(OrdinalPatterns(m = 3)), x) # equivalent
 ps == ps_mle # true
 ```
 
-See also: [`Bayes`](@ref), [`Shrinkage`](@ref).
+See also: [`BayesianRegularization`](@ref), [`Shrinkage`](@ref).
 """
 struct RelativeAmount{O <: OutcomeSpace} <: ProbabilitiesEstimator
     outcomemodel::O

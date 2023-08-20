@@ -61,7 +61,7 @@ The default probabilities estimator is [`RelativeAmount`](@ref), which is compat
 [`OutcomeSpace`](@ref). The following estimators only support counting-based outcomes.
 
 - [`Shrinkage`](@ref).
-- [`Bayes`](@ref).
+- [`BayesianRegularization`](@ref).
 - [`AddConstant`](@ref).
 
 ## Description
@@ -155,13 +155,13 @@ x = randn(500)
 ps = probabilities(RelativeAmount(OrdinalPatterns(m = 3)), x)
 
 # Some more sophisticated ways of estimating probabilities:
-ps = probabilities(Bayes(OrdinalPatterns(m = 3)), x)
+ps = probabilities(BayesianRegularization(OrdinalPatterns(m = 3)), x)
 ps = probabilities(Shrinkage(ValueHistogram(RectangularBinning(5))), x)
 
 # Only the `RelativeAmount` estimator works with non-counting based outcome spaces,
 # like for example `WaveletOverlap`.
 ps = probabilities(RelativeAmount(WaveletOverlap()), x) # works
-ps = probabilities(Bayes(WaveletOverlap()), x) # errors
+ps = probabilities(BayesianRegularization(WaveletOverlap()), x) # errors
 ```
 
     probabilities(x::Vector_or_SSSet) → p::Probabilities

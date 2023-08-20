@@ -149,11 +149,12 @@ The calculation time of the maximum complexity curve grows as `O(total_outcomes(
 very long for high numbers of outcomes.
 This function is inspired by S. Sippels implementation in statcomp [^statcomp].
 
-This function will work with any `ProbabilitiesEstimator` where `total_outcomes`(@ref) is known a priori.
+This function will work with any `ProbabilitiesEstimator` where [`total_outcomes`](@ref) is known a priori.
 
 [^Rosso2007]: Rosso, O. A., Larrondo, H. A., Martin, M. T., Plastino, A., & Fuentes, M. A. (2007).
             [Distinguishing noise from chaos](https://doi.org/10.1103/PhysRevLett.99.154102).
             Physical review letters, 99(15), 154102.
+
 [^statcomp]: Sippel, S., Lange, H., Gans, F. (2019).
             [statcomp: Statistical Complexity and Information Measures for Time Series Analysis](https://cran.r-project.org/web/packages/statcomp/index.html)
 """

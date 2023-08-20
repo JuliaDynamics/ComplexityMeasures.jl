@@ -10,19 +10,10 @@ function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N, D::Int = 1)
     end
 end
 
-
-# from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
-function entropy(e::InformationMeasure, est::DifferentialInfoEstimator, x)
-    if e isa Shannon
-        return information(est, x)
-    else
-        throw(ErrorException("only shannon entropy supports this deprecated interface"))
-    end
-end
-
 @deprecate ComplexityMeasure ComplexityEstimator
 @deprecate EntropyDefinition InformationMeasure
 @deprecate entropy_maximum information_maximum
+@deprecate entropy_normalized information_normalized
 @deprecate DifferentialEntropyEstimator DifferentialInfoEstimator
 @deprecate DiscreteEntropyEstimator DiscreteInfoEstimator
 @deprecate MLEntropy PlugIn
@@ -80,30 +71,6 @@ function genentropy(x::Array_or_SSSet, est::OutcomeSpace; q = 1.0, base = MathCo
     return information(Renyi(q, base), RelativeAmount(est), x)
 end
 
-####################################################################################
-# For 3.0
-####################################################################################
-export entropy
-entropy(args...) = information(args...)
-
-
-# Discrete
-################################################################################
-export entropy_normalized
-entropy_normalized(args...) = information_normalized(args...)
-
-# Differential
-################################################################################
-function entropy(est::DifferentialInfoEstimator, x)
-    @warn """
-    `entropy(est::DifferentialEntropyEstimator, x)` is deprecated.
-    Use `information(est, x)` instead.
-    """
-    return information(est, x)
-end
-
-
-# 3.0
 @deprecate SymbolicPermutation OrdinalPatterns
 @deprecate SymbolicWeightedPermutation WeightedOrdinalPatterns
 @deprecate SymbolicAmplitudeAwarePermutation AmplitudeAwareOrdinalPatterns

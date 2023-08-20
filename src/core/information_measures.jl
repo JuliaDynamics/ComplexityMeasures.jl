@@ -1,21 +1,16 @@
 export InformationMeasure
-export DiscreteInfoEstimator, DiscreteInfoEstimator
-export DifferentialInfoEstimator, DifferentialInfoEstimator
-export information, information_maximum, information_normalized, convert_logunit
-
+export DiscreteInfoEstimator, DifferentialInfoEstimator
 
 """
     InformationMeasure
 
-`InformationMeasure` is the supertype of all information measure definitions.
+`InformationMeasure` is the supertype of all information measure _definitions_.
 
 In this package, we define "information measures" as functionals of probability mass
 functions ("discrete" measures), or of probability density functions ("differential"
 measures). Examples are (generalized) entropies such as [`Shannon`](@ref) or
 [`Renyi`](@ref), or extropies like [`ShannonExtropy`](@ref).
-A particular information measure may have both a discrete and a continuous/differential
-definition, which are estimated using a [`DifferentialInfoEstimator`](@ref) or
-a [`DifferentialInfoEstimator`](@ref), respectively.
+[^Amigó2018] provides a useful review of generalized entropies.
 
 ## Used with
 
@@ -42,13 +37,27 @@ for usage examples.
 - [`TsallisExtropy`](@ref).
 - [`ShannonExtropy`](@ref), which is a subcase of the above two in the limit `q → 1`.
 
+## Estimators
+
+A particular information measure may have both a discrete and a continuous/differential
+definition, which are estimated using a [`DifferentialInfoEstimator`](@ref) or
+a [`DifferentialInfoEstimator`](@ref), respectively.
+
 [^Amigó2018]:
     Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
     generalized entropies. [Entropy, 20(11), 813.](https://www.mdpi.com/1099-4300/20/11/813)
 """
 abstract type InformationMeasure end
 
-# This is internal: not exported or in public API
+"""
+    abstract type Entropy <: InformationMeasure end
+
+Abstract subtype of [`InformationMeasure`](@ref). It only exists
+to perform a sanity check when calling the [`entropy`](@ref) function.
+"""
+abstract type Entropy <: InformationMeasure end
+
+# This is documented in the dev docs
 """
     InformationMeasureEstimator{I <: InformationMeasure}
 
@@ -86,8 +95,9 @@ function information(est::InformationMeasureEstimator, probest::ProbabilitiesEst
     throw(ArgumentError("""$est not implemented for information measure $(est.definition)"""))
 end
 
+
 ###########################################################################################
-# Discrete entropy
+# Estimators
 ###########################################################################################
 """
     DiscreteInfoEstimator
@@ -119,10 +129,10 @@ using the Miller-Madow bias correction. The list below gives a complete overview
 The following estimators are generic and can compute any [`InformationMeasure`](@ref).
 
 - [`PlugIn`](@ref). The default, generic plug-in estimator of any information measure.
-    It computes the measure exactly as stated in the definition, using the provided
-    probabilities.
+    It computes the measure exactly as stated in the definition, using the computed
+    probability mass function.
 - [`Jackknife`](@ref). Uses the a combination of the plug-in estimator and the jackknife
-    principle to estimate an [`InformationMeasure`](@ref).
+    principle to estimate the information measure.
 
 ### [`Shannon`](@ref) entropy estimators
 
@@ -142,23 +152,17 @@ provide improvements over the naive [`PlugIn`](@ref) estimator.
     What this means is that every estimator actually comes in many different variants -
     one for each [`ProbabilitiesEstimator`](@ref). For example, the [`MillerMadow`](@ref)
     estimator of [`Shannon`](@ref) entropy is typically calculated with [`RelativeAmount`](@ref)
-    probabilities. But here, you can use for example the [`Bayes`](@ref) or the
+    probabilities. But here, you can use for example the [`BayesianRegularization`](@ref) or the
     [`Shrinkage`](@ref) probabilities estimators instead, i.e.
     `information(MillerMadow(), RelativeAmount(outcome_space), x)` and
-    `information(MillerMadow(), Bayes(outcomes_space), x)` are distinct estimators.
+    `information(MillerMadow(), BayesianRegularization(outcomes_space), x)` are distinct estimators.
     This holds for all [`DiscreteInfoEstimator`](@ref)s. Many of these
     estimators haven't been explored in the literature before, so feel free to explore,
     and please cite this software if you use it to explore some new estimator combination!
-
-
-More estimators will be added in the future ([#237](https://github.com/JuliaDynamics/ComplexityMeasures.jl/issues/237)).
 """
 abstract type DiscreteInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
 
 
-###########################################################################################
-# Differential entropy
-###########################################################################################
 """
     DifferentialInfoEstimator
 
@@ -188,33 +192,5 @@ See [`information`](@ref) for usage.
 """
 abstract type DifferentialInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
 
-###########################################################################################
-# Utils
-###########################################################################################
-"""
-    log_with_base(base) → f
 
-Return a function that computes the logarithm at a given base.
-This definitely increases accuracy, and probably also performance.
-"""
-function log_with_base(base)
-    if base == 2
-        log2
-    elseif base == MathConstants.e
-        log
-    elseif base == 10
-        log10
-    else
-        x -> log(base, x)
-    end
-end
 
-"""
-    convert_logunit(h_a::Real, a, b) → h_b
-
-Convert a number `h_a` computed with logarithms to base `a` to an entropy `h_b` computed
-with logarithms to base `b`. This can be used to convert the "unit" of an entropy.
-"""
-function convert_logunit(h_a::Real, base_from, base_to)
-    h_a / log(base_from, base_to)
-end

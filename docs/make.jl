@@ -1,8 +1,13 @@
 cd(@__DIR__)
 using ComplexityMeasures
 
+# Convert tutorial file to markdown
+import Literate
+Literate.markdown("src/tutorial.jl", "src")
+
 pages = [
     "index.md",
+    "tutorial.md",
     "probabilities.md",
     "information_measures.md",
     "complexity.md",
