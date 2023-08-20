@@ -37,7 +37,7 @@ RenyiExtropy
 TsallisExtropy
 ```
 
-### Discrete information estimators
+## Discrete information estimators
 
 ```@docs
 DiscreteInfoEstimator
@@ -50,7 +50,7 @@ HorvitzThompson
 ChaoShen
 ```
 
-### Differential information estimators
+## Differential information estimators
 
 ```@docs
 DifferentialInfoEstimator
