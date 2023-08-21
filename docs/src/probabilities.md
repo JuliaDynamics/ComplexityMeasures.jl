@@ -143,4 +143,6 @@ decode
 OrdinalPatternEncoding
 GaussianCDFEncoding
 RectangularBinEncoding
+AmplitudeEncoding
+FirstDifferenceEncoding
 ```

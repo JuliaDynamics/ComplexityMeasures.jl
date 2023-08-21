@@ -31,6 +31,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("utils/bin_encoding.jl")
     testfile("utils/encoding.jl")
     testfile("utils/amplitude_encoding.jl")
+    testfile("utils/first_difference_encoding.jl")
     testfile("convenience.jl")
     testfile("deprecations.jl")
 end
