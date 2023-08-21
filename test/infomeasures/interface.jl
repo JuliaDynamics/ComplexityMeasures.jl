@@ -13,6 +13,15 @@ using Random: Xoshiro
     x = rand(Xoshiro(1234), 10_000)
     @test information_maximum(PlugIn(s), e2) == information_maximum(s, e2)
     @test information_normalized(PlugIn(s), e1, x) == information_normalized(s, e1, x)
+
+    # entropy wrapper function
+    @test entropy(Shannon(MathConstants.e), ValueHistogram(4), x) ==
+    information(Shannon(MathConstants.e), ValueHistogram(4), x)
+
+    y = rand(50)
+    @test entropy(Jackknife(), ValueHistogram(4), y) ==
+    information(Jackknife(), ValueHistogram(4), y)
+
 end
 
 @testset "info interface: errors" begin
@@ -21,6 +30,9 @@ end
     # the AlizadehArghami estimator only works for Shannon entropy
     @test_throws ArgumentError information(Tsallis(), AlizadehArghami(), x) # deprecated
     @test_throws ArgumentError information(AlizadehArghami(Tsallis()), x)
+
+    @test_throws ArgumentError entropy(ShannonExtropy(), OrdinalPatterns(), x)
+
 
     # some new measure
     struct SomeNewMeasure <: InformationMeasure end

@@ -1,11 +1,10 @@
-# [Probabilities](@ref probabilities)
+# [Probabilities](@ref)
 
 !!! note
-    Please be sure you have read the [Terminology](@ref terminology) section before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
-
+    Be sure you have gone through the [Tutorial](@ref) before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
 
 ComplexityMeasures.jl implements an interface for probabilities that exactly follows the mathematically rigorous formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space).
-It is formalized by [`OutcomeSpace`](@ref), [`counts`](@ref), [`probabilities`](@ref) and derivative functions such as  [`allprobabilities_and_outcomes`](@ref).
+Probability spaces are formalized by an [`OutcomeSpace`](@ref) $\Omega$, and the functions [`counts`](@ref) and [`probabilities`](@ref) as well as derivative functions such as [`allprobabilities_and_outcomes`](@ref).
 The mathematical formulation of probabilities spaces is further enhanced by [`ProbabilitiesEstimator`](@ref) and its subtypes, which may correct theoretically known biases when estimating probabilities from finite data.
 
 In reality, probabilities can be either discrete ([mass functions](https://en.wikipedia.org/wiki/Probability_mass_function)) or continuous ([density functions](https://en.wikipedia.org/wiki/Probability_density_function)).

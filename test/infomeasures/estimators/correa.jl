@@ -15,8 +15,8 @@ N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
 
 npts = 1000000
 ea = information(Correa(m = 100), rand(npts))
-ea_n = information(Correa(m = 100, base = ℯ), randn(npts))
-ea_n3 = information(Correa(m = 100, base = 3), randn(npts))
+ea_n = information(Correa(Shannon(base = ℯ), m = 100), randn(npts))
+ea_n3 = information(Correa(Shannon(base = 3), m = 100), randn(npts))
 
 @test U - max(0.02, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
 @test N * 0.96 ≤ ea_n ≤ N * 1.02

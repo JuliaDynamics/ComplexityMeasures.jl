@@ -21,11 +21,12 @@ Base.@kwdef struct ShannonExtropy{B} <: InformationMeasure
 end
 
 function information(e::ShannonExtropy, probs::Probabilities)
-    if length(probs) == 1
+    non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
+    if length(non0_probs) == 1
         return 0.0
     end
 
-    return -sum((1 - pᵢ) * log(e.base, 1 - pᵢ) for pᵢ in probs)
+    return -sum((1 - pᵢ) * log(e.base, 1 - pᵢ) for pᵢ in non0_probs)
 end
 
 function information_maximum(e::ShannonExtropy, L::Int)

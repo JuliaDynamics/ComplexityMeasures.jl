@@ -36,16 +36,17 @@ RenyiExtropy(; q = 1.0, base = 2) = RenyiExtropy(q, base)
 
 function information(e::RenyiExtropy, probs::Probabilities)
     (; q, base) = e
+    non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
 
-    if length(probs) == 1
+    if length(non0_probs) == 1
         return 0.0
     end
 
     if q ≈ 1
-        return information(ShannonExtropy(; base), probs)
+        return information(ShannonExtropy(; base), Probabilities(non0_probs))
     else
-        N = length(probs)
-        num = -(N - 1)*log(base, N - 1) + (N - 1)*log(base, sum((1 - pᵢ)^q for pᵢ in probs))
+        N = length(non0_probs)
+        num = -(N - 1)*log(base, N - 1) + (N - 1)*log(base, sum((1 - pᵢ)^q for pᵢ in non0_probs))
         den = 1 - q
         return num / den
     end

@@ -24,10 +24,11 @@ export Lord
 
 """
     Lord <: DifferentialInfoEstimator
-    Lord(measure = Shannon(); k = 10, w = 0, base = 2)
+    Lord(measure = Shannon(); k = 10, w = 0)
 
 `Lord` estimates the [`Shannon`](@ref) differential [`information`](@ref) using a nearest
-neighbor approach with a local nonuniformity correction (LNC).
+neighbor approach with a local nonuniformity correction (LNC), with logarithms to the
+`base` specified in `definition`.
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
@@ -69,14 +70,13 @@ makes `Lord` a well-suited entropy estimator for a wide range of systems.
     of entropy and mutual information. Chaos: An Interdisciplinary Journal of Nonlinear
     Science, 28(3), 033114.
 """
-struct Lord{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I
+struct Lord{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
+    definition::I
     k::Int
     w::Int
-    base::B
 end
-function Lord(measure = Shannon(); k = 10, w = 0, base = 2)
-    return Lord(measure, k, w, base)
+function Lord(definition = Shannon(); k = 10, w = 0)
+    return Lord(definition, k, w)
 end
 
 function information(est::Lord{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D}
@@ -134,7 +134,7 @@ function information(est::Lord{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D
     # The estimated entropy has "unit" [nats]
     h = - h / N
 
-    return convert_logunit(h, ℯ, est.base)
+    return convert_logunit(h, ℯ, est.definition.base)
 end
 
 # This is zero-allocating.

@@ -7,10 +7,11 @@ export Goria
 
 """
     Goria <: DifferentialInfoEstimator
-    Goria(measure = Shannon(); k = 1, w = 0, base = 2)
+    Goria(measure = Shannon(); k = 1, w = 0)
 
 The `Goria` estimator computes the [`Shannon`](@ref) differential
-[`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref) in the given `base`.
+[`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref),
+with logarithms to the `base` specified in `definition`.
 
 ## Description
 
@@ -22,7 +23,6 @@ the [Shannon](@ref) differential entropy
 ```math
 H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))].
 ```
-
 
 Specifically, let ``\\bf{n}_1, \\bf{n}_2, \\ldots, \\bf{n}_N`` be the distance of the
 samples ``\\{\\bf{x}_1, \\bf{x}_2, \\ldots, \\bf{x}_N \\}`` to their
@@ -45,14 +45,13 @@ is the digamma function.
     class of random vector entropy estimators and its applications in testing statistical
     hypotheses. Journal of Nonparametric Statistics, 17(3), 277-297.
 """
-struct Goria{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I
+struct Goria{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
+    definition::I
     k::Int
     w::Int
-    base::B
 end
-function Goria(measure = Shannon(); k = 1, w = 0, base = 2)
-    return Goria(measure, k, w, base)
+function Goria(definition = Shannon(); k = 1, w = 0)
+    return Goria(definition, k, w)
 end
 
 function information(est::Goria{<:Shannon}, x::AbstractStateSpaceSet{D}) where D
@@ -66,6 +65,6 @@ function information(est::Goria{<:Shannon}, x::AbstractStateSpaceSet{D}) where D
           log(N - 1) +
           log(c1(D)) -
           digamma(k)
-    return convert_logunit(h, ℯ, est.base)
+    return convert_logunit(h, ℯ, est.definition.base)
 end
 c1(D::Int) = (2π^(D/2)) / (D* gamma(D/2))

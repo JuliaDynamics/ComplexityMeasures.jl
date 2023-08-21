@@ -15,7 +15,7 @@ N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
 
 npts = 1000000
 ea = information(Vasicek(m = 100), rand(npts))
-ea_n3 = information(Vasicek(m = 100, base = 3), randn(npts))
+ea_n3 = information(Vasicek(Shannon(base = 3), m = 100), randn(npts))
 
 @test U - max(0.02, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
 @test N_base3 * 0.96 ≤ ea_n3 ≤ N_base3 * 1.02

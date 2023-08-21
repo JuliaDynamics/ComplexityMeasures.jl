@@ -14,6 +14,8 @@ include("infomeasure_types/shannon_extropy.jl")
 include("infomeasure_types/tsallis_extropy.jl")
 include("infomeasure_types/renyi_extropy.jl")
 
+include("infomeasure_types/electronic_entropy.jl")
+
 
 # Estimators
 testfile("estimators/estimators.jl")
