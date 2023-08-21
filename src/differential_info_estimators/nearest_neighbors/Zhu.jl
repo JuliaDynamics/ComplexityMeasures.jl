@@ -2,11 +2,12 @@ export Zhu
 
 """
     Zhu <: DifferentialInfoEstimator
-    Zhu(; measure = Shannon(), k = 1, w = 0, base = 2)
+    Zhu(; definition = Shannon(), k = 1, w = 0)
 
 The `Zhu` estimator (Zhu et al., 2015)[^Zhu2015] is an extension to
 [`KozachenkoLeonenko`](@ref), and computes the [`Shannon`](@ref)
-differential [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref) in the given `base`.
+differential [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref),
+with logarithms to the `base` specified in `definition`.
 
 ## Description
 
@@ -31,14 +32,13 @@ See also: [`information`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialInf
     transfer entropy estimation via the k-nearest-neighbors approach. InformationMeasure, 17(6),
     4173-4201.
 """
-struct Zhu{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I
+struct Zhu{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
+    definition::I
     k::Int
     w::Int
-    base::B
 end
-function Zhu(measure = Shannon(); k = 1, w = 0, base = 2)
-    return Zhu(measure, k, w, base)
+function Zhu(definition = Shannon(); k = 1, w = 0)
+    return Zhu(definition, k, w)
 end
 
 function information(est::Zhu{<:Shannon}, x::AbstractStateSpaceSet{D, T}) where {D, T}
@@ -48,7 +48,7 @@ function information(est::Zhu{<:Shannon}, x::AbstractStateSpaceSet{D, T}) where 
     nn_idxs = bulkisearch(tree, x, NeighborNumber(k), Theiler(w))
     # The estimated entropy has "unit" [nats]
     h = digamma(N) + mean_logvolumes(x, nn_idxs, N) - digamma(k) + (D - 1) / k
-    return convert_logunit(h, ℯ, est.base)
+    return convert_logunit(h, ℯ, est.definition.base)
 end
 
 function mean_logvolumes(x, nn_idxs, N::Int)

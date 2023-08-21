@@ -2,11 +2,11 @@ export Vasicek
 
 """
     Vasicek <: DifferentialInfoEstimator
-    Vasicek(measure = Shannon(); m::Int = 1, base = 2)
+    Vasicek(definition = Shannon(); m::Int = 1)
 
 The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`information`](@ref)
-(in the given `base`) of
-a timeseries using the method from Vasicek (1976)[^Vasicek1976].
+of a timeseries using the method from Vasicek (1976)[^Vasicek1976], with logarithms to the
+`base` specified in `definition`.
 
 The `Vasicek` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic), of which
@@ -55,13 +55,12 @@ written for this package).
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Ebrahimi`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-struct Vasicek{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
-    measure::I
+struct Vasicek{I <: InformationMeasure, M<:Integer} <: DifferentialInfoEstimator{I}
+    definition::I
     m::M
-    base::B
 end
-function Vasicek(measure = Shannon(); m = 1, base = 2)
-    return Vasicek(measure, m, base)
+function Vasicek(definition = Shannon(); m = 1)
+    return Vasicek(definition, m)
 end
 
 function information(est::Vasicek{<:Shannon}, x::AbstractVector{T}) where {T<:Real}
@@ -80,5 +79,5 @@ function information(est::Vasicek{<:Shannon}, x::AbstractVector{T}) where {T<:Re
 
     # The estimated entropy has "unit" [nats]
     h = HVₘₙ / n
-    return convert_logunit(h, ℯ, est.base)
+    return convert_logunit(h, ℯ, est.definition.base)
 end

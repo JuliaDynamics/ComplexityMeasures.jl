@@ -17,8 +17,8 @@ N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
 # ------------------------------------------------------------------------------------
 npts = 1000000
 ea = information(Gao(k = 5, corrected = false), rand(npts))
-ea_n = information(Gao(k = 5, corrected = false, base = ℯ), randn(npts))
-ea_n3 = information(Gao(k = 5, corrected = false, base = 3), randn(npts))
+ea_n = information(Gao(Shannon(base = ℯ), k = 5, corrected = false), randn(npts))
+ea_n3 = information(Gao(Shannon(base = 3), k = 5, corrected = false), randn(npts))
 
 # It is not expected that this estimator will be precise, so increase
 # allowed error bounds compared to other estimators.
@@ -30,7 +30,7 @@ ea_n3 = information(Gao(k = 5, corrected = false, base = 3), randn(npts))
 # With correction
 # ------------------------------------------------------------------------------------
 ea = information(Gao(k = 5, corrected = true), rand(npts))
-ea_n = information(Gao(k = 5, base = ℯ, corrected = true), randn(npts))
+ea_n = information(Gao(Shannon(base = ℯ), k = 5, corrected = true), randn(npts))
 
 @test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
 @test N * 0.98 ≤ ea_n ≤ N * 1.02

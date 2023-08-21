@@ -2,11 +2,12 @@ export AlizadehArghami
 
 """
     AlizadehArghami <: DifferentialInfoEstimator
-    AlizadehArghami(measure = Shannon(); m::Int = 1, base = 2)
+    AlizadehArghami(definition = Shannon(); m::Int = 1)
 
 The `AlizadehArghami`estimator computes the [`Shannon`](@ref) differential
-[`information`](@ref) (in the given `base`) of a timeseries using the
-method from Alizadeh & Arghami (2010)[^Alizadeh2010].
+[`information`](@ref) of a timeseries using the
+method from Alizadeh & Arghami (2010)[^Alizadeh2010], with logarithms to the `base`
+specified in `definition`.
 
 The `AlizadehArghami` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
@@ -48,13 +49,12 @@ the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correcti
 See also: [`information`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-struct AlizadehArghami{I <: InformationMeasure, M<:Integer, B} <: DifferentialInfoEstimator{I}
-    measure::I
+struct AlizadehArghami{I <: InformationMeasure, M<:Integer} <: DifferentialInfoEstimator{I}
+    definition::I
     m::M
-    base::B
 end
-function AlizadehArghami(measure = Shannon(); m = 1, base = 2)
-    return AlizadehArghami(measure, m, base)
+function AlizadehArghami(definition = Shannon(); m = 1)
+    return AlizadehArghami(definition, m)
 end
 
 function information(est::AlizadehArghami{<:Shannon}, x::AbstractVector{<:Real})
@@ -62,6 +62,7 @@ function information(est::AlizadehArghami{<:Shannon}, x::AbstractVector{<:Real})
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
     # The estimated entropy has "unit" [nats]
-    h = information(Vasicek(; m, base = MathConstants.e), x) + (2 / n)*(m * log(2))
-    return convert_logunit(h, ℯ, est.base)
+    # We make sure base is correct by defining a new `Shannon` instance.
+    h = information(Vasicek(Shannon(base = MathConstants.e); m), x) + (2 / n)*(m * log(2))
+    return convert_logunit(h, ℯ, est.definition.base)
 end

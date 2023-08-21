@@ -7,11 +7,11 @@ export ZhuSingh
 
 """
     ZhuSingh <: DifferentialInfoEstimator
-    ZhuSingh(measure = Shannon(); k = 1, w = 0, base = 2)
+    ZhuSingh(definition = Shannon(); k = 1, w = 0)
 
 The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
-differential [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref)
-in the given `base`.
+differential [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref), with
+logarithms to the `base` specified in `definition`.
 
 ## Description
 
@@ -45,14 +45,13 @@ See also: [`information`](@ref), [`DifferentialInfoEstimator`](@ref).
     neighbor estimates of entropy. American journal of mathematical and management
     sciences, 23(3-4), 301-321.
 """
-struct ZhuSingh{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I
+struct ZhuSingh{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
+    definition::I
     k::Int
     w::Int
-    base::B
 end
-function ZhuSingh(measure = Shannon(); k = 1, w = 0, base = 2)
-    return ZhuSingh(measure, k, w, base)
+function ZhuSingh(definition = Shannon(); k = 1, w = 0)
+    return ZhuSingh(definition, k, w)
 end
 
 function information(est::ZhuSingh{<:Shannon}, x::AbstractStateSpaceSet{D, T}) where {D, T}
@@ -63,7 +62,7 @@ function information(est::ZhuSingh{<:Shannon}, x::AbstractStateSpaceSet{D, T}) w
     mean_logvol, mean_digammaξ = mean_logvolumes_and_digamma(x, nn_idxs, N, k)
     # The estimated entropy has "unit" [nats]
     h = digamma(N) + mean_logvol - mean_digammaξ
-    return convert_logunit(h, ℯ, est.base)
+    return convert_logunit(h, ℯ, est.definition.base)
 end
 
 function mean_logvolumes_and_digamma(x, nn_idxs, N::Int, k::Int)

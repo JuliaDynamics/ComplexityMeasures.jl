@@ -15,7 +15,7 @@ N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
 
 npts = 20000 # a bit fewer points than for other tests, so tests don't take forever.
 ea = information(Lord(k = 20), rand(npts))
-ea_n3 = information(Lord(k = 20, base = 3), randn(npts))
+ea_n3 = information(Lord(Shannon(base = 3), k = 20), randn(npts))
 
 @test N_base3 * 0.96 ≤ ea_n3 ≤ N_base3 * 1.03
 @test U - max(0.05, U*0.03) ≤ ea ≤ U + max(0.03, U*0.03)

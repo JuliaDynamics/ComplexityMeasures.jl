@@ -2,10 +2,11 @@ export KozachenkoLeonenko
 
 """
     KozachenkoLeonenko <: DifferentialInfoEstimator
-    KozachenkoLeonenko(measure = Shannon(); w::Int = 0, base = 2)
+    KozachenkoLeonenko(definition = Shannon(); w::Int = 0)
 
 The `KozachenkoLeonenko` estimator computes the [`Shannon`](@ref) differential
-[`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref) in the given `base`.
+[`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref), with logarithms to
+the `base` specified in `definition`.
 
 ## Description
 
@@ -36,14 +37,13 @@ See also: [`information`](@ref), [`Kraskov`](@ref), [`DifferentialInfoEstimator`
 [^KozachenkoLeonenko1987]: Kozachenko, L. F., & Leonenko, N. N. (1987). Sample estimate of
     the entropy of a random vector. Problemy Peredachi Informatsii, 23(2), 9-16.
 """
-struct KozachenkoLeonenko{I <: InformationMeasure, B} <: NNDifferentialInfoEstimator{I}
-    measure::I
+struct KozachenkoLeonenko{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
+    definition::I
     w::Int
-    base::B
 end
 
-function KozachenkoLeonenko(measure = Shannon(); w = 0, base = 2)
-    return KozachenkoLeonenko(measure, w, base)
+function KozachenkoLeonenko(definition = Shannon(); w = 0)
+    return KozachenkoLeonenko(definition, w)
 end
 
 function information(est::KozachenkoLeonenko{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D}
@@ -56,5 +56,5 @@ function information(est::KozachenkoLeonenko{<:Shannon}, x::AbstractStateSpaceSe
         log(MathConstants.e, ball_volume(D)) +
         MathConstants.eulergamma +
         log(MathConstants.e, N - 1)
-    return convert_logunit(h, ℯ, est.base)
+    return convert_logunit(h, ℯ, est.definition.base)
 end

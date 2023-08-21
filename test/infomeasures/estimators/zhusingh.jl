@@ -43,7 +43,7 @@ N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
 
 npts = 1000000
 ea = information(ZhuSingh(k = 5), rand(npts))
-ea_n3 = information(ZhuSingh(k = 5, base = 3), randn(npts))
+ea_n3 = information(ZhuSingh(Shannon(base = 3), k = 5), randn(npts))
 
 @test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
 @test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
