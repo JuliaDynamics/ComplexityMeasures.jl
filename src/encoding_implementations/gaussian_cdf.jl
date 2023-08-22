@@ -83,3 +83,12 @@ function decode(encoding::GaussianCDFEncoding, i::Int)
     lower_interval_bound = (i - 1)/(c)
     return SVector(lower_interval_bound, prevfloat(lower_interval_bound + 1/c))
 end
+
+# Since the μ and σ are fixed parameters, we can also just encode/decode a state vector
+# element-wise.
+function encode(encoding::GaussianCDFEncoding, x::AbstractVector{<:Real})
+    return encode.(Ref(encoding), x)
+end
+function decode(encoding::GaussianCDFEncoding, x::AbstractVector{<:Real})
+    return decode.(Ref(encoding), x)
+end
