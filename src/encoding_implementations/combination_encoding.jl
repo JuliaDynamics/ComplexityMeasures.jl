@@ -56,6 +56,15 @@ struct CombinationEncoding{VE, L, C} <: Encoding
     # internal fields: LinearIndices/CartesianIndices for encodings/decodings.
     linear_indices::L
     cartesian_indices::C
+
+    function CombinationEncoding(encodings::VE, l::L, c::C) where {VE, L, C}
+        if any(e isa CombinationEncoding for e in encodings)
+            s = "CombinationEncoding doesn't accept a CombinationEncoding as one of its " *
+             "sub-encodings."
+            throw(ArgumentError(s))
+        end
+        new{VE, L, C}(encodings, l, c)
+    end
 end
 
 function CombinationEncoding(encodings::Vararg{<:Encoding, N}) where N

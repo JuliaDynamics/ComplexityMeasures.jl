@@ -12,3 +12,6 @@ symbol = encode(e_combo, x)
 d = decode(e_combo, symbol)
 @test d isa AbstractVector
 @test length(d) == length(es)
+
+c = CombinationEncoding(OrdinalPatternEncoding())
+@test_throws ArgumentError CombinationEncoding([c])
