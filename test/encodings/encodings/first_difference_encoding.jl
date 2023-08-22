@@ -14,3 +14,9 @@ symbols3 = [encode(FirstDifferenceEncoding(0, 1; n), rand(rng, 𝒰, 5)) for i =
 
 # Zero first differences should give symbol 1
 @test encode(FirstDifferenceEncoding(0, 1; n = 3), [1, 1, 1]) == 1
+
+# Need at least one interval
+@test_throws ArgumentError FirstDifferenceEncoding(0, 1, n = 0)
+
+# minval/maxval must be ordered correctly
+@test_throws ArgumentError FirstDifferenceEncoding(1, 0, n = 2)

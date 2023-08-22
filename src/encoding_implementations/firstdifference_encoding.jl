@@ -49,16 +49,27 @@ pts = [rand(3) for i = 1:1000]
     Illustration in spike detection and signal segmentation. Computer methods and
     programs in biomedicine, 128, 40-51.
 """
-Base.@kwdef struct FirstDifferenceEncoding <: Encoding
+Base.@kwdef struct FirstDifferenceEncoding{R} <: Encoding
     n::Int = 2
     minval::Real
     maxval::Real
-    encoder::RectangularBinEncoding
+    encoder::R # RectangularBinEncoding
 
-    function FirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
-        encoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
-        new(n, minval, maxval, encoder)
+    function FirstDifferenceEncoding(n::Int, minval::Real, maxval::Real, encoder::R) where R
+        if minval > maxval
+            s = "Need minval <= maxval. Got minval=$minval and maxval=$maxval."
+            throw(ArgumentError(s))
+        end
+        if n < 1
+            throw(ArgumentError("n must be ≥ 1"))
+        end
+        new{typeof(encoder)}(n, minval, maxval, encoder)
     end
+end
+
+function FirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
+    encoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
+    return FirstDifferenceEncoding(n, minval, maxval, encoder)
 end
 
 function encode(encoding::FirstDifferenceEncoding, x::AbstractVector{<:Real})
