@@ -1,7 +1,8 @@
 using Test
 using ComplexityMeasures
 using Random
-using Distributions
+using Distributions: Uniform
+using Statistics: mean
 
 rng = Xoshiro(1234)
 # With three symbols, the unit interval is symbolized into three different symbols [1, 2 3],

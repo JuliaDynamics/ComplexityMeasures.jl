@@ -1,0 +1,6 @@
+testfile("utils.jl")
+testfile("encodings/amplitude_encoding.jl")
+testfile("encodings/first_difference_encoding.jl")
+testfile("encodings/gaussian_cdf_encoding.jl")
+testfile("encodings/ordinal_pattern_encoding.jl")
+testfile("encodings/rectangular_bin_encoding.jl")
