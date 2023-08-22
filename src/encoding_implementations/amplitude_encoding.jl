@@ -4,9 +4,9 @@ export AmplitudeEncoding
     AmplitudeEncoding <: Encoding
     AmplitudeEncoding(minval::Real, maxval::Real; n = 2)
 
-Encoding which discretizes a state vector (an `AbstractVector` of some kind) into its
-"absolute amplitude symbol"  relative to some pre-dedined minimum value `minval` and
-maximum value `maxval` (see description below).
+`AmplitudeEncoding` encodes a vector based on the relative position the mean of the
+vector has with respect to a predefined minimum and maximum value (`minval` and
+`maxval`, respectively).
 
 ## Description
 

@@ -4,9 +4,9 @@ export FirstDifferenceEncoding
     FirstDifferenceEncoding <: Encoding
     FirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
 
-Encoding which discretizes a state vector (an `AbstractVector` of some kind) into its
-"first difference symbol"  relative to some pre-defined minimum (`minval`) and
-maximum (`maxval`) first difference (see description below).
+`FirstDifferenceEncoding` encodes a vector based on the relative position the average
+of the *first differences* of the vectors has  with respect to a predefined minimum and
+maximum value (`minval` and `maxval`, respectively).
 
 ## Description
 
