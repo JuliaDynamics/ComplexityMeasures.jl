@@ -11,7 +11,7 @@ minval, maxval = 0, 1
 𝒰 = Uniform(minval, maxval)
 symbols3 = [encode(AmplitudeEncoding(0, 1; n = 3), rand(rng, 𝒰, 3)) for i = 1:1000000]
 @test 1.99 ≤ mean(symbols3) ≤ 2.01
-@test all(1 .<= symbols3 .<= n)
+@test all(1 .<= symbols3 .<= 3)
 
 # Need at least one interval
 @test_throws ArgumentError AmplitudeEncoding(0, 1, n = 0)
