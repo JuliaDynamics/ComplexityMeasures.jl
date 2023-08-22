@@ -74,6 +74,8 @@ CombinationEncoding(encodings::Vector{<:Encoding}) = CombinationEncoding(encodin
 # for single numbers, and `OrdinalPatternEncoding` also isn't defined for single numbers.
 # Therefore, we enforce vector-valued input with encoding.
 function encode(encoding::CombinationEncoding, x::AbstractVector{<:Real})
+    # note: we don't enforce length(x) >= 2 here, because some combinations of
+    # encodings may work on single-element vectors (even though most don't).
     symbols = [encode(e, x) for e in encoding.encodings]
     ω::Int = encoding.linear_indices[symbols...]
     return ω
