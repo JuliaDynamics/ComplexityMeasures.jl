@@ -20,7 +20,7 @@ When used with [`decode`](@ref), the integer symbol is converted to its correspo
 cartesian coordinate, which is used to retrieve the decoded symbols for each of
 the encodings.
 
-The total number of outcomes is `sum(total_outcomes(e) for e in encodings)`.
+The total number of outcomes is `prod(total_outcomes(e) for e in encodings)`.
 
 ## Examples
 
@@ -96,5 +96,5 @@ function decode(encoding::CombinationEncoding, ω::Int)
 end
 
 function total_outcomes(encoding::CombinationEncoding)
-    return sum(total_outcomes(e) for e in encoding.encodings)
+    return prod(total_outcomes(e) for e in encoding.encodings)
 end
