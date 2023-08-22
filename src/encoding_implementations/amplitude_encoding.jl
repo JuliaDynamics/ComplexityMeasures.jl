@@ -53,11 +53,14 @@ struct AmplitudeEncoding <: Encoding
 end
 
 function encode(encoding::AmplitudeEncoding, x::AbstractVector)
+    (; n, minval, maxval, encoder) = encoding
     Λ = sum(abs(xᵢ) for xᵢ in x) / length(x)
-    Λ_normalized = norm_minmax(Λ, encoding.minval, encoding.maxval)
+
+    # Normalize to [0, 1]
+    Λ_normalized = (Λ - minval) / (maxval - minval)
 
     # Return an integer from the set {1, 2, …, encoding.n}
-    return encode(encoding.encoder, Λ_normalized)
+    return encode(encoder, Λ_normalized)
 end
 
 function decode(encoding::AmplitudeEncoding, ω::Int)

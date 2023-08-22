@@ -62,16 +62,20 @@ Base.@kwdef struct FirstDifferenceEncoding <: Encoding
 end
 
 function encode(encoding::FirstDifferenceEncoding, x::AbstractVector{<:Real})
+    (; n, minval, maxval, encoder) = encoding
+
     L = length(x)
     Λ = 0.0 # a loop is much faster than using `diff` (which allocates a new vector)
     for i = 2:L
        Λ += abs(x[i] - x[i - 1])
     end
     Λ /= (L - 1)
-    Λ_normalized = norm_minmax(Λ, encoding.minval, encoding.maxval)
+
+    # Normalize to [0, 1]
+    Λ_normalized = (Λ - minval) / (maxval - minval)
 
     # Return an integer from the set {1, 2, …, encoding.n}
-    return encode(encoding.encoder, Λ_normalized)
+    return encode(encoder, Λ_normalized)
 end
 
 function decode(encoding::FirstDifferenceEncoding, ω::Int)
