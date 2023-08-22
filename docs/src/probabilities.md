@@ -145,4 +145,5 @@ GaussianCDFEncoding
 RectangularBinEncoding
 AmplitudeEncoding
 FirstDifferenceEncoding
+CombinationEncoding
 ```
