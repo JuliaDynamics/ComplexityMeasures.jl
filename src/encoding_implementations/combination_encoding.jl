@@ -56,19 +56,18 @@ struct CombinationEncoding{VE, L, C} <: Encoding
     # internal fields: LinearIndices/CartesianIndices for encodings/decodings.
     linear_indices::L
     cartesian_indices::C
-
-    function CombinationEncoding(encodings::Vararg{<:Encoding, N}) where N
-        ranges = tuple([1:total_outcomes(e) for e in encodings]...)
-        linear_indices = LinearIndices(ranges)
-        cartesian_indices = CartesianIndices(ranges)
-        VE = typeof(encodings)
-        L = typeof(linear_indices)
-        C = typeof(cartesian_indices)
-        return new{VE, L, C}(encodings, linear_indices, cartesian_indices)
-    end
-
-    CombinationEncoding(encodings::Vector{<:Encoding}) = CombinationEncoding(encodings...)
 end
+
+function CombinationEncoding(encodings::Vararg{<:Encoding, N}) where N
+    ranges = tuple([1:total_outcomes(e) for e in encodings]...)
+    linear_indices = LinearIndices(ranges)
+    cartesian_indices = CartesianIndices(ranges)
+    VE = typeof(encodings)
+    L = typeof(linear_indices)
+    C = typeof(cartesian_indices)
+    return CombinationEncoding(encodings, linear_indices, cartesian_indices)
+end
+CombinationEncoding(encodings::Vector{<:Encoding}) = CombinationEncoding(encodings...)
 
 # We could in principle allow any `x` here, but not all encodings support encoding
 # single numbers. In particular, the `FirstDifferenceEncoding` isn't even defined
