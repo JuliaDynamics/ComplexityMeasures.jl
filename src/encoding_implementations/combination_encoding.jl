@@ -4,9 +4,8 @@ export CombinationEncoding
     CombinationEncoding <: Encoding
     CombinationEncoding(encodings)
 
-Create a combined encoding consisting of multiple `encodings` (e.g.
-[`AmplitudeEncoding`](@ref) and [`FirstDifferenceEncoding`](@ref)), to be used
-to encode a state vector (some form of `AbstractVector`).
+A `CombinationEncoding` takes multiple [`Encoding`](@ref)s and create a combined
+encoding that can be used to encode vectors.
 
 ## Encoding/decoding
 
@@ -71,6 +70,10 @@ struct CombinationEncoding{VE, L, C} <: Encoding
     CombinationEncoding(encodings::Vector{<:Encoding}) = CombinationEncoding(encodings...)
 end
 
+# We could in principle allow any `x` here, but not all encodings support encoding
+# single numbers. In particular, the `FirstDifferenceEncoding` isn't even defined
+# for single numbers, and `OrdinalPatternEncoding` also isn't defined for single numbers.
+# Therefore, we enforce vector-valued input with encoding.
 function encode(encoding::CombinationEncoding, x::AbstractVector{<:Real})
     symbols = [encode(e, x) for e in encoding.encodings]
     ω::Int = encoding.linear_indices[symbols...]
