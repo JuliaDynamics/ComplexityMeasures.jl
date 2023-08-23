@@ -71,9 +71,6 @@ function CombinationEncoding(encodings::Vararg{<:Encoding, N}) where N
     ranges = tuple([1:total_outcomes(e) for e in encodings]...)
     linear_indices = LinearIndices(ranges)
     cartesian_indices = CartesianIndices(ranges)
-    VE = typeof(encodings)
-    L = typeof(linear_indices)
-    C = typeof(cartesian_indices)
     return CombinationEncoding(encodings, linear_indices, cartesian_indices)
 end
 CombinationEncoding(encodings::Vector{<:Encoding}) = CombinationEncoding(encodings...)
