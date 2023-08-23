@@ -1,10 +1,10 @@
-export FirstDifferenceEncoding
+export RelativeFirstDifferenceEncoding
 
 """
-    FirstDifferenceEncoding <: Encoding
-    FirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
+    RelativeFirstDifferenceEncoding <: Encoding
+    RelativeFirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
 
-`FirstDifferenceEncoding` encodes a vector based on the relative position the average
+`RelativeFirstDifferenceEncoding` encodes a vector based on the relative position the average
 of the *first differences* of the vectors has  with respect to a predefined minimum and
 maximum value (`minval` and `maxval`, respectively).
 
@@ -15,7 +15,7 @@ permutation entropy. They use a linear combination of amplitude information and
 first differences information of state vectors to correct probabilities. Here, however,
 we explicitly encode the first differences part of the correction as an a integer symbol
 `Λ ∈ [1, 2, …, n]`. The amplitude part of the encoding is available
-as the [`AmplitudeEncoding`](@ref) encoding.
+as the [`RelativeMeanEncoding`](@ref) encoding.
 
 ## Encoding/decoding
 
@@ -35,11 +35,11 @@ fell into is returned.
 ## Performance tips
 
 If you are encoding multiple input vectors, it is more efficient to construct a
-[`FirstDifferenceEncoding`](@ref) instance and re-use it:
+[`RelativeFirstDifferenceEncoding`](@ref) instance and re-use it:
 
 ```julia
 minval, maxval = 0, 1
-encoding = FirstDifferenceEncoding(minval, maxval; n = 4)
+encoding = RelativeFirstDifferenceEncoding(minval, maxval; n = 4)
 pts = [rand(3) for i = 1:1000]
 [encode(encoding, x) for x in pts]
 ```
@@ -49,13 +49,13 @@ pts = [rand(3) for i = 1:1000]
     Illustration in spike detection and signal segmentation. Computer methods and
     programs in biomedicine, 128, 40-51.
 """
-Base.@kwdef struct FirstDifferenceEncoding{R} <: Encoding
+Base.@kwdef struct RelativeFirstDifferenceEncoding{R} <: Encoding
     n::Int = 2
     minval::Real
     maxval::Real
     encoder::R # RectangularBinEncoding
 
-    function FirstDifferenceEncoding(n::Int, minval::Real, maxval::Real, encoder::R) where R
+    function RelativeFirstDifferenceEncoding(n::Int, minval::Real, maxval::Real, encoder::R) where R
         if minval > maxval
             s = "Need minval <= maxval. Got minval=$minval and maxval=$maxval."
             throw(ArgumentError(s))
@@ -67,12 +67,12 @@ Base.@kwdef struct FirstDifferenceEncoding{R} <: Encoding
     end
 end
 
-function FirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
+function RelativeFirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
     encoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
-    return FirstDifferenceEncoding(n, minval, maxval, encoder)
+    return RelativeFirstDifferenceEncoding(n, minval, maxval, encoder)
 end
 
-function encode(encoding::FirstDifferenceEncoding, x::AbstractVector{<:Real})
+function encode(encoding::RelativeFirstDifferenceEncoding, x::AbstractVector{<:Real})
     (; n, minval, maxval, encoder) = encoding
 
     L = length(x)
@@ -89,9 +89,9 @@ function encode(encoding::FirstDifferenceEncoding, x::AbstractVector{<:Real})
     return encode(encoder, Λ_normalized)
 end
 
-function decode(encoding::FirstDifferenceEncoding, ω::Int)
+function decode(encoding::RelativeFirstDifferenceEncoding, ω::Int)
     # Return the left-edge of the bin.
     return decode(encoding.encoder, ω)
 end
 
-total_outcomes(encoding::FirstDifferenceEncoding) = total_outcomes(encoding.encoder)
+total_outcomes(encoding::RelativeFirstDifferenceEncoding) = total_outcomes(encoding.encoder)

@@ -1,10 +1,10 @@
-export AmplitudeEncoding
+export RelativeMeanEncoding
 
 """
-    AmplitudeEncoding <: Encoding
-    AmplitudeEncoding(minval::Real, maxval::Real; n = 2)
+    RelativeMeanEncoding <: Encoding
+    RelativeMeanEncoding(minval::Real, maxval::Real; n = 2)
 
-`AmplitudeEncoding` encodes a vector based on the relative position the mean of the
+`RelativeMeanEncoding` encodes a vector based on the relative position the mean of the
 vector has with respect to a predefined minimum and maximum value (`minval` and
 `maxval`, respectively).
 
@@ -15,7 +15,7 @@ permutation entropy. They use a linear combination of amplitude information and
 first differences information of state vectors to correct probabilities. Here, however,
 we explicitly encode the amplitude-part of the correction as an a integer symbol
 `Λ ∈ [1, 2, …, n]`. The first-difference part of the encoding is available
-as the [`FirstDifferenceEncoding`](@ref) encoding.
+as the [`RelativeFirstDifferenceEncoding`](@ref) encoding.
 
 ## Encoding/decoding
 
@@ -35,13 +35,13 @@ fell into is returned.
     Illustration in spike detection and signal segmentation. Computer methods and
     programs in biomedicine, 128, 40-51.
 """
-struct AmplitudeEncoding{R} <: Encoding
+struct RelativeMeanEncoding{R} <: Encoding
     n::Int
     minval::Real
     maxval::Real
     encoder::R # RectangularBinEncoding
 
-    function AmplitudeEncoding(n::Int, minval::Real, maxval::Real, encoder::R) where R
+    function RelativeMeanEncoding(n::Int, minval::Real, maxval::Real, encoder::R) where R
         if minval > maxval
             s = "Need minval <= maxval. Got minval=$minval and maxval=$maxval."
             throw(ArgumentError(s))
@@ -53,12 +53,12 @@ struct AmplitudeEncoding{R} <: Encoding
     end
 end
 
-function AmplitudeEncoding(minval::Real, maxval::Real; n = 2)
+function RelativeMeanEncoding(minval::Real, maxval::Real; n = 2)
     encoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
-    return AmplitudeEncoding(n, minval, maxval, encoder)
+    return RelativeMeanEncoding(n, minval, maxval, encoder)
 end
 
-function encode(encoding::AmplitudeEncoding, x::AbstractVector)
+function encode(encoding::RelativeMeanEncoding, x::AbstractVector)
     (; n, minval, maxval, encoder) = encoding
     Λ = sum(abs(xᵢ) for xᵢ in x) / length(x)
 
@@ -69,9 +69,9 @@ function encode(encoding::AmplitudeEncoding, x::AbstractVector)
     return encode(encoder, Λ_normalized)
 end
 
-function decode(encoding::AmplitudeEncoding, ω::Int)
+function decode(encoding::RelativeMeanEncoding, ω::Int)
     # Return the left-edge of the bin.
     return decode(encoding.encoder, ω)
 end
 
-total_outcomes(encoding::AmplitudeEncoding) = total_outcomes(encoding.encoder)
+total_outcomes(encoding::RelativeMeanEncoding) = total_outcomes(encoding.encoder)

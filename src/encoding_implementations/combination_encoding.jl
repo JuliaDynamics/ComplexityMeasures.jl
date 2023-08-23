@@ -34,8 +34,8 @@ x = [0.9, 0.2, 0.3]
 # and ordinal pattern encoding.
 
 encodings = [
-    FirstDifferenceEncoding(0, 1; n = 2),
-    AmplitudeEncoding(0, 1; n = 5),
+    RelativeFirstDifferenceEncoding(0, 1; n = 2),
+    RelativeMeanEncoding(0, 1; n = 5),
     OrdinalPatternEncoding(3) # x is a three-element vector
     ]
 c = CombinationEncoding(encodings)
@@ -79,7 +79,7 @@ end
 CombinationEncoding(encodings::Vector{<:Encoding}) = CombinationEncoding(encodings...)
 
 # We could in principle allow any `x` here, but not all encodings support encoding
-# single numbers. In particular, the `FirstDifferenceEncoding` isn't even defined
+# single numbers. In particular, the `RelativeFirstDifferenceEncoding` isn't even defined
 # for single numbers, and `OrdinalPatternEncoding` also isn't defined for single numbers.
 # Therefore, we enforce vector-valued input with encoding.
 function encode(encoding::CombinationEncoding, x::AbstractVector{<:Real})
