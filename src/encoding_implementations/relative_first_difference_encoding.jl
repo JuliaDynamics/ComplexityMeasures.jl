@@ -67,6 +67,11 @@ Base.@kwdef struct RelativeFirstDifferenceEncoding{R} <: Encoding
     end
 end
 
+function Base.show(io::IO, e::RelativeFirstDifferenceEncoding)
+    n, minval, maxval = e.n, e.minval, e.maxval
+    print(io, "RelativeFirstDifferenceEncoding(n=$n, minval=$minval, maxval=$maxval)")
+end
+
 function RelativeFirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
     encoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
     return RelativeFirstDifferenceEncoding(n, minval, maxval, encoder)
