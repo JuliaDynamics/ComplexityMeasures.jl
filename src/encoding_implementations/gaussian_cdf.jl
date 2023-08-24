@@ -132,7 +132,7 @@ end
 
 function total_outcomes(encoding::GaussianCDFEncoding{m}) where m
     c = encoding.c
-    return prod(c for i = 1:m)
+    return c^m
 end
 
 gaussian(x, μ, σ) = exp((-(x - μ)^2)/(2σ^2))
