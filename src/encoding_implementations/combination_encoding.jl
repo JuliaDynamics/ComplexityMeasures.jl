@@ -33,11 +33,11 @@ x = [0.9, 0.2, 0.3]
 # To do so, we will use a combination of first-difference encoding, amplitude encoding,
 # and ordinal pattern encoding.
 
-encodings = [
+encodings = (
     RelativeFirstDifferenceEncoding(0, 1; n = 2),
     RelativeMeanEncoding(0, 1; n = 5),
     OrdinalPatternEncoding(3) # x is a three-element vector
-    ]
+    )
 c = CombinationEncoding(encodings)
 
 # Encode `x` as integer
