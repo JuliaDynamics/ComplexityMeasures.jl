@@ -135,7 +135,7 @@ and `num_min` different values of the normalized information measure of choice (
 the minimum complexity curve).
 
 This function can also be used to compute the maximum "complexity-extropy curve" if
-`c.entr` is an [`ProbabilitiesFunctional`](@ref), which is the equivalent of the
+`c.entr` is an [`InformationMeasure`](@ref), which is the equivalent of the
 complexity-entropy curves, but using [`extropy`](@ref) instead of [`information`](@ref).
 
 ## Description

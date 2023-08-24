@@ -1,7 +1,7 @@
 export RenyiExtropy
 
 """
-    RenyiExtropy <: ProbabilitiesFunctional
+    RenyiExtropy <: InformationMeasure
     RenyiExtropy(; q = 1.0, base = 2)
 
 The Rényi extropy [Liu2023](@cite).

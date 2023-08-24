@@ -4,7 +4,7 @@ export RectangularBinEncoding
 """
     AbstractBinning
 
-Supertype encompassing [`RectangularBinning`](@ref) and [`FixedRectangualrBinning`](@ref).
+Supertype encompassing [`RectangularBinning`](@ref) and [`FixedRectangularBinning`](@ref).
 """
 abstract type AbstractBinning end
 abstract type HistogramEncoding <: Encoding end
