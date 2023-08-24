@@ -5,15 +5,15 @@ export GaussianCDFEncoding
 """
     GaussianCDFEncoding <: Encoding
     GaussianCDFEncoding(m::Int = 1; μ, σ, c::Int = 3)
-    GaussianCDFEncoding(x::AbstractVector; μ, σ, c::Int = 3)
+    GaussianCDFEncoding(χ::AbstractVector; μ, σ, c::Int = 3)
 
-An encoding scheme that [`encode`](@ref)s a scalar or vector `x` into one of the integers
+An encoding scheme that [`encode`](@ref)s a scalar or vector `χ` into one of the integers
 `sᵢ ∈ [1, 2, …, c]` based on the normal cumulative distribution function (NCDF),
 and [`decode`](@ref)s the `sᵢ` into subintervals of `[0, 1]` (with some loss of information).
 
 The size of the input to be encoded must be known beforehand, and one must set
-`m = length(x)`, where `x` is the input (`m = 1` for scalars, `m ≥ 2` for vectors).
-Alternatively, provide the vector `x` to the constructor to infer `m` automatically.
+`m = length(χ)`, where `χ` is the input (`m = 1` for scalars, `m ≥ 2` for vectors).
+Alternatively, provide the vector `χ` to the constructor to infer `m` automatically.
 
 Notice that the decoding step does not yield an element of any outcome space of the
 estimators that use `GaussianCDFEncoding` internally, such as [`Dispersion`](@ref).
@@ -23,7 +23,7 @@ That is because these estimators additionally delay embed the encoded data.
 
 ### Encoding/decoding scalars
 
-`GaussianCDFEncoding` first maps an input scalar ``x`` to a new real number
+`GaussianCDFEncoding` first maps an input scalar ``χ`` to a new real number
 ``y_ \\in [0, 1]`` by using the normal cumulative distribution function (CDF) with the
 given mean `μ` and standard deviation `σ`, according to the map
 
@@ -42,15 +42,15 @@ This subinterval is returned as a length-`1` `Vector{SVector}`.
 
 ### Encoding/decoding vectors
 
-If `GaussianCDFEncoding` is used with a vector `x`, then each element of `x` is
-encoded separately, resulting in a `length(x)` sequence of integers which may be
+If `GaussianCDFEncoding` is used with a vector `χ`, then each element of `χ` is
+encoded separately, resulting in a `length(χ)` sequence of integers which may be
 treated as a `CartesianIndex`. The encoded symbol `s ∈ [1, 2, …, c]` is then just the
 linear index corresponding to this cartesian index (similar to how
 [CombinationEncoding](@ref) works).
 
 When [`decode`](@ref)d, the integer symbol `s` is converted back into its `CartesianIndex`
 representation,  which is just a sequence of integers that refer to subdivisions
-of the `[0, 1]` interval. The relevant subintervals are then returned as a length-`x`
+of the `[0, 1]` interval. The relevant subintervals are then returned as a length-`χ`
 `Vector{SVector}`.
 
 ## Examples
@@ -74,28 +74,6 @@ julia> decode(encoding, 3)
 2-element SVector{2, Float64} with indices SOneTo(2):
  0.4
  0.6
-```
-
-One can also encode the entire vector as an integer.
-
-```jldoctest
-julia> using ComplexityMeasures, Statistics
-
-julia> x = [0.1, 0.4, 0.7, -2.1, 8.0];
-
-julia> μ, σ = mean(x), std(x); encoding = GaussianCDFEncoding(x; μ, σ, c = 2)
-GaussianCDFEncoding(m=5; c=2, μ=1.42, σ=3.840182287340016)
-
-julia> symbol = encode(encoding, x)
-17
-
-julia> decode(encoding, symbol)
-5-element Vector{SVector{1, Float64}}:
- [0.0]
- [0.0]
- [0.0]
- [0.0]
- [0.5000000000000001]
 ```
 """
 struct GaussianCDFEncoding{m, T, L <: LinearIndices, C <: CartesianIndices, R} <: Encoding
