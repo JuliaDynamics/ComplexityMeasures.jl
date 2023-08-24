@@ -23,3 +23,25 @@ symbols3 = [encode(RelativeFirstDifferenceEncoding(0, 1; n), rand(rng, 𝒰, 5))
 
 # `n` must be positive and nonzero
 @test_throws ArgumentError RelativeMeanEncoding(0, 1, n = 0)
+
+
+# ----------------------------------------------------------------
+# Analytical tests
+# ----------------------------------------------------------------
+encoding = RelativeFirstDifferenceEncoding(0, 1, n = 3)
+
+x = [0.2, 0.1, 0.0] # mean(abs.(diff(x)) => 1st bin with n = 3
+s1 = encode(encoding, x)
+@test s1 == 1
+
+x = [0.5, 0.2, 0.5, 0.1, 1.0] # mean(abs.(diff(x)) = 0.45 => 2nd bin with n = 3
+s2 = encode(encoding, x)
+@test s2 == 2
+
+x = [0.8, 0.1, 1.0] # mean(abs.(diff(x)) = 0.8 => 3rd with n = 3
+s3 = encode(encoding, x)
+@test s3 == 3
+
+@test first(decode(encoding, s1)) ≈ 0.0
+@test first(decode(encoding, s2)) ≈ 1/3
+@test first(decode(encoding, s3)) ≈ 2/3
