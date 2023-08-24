@@ -1,6 +1,7 @@
 using Test
 using ComplexityMeasures
 using Statistics: mean, std
+using StaticArrays: SVector
 
 # Analytical tests
 ################################################################
@@ -11,7 +12,8 @@ ezero = encode(encoding, 0.0)
 @test ezero == 2
 
 dzero = decode(encoding, ezero) # a two-element static vector
-@test first(dzero) ≈ 1/3 && last(dzero) ≈ 2/3
+@test dzero isa Vector{<:SVector}
+@test first(dzero[1]) ≈ 1/3
 
 # ----------------------------------------------------------------
 # Integer encoding.
@@ -34,14 +36,21 @@ symbols = encode.(Ref(s), x)
 y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
 μ = mean(y)
 σ = std(y)
-encoding = GaussianCDFEncoding( c = 3; μ, σ)
+encoding = GaussianCDFEncoding(c = 3; μ, σ)
 s = encode.(Ref(encoding), y)
-@test s == [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
+s_elwise_paper = [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
+@test s == s_elwise_paper
 
 # ----------------------------------------------------------------
 # State vector encoding/decoding (we just re-use the example above)
 # ----------------------------------------------------------------
-symbols = encode(encoding, y)
-@test symbols == encode.(Ref(encoding), y)
-@test symbols isa AbstractVector{<:Int}
-@test decode.(Ref(encoding), symbols) isa AbstractVector{<:SVector}
+y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
+s_elwise_paper = [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
+μ = mean(y)
+σ = std(y)
+encoding = GaussianCDFEncoding(length(y); c = 3, μ, σ)
+s = encode(encoding, y)
+@test s isa Int
+@test s == encoding.linear_indices[s_elwise_paper...]
+@test 1 ≤ s ≤ total_outcomes(encoding)
+@test decode(encoding, s) isa AbstractVector{<:SVector}

@@ -15,11 +15,16 @@ Further additions to the library in v3:
 - Add the 1976 Lempel-Ziv complexity measure (`LempelZiv76`).
 - New entropy definition: identification entropy (`Identification`).
 - Minor documentation fixes.
+- `GaussianCDFEncoding` now can be used with vector-valued inputs.
 
 ### Bug fixes
 
 - `outcome_space` for `Dispersion` now correctly returns the all possible **sorted** outcomes
     (as promised by the `outcome_space` docstring).
+- `decode` with `GaussianCDFEncoding` now correctly returns only the left-sides of the
+    `[0, 1]` subintervals, and always returns the decoded symbol as a `Vector{SVector}`
+    (consistent with `RectangularBinEncoding`), regardless of whether the input is a scalar
+    or a vector.
 
 ### Renaming
 
