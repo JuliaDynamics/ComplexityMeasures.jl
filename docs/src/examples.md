@@ -248,7 +248,7 @@ Here, we show the sensitivity of the various entropies to variations in their pa
 
 ### Curado entropy
 
-Here, we reproduce Figure 2 from Curado & Nobre (2004)[Curado2004](@cite), showing
+Here, we reproduce Figure 2 from [Curado2004](@citet), showing
 how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
@@ -296,7 +296,7 @@ fig
 
 ### Stretched exponential entropy
 
-Here, we reproduce the example from Anteneodo & Plastino (1999)[Anteneodo1999](@cite), showing
+Here, we reproduce the example from [Anteneodo1999](@citet), showing
 how the stretched exponential entropy changes as function of the parameter `η` for a range
 of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
@@ -320,13 +320,13 @@ fig
 
 ## [Discrete entropy: dispersion entropy](@id dispersion_example)
 
-Here we compute dispersion entropy (Rostaghi et al. 2016)[Rostaghi2016](@cite),
+Here we compute dispersion entropy [Rostaghi2016](@cite),
 using the use the [`Dispersion`](@ref) probabilities estimator, for a time
 series consisting of normally distributed noise with a single spike in the middle of the
 signal.
 We compute the entropies over a range subsets of the data, using a sliding window
 consisting of 70 data points, stepping the window 10 time steps at a time.
-This example is adapted from Li et al. (2021)[Li2019](@cite).
+This example is adapted from [Li2019](@citet).
 
 ```@example MAIN
 using ComplexityMeasures
@@ -479,12 +479,12 @@ for [`SpatialDispersion`](@ref)).
 
 ## Complexity: reverse dispersion entropy
 
-Here, we compare regular dispersion entropy (Rostaghi et al., 2016)[Rostaghi2016](@cite), and
-reverse dispersion entropy Li et al. (2021)[Li2019](@cite) for a time series consisting
+Here, we compare regular dispersion entropy [Rostaghi2016](@cite), and
+reverse dispersion entropy [Li2019](@cite) for a time series consisting
 of normally distributed noise with a single spike in the middle of the signal.
 We compute the entropies over a range subsets of the data, using a sliding window
 consisting of 70 data points, stepping the window 10 time steps at a time.
-This example reproduces parts of figure 3 in Li et al. (2021), but results here are not
+This example reproduces parts of figure 3 in [Li2021](@cite), but results here are not
 exactly the same as in the original paper, because their examples are based on randomly
 generated numbers and do not provide code that specify random number seeds.
 
@@ -610,15 +610,15 @@ of surrogate realizations, and actually compute quantiles to compare with.
 
 ## Complexity: approximate entropy
 
-Here, we reproduce the Henon map example with ``R=0.8`` from Pincus (1991),
-comparing our values with relevant values from table 1 in Pincus (1991).
+Here, we reproduce the Henon map example with ``R=0.8`` from [Pincus1991](@citet),
+comparing our values with relevant values from table 1 in [Pincus1991](@citet).
 
 We use `DiscreteDynamicalSystem` from `DynamicalSystemsBase` to represent the map,
 and use the `trajectory` function from the same package to iterate the map
 for different initial conditions, for multiple time series lengths.
 
 Finally, we summarize our results in box plots and compare the values to those
-obtained by Pincus (1991).
+obtained by [Pincus1991](@citet).
 
 ```@example MAIN
 using ComplexityMeasures
@@ -754,7 +754,9 @@ fig
 
 ## Statistical complexity of iterated maps
 
-In this example, we reproduce parts of Fig. 1 in Rosso et al. (2007): We compute the statistical complexity of the Henon, logistic and Schuster map, as well as that of k-noise.
+In this example, we reproduce parts of Fig. 1 in [Rosso2007](@citet): We compute the
+statistical complexity of the Henon, logistic and Schuster map, as well as that of k-noise.
+
 ```@example MAIN
 using ComplexityMeasures
 using Distances
