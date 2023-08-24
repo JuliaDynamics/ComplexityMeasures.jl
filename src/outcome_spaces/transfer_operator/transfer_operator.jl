@@ -339,8 +339,7 @@ invariantmeasure(iv)
     invariantmeasure(iv::InvariantMeasure) → (ρ::Probabilities, bins::Vector{<:SVector})
 
 From a pre-computed invariant measure, return the probabilities and associated bins.
-The element `ρ[i]` is the probability of visitation to the box `bins[i]`. Analogous to
-[`binhist`](@ref).
+The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
 
 
 !!! hint "Transfer operator approach vs. naive histogram approach"
