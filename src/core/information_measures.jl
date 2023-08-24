@@ -1,4 +1,5 @@
 export InformationMeasure
+export InformationMeasureEstimator
 export DiscreteInfoEstimator, DifferentialInfoEstimator
 
 """
@@ -191,6 +192,3 @@ See [`information`](@ref) for usage.
 - [`Ebrahimi`](@ref).
 """
 abstract type DifferentialInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
-
-
-
