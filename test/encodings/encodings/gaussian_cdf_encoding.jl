@@ -54,3 +54,5 @@ s = encode(encoding, y)
 @test s == encoding.linear_indices[s_elwise_paper...]
 @test 1 ≤ s ≤ total_outcomes(encoding)
 @test decode(encoding, s) isa AbstractVector{<:SVector}
+
+@test_throws ArgumentError encode(GaussianCDFEncoding(length(y) - 1; c = 3, μ, σ), y)
