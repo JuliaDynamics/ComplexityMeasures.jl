@@ -60,12 +60,13 @@ kldivergence(px, py)
 ```@example MAIN
 kldivergence(py, px)
 ```
+
 (`Inf` because there are events with 0 probability in `px`)
 
 ## Differential entropy: estimator comparison
 
 Here, we compare how the nearest neighbor differential entropy estimators
-([`Kraskov`](@ref), [`KozachenkoLeonenko`](@ref), [`Zhu`](@ref) and [`ZhuSingh`](@ref))
+([`Kraskov`](@ref), [`KozachenkoLeonenko`](@ref), [`Zhu`](@ref), [`ZhuSingh`](@ref), etc.)
 converge towards the true entropy value for increasing time series length.
 
 ComplexityMeasures.jl also provides entropy estimators based on
@@ -125,7 +126,7 @@ for (i, est_os) in enumerate(estimators_os)
         pts = randn(maximum(Ns)) # raw timeseries, not a `StateSpaceSet`
         for (k, N) in enumerate(Ns)
             m = floor(Int, N / 100) # Scale `m` to timeseries length
-            est = est_os(; m, base = ℯ) # Instantiate estimator with current `m`
+            est = est_os(ent; m) # Instantiate estimator with current `m`
             Hs_uniform_os[i][k][j] = information(est, pts[1:N])
         end
     end
@@ -668,7 +669,7 @@ fig = Figure()
 # Example time series
 a1 = Axis(fig[1,1]; xlabel = "Time (t)", ylabel = "Value")
 sys = henon(u₀ = [0.5, 0.1], R = 0.8)
-x, y = columns(trajectory(sys, 100, Ttr = 500))
+x, y = columns(first(trajectory(sys, 100, Ttr = 500))) # we don't need time indices
 lines!(a1, 1:length(x), x, label = "x")
 lines!(a1, 1:length(y), y, label = "y")
 
