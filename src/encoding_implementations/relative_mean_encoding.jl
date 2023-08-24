@@ -39,9 +39,9 @@ struct RelativeMeanEncoding{R} <: Encoding
     n::Int
     minval::Real
     maxval::Real
-    encoder::R # RectangularBinEncoding
+    binencoder::R # RectangularBinEncoding
 
-    function RelativeMeanEncoding(n::Int, minval::Real, maxval::Real, encoder::R) where R
+    function RelativeMeanEncoding(n::Int, minval::Real, maxval::Real, binencoder::R) where R
         if minval > maxval
             s = "Need minval <= maxval. Got minval=$minval and maxval=$maxval."
             throw(ArgumentError(s))
@@ -49,7 +49,7 @@ struct RelativeMeanEncoding{R} <: Encoding
         if n < 1
             throw(ArgumentError("n must be ≥ 1"))
         end
-        return new{typeof(encoder)}(n, minval, maxval, encoder)
+        return new{typeof(binencoder)}(n, minval, maxval, binencoder)
     end
 end
 
@@ -59,24 +59,24 @@ function Base.show(io::IO, e::RelativeMeanEncoding)
 end
 
 function RelativeMeanEncoding(minval::Real, maxval::Real; n = 2)
-    encoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
-    return RelativeMeanEncoding(n, minval, maxval, encoder)
+    binencoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
+    return RelativeMeanEncoding(n, minval, maxval, binencoder)
 end
 
 function encode(encoding::RelativeMeanEncoding, x::AbstractVector)
-    (; n, minval, maxval, encoder) = encoding
+    (; n, minval, maxval, binencoder) = encoding
     Λ = sum(abs(xᵢ) for xᵢ in x) / length(x)
 
     # Normalize to [0, 1]
     Λ_normalized = (Λ - minval) / (maxval - minval)
 
     # Return an integer from the set {1, 2, …, encoding.n}
-    return encode(encoder, Λ_normalized)
+    return encode(binencoder, Λ_normalized)
 end
 
 function decode(encoding::RelativeMeanEncoding, ω::Int)
     # Return the left-edge of the bin.
-    return decode(encoding.encoder, ω)
+    return decode(encoding.binencoder, ω)
 end
 
-total_outcomes(encoding::RelativeMeanEncoding) = total_outcomes(encoding.encoder)
+total_outcomes(encoding::RelativeMeanEncoding) = total_outcomes(encoding.binencoder)

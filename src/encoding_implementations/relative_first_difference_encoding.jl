@@ -53,9 +53,9 @@ Base.@kwdef struct RelativeFirstDifferenceEncoding{R} <: Encoding
     n::Int = 2
     minval::Real
     maxval::Real
-    encoder::R # RectangularBinEncoding
+    binencoder::R # RectangularBinEncoding
 
-    function RelativeFirstDifferenceEncoding(n::Int, minval::Real, maxval::Real, encoder::R) where R
+    function RelativeFirstDifferenceEncoding(n::Int, minval::Real, maxval::Real, binencoder::R) where R
         if minval > maxval
             s = "Need minval <= maxval. Got minval=$minval and maxval=$maxval."
             throw(ArgumentError(s))
@@ -63,7 +63,7 @@ Base.@kwdef struct RelativeFirstDifferenceEncoding{R} <: Encoding
         if n < 1
             throw(ArgumentError("n must be ≥ 1"))
         end
-        new{typeof(encoder)}(n, minval, maxval, encoder)
+        new{typeof(binencoder)}(n, minval, maxval, binencoder)
     end
 end
 
@@ -73,12 +73,12 @@ function Base.show(io::IO, e::RelativeFirstDifferenceEncoding)
 end
 
 function RelativeFirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
-    encoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
-    return RelativeFirstDifferenceEncoding(n, minval, maxval, encoder)
+    binencoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
+    return RelativeFirstDifferenceEncoding(n, minval, maxval, binencoder)
 end
 
 function encode(encoding::RelativeFirstDifferenceEncoding, x::AbstractVector{<:Real})
-    (; n, minval, maxval, encoder) = encoding
+    (; n, minval, maxval, binencoder) = encoding
 
     L = length(x)
     Λ = 0.0 # a loop is much faster than using `diff` (which allocates a new vector)
@@ -91,12 +91,14 @@ function encode(encoding::RelativeFirstDifferenceEncoding, x::AbstractVector{<:R
     Λ_normalized = (Λ - minval) / (maxval - minval)
 
     # Return an integer from the set {1, 2, …, encoding.n}
-    return encode(encoder, Λ_normalized)
+    return encode(binencoder, Λ_normalized)
 end
 
 function decode(encoding::RelativeFirstDifferenceEncoding, ω::Int)
     # Return the left-edge of the bin.
-    return decode(encoding.encoder, ω)
+    return decode(encoding.binencoder, ω)
 end
 
-total_outcomes(encoding::RelativeFirstDifferenceEncoding) = total_outcomes(encoding.encoder)
+function total_outcomes(encoding::RelativeFirstDifferenceEncoding)
+    return total_outcomes(encoding.binencoder)
+end
