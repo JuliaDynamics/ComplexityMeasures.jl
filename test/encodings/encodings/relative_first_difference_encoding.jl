@@ -20,3 +20,6 @@ symbols3 = [encode(RelativeFirstDifferenceEncoding(0, 1; n), rand(rng, 𝒰, 5))
 
 # minval/maxval must be ordered correctly
 @test_throws ArgumentError RelativeFirstDifferenceEncoding(1, 0, n = 2)
+
+# `n` must be positive and nonzero
+@test_throws ArgumentError RelativeMeanEncoding(0, 1, n = 0)

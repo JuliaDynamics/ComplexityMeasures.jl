@@ -3,6 +3,9 @@ using ComplexityMeasures
 using Statistics: mean, std
 using StaticArrays: SVector
 
+# Convenience constructor.
+@test GaussianCDFEncoding(rand(3); μ = 0.0, σ = 0.1) isa GaussianCDFEncoding
+
 # Analytical tests
 ################################################################
 # For a zero-mean Gaussian with c = 3 intervals, zero should map to the symbol 2. This
