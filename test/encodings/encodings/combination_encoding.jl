@@ -15,3 +15,25 @@ d = decode(e_combo, symbol)
 
 c = CombinationEncoding(OrdinalPatternEncoding())
 @test_throws ArgumentError CombinationEncoding([c])
+
+
+# ----------------------------------------------------------------
+# Analytical tests
+# ----------------------------------------------------------------
+encodings = [
+    RelativeMeanEncoding(0, 1, n = 2),
+    OrdinalPatternEncoding(3),
+]
+comboencoding = CombinationEncoding(encodings...)
+
+x = [0.3, 0.1, 0.2]
+s_a = encode(RelativeMeanEncoding(0, 1, n = 3), x) # mean = 0.2 => s_a = 1
+s_o = encode(OrdinalPatternEncoding(3), x) # sorting pattern [2, 3, 1] => s_o = 4
+
+# Symbol ranges are 1:2, 1:factorial(3) = 1:6, so we should get linear index 7
+lidxs = LinearIndices((1:2, 1:factorial(3)))
+s_c = encode(comboencoding, x)
+@test lidxs[s_a, s_o] == 7 == s_c
+
+@test decode(comboencoding, s_c)[1][1] ≈ 0.0 # left bin edge of first subinterval is zero
+@test decode(comboencoding, s_c)[2] == [2, 3, 1] # idxs that would sort `x`
