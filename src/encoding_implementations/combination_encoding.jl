@@ -76,14 +76,8 @@ function CombinationEncoding(encodings::Vararg{<:Encoding, N}) where N
 end
 CombinationEncoding(encodings::Vector{<:Encoding}) = CombinationEncoding(encodings...)
 
-# We could in principle allow any `x` here, but not all encodings support encoding
-# single numbers. In particular, the `RelativeFirstDifferenceEncoding` isn't even defined
-# for single numbers, and `OrdinalPatternEncoding` also isn't defined for single numbers.
-# Therefore, we enforce vector-valued input with encoding.
-function encode(encoding::CombinationEncoding, x::AbstractVector{<:Real})
-    # note: we don't enforce length(x) >= 2 here, because some combinations of
-    # encodings may work on single-element vectors (even though most don't).
-    symbols = [encode(e, x) for e in encoding.encodings]
+function encode(encoding::CombinationEncoding, χ)
+    symbols = [encode(e, χ) for e in encoding.encodings]
     ω::Int = encoding.linear_indices[symbols...]
     return ω
 end
