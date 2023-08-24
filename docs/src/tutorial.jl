@@ -178,7 +178,7 @@ perm_ext_y_jack = information(Jackknife(extdef), ospace, y)
 
 # Discrete entropies (or in general, information measures) are functions of probability mass functions.
 # It is also possible to compute entropies of probability density functions.
-# In ComplexityMeasures.jl, this is done by calling [`entropy`](@ref) (or the more general [`information`](@ref)) with a differential information estimator, a subtype of [`DiffInfoEstimator`](@ref).
+# In ComplexityMeasures.jl, this is done by calling [`entropy`](@ref) (or the more general [`information`](@ref)) with a differential information estimator, a subtype of [`DifferentialInfoEstimator`](@ref).
 # These estimators are given directly to [`information`](@ref) without assigning an outcome space, because the probability density is approximated implicitly, not explicitly.
 # For example, the [`Correa`](@ref) estimator approximates the differential Shannon entropy by utilizing order statistics of the timeseries data:
 
