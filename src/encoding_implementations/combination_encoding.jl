@@ -5,7 +5,8 @@ export CombinationEncoding
     CombinationEncoding(encodings)
 
 A `CombinationEncoding` takes multiple [`Encoding`](@ref)s and create a combined
-encoding that can be used to encode vectors.
+encoding that can be used to encode inputs that are compatible with the
+given `encodings`.
 
 ## Encoding/decoding
 
