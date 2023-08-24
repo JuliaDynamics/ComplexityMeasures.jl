@@ -22,11 +22,8 @@ const PermProbEst = PermutationOutcomeSpace
     OrdinalPatterns <: OutcomeSpace
     OrdinalPatterns(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
-An [`OutcomeSpace`](@ref) based on ordinal permutation patterns.
-
-Originally introduced in Bandt & Pompe (2002)[BandtPompe2002](@cite)'s paper on
-permutation entropy, and also used for multivariate permutation entropy (He et al., 2016)
-[He2016](@cite).
+An [`OutcomeSpace`](@ref) based on ordinal permutation patterns, originally introduced in
+[BandtPompe2002](@citet)'s paper on permutation entropy.
 
 When passed to [`probabilities`](@ref) the output depends on the input data type:
 
@@ -44,7 +41,7 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     relative magnitudes of the elements of ``\\bf{x}_i``.
     Like above, probabilities are estimated as the frequencies of the permutation symbols.
     The resulting probabilities can be used to compute multivariate permutation
-    entropy[He2016](@cite), although here we don't perform any further subdivision
+    entropy [He2016](@cite), although here we don't perform any further subdivision
     of the permutation patterns (as in Figure 3 of[He2016](@cite)).
 
 Internally, [`OrdinalPatterns`](@ref) uses the [`OrdinalPatternEncoding`](@ref)
@@ -57,12 +54,12 @@ For a version of this estimator that can be used on spatial data, see
 [`SpatialOrdinalPatterns`](@ref).
 
 !!! note "Handling equal values in ordinal patterns"
-    In Bandt & Pompe (2002), equal values are ordered after their order of appearance, but
+    In [BandtPompe2002](@citet), equal values are ordered after their order of appearance, but
     this can lead to erroneous temporal correlations, especially for data with
     low amplitude resolution [Zunino2017](@cite). Here, by default, if two values are equal,
     then one of the is randomly assigned as "the largest", using
     `lt = ComplexityMeasures.isless_rand`.
-    To get the behaviour from Bandt and Pompe (2002)[BandtPompe2002](@cite), use
+    To get the behaviour from [BandtPompe2002](@citet), use
     `lt = Base.isless`.
 
 ## Outcome space

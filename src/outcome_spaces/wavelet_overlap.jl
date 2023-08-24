@@ -8,8 +8,8 @@ An [`OutcomeSpace`](@ref) based on the maximal overlap discrete wavelet transfor
 
 When used with [`probabilities`](@ref), the MODWT is applied to a
 signal, then probabilities are computed as the (normalized) energies at different
-wavelet scales. These probabilities are used to compute the wavelet entropy,
-according to Rosso et al. (2001)[Rosso2001](@cite).
+wavelet scales. These probabilities are used to compute the wavelet entropy
+according to [Rosso2001](@citet).
 Input timeseries `x` is needed for a well-defined outcome space.
 
 By default the wavelet `Wavelets.WT.Daubechies{12}()`

@@ -4,7 +4,7 @@ export ShannonExtropy
     ShannonExtropy <: InformationMeasure
     ShannonExtropy(; base = 2)
 
-The Shannon extropy (Lad et al., 2015[Lad2015](@cite)), used with [`extropy`](@ref) to compute
+The Shannon extropy [Lad2015](@cite), used with [`extropy`](@ref) to compute
 
 ```math
 J(x) -\\sum_{i=1}^N (1 - p[i]) \\log{(1 - p[i])},

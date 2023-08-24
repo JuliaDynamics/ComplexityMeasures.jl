@@ -20,8 +20,7 @@ is approximated over the bins, then bin probabilities are estimated as the invar
 associated with that transfer operator. Assumes that the input data are sequential
 (time-ordered).
 
-This implementation follows the grid estimator approach in Diego et al.
-(2019)[Diego2019](@cite).
+This implementation follows the grid estimator approach in [Diego2019](@citet).
 
 ## Outcome space
 

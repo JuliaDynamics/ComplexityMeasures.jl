@@ -5,7 +5,7 @@ export Tsallis
     Tsallis(q; k = 1.0, base = 2)
     Tsallis(; q = 1.0, k = 1.0, base = 2)
 
-The Tsallis[Tsallis1988](@cite) generalized order-`q` entropy, used with
+The Tsallis [Tsallis1988](@cite) generalized order-`q` entropy, used with
 [`information`](@ref) to compute an entropy.
 
 `base` only applies in the limiting case `q == 1`, in which the Tsallis entropy reduces

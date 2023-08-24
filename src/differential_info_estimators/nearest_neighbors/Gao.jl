@@ -9,18 +9,18 @@ export Gao
     Gao <: DifferentialInfoEstimator
     Gao(definition = Shannon(); k = 1, w = 0, corrected = true)
 
-The `Gao` estimator (Gao et al., 2015)[Gao2015](@ref) computes the [`Shannon`](@ref)
+The `Gao` estimator [Gao2015](@cite) computes the [`Shannon`](@ref)
 differential [`information`](@ref), using a `k`-th nearest-neighbor approach
-based on Singh et al. (2003)[Singh2003](@cite), with logarithms to the `base` specified in
+based on [Singh2003](@citet), with logarithms to the `base` specified in
 `definition`.
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
 when searching for neighbours).
 
-Gao et al., 2015 give two variants of this estimator. If `corrected == false`, then the uncorrected version
-is used. If `corrected == true`, then the corrected version is used, which ensures that
-the estimator is asymptotically unbiased.
+[Gao2015](@citet) give two variants of this estimator. If `corrected == false`, then the
+uncorrected version is used. If `corrected == true`, then the corrected version is used,
+which ensures that the estimator is asymptotically unbiased.
 
 ## Description
 

@@ -4,7 +4,7 @@ export KozachenkoLeonenko
     KozachenkoLeonenko <: DifferentialInfoEstimator
     KozachenkoLeonenko(definition = Shannon(); w::Int = 0)
 
-The `KozachenkoLeonenko` estimator (Kozachenko & Leonenko, 1987)[KozachenkoLeonenko1987](@cite)
+The `KozachenkoLeonenko` estimator [KozachenkoLeonenko1987](@cite)
 computes the [`Shannon`](@ref) differential [`information`](@ref) of a multi-dimensional
 [`StateSpaceSet`](@ref), with logarithms to the `base` specified in `definition`.
 
@@ -19,9 +19,8 @@ the [Shannon](@ref) differential entropy
 H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
 ```
 
-using the nearest neighbor method from Kozachenko &
-Leonenko (1987)[KozachenkoLeonenko1987](@cite), as described in Charzyńska and
-Gambin (2015)[Charzyńska2015](@ref).
+using the nearest neighbor method from [KozachenkoLeonenko1987](@citet), as described in
+[Charzyńska2015](@citet).
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded

@@ -9,7 +9,7 @@ export ApproximateEntropy
     ApproximateEntropy <: ComplexityEstimator
     ApproximateEntropy([x]; r = 0.2std(x), kwargs...)
 
-An estimator for the approximate entropy (ApEn; Pincus, 1991)[Pincus1991](@cite) complexity
+An estimator for the approximate entropy [Pincus1991](@cite) complexity
 measure, used with [`complexity`](@ref).
 
 The keyword argument `r` is mandatory if an input timeseries `x` is not provided.
@@ -25,7 +25,7 @@ The keyword argument `r` is mandatory if an input timeseries `x` is not provided
 
 ## Description
 
-Approximate entropy is defined as
+Approximate entropy (ApEn) is defined as
 
 ```math
 ApEn(m ,r) = \\lim_{N \\to \\infty} \\left[ \\phi(x, m, r) - \\phi(x, m + 1, r) \\right].

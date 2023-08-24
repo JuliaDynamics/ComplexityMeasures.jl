@@ -5,7 +5,7 @@ export ChaoShen
     ChaoShen(definition::Shannon = Shannon())
 
 The `ChaoShen` estimator is used with [`information`](@ref) to compute the
-discrete [`Shannon`](@ref) entropy according to Chao & Shen (2003)[Chao2003](@cite).
+discrete [`Shannon`](@ref) entropy according to [Chao2003](@citet).
 
 ## Description
 
@@ -20,8 +20,8 @@ H_S^{CS} = -\\sum_{i=1}^M \\left( \\dfrac{C p_i \\log(C p_i)}{1 - (1 - C p_i)^N}
 ```
 
 where ``N`` is the sample size and ``M`` is the number of [`outcomes`](@ref). If
-``f_1 = N``, then ``f_1`` is set to ``f_1 = N - 1`` to ensure positive entropy (Arora
-et al., 2022)[Arora2022](@cite).
+``f_1 = N``, then ``f_1`` is set to ``f_1 = N - 1`` to ensure positive entropy
+[Arora2022](@cite).
 """
 Base.@kwdef struct ChaoShen{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
     definition::I = Shannon()

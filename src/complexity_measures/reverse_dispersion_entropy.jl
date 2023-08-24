@@ -7,11 +7,11 @@ export ReverseDispersion
     ReverseDispersion <: ComplexityEstimator
     ReverseDispersion(; c = 3, m = 2, τ = 1, check_unique = true)
 
-Estimator for the reverse dispersion entropy complexity measure (Li et al., 2019)[Li2019](@cite).
+Estimator for the reverse dispersion entropy complexity measure [Li2019](@cite).
 
 ## Description
 
-Li et al. (2021)[Li2019](@cite) defines the reverse dispersion entropy as
+[Li2019](@citet) defines the reverse dispersion entropy as
 
 ```math
 H_{rde} = \\sum_{i = 1}^{c^m} \\left(p_i - \\dfrac{1}{{c^m}} \\right)^2 =
@@ -34,8 +34,8 @@ the dispersion pattern probability distribution is from white noise.
 
 ## Data requirements
 
-The input must have more than one unique element for the default [`GaussianEncoding`](@ref)
-to be well-defined. Li et al. (2018) recommends
+The input must have more than one unique element for the default
+[`GaussianCDFEncoding`](@ref) to be well-defined. [Li2018](@citet) recommends
 that `x` has at least 1000 data points.
 
 If `check_unique == true` (default), then it is checked that the input has

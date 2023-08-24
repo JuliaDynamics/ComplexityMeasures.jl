@@ -4,7 +4,7 @@ export Zhu
     Zhu <: DifferentialInfoEstimator
     Zhu(; definition = Shannon(), k = 1, w = 0)
 
-The `Zhu` estimator (Zhu et al., 2015)[Zhu2015](@cite) is an extension to
+The `Zhu` estimator [Zhu2015](@cite) is an extension to
 [`KozachenkoLeonenko`](@ref), and computes the [`Shannon`](@ref)
 differential [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref),
 with logarithms to the `base` specified in `definition`.
@@ -25,7 +25,8 @@ using `k` nearest neighbor searches. `w` is the Theiler window, which determines
 temporal neighbors are excluded during neighbor searches (defaults to `0`, meaning that
 only the point itself is excluded when searching for neighbours).
 
-See also: [`information`](@ref), [`KozachenkoLeonenko`](@ref), [`DifferentialInfoEstimator`](@ref).
+See also: [`information`](@ref), [`KozachenkoLeonenko`](@ref),
+[`DifferentialInfoEstimator`](@ref).
 """
 struct Zhu{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
     definition::I

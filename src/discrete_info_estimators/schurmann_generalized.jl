@@ -6,14 +6,15 @@ export GeneralizedSchürmann
 
 The `GeneralizedSchürmann` estimator is used with [`information`](@ref) to compute the
 discrete [`Shannon`](@ref) entropy with the bias-corrected estimator
-given in Grassberger (2022)[Grassberger2022](@cite).
+given in [Grassberger2022](@citet).
 
 The "generalized" part of the name, as opposed to the [`Schürmann2004`](@ref) estimator,
 is due to the possibility of picking difference parameters ``a_i`` for different outcomes.
 If different parameters are assigned to the different outcomes, `a` must be a vector of
 parameters of length `length(outcomes)`, where the outcomes are obtained using
-[`outcomes`](@ref). See Grassberger (2022) for more information. If `a` is a real number,
-then ``a_i = a \\forall i``, and the estimator reduces to the [`Schürmann`](@ref) estimator.
+[`outcomes`](@ref). See [Grassberger2022](@citet) for more information. If `a` is a real
+number, then ``a_i = a \\forall i``, and the estimator reduces to the [`Schürmann`](@ref)
+estimator.
 
 ## Description
 

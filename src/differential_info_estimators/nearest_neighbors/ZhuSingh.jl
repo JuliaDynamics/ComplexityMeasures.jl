@@ -9,8 +9,7 @@ export ZhuSingh
     ZhuSingh <: DifferentialInfoEstimator
     ZhuSingh(definition = Shannon(); k = 1, w = 0)
 
-The `ZhuSingh` estimator
-(Zhu et al., 2015; Singh et al., 2003)[Zhu2015](@cite)[Singh2003](@cite) computes the
+The `ZhuSingh` estimator [Zhu2015](@cite)[Singh2003](@cite) computes the
 [`Shannon`](@ref) differential [`information`](@ref) of a multi-dimensional
 [`StateSpaceSet`](@ref), with logarithms to the `base` specified in `definition`.
 
@@ -28,7 +27,7 @@ H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))].
 Like [`Zhu`](@ref), this estimator approximates probabilities within hyperrectangles
 surrounding each point `xᵢ ∈ x` using using `k` nearest neighbor searches. However,
 it also considers the number of neighbors falling on the borders of these hyperrectangles.
-This estimator is an extension to the entropy estimator in Singh et al. (2003).
+This estimator is an extension to the entropy estimator in [Singh2003](@citet).
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded

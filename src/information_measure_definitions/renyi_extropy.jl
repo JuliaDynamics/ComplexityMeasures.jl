@@ -4,7 +4,7 @@ export RenyiExtropy
     RenyiExtropy <: ProbabilitiesFunctional
     RenyiExtropy(; q = 1.0, base = 2)
 
-The Rényi extropy (Liu & Xiao, 2023[Liu2023](@cite)).
+The Rényi extropy [Liu2023](@cite).
 
 ## Description
 

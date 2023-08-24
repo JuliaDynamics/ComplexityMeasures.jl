@@ -26,7 +26,7 @@ export Lord
     Lord <: DifferentialInfoEstimator
     Lord(measure = Shannon(); k = 10, w = 0)
 
-The `Lord` estimator (Lord et al., 2018)[Lord2018](@cite) estimates the [`Shannon`](@ref)
+The `Lord` estimator [Lord2018](@cite) estimates the [`Shannon`](@ref)
 differential [`information`](@ref) using a nearest neighbor approach with a local
 nonuniformity correction (LNC), with logarithms to the `base` specified in `definition`.
 

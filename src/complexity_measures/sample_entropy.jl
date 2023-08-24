@@ -9,8 +9,8 @@ export entropy_sample
 """
     SampleEntropy([x]; r = 0.2std(x), kwargs...) <: ComplexityEstimator
 
-An estimator for the sample entropy complexity measure (Richman & Moorman,
-2000)[Richman2000](@cite), used with [`complexity`](@ref) and [`complexity_normalized`](@ref).
+An estimator for the sample entropy complexity measure [Richman2000](@cite), used with
+[`complexity`](@ref) and [`complexity_normalized`](@ref).
 
 The keyword argument `r` is mandatory if an input timeseries `x` is not provided.
 

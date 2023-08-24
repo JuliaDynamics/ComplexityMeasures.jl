@@ -6,7 +6,7 @@ export AlizadehArghami
 
 The `AlizadehArghami` estimator computes the [`Shannon`](@ref) differential
 [`information`](@ref) of a timeseries using the
-method from Alizadeh & Arghami (2010)[Alizadeh2010](@cite), with logarithms to the `base`
+method from Alizadeh & Arghami (2010)[Alizadeh2010](@citet), with logarithms to the `base`
 specified in `definition`.
 
 The `AlizadehArghami` estimator belongs to a class of differential entropy estimators based

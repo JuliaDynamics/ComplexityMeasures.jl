@@ -14,10 +14,9 @@ generalises [`OrdinalPatterns`](@ref) to high-dimensional arrays.
 The order `m` of the permutation pattern is extracted from the `stencil`, see below.
 
 `SpatialOrdinalPatterns` is based on the 2D and 3D *spatiotemporal permutation entropy*
-estimators by by Ribeiro et al. (2012)[Ribeiro2012](@cite) and Schlemmer et al.
-(2018)[Schlemmer2018](@cite)), respectively, but is here implemented as a pure probabilities
-probabilities estimator that is generalized for `D`-dimensional input array `x`,
-with arbitrary regions (stencils) to get patterns form
+estimators by [Ribeiro2012](@citet) and [Schlemmer2018](@citet), respectively, but is here
+implemented as a pure probabilities probabilities estimator that is generalized for
+`D`-dimensional input array `x`, with arbitrary regions (stencils) to get patterns form
 and (possibly) periodic boundary conditions.
 
 See below for ways to specify the `stencil`. If `periodic = true`, then the stencil wraps

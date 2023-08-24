@@ -4,7 +4,7 @@ export Kaniadakis
     Kaniadakis <: InformationMeasure
     Kaniadakis(; κ = 1.0, base = 2.0)
 
-The Kaniadakis entropy (Tsallis, 2009)[Tsallis2009](@cite), used with [`information`](@ref)
+The Kaniadakis entropy [Tsallis2009](@cite), used with [`information`](@ref)
 to compute
 
 ```math

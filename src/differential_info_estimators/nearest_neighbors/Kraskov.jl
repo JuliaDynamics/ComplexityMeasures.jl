@@ -6,7 +6,8 @@ export Kraskov
 
 The `Kraskov` estimator computes the [`Shannon`](@ref) differential [`information`](@ref) of
 a multi-dimensional [`StateSpaceSet`](@ref) using the `k`-th nearest neighbor
-searches method from [Kraskov2004](@cite), with logarithms to the `base` specified in `definition`.
+searches method from [Kraskov2004](@citet), with logarithms to the `base` specified in
+`definition`.
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded

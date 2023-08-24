@@ -8,7 +8,7 @@ The `Jackknife` estimator is used with [`information`](@ref) to compute any
 discrete [`InformationMeasure`](@ref).
 
 The `Jackknife` estimator uses the generic jackknife principle to reduce bias.
-Zahl (1977)[Zahl1977](@cite) was the first to apply the jaccknife technique in the context of
+[Zahl1977](@citet) was the first to apply the jaccknife technique in the context of
 [`Shannon`](@ref) entropy estimation. Here, we've generalized his estimator to work
 with any [`InformationMeasure`](@ref).
 

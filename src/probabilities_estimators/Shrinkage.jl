@@ -8,8 +8,7 @@ export Shrinkage
 The `Shrinkage` estimator is used with [`probabilities`](@ref) and related functions
 to estimate probabilities over the given `m`-element counting-based
 [`OutcomeSpace`](@ref) using James-Stein-type shrinkage
-(James & Stein, 1992)[JamesStein1992](@cite), as presented in
-Hausser & Strimmer (2009)[Hausser2009](@cite).
+[JamesStein1992](@cite), as presented in [Hausser2009](@citet).
 
 ## Description
 
@@ -25,9 +24,9 @@ target. Hausser & Strimmer (2009)[Hausser2009](@cite) picks ``t_k = 1/m``, i.e. 
 distribution.
 
 If `t == nothing`, then ``t_k`` is set to ``1/m`` for all ``k``,
-as in Hausser & Strimmer (2009)[Hausser2009](@cite).
+as in [Hausser2009](@citet).
 If `λ == nothing` (the default), then the shrinkage intensity is optimized according
-to Hausser & Strimmer (2009)[Hausser2009](@cite). Hence, you should probably not pick
+to [Hausser2009](@citet). Hence, you should probably not pick
 `λ` nor `t` manually, unless you know what you are doing.
 
 ## Assumptions

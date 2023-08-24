@@ -5,12 +5,12 @@ export Vasicek
     Vasicek(definition = Shannon(); m::Int = 1)
 
 The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`information`](@ref)
-of a timeseries using the method from Vasicek (1976)[Vasicek1976](@cite), with logarithms to the
+of a timeseries using the method from [Vasicek1976](@citet), with logarithms to the
 `base` specified in `definition`.
 
 The `Vasicek` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic), of which
-Vasicek (1976) was the first. It only works for *timeseries* input.
+[Vasicek1976](@citet) was the first. It only works for *timeseries* input.
 
 ## Description
 

@@ -4,7 +4,7 @@ export TsallisExtropy
     TsallisExtropy <: InformationMeasure
     TsallisExtropy(; base = 2)
 
-The Tsallis extropy (Xue & Deng[Xue2023](@cite)).
+The Tsallis extropy [Xue2023](@cite).
 
 ## Description
 

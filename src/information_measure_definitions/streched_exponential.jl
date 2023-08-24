@@ -6,8 +6,8 @@ export StretchedExponential
     StretchedExponential <: InformationMeasure
     StretchedExponential(; η = 2.0, base = 2)
 
-The stretched exponential, or Anteneodo-Plastino, entropy (Anteneodo &
-Plastino, 1999[Anteneodo1999](@cite)), used with [`information`](@ref) to compute
+The stretched exponential, or Anteneodo-Plastino, entropy [Anteneodo1999](@cite), used with
+[`information`](@ref) to compute
 
 ```math
 S_{\\eta}(p) = \\sum_{i = 1}^N

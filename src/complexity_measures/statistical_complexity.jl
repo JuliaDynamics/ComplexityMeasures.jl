@@ -8,7 +8,7 @@ export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
     StatisticalComplexity([x]; kwargs...)
 
 An estimator for the statistical complexity and entropy, originally by
-Rosso et al. (2007)[Rosso2007](@cite), but here generalized (see [Rosso2013](@cite)) to work with any
+[Rosso2007](@cite), but here generalized see [Rosso2013](@citet) to work with any
 [`ProbabilitiesEstimator`](@ref) in combination with any [`OutcomeSpace`](@ref)
 with a priori known `total_outcomes`, any valid distance metric, and any
 normalizable discrete information measure (e.g. entropies like [`Shannon`](@ref),
@@ -41,7 +41,7 @@ In the original paper[Rosso2007](@cite), this complexity measure was defined
 via an ordinal pattern-based probability distribution, the Shannon entropy
 and the Jensen-Shannon divergence as a distance measure.
 This implementation allows for a generalization of the
-complexity measure as developed in [Rosso2013](@cite).
+complexity measure as developed in [Rosso2013](@citet).
 Here, ``H_q``` can be the (q-order) Shannon-, Renyi or Tsallis
 entropy and ``Q_q`` based either on the Euclidean, Wooters, Kullback,
 q-Kullback, Jensen or q-Jensen distance as
@@ -128,9 +128,11 @@ linearpermissiverange(start; stop, length) = length==1 ? [start] : collect(range
 """
     entropy_complexity_curves(c::StatisticalComplexity; num_max=1, num_min=1000) -> (min_entropy_complexity, max_entropy_complexity)
 
-Calculate the maximum complexity-entropy curve for the statistical complexity according to [Rosso2007](@cite)
-for `num_max * total_outcomes(c.est)` different values of the normalized information measure of choice (in case of the maximum complexity curves)
-and `num_min` different values of the normalized information measure of choice (in case of the minimum complexity curve).
+Calculate the maximum complexity-entropy curve for the statistical complexity according to
+[Rosso2007](@citet) for `num_max * total_outcomes(c.est)` different values of the normalized
+information measure of choice (in case of the maximum complexity curves)
+and `num_min` different values of the normalized information measure of choice (in case of
+the minimum complexity curve).
 
 This function can also be used to compute the maximum "complexity-extropy curve" if
 `c.entr` is an [`ProbabilitiesFunctional`](@ref), which is the equivalent of the
@@ -138,10 +140,10 @@ complexity-entropy curves, but using [`extropy`](@ref) instead of [`information`
 
 ## Description
 
-The way the statistical complexity is designed, there is a minimum and maximum possible complexity
-for data with a given permutation entropy.
-The calculation time of the maximum complexity curve grows as `O(total_outcomes(c.est)^2)`, and thus takes
-very long for high numbers of outcomes.
+The way the statistical complexity is designed, there is a minimum and maximum possible
+complexity for data with a given permutation entropy.
+The calculation time of the maximum complexity curve grows as `O(total_outcomes(c.est)^2)`,
+and thus takes very long for high numbers of outcomes.
 This function is inspired by S. Sippels implementation in statcomp [Sippel2016](@cite).
 
 This function will work with any `ProbabilitiesEstimator` where [`total_outcomes`](@ref) is known a priori.

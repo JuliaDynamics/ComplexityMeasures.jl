@@ -4,8 +4,8 @@ export Regular
     Regular <: MultiScaleAlgorithm
     Regular(; f::Function = Statistics.mean)
 
-The original multi-scale algorithm for multiscale entropy analysis (Costa et al.,
-2022)[Costa2002](@cite), which yields a single downsampled time series per scale `s`.
+The original multi-scale algorithm for multiscale entropy analysis [Costa2002](@cite),
+which yields a single downsampled time series per scale `s`.
 
 ## Description
 
@@ -28,11 +28,10 @@ where `f` is some summary statistic applied to the length-`ts-((t - 1)s + 1)` tu
 Different choices of `f` have yield different multiscale methods appearing in the
 literature. For example:
 
-- `f == Statistics.mean` yields the original first-moment multiscale sample entropy (Costa
-    et al., 2002)[Costa2002](@cite).
-- `f == Statistics.var` yields the generalized multiscale sample entropy (Costa &
-    Goldberger, 2015)[Costa2015](@cite), which uses the second-moment (variance) instead of the
-    mean.
+- `f == Statistics.mean` yields the original first-moment multiscale sample entropy
+    [Costa2002](@cite).
+- `f == Statistics.var` yields the generalized multiscale sample entropy [Costa2015](@cite),
+    which uses the second-moment (variance) instead of the mean.
 
 See also: [`Composite`](@ref).
 """

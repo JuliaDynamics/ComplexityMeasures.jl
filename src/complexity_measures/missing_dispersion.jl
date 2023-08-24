@@ -9,8 +9,7 @@ export MissingDispersionPatterns
     MissingDispersionPatterns(est = Dispersion())
 
 An estimator for the number of missing dispersion patterns (``N_{MDP}``), a complexity
-measure which can be used to detect nonlinearity in time series (Zhou et al.,
-2023)[Zhou2023](@cite).
+measure which can be used to detect nonlinearity in time series [Zhou2023](@cite).
 
 Used with [`complexity`](@ref) or [`complexity_normalized`](@ref), whose implementation
 uses [`missing_outcomes`](@ref).

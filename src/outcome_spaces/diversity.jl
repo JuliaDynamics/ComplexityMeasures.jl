@@ -5,11 +5,10 @@ export Diversity
 """
     Diversity(; m::Int, τ::Int, nbins::Int)
 
-A [`OutcomeSpace`](@ref) based on the cosine similarity (Wang et al.,
-2020)[Wang2020](@cite).
+A [`OutcomeSpace`](@ref) based on the cosine similarity [Wang2020](@cite).
 
-It can be used with [`information`](@ref) to compute the diversity entropy of an input
-timeseries[Wang2020](@cite).
+It can be used with [`information`](@ref) to compute the "diversity entropy" of an input
+timeseries [Wang2020](@cite).
 
 The implementation here allows for `τ != 1`, which was not considered in the original paper.
 

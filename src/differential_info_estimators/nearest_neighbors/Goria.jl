@@ -9,7 +9,7 @@ export Goria
     Goria <: DifferentialInfoEstimator
     Goria(measure = Shannon(); k = 1, w = 0)
 
-The `Goria` estimator (Goria et al., 2005)[Goria2005](@cite) computes the
+The `Goria` estimator [Goria2005](@cite) computes the
 [`Shannon`](@ref) differential
 [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref),
 with logarithms to the `base` specified in `definition`.
@@ -32,7 +32,7 @@ samples ``\\{\\bf{x}_1, \\bf{x}_2, \\ldots, \\bf{x}_N \\}`` to their
 ```math
 \\hat{\\rho}_k = \\left( \\prod_{i=1}^N \\right)^{\\dfrac{1}{N}}
 ```
-Goria et al. (2005)[Goria2005](@cite)'s estimate of Shannon differential entropy is then
+[Goria2005](@citet)'s estimate of Shannon differential entropy is then
 
 ```math
 \\hat{H} = m\\hat{\\rho}_k + \\log(N - 1) - \\psi(k) + \\log c_1(m),

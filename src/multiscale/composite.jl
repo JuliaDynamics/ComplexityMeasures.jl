@@ -4,9 +4,8 @@ export Composite
     Composite <: MultiScaleAlgorithm
     Composite(; f::Function = Statistics.mean)
 
-Composite multi-scale algorithm for multiscale entropy analysis (Wu et al.,
-2013)[Wu2013](@cite), used, with [`multiscale`](@ref) to compute, for example, composite
-multiscale entropy (CMSE).
+Composite multi-scale algorithm for multiscale entropy analysis [Wu2013](@cite), used,
+with [`multiscale`](@ref) to compute, for example, composite multiscale entropy (CMSE).
 
 ## Description
 
@@ -15,7 +14,7 @@ like [`Regular`](@ref), downsamples and coarse-grains `x` by splitting it into
 non-overlapping windows of length `s`, and then constructing downsampled time series by
 applying the function `f` to each of the resulting length-`s` windows.
 
-However, Wu et al. (2013)[Wu2013](@cite) realized that for each scale `s`, there are actually `s`
+However, [Wu2013](@citet) realized that for each scale `s`, there are actually `s`
 different ways of selecting windows, depending on where indexing starts/ends.
 These `s` different downsampled time series `D_t(s, f)` at each scale `s` are
 constructed as follows:
