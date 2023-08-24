@@ -8,8 +8,8 @@ export Shrinkage
 The `Shrinkage` estimator is used with [`probabilities`](@ref) and related functions
 to estimate probabilities over the given `m`-element counting-based
 [`OutcomeSpace`](@ref) using James-Stein-type shrinkage
-(James & Stein, 1961)[^JamesStein1961], as presented in
-Hausser & Strimmer (2009)[^Hausser2009].
+(James & Stein, 1992)[JamesStein1992](@cite), as presented in
+Hausser & Strimmer (2009)[Hausser2009](@cite).
 
 ## Description
 
@@ -21,13 +21,13 @@ The `Shrinkage` estimator estimates a cell probability ``\\theta_{k}^{\\text{Shr
 
 where ``\\lambda \\in [0, 1]`` is the shrinkage intensity (``\\lambda = 0`` means
 no shrinkage, and ``\\lambda = 1`` means full shrinkage), and ``t_k`` is the shrinkage
-target. Hausser & Strimmer (2009)[^Hausser2009] picks ``t_k = 1/m``, i.e. the uniform
+target. Hausser & Strimmer (2009)[Hausser2009](@cite) picks ``t_k = 1/m``, i.e. the uniform
 distribution.
 
 If `t == nothing`, then ``t_k`` is set to ``1/m`` for all ``k``,
-as in Hausser & Strimmer (2009)[^Hausser2009].
+as in Hausser & Strimmer (2009)[Hausser2009](@cite).
 If `λ == nothing` (the default), then the shrinkage intensity is optimized according
-to Hausser & Strimmer (2009)[^Hausser2009]. Hence, you should probably not pick
+to Hausser & Strimmer (2009)[Hausser2009](@cite). Hence, you should probably not pick
 `λ` nor `t` manually, unless you know what you are doing.
 
 ## Assumptions
@@ -53,14 +53,6 @@ ps_shrink = probabilities(Shrinkage(OrdinalPatterns(m = 3)), x)
 ```
 
 See also: [`RelativeAmount`](@ref), [`BayesianRegularization`](@ref).
-
-[^JamesStein1961]:
-    James, W., & Stein, C. (1992). Estimation with quadratic loss. In Breakthroughs in
-    statistics: Foundations and basic theory (pp. 443-460). New York, NY: Springer New York.
-[^Hausser2009]:
-    Hausser, J., & Strimmer, K. (2009). Entropy inference and the James-Stein estimator,
-    with application to nonlinear gene association networks. Journal of Machine Learning
-    Research, 10(7).
 """
 struct Shrinkage{O <: OutcomeSpace, T <: Union{Nothing, Real, Vector{<:Real}}, L <: Union{Nothing, Real}} <: ProbabilitiesEstimator
     outcomemodel::O

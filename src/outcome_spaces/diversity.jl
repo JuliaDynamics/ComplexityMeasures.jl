@@ -5,9 +5,11 @@ export Diversity
 """
     Diversity(; m::Int, τ::Int, nbins::Int)
 
-A [`OutcomeSpace`](@ref) based on the cosine similarity.
-It can be used with [`information`](@ref) to
-compute the diversity entropy of an input timeseries[^Wang2020].
+A [`OutcomeSpace`](@ref) based on the cosine similarity (Wang et al.,
+2020)[Wang2020](@cite).
+
+It can be used with [`information`](@ref) to compute the diversity entropy of an input
+timeseries[Wang2020](@cite).
 
 The implementation here allows for `τ != 1`, which was not considered in the original paper.
 
@@ -27,13 +29,9 @@ Diversity probabilities are computed as follows.
 5. Sum-normalize the histogram to obtain probabilities.
 
 ## Outcome space
+
 The outcome space for `Diversity` is the bins of the `[-1, 1]` interval,
 and the return configuration is the same as in [`ValueHistogram`](@ref) (left bin edge).
-
-[^Wang2020]:
-    Wang, X., Si, S., & Li, Y. (2020). Multiscale diversity entropy: A novel
-    dynamical measure for fault diagnosis of rotating machinery. IEEE Transactions on
-    Industrial Informatics, 17(8), 5419-5429.
 """
 Base.@kwdef struct Diversity <: CountBasedOutcomeSpace
     m::Int = 2

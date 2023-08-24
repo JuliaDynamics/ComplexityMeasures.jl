@@ -5,7 +5,7 @@ export Vasicek
     Vasicek(definition = Shannon(); m::Int = 1)
 
 The `Vasicek` estimator computes the [`Shannon`](@ref) differential [`information`](@ref)
-of a timeseries using the method from Vasicek (1976)[^Vasicek1976], with logarithms to the
+of a timeseries using the method from Vasicek (1976)[Vasicek1976](@cite), with logarithms to the
 `base` specified in `definition`.
 
 The `Vasicek` estimator belongs to a class of differential entropy estimators based
@@ -47,10 +47,6 @@ In practice, choice of `m` influences how fast the entropy converges to the true
 For small value of `m`, convergence is slow, so we recommend to scale `m` according to the
 time series length `n` and use `m >= n/100` (this is just a heuristic based on the tests
 written for this package).
-
-[^Vasicek1976]:
-    Vasicek, O. (1976). A test for normality based on sample entropy. Journal of the Royal
-    Statistical Society: Series B (Methodological), 38(1), 54-59.
 
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Ebrahimi`](@ref), [`DifferentialInfoEstimator`](@ref).

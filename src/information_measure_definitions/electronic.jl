@@ -5,7 +5,7 @@ export ElectronicEntropy
     ElectronicEntropy(; h = Shannon(; base = 2), j = ShannonExtropy(; base = 2))
 
 The ["electronic entropy"](https://en.wikipedia.org/wiki/Electronic_entropy) measure is
-defined in discrete form in Lad et al. (2015)[^Lad2015] as
+defined in discrete form in Lad et al. (2015)[Lad2015](@cite) as
 
 ```math
 H_{EL}(p) = H_S(p) + J_S(P),
@@ -13,9 +13,6 @@ H_{EL}(p) = H_S(p) + J_S(P),
 
 where ``H_S(p)`` is the [`Shannon`](@ref) entropy and ``J_S(p)`` is the [`ShannonExtropy`](@ref)
 extropy of the probability vector ``p``.
-
-[^Lad2015]:
-    Lad, F., Sanfilippo, G., & Agro, G. (2015). Extropy: Complementary dual of entropy.
 """
 struct ElectronicEntropy <: InformationMeasure
     h::Shannon

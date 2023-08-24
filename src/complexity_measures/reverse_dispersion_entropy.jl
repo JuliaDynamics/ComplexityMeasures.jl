@@ -7,11 +7,11 @@ export ReverseDispersion
     ReverseDispersion <: ComplexityEstimator
     ReverseDispersion(; c = 3, m = 2, τ = 1, check_unique = true)
 
-Estimator for the reverse dispersion entropy complexity measure (Li et al., 2019)[^Li2019].
+Estimator for the reverse dispersion entropy complexity measure (Li et al., 2019)[Li2019](@cite).
 
 ## Description
 
-Li et al. (2021)[^Li2019] defines the reverse dispersion entropy as
+Li et al. (2021)[Li2019](@cite) defines the reverse dispersion entropy as
 
 ```math
 H_{rde} = \\sum_{i = 1}^{c^m} \\left(p_i - \\dfrac{1}{{c^m}} \\right)^2 =
@@ -22,7 +22,7 @@ probability estimator. Relative frequencies of dispersion patterns are computed 
 given `encoding` scheme , which defaults to encoding using the normal cumulative
 distribution function (NCDF), as implemented by [`GaussianCDFEncoding`](@ref), using
 embedding dimension `m` and embedding delay `τ`.
-Recommended parameter values[^Li2018] are `m ∈ [2, 3]`, `τ = 1` for the embedding, and
+Recommended parameter values[Li2018](@cite) are `m ∈ [2, 3]`, `τ = 1` for the embedding, and
 `c ∈ [3, 4, …, 8]` categories for the Gaussian mapping.
 
 If normalizing, then the reverse dispersion entropy is normalized to `[0, 1]`.
@@ -41,9 +41,6 @@ that `x` has at least 1000 data points.
 If `check_unique == true` (default), then it is checked that the input has
 more than one unique value. If `check_unique == false` and the input only has one
 unique element, then a `InexactError` is thrown when trying to compute probabilities.
-
-[^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
-    complexity measure for sensor signal. Sensors, 19(23), 5203.
 """
 Base.@kwdef struct ReverseDispersion{S <: Encoding} <: ComplexityEstimator
     encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`
@@ -66,10 +63,7 @@ If `normalize == true`, then normalize the value to the interval `[0, 1]` by usi
 parameters of `estimator`.
 
 Used to compute reverse dispersion entropy([`ReverseDispersion`](@ref);
-Li et al., 2019[^Li2019]).
-
-[^Li2019]: Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
-    complexity measure for sensor signal. Sensors, 19(23), 5203.
+Li et al., 2019[Li2019](@cite)).
 """
 function distance_to_whitenoise(est::ReverseDispersion, p::Probabilities; normalize = false)
     # We can safely skip non-occurring symbols, because they don't contribute

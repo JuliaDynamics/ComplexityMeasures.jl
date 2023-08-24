@@ -77,9 +77,6 @@ factor `1`, the original time series is considered.
     maximum scale level is `length(x) ÷ 2`, but to avoid applying the method to time
     series that are extremely short, maybe consider limiting `maxscale` (e.g.
     `maxscale = length(x) ÷ 5`).
-
-[^Costa2002]: Costa, M., Goldberger, A. L., & Peng, C. K. (2002). Multiscale entropy
-    analysis of complex physiologic time series. Physical review letters, 89(6), 068102.
 """
 function multiscale(alg::MultiScaleAlgorithm, e::InformationMeasure,
         est::Union{ProbabilitiesEstimator, DifferentialInfoEstimator}, x)

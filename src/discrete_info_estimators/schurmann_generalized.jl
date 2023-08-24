@@ -6,7 +6,7 @@ export GeneralizedSchürmann
 
 The `GeneralizedSchürmann` estimator is used with [`information`](@ref) to compute the
 discrete [`Shannon`](@ref) entropy with the bias-corrected estimator
-given in Grassberger (2022)[^Grassberger2022].
+given in Grassberger (2022)[Grassberger2022](@cite).
 
 The "generalized" part of the name, as opposed to the [`Schürmann2004`](@ref) estimator,
 is due to the possibility of picking difference parameters ``a_i`` for different outcomes.
@@ -34,10 +34,6 @@ G_n(a) = \\varphi(n) + (-1)^n \\int_0^a \\dfrac{x^{n - 1}}{x + 1} dx,
 ```math
 G_n = \\varphi(n) + (-1)^n \\int_0^1 \\dfrac{x^{n - 1}}{x + 1} dx.
 ```
-
-[^Grassberger2022]:
-    Grassberger, P. (2022). On generalized Schürmann entropy estimators. Entropy, 24(5),
-    680.
 """
 Base.@kwdef struct GeneralizedSchürmann{I <: InformationMeasure, T} <: DiscreteInfoEstimator{I}
     definition::I = Shannon()

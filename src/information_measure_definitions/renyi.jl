@@ -5,7 +5,7 @@ export Renyi
     Renyi(q, base = 2)
     Renyi(; q = 1.0, base = 2)
 
-The Rényi[^Rényi1960] generalized order-`q` entropy, used with [`information`](@ref)
+The Rényi[Rényi1961](@cite) generalized order-`q` entropy, used with [`information`](@ref)
 to compute an entropy with units given by `base` (typically `2` or `MathConstants.e`).
 
 ## Description
@@ -19,18 +19,12 @@ H_q(p) = \\frac{1}{1-q} \\log \\left(\\sum_i p[i]^q\\right)
 
 and generalizes other known entropies,
 like e.g. the information entropy
-(``q = 1``, see [^Shannon1948]), the maximum entropy (``q=0``,
+(``q = 1``, see [Shannon1948](@cite)), the maximum entropy (``q=0``,
 also known as Hartley entropy), or the correlation entropy
 (``q = 2``, also known as collision entropy).
 
 The maximum value of the Rényi entropy is ``\\log_{base}(L)``, which is the entropy of the
 uniform distribution with ``L`` the [`total_outcomes`](@ref).
-
-[^Rényi1960]:
-    A. Rényi, _Proceedings of the fourth Berkeley Symposium on Mathematics,
-    Statistics and Probability_, pp 547 (1960)
-
-[^Shannon1948]: C. E. Shannon, Bell Systems Technical Journal **27**, pp 379 (1948)
 """
 Base.@kwdef struct Renyi{Q, B} <: Entropy
     q::Q = 1.0

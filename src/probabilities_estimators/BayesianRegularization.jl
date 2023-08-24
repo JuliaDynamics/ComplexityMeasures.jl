@@ -6,7 +6,7 @@ export BayesianRegularization
 
 The `BayesianRegularization` estimator is used with [`probabilities`](@ref) and related functions to
 estimate probabilities over the given `m`-element counting-based [`OutcomeSpace`](@ref)
-using Bayesian regularization of cell counts (Hausser & Strimmer, 2009)[^Hausser2009].
+using Bayesian regularization of cell counts (Hausser & Strimmer, 2009)[Hausser2009](@cite).
 See [`ProbabilitiesEstimator`](@ref) for usage.
 
 ## Outcome space requirements
@@ -28,7 +28,7 @@ for the outcome ``\\omega_{k}``, and ``A = \\sum_{i=1}^k a_k``.
 ## Picking `a`
 
 There are many common choices of priors, some of which are listed in
-Hausser & Strimmer (2009)[^Hausser2009]. They include
+Hausser & Strimmer (2009)[Hausser2009](@cite). They include
 
 - `a == 0`, which is equivalent to the [`RelativeAmount`](@ref) estimator.
 - `a == 0.5` (Jeffrey's prior)
@@ -40,7 +40,7 @@ where `x` is the input data and `o` is the [`OutcomeSpace`](@ref).
 If used with [`probabilities`](@ref), then `length(a)` must match the number of
 *observed* outcomes (you can check this using [`probabilities_and_outcomes`](@ref)).
 The choice of `a` can severely impact the estimation errors of the probabilities,
-and the errors depend both on the choice of `a` and on the sampling scenario[^Hausser2009].
+and the errors depend both on the choice of `a` and on the sampling scenario[Hausser2009](@cite).
 
 ## Assumptions
 
@@ -65,11 +65,6 @@ ps_bayes = probabilities(BayesianRegularization(OrdinalPatterns(m = 3), a = 0.5)
 ```
 
 See also: [`RelativeAmount`](@ref), [`Shrinkage`](@ref).
-
-[^Hausser2009]:
-    Hausser, J., & Strimmer, K. (2009). Entropy inference and the James-Stein estimator,
-    with application to nonlinear gene association networks. Journal of Machine Learning
-    Research, 10(7).
 """
 struct BayesianRegularization{O <: OutcomeSpace, A} <: ProbabilitiesEstimator
     outcomemodel::O

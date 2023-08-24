@@ -10,7 +10,7 @@ export entropy_sample
     SampleEntropy([x]; r = 0.2std(x), kwargs...) <: ComplexityEstimator
 
 An estimator for the sample entropy complexity measure (Richman & Moorman,
-2000)[^Richman2000], used with [`complexity`](@ref) and [`complexity_normalized`](@ref).
+2000)[Richman2000](@cite), used with [`complexity`](@ref) and [`complexity_normalized`](@ref).
 
 The keyword argument `r` is mandatory if an input timeseries `x` is not provided.
 
@@ -62,10 +62,6 @@ If computing the normalized measure, then the resulting sample entropy is on `[0
     any `τ`.
 
 See also: [`entropy_sample`](@ref).
-
-[^Richman2000]: Richman, J. S., & Moorman, J. R. (2000). Physiological time-series
-    analysis using approximate entropy and sample entropy. American Journal of
-    Physiology-Heart and Circulatory Physiology, 278(6), H2039-H2049.
 """
 Base.@kwdef struct SampleEntropy{R} <: ComplexityEstimator
     m::Int = 2

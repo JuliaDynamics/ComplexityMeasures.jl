@@ -5,7 +5,7 @@ export ChaoShen
     ChaoShen(definition::Shannon = Shannon())
 
 The `ChaoShen` estimator is used with [`information`](@ref) to compute the
-discrete [`Shannon`](@ref) entropy according to Chao & Shen (2003)[^Chao2003].
+discrete [`Shannon`](@ref) entropy according to Chao & Shen (2003)[Chao2003](@cite).
 
 ## Description
 
@@ -21,16 +21,7 @@ H_S^{CS} = -\\sum_{i=1}^M \\left( \\dfrac{C p_i \\log(C p_i)}{1 - (1 - C p_i)^N}
 
 where ``N`` is the sample size and ``M`` is the number of [`outcomes`](@ref). If
 ``f_1 = N``, then ``f_1`` is set to ``f_1 = N - 1`` to ensure positive entropy (Arora
-et al., 2022)[^Arora2022].
-
-[^Chao2003]:
-    Chao, A., & Shen, T. J. (2003). Nonparametric estimation of Shannon’s index of
-    diversity when there are unseen species in sample. Environmental and ecological
-    statistics, 10(4), 429-443.
-
-[^Arora2022]:
-    Arora, A., Meister, C., & Cotterell, R. (2022). Estimating the entropy of linguistic
-    distributions. arXiv preprint arXiv:2204.01469.
+et al., 2022)[Arora2022](@cite).
 """
 Base.@kwdef struct ChaoShen{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
     definition::I = Shannon()

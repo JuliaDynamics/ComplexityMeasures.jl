@@ -9,9 +9,10 @@ export ZhuSingh
     ZhuSingh <: DifferentialInfoEstimator
     ZhuSingh(definition = Shannon(); k = 1, w = 0)
 
-The `ZhuSingh` estimator (Zhu et al., 2015)[^Zhu2015] computes the [`Shannon`](@ref)
-differential [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref), with
-logarithms to the `base` specified in `definition`.
+The `ZhuSingh` estimator
+(Zhu et al., 2015; Singh et al., 2003)[Zhu2015](@cite)[Singh2003](@cite) computes the
+[`Shannon`](@ref) differential [`information`](@ref) of a multi-dimensional
+[`StateSpaceSet`](@ref), with logarithms to the `base` specified in `definition`.
 
 ## Description
 
@@ -34,16 +35,6 @@ during neighbor searches (defaults to `0`, meaning that only the point itself is
 when searching for neighbours).
 
 See also: [`information`](@ref), [`DifferentialInfoEstimator`](@ref).
-
-[^Zhu2015]:
-    Zhu, J., Bellanger, J. J., Shu, H., & Le Bouquin Jeannès, R. (2015). Contribution to
-    transfer entropy estimation via the k-nearest-neighbors approach. InformationMeasure, 17(6),
-    4173-4201.
-
-[^Singh2003]:
-    Singh, H., Misra, N., Hnizdo, V., Fedorowicz, A., & Demchuk, E. (2003). Nearest
-    neighbor estimates of entropy. American journal of mathematical and management
-    sciences, 23(3-4), 301-321.
 """
 struct ZhuSingh{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
     definition::I

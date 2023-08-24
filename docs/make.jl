@@ -14,7 +14,9 @@ pages = [
     "convenience.md",
     "examples.md",
     "devdocs.md",
+    "references.md",
 ]
+
 
 import Downloads
 Downloads.download(
@@ -23,4 +25,13 @@ Downloads.download(
 )
 include("build_docs_with_style.jl")
 
-build_docs_with_style(pages, ComplexityMeasures, StateSpaceSets)
+using DocumenterCitations
+
+bib = CitationBibliography(
+    joinpath(@__DIR__, "refs.bib");
+    style=:authoryear
+)
+
+build_docs_with_style(pages, ComplexityMeasures, StateSpaceSets;
+    expandfirst = ["index.md"], bib,
+)

@@ -7,7 +7,7 @@ export StretchedExponential
     StretchedExponential(; η = 2.0, base = 2)
 
 The stretched exponential, or Anteneodo-Plastino, entropy (Anteneodo &
-Plastino, 1999[^Anteneodo1999]), used with [`information`](@ref) to compute
+Plastino, 1999[Anteneodo1999](@cite)), used with [`information`](@ref) to compute
 
 ```math
 S_{\\eta}(p) = \\sum_{i = 1}^N
@@ -21,10 +21,6 @@ function, and ``\\Gamma(\\cdot) = \\Gamma(\\cdot, 0)`` is the Gamma function. Re
 
 The maximum entropy for `StrechedExponential` is a rather complicated expression involving
 incomplete Gamma functions (see source code).
-
-[^Anteneodo1999]: Anteneodo, C., & Plastino, A. R. (1999). Maximum entropy approach to
-    stretched exponential probability distributions. Journal of Physics A: Mathematical
-    and General, 32(7), 1089.
 """
 Base.@kwdef struct StretchedExponential{Q, B} <: Entropy
     η::Q = 2.0

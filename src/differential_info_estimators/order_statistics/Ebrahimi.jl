@@ -5,7 +5,7 @@ export Ebrahimi
     Ebrahimi(definition = Shannon(); m::Int = 1)
 
 The `Ebrahimi` estimator computes the [`Shannon`](@ref) [`information`](@ref) of a
-timeseries using the method from Ebrahimi (1994)[^Ebrahimi1994], with logarithms to the
+timeseries using the method from Ebrahimi (1994)[Ebrahimi1994](@cite), with logarithms to the
 `base` specified in `definition`.
 
 The `Ebrahimi` estimator belongs to a class of differential entropy estimators based
@@ -51,10 +51,6 @@ c_i =
     1 + \\frac{n - i}{m} & n - m + 1 \\geq i \\geq n
 \\end{cases}.
 ```
-
-[^Ebrahimi1994]:
-    Ebrahimi, N., Pflughoeft, K., & Soofi, E. S. (1994). Two measures of sample entropy.
-    Statistics & Probability Letters, 20(3), 225-234.
 
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).

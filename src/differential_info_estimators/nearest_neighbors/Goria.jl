@@ -9,7 +9,8 @@ export Goria
     Goria <: DifferentialInfoEstimator
     Goria(measure = Shannon(); k = 1, w = 0)
 
-The `Goria` estimator computes the [`Shannon`](@ref) differential
+The `Goria` estimator (Goria et al., 2005)[Goria2005](@cite) computes the
+[`Shannon`](@ref) differential
 [`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref),
 with logarithms to the `base` specified in `definition`.
 
@@ -31,7 +32,7 @@ samples ``\\{\\bf{x}_1, \\bf{x}_2, \\ldots, \\bf{x}_N \\}`` to their
 ```math
 \\hat{\\rho}_k = \\left( \\prod_{i=1}^N \\right)^{\\dfrac{1}{N}}
 ```
-Goria et al. (2005)[^Goria2005]'s estimate of Shannon differential entropy is then
+Goria et al. (2005)[Goria2005](@cite)'s estimate of Shannon differential entropy is then
 
 ```math
 \\hat{H} = m\\hat{\\rho}_k + \\log(N - 1) - \\psi(k) + \\log c_1(m),
@@ -39,11 +40,6 @@ Goria et al. (2005)[^Goria2005]'s estimate of Shannon differential entropy is th
 
 where ``c_1(m) = \\dfrac{2\\pi^\\frac{m}{2}}{m \\Gamma(m/2)}`` and ``\\psi``
 is the digamma function.
-
-[^Goria2005]:
-    Goria, M. N., Leonenko, N. N., Mergel, V. V., & Novi Inverardi, P. L. (2005). A new
-    class of random vector entropy estimators and its applications in testing statistical
-    hypotheses. Journal of Nonparametric Statistics, 17(3), 277-297.
 """
 struct Goria{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
     definition::I

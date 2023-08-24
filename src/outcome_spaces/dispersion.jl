@@ -6,12 +6,11 @@ export Dispersion
     Dispersion(; c = 5, m = 2, τ = 1, check_unique = true)
 
 An [`OutcomeSpace`](@ref) based on dispersion patterns, originally used by
-Rostaghi & Azami, 2016[^Rostaghi2016] to compute the "dispersion entropy", which
+Rostaghi & Azami, 2016[Rostaghi2016](@cite) to compute the "dispersion entropy", which
 characterizes the complexity and irregularity of a time series.
 
-Recommended parameter
-values[^Li2018] are `m ∈ [2, 3]`, `τ = 1` for the embedding, and `c ∈ [3, 4, …, 8]`
-categories for the Gaussian symbol mapping.
+Recommended parameter values [Li2018](@cite) are `m ∈ [2, 3]`, `τ = 1` for the embedding,
+and `c ∈ [3, 4, …, 8]` categories for the Gaussian symbol mapping.
 
 ## Description
 
@@ -37,7 +36,7 @@ the symbols (integers) encoded by the Gaussian CDF, i.e., the unique elements of
 ## Data requirements and parameters
 
 The input must have more than one unique element for the Gaussian mapping to be
-well-defined. Li et al. (2018) recommends that `x` has at least 1000 data points.
+well-defined. Li et al. (2018)[Li2018](@cite) recommends that `x` has at least 1000 data points.
 
 If `check_unique == true` (default), then it is checked that the input has
 more than one unique value. If `check_unique == false` and the input only has one
@@ -58,15 +57,6 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
 
 For a version of this estimator that can be used on high-dimensional arrays, see
 [`SpatialDispersion`](@ref).
-
-[^Rostaghi2016]:
-    Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series analysis.
-    IEEE Signal Processing Letters, 23(5), 610-614.
-
-[^Li2018]:
-    Li, G., Guan, Q., & Yang, H. (2018). Noise reduction method of underwater acoustic
-    signals based on CEEMDAN, effort-to-compress complexity, refined composite multiscale
-    dispersion entropy and wavelet threshold denoising. InformationMeasure, 21(1), 11.
 """
 Base.@kwdef struct Dispersion{S <: Encoding} <: CountBasedOutcomeSpace
     encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`

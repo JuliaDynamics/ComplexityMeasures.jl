@@ -4,7 +4,7 @@ export RenyiExtropy
     RenyiExtropy <: ProbabilitiesFunctional
     RenyiExtropy(; q = 1.0, base = 2)
 
-The Rényi extropy (Liu & Xiao, 2021[^Liu2021]).
+The Rényi extropy (Liu & Xiao, 2023[Liu2023](@cite)).
 
 ## Description
 
@@ -22,10 +22,6 @@ on the interval ``[0, 1]`` by normalizing to to the maximal Rényi extropy, give
 ```math
 J_R(P) = (N - 1)\\log \\left( \\dfrac{n}{n-1} \\right) .
 ```
-
-[^Liu2021]:
-    Liu, J., & Xiao, F. (2021). Renyi extropy. Communications in Statistics-Theory and
-    Methods, 1-12.
 """
 struct RenyiExtropy{Q,B} <: InformationMeasure
     q::Q

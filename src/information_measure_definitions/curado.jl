@@ -4,7 +4,7 @@ export Curado
     Curado <: InformationMeasure
     Curado(; b = 1.0)
 
-The Curado entropy (Curado & Nobre, 2004)[^Curado2004], used with [`information`](@ref) to
+The Curado entropy (Curado & Nobre, 2004)[Curado2004](@cite), used with [`information`](@ref) to
 compute
 
 ```math
@@ -15,9 +15,6 @@ with `b ∈ ℛ, b > 0`, and the terms outside the sum ensures that ``H_C(0) = H
 
 The maximum entropy for Curado is ``L(1 - \\exp(-b/L)) + \\exp(-b) - 1`` with ``L``
 the [`total_outcomes`](@ref).
-
-[^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
-    entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
 """
 Base.@kwdef struct Curado{B} <: Entropy
     b::B = 1.0
