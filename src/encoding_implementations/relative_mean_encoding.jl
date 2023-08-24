@@ -53,11 +53,6 @@ struct RelativeMeanEncoding{R} <: Encoding
     end
 end
 
-function Base.show(io::IO, e::RelativeMeanEncoding)
-    n, minval, maxval = e.n, e.minval, e.maxval
-    print(io, "RelativeMeanEncoding(n=$n, minval=$minval, maxval=$maxval)")
-end
-
 function RelativeMeanEncoding(minval::Real, maxval::Real; n = 2)
     binencoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
     return RelativeMeanEncoding(n, minval, maxval, binencoder)

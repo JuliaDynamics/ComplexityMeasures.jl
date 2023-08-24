@@ -103,11 +103,6 @@ struct GaussianCDFEncoding{m, T, L <: LinearIndices, C <: CartesianIndices, R} <
 end
 GaussianCDFEncoding(x::AbstractVector; kwargs...) = GaussianCDFEncoding(length(x); kwargs...)
 
-function Base.show(io::IO, e::GaussianCDFEncoding{m, T, L, C}) where {m, T, L, C}
-    c, μ, σ = e.c, e.μ, e.σ
-    print(io, "GaussianCDFEncoding(m=$m; c=$c, μ=$μ, σ=$σ)")
-end
-
 function total_outcomes(encoding::GaussianCDFEncoding{m}) where m
     c = encoding.c
     return c^m

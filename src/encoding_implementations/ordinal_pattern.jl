@@ -60,10 +60,6 @@ function OrdinalPatternEncoding(m = 3, lt::F = isless_rand) where {F}
     return OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
 end
 
-function Base.show(io::IO, e::OrdinalPatternEncoding{M}) where {M}
-    print(io, "OrdinalPatternEncoding{3}(lt = $(e.lt))")
-end
-
 # So that SymbolicPerm stuff fallback here
 total_outcomes(::OrdinalPatternEncoding{m}) where {m} = factorial(m)
 outcome_space(::OrdinalPatternEncoding{m}) where {m} = permutations(1:m) |> collect
