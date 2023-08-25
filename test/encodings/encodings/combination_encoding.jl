@@ -16,7 +16,6 @@ d = decode(e_combo, symbol)
 c = CombinationEncoding(OrdinalPatternEncoding())
 @test_throws ArgumentError CombinationEncoding([c])
 
-
 # ----------------------------------------------------------------
 # Analytical tests
 # ----------------------------------------------------------------
@@ -38,3 +37,7 @@ s_c = encode(comboencoding, x)
 @test decode(comboencoding, s_c)[1][1] ≈ 0.0 # left bin edge of first subinterval is zero
 @test decode(comboencoding, s_c)[2] == [2, 3, 1] # idxs that would sort `x`
 @test decode(comboencoding, s_c) isa Tuple
+
+# Convencience constructor
+# ----------------------------------------------------------------
+@test CombinationEncoding(encodings) isa CombinationEncoding
