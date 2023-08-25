@@ -4,7 +4,7 @@ export CombinationEncoding
     CombinationEncoding <: Encoding
     CombinationEncoding(encodings)
 
-A `CombinationEncoding` takes multiple [`Encoding`](@ref)s and create a combined
+A `CombinationEncoding` takes multiple [`Encoding`](@ref)s and creates a combined
 encoding that can be used to encode inputs that are compatible with the
 given `encodings`.
 
@@ -19,7 +19,7 @@ with a single integer.
 
 When used with [`decode`](@ref), the integer symbol is converted to its corresponding
 cartesian coordinate, which is used to retrieve the decoded symbols for each of
-the encodings.
+the encodings. These decoded symbols are returned as a vector.
 
 The total number of outcomes is `prod(total_outcomes(e) for e in encodings)`.
 
@@ -50,35 +50,34 @@ c = CombinationEncoding(encodings)
 d = decode(c, ω)
 ```
 """
-struct CombinationEncoding{VE, L, C} <: Encoding
+struct CombinationEncoding{E, L, C} <: Encoding
     # An iterable of encodings.
-    encodings::VE
+    encodings::E
 
     # internal fields: LinearIndices/CartesianIndices for encodings/decodings.
     linear_indices::L
     cartesian_indices::C
 
-    function CombinationEncoding(encodings::VE, l::L, c::C) where {VE, L, C}
+    function CombinationEncoding(encodings::E, l::L, c::C) where {E, L, C}
         if any(e isa CombinationEncoding for e in encodings)
             s = "CombinationEncoding doesn't accept a CombinationEncoding as one of its " *
              "sub-encodings."
             throw(ArgumentError(s))
         end
-        new{VE, L, C}(encodings, l, c)
+        new{E, L, C}(encodings, l, c)
     end
 end
-
+CombinationEncoding(encodings) = CombinationEncoding(encodings...)
 function CombinationEncoding(encodings::Vararg{<:Encoding, N}) where N
     ranges = tuple([1:total_outcomes(e) for e in encodings]...)
     linear_indices = LinearIndices(ranges)
     cartesian_indices = CartesianIndices(ranges)
-    return CombinationEncoding(encodings, linear_indices, cartesian_indices)
+    return CombinationEncoding(tuple(encodings...), linear_indices, cartesian_indices)
 end
-CombinationEncoding(encodings::Vector{<:Encoding}) = CombinationEncoding(encodings...)
 
 function encode(encoding::CombinationEncoding, χ)
-    symbols = [encode(e, χ) for e in encoding.encodings]
-    ω::Int = encoding.linear_indices[symbols...]
+    symbols = CartesianIndex(map(e -> encode(e, χ), encoding.encodings))
+    ω::Int = encoding.linear_indices[symbols]
     return ω
 end
 
