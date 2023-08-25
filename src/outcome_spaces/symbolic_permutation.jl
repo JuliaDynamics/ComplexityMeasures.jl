@@ -42,7 +42,7 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     Like above, probabilities are estimated as the frequencies of the permutation symbols.
     The resulting probabilities can be used to compute multivariate permutation
     entropy [He2016](@cite), although here we don't perform any further subdivision
-    of the permutation patterns (as in Figure 3 of[He2016](@cite)).
+    of the permutation patterns (as in Figure 3 of [He2016](@citet)).
 
 Internally, [`OrdinalPatterns`](@ref) uses the [`OrdinalPatternEncoding`](@ref)
 to represent ordinal patterns as integers for efficient computations.
