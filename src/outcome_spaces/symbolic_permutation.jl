@@ -99,8 +99,8 @@ end
     WeightedOrdinalPatterns(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
 
 A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
-based on the weighted permutation entropy[Fadlallah2013](@cite). The outcome space and keywords
-are the same as in [`OrdinalPatterns`](@ref).
+based on the weighted permutation entropy [Fadlallah2013](@cite). The outcome space and
+keywords are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 
@@ -135,8 +135,8 @@ is_counting_based(o::WeightedOrdinalPatterns) = false
     AmplitudeAwareOrdinalPatterns(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
 
 A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
-based on the amplitude-aware permutation entropy[Azami2016](@cite). The outcome space and keywords
-are the same as in [`OrdinalPatterns`](@ref).
+based on the amplitude-aware permutation entropy [Azami2016](@cite). The outcome space and
+keywords are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 

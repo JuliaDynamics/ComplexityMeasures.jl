@@ -20,7 +20,7 @@ The `Shrinkage` estimator estimates a cell probability ``\\theta_{k}^{\\text{Shr
 
 where ``\\lambda \\in [0, 1]`` is the shrinkage intensity (``\\lambda = 0`` means
 no shrinkage, and ``\\lambda = 1`` means full shrinkage), and ``t_k`` is the shrinkage
-target. Hausser & Strimmer (2009)[Hausser2009](@cite) picks ``t_k = 1/m``, i.e. the uniform
+target. [Hausser2009](@citet) picks ``t_k = 1/m``, i.e. the uniform
 distribution.
 
 If `t == nothing`, then ``t_k`` is set to ``1/m`` for all ``k``,
