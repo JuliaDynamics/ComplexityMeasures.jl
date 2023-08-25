@@ -20,35 +20,40 @@ All PRs contributing new functionality must be well tested and well documented. 
 
 If your new outcome space is counting-based, then
 
-5. Implement dispatch for [`counts`](@ref) for your [`OutcomeSpace`](@ref) type.
-6. Implement dispatch for [`counts_and_outcomes`](@ref) for your [`OutcomeSpace`](@ref) type.
+5. Implement dispatch for [`counts_and_outcomes`](@ref) for your [`OutcomeSpace`](@ref) type.
 
 If your new outcome space is not counting-based, then
 
-7. Implement dispatch for [`probabilities`](@ref) for your [`OutcomeSpace`](@ref) type.
-8. Implement dispatch for [`probabilities_and_outcomes`](@ref) for your
+6. Implement dispatch for [`probabilities`](@ref) for your [`OutcomeSpace`](@ref) type.
+7. Implement dispatch for [`probabilities_and_outcomes`](@ref) for your
     [`OutcomeSpace`](@ref) type.
 
 Finally,
 
-9. Implement dispatch for [`outcome_space`](@ref) and your [`OutcomeSpace`](@ref) type.
+8. Implement dispatch for [`outcome_space`](@ref) and your [`OutcomeSpace`](@ref) type.
     The return value of `outcome_space` must be sorted (as in the default behavior of
     `sort`, in ascending order).
-10. Add your outcome space type to the table list in the documentation page of outcome
+9. Add your outcome space type to the table list in the documentation page of outcome
     space. If you made an encoding, also add it to corresponding table in the encodings
     section.
 
 ### Optional steps
 
-1. [`outcomes`](@ref). By default calls [`probabilities_and_outcomes`](@ref) and returns
+The following methods may be extended for your [`OutcomeSpace`](@ref) if doing so
+leads to performance benefits.
+
+1. [`counts`](@ref). Implementing this method for your [`OutcomeSpace`](@ref) type
+    is typically more performant than dispatching to `first(counts_and_outcomes(...))`.
+    In fact, most existing count-based outcome spaces implements [`counts`](@ref) explicitly.
+2. [`outcomes`](@ref). By default calls [`probabilities_and_outcomes`](@ref) and returns
     the second value.
-2. [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref).
+3. [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref).
     This is the function that most typically has performance benefits if implemented
     explicitly, so most existing estimators extend it by default.
 
 ## Adding a new [`ProbabilitiesEstimator`](@ref)
 
-### Mandatory steps 
+### Mandatory steps
 
 1. Define your type and make it subtype [`ProbabilitiesEstimator`](@ref).
 2. Add a docstring to your type following the style of the docstrings of other
@@ -62,10 +67,11 @@ Finally,
 
 ### Optional steps
 
-1. Implement dispatch for [`probabilities`](@ref) for your [`ProbabilitiesEstimator`](@ref)
-    if doing so leads to more efficient code.
-2. Implement dispatch for [`allprobabilities`](@ref) for your [`ProbabilitiesEstimator`](@ref)
-    if doing so leads to more efficient code.
+The following methods may be extended for your [`ProbabilitiesEstimator`](@ref) if doing so
+leads to performance benefits.
+
+1. [`probabilities`](@ref).
+2. [`allprobabilities`](@ref).
 
 ## Adding a new `InformationMeasureEstimator`
 

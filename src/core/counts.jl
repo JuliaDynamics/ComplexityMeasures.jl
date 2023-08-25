@@ -80,14 +80,15 @@ Like [`allcounts_and_outcomes`](@ref), but only returns the counts.
 """
 allcounts(o::OutcomeSpace, x::Array_or_SSSet) = first(allcounts_and_outcomes(o, x))
 
-# This function must explicitly overriden by count-based `OutcomeSpaces`.
+# This function *can* be overridden by count-based `OutcomeSpaces` if it is
+# more performant to do so than dispatching to `counts_and_outcomes`.
 """
     counts(o::OutcomeSpace, x) → cts::Vector{Int}
 
 Like [`counts_and_outcomes`](@ref), but only returns the counts.
 """
 function counts(o::OutcomeSpace, x)
-    throw(ArgumentError("`counts` not implemented for estimator $(typeof(o))."))
+    return counts_and_outcomes(o, x)
 end
 
 """
