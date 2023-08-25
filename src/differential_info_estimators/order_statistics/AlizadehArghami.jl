@@ -5,9 +5,8 @@ export AlizadehArghami
     AlizadehArghami(definition = Shannon(); m::Int = 1)
 
 The `AlizadehArghami` estimator computes the [`Shannon`](@ref) differential
-[`information`](@ref) of a timeseries using the
-method from Alizadeh & Arghami (2010)[Alizadeh2010](@citet), with logarithms to the `base`
-specified in `definition`.
+[`information`](@ref) of a timeseries using the method from [Alizadeh2010](@citet), with
+logarithms to the `base` specified in `definition`.
 
 The `AlizadehArghami` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
