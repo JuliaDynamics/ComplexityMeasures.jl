@@ -27,9 +27,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     # include("multiscale/multiscale.jl")
 
     # Various
-    testfile("utils/fasthist.jl")
-    testfile("utils/bin_encoding.jl")
-    testfile("utils/encoding.jl")
+    testfile("encodings/encodings.jl")
     testfile("convenience.jl")
     testfile("deprecations.jl")
 end
