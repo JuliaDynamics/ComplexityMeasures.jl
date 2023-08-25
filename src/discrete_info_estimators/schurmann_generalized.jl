@@ -8,7 +8,8 @@ The `GeneralizedSchürmann` estimator is used with [`information`](@ref) to comp
 discrete [`Shannon`](@ref) entropy with the bias-corrected estimator
 given in [Grassberger2022](@citet).
 
-The "generalized" part of the name, as opposed to the [Schurmann2004](@citet) estimator,
+The "generalized" part of the name, as opposed to the [Schurmann2004](@citet) estimator
+([`Schürmann`](@ref)),
 is due to the possibility of picking difference parameters ``a_i`` for different outcomes.
 If different parameters are assigned to the different outcomes, `a` must be a vector of
 parameters of length `length(outcomes)`, where the outcomes are obtained using
