@@ -5,21 +5,23 @@ e_firstdiff = RelativeFirstDifferenceEncoding(0, 1, n = 2)
 e_bin = RectangularBinEncoding(FixedRectangularBinning(0, 1, 2))
 es = [e_ord, e_firstdiff, e_amp, e_bin]
 
-e_combo = CombinationEncoding(es)
+# Constructors
+# ----------------------------------------------------------------
 
+@test CombinationEncoding(es) isa CombinationEncoding
+@test CombinationEncoding(es...) isa CombinationEncoding
+
+c = CombinationEncoding(OrdinalPatternEncoding())
+@test_throws ArgumentError CombinationEncoding([c])
+
+# Encoding/decoding
+# ----------------------------------------------------------------
+e_combo = CombinationEncoding(es)
 symbol = encode(e_combo, x)
 @test symbol isa Int
 d = decode(e_combo, symbol)
 @test d isa Tuple
 @test length(d) == length(es)
-
-c = CombinationEncoding(OrdinalPatternEncoding())
-@test_throws ArgumentError CombinationEncoding([c])
-
-# Convencience constructor
-# ----------------------------------------------------------------
-@test CombinationEncoding(encodings) isa CombinationEncoding
-
 
 # ----------------------------------------------------------------
 # Analytical tests
