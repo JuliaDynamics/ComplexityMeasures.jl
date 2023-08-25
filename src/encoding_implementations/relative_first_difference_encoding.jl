@@ -10,7 +10,7 @@ maximum value (`minval` and `maxval`, respectively).
 
 ## Description
 
-This encoding is inspired by Azami & Escudero[^Azami2016]'s algorithm for amplitude-aware
+This encoding is inspired by [Azami2016](@citet)'s algorithm for amplitude-aware
 permutation entropy. They use a linear combination of amplitude information and
 first differences information of state vectors to correct probabilities. Here, however,
 we explicitly encode the first differences part of the correction as an a integer symbol
@@ -43,11 +43,6 @@ encoding = RelativeFirstDifferenceEncoding(minval, maxval; n = 4)
 pts = [rand(3) for i = 1:1000]
 [encode(encoding, x) for x in pts]
 ```
-
-[^Azami2016]:
-    Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy:
-    Illustration in spike detection and signal segmentation. Computer methods and
-    programs in biomedicine, 128, 40-51.
 """
 Base.@kwdef struct RelativeFirstDifferenceEncoding{R} <: Encoding
     n::Int = 2
