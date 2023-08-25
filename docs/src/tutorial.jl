@@ -9,7 +9,8 @@
 # !!! note
 #     The documentation and exposition of ComplexityMeasures.jl is inspired by chapter 5 of
 #     [Nonlinear Dynamics](https://link.springer.com/book/10.1007/978-3-030-91032-7),
-#     Datseris & Parlitz, Springer 2022, and expanded to cover more content.
+#     Datseris & Parlitz, Springer 2022 [Datseris2022](@cite), and expanded to cover more
+#     content.
 
 
 # ## First things first: "complexity measures"
