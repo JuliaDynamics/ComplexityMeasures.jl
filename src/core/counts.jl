@@ -87,7 +87,7 @@ allcounts(o::OutcomeSpace, x::Array_or_SSSet) = first(allcounts_and_outcomes(o, 
 Like [`counts_and_outcomes`](@ref), but only returns the counts.
 """
 function counts(o::OutcomeSpace, x)
-    throw(ArgumentError("`counts_and_outcomes` not implemented for estimator $(typeof(o))."))
+    throw(ArgumentError("`counts` not implemented for estimator $(typeof(o))."))
 end
 
 """
