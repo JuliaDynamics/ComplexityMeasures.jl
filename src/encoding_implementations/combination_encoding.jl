@@ -19,7 +19,7 @@ with a single integer.
 
 When used with [`decode`](@ref), the integer symbol is converted to its corresponding
 cartesian coordinate, which is used to retrieve the decoded symbols for each of
-the encodings. These decoded symbols are returned as a vector.
+the encodings, and a tuple of the decoded symbols are returned.
 
 The total number of outcomes is `prod(total_outcomes(e) for e in encodings)`.
 
@@ -82,8 +82,9 @@ function encode(encoding::CombinationEncoding, χ)
 end
 
 function decode(encoding::CombinationEncoding, ω::Int)
+    es = encoding.encodings
     cidx = encoding.cartesian_indices[ω]
-    return [decode(e, cidx[i]) for (i, e) in enumerate(encoding.encodings)]
+    return map(e -> decode(e, cidx[findfirst(eᵢ -> eᵢ == e, es)]), es)
 end
 
 function total_outcomes(encoding::CombinationEncoding)
