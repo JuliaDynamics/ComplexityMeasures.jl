@@ -1,88 +1,81 @@
+using ComplexityMeasures, Test
+using Random: MersenneTwister
 using StateSpaceSets: StateSpaceSet
-using DelayEmbeddings: genembed
 using StaticArrays: SVector
-using ComplexityMeasures: encode, decode
-using Statistics: mean, std
 
 @testset "RectangularBinEncoding" begin
     x = rand(100)
-    y = Dataset(rand(100, 2))
+    y = StateSpaceSet(rand(100, 2))
     b = FixedRectangularBinning(0:0.2:1.0)
     @test RectangularBinEncoding(b, x) isa RectangularBinEncoding
     @test_throws ArgumentError RectangularBinEncoding(b, y)
 end
 
-@testset "Ordinal patterns" begin
-    o = OrdinalPatternEncoding(5)
-    @test o isa OrdinalPatternEncoding{5}
+seeds = [1234, 57772, 90897, 2158081, 888]
+# Note that if `false` is used for `precise` the tests will fail.
+# But that's okay, since we do not do guarantees for that case.
+binnings = [
+    RectangularBinning(3, true),
+    RectangularBinning(3, false),
+    RectangularBinning(0.2, true),
+    RectangularBinning(0.2, false),
+    RectangularBinning([2, 3], true),
+    RectangularBinning([2, 3], false),
+    RectangularBinning([0.2, 0.3], true),
+    FixedRectangularBinning(range(0, 1; length = 5), 2, true),
+    FixedRectangularBinning(range(0, 1; length = 5), 2, false),
+]
 
-    # This is not part of the public API, but this is crucial to test directly to
-    # ensure its correctness. It makes no sense to test it though "end-product" code,
-    # because there would be no obvious way of debugging the forward/inverse Lehmer-code
-    # code from end-product code. We therefore test the internals here.
-    @testset "Encoding/decoding" begin
-        # Simple example
-        enc = OrdinalPatternEncoding(3)
-        @test decode(enc, encode(enc, [10, -2, 1])) == SVector{3, Int}(2, 3, 1)
-        enc = OrdinalPatternEncoding(4)
-        @test decode(enc, encode(enc, [-5, 4, -3, 5])) == SVector{4, Int}(1, 3, 2, 4)
+@testset "seed $(seed)" for seed in seeds
+    D = StateSpaceSet(rand(MersenneTwister(seed), 100, 2))
 
-        m = 4
-        # All possible permutations for length-4 vectors.
-        # Table 1 in Berger et al. These permutations should, in the given order,
-        # map onto integers 0, 1, ..., factorial(4) - 1.
-        permutations = [[1, 2, 3, 4], [1, 2, 4, 3], [1, 3, 2, 4], [1, 3, 4, 2], [1, 4, 2, 3], [1, 4, 3, 2], [2, 1, 3, 4], [2, 1, 4, 3], [2, 3, 1, 4], [2, 3, 4, 1], [2, 4, 1, 3], [2, 4, 3, 1], [3, 1, 2, 4], [3, 1, 4, 2], [3, 2, 1, 4], [3, 2, 4, 1], [3, 4, 1, 2], [3, 4, 2, 1], [4, 1, 2, 3], [4, 1, 3, 2], [4, 2, 1, 3], [4, 2, 3, 1], [4, 3, 1, 2], [4, 3, 2, 1]]
-        # Just add some noise to the data that doesn't alter the order.
-        xs = [sortperm(p .+ rand(4) .* 0.1) for p in permutations]
+    @testset "Binning $i" for i in eachindex(binnings)
+        encoding = RectangularBinEncoding(binnings[i], D)
+        outs = [encode(encoding, χ) for χ in D]
+        unique!(outs)
+        @test -1 ∉ unique!(outs)
+        decs = [decode(encoding, i) for i in outs]
 
-        # When using raw input vectors
-        encoder = OrdinalPatternEncoding(m)
-        encoded_πs = [encode(encoder, xi) for xi in xs]
-        decoded_πs = decode.(Ref(encoder), encoded_πs)
-        @test all(sort(decoded_πs) .== sort(permutations))
-        @test all(encoded_πs .== 1:factorial(m))
-        @test all(decoded_πs .== permutations)
-
-        # When input vectors are already permutations
-        encoded_πs = [ComplexityMeasures.permutation_to_integer(p) for p in permutations]
-        decoded_πs = decode.(Ref(encoder), encoded_πs)
-        @test all(encoded_πs .== 1:factorial(m))
-        @test all(decoded_πs .== permutations)
     end
 end
 
-@testset "Gaussian symbolization" begin
-    # Li et al. (2018) recommends using at least 1000 data points when estimating
-    # dispersion entropy.
-    x = rand(1000)
-    μ = mean(x)
-    σ = std(x)
-    c = 4
-    m = 4
-    τ = 1
-    s = GaussianCDFEncoding(c = c; μ, σ)
+@testset "maxi in range corrected (###)" begin
+    X = SVector{2, Float64}.(vec(collect(Iterators.product(0:0.05:0.99, 0:0.05:0.99))))
+    X = StateSpaceSet(X)
+    # From FractalDimensions.jl
+    function _data_boxing(X, encoding)
+        # Output is a dictionary mapping cartesian indices to vector of data point indices
+        # in said cartesian index bin
+        boxes_to_contents = Dict{NTuple{dimension(X), Int}, Vector{Int}}()
+        for (j, x) in enumerate(X)
+            i = encode(encoding, x) # linear index of box in histogram
+            if i == -1
+                error("$(j)-th point was encoded as -1. Point = $(x)")
+            end
+            ci = Tuple(encoding.ci[i]) # cartesian index of box in histogram
+            if !haskey(boxes_to_contents, ci)
+                boxes_to_contents[ci] = Int[]
+            end
+            push!(boxes_to_contents[ci], j)
+        end
+        return boxes_to_contents
+    end
 
-    # Symbols should be in the set [1, 2, …, c].
-    symbols = encode.(Ref(s), x)
-    @test all([s ∈ collect(1:c) for s in symbols])
-
-    # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper.
-    y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
-    μ = mean(y)
-    σ = std(y)
-    encoding = GaussianCDFEncoding( c = 3; μ, σ)
-    s = encode.(Ref(encoding), y)
-    @test s == [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
-end
-
-@testset "isless_rand" begin
-    # because permutations are partially random, we sort many times and check that
-    # we get *a* (not *the one*) correct answer every time
-    for i = 1:50
-        s = sortperm([1, 2, 3, 2], lt = ComplexityMeasures.isless_rand)
-        @test s == [1, 2, 4, 3] || s == [1, 4, 2, 3]
+    @testset "0.1 rad" begin
+        encoding = RectangularBinEncoding(RectangularBinning(0.1, true), X)
+        btc = _data_boxing(X, encoding)
+        @test all(isequal(4), length.(values(btc)))
+    end
+    @testset "0.05 rad" begin
+        encoding = RectangularBinEncoding(RectangularBinning(0.05, true), X)
+        btc = _data_boxing(X, encoding)
+        @test all(isequal(1), length.(values(btc)))
     end
 end
+
+
+# TODO: the following tests were commented out at some point. Are they now redunant, given
+# the tests above?
 
 # @testset "Equal-width intervals (rectangular binning)" begin
 #     N = 10 # each dimension is divides [min, max] into N chunks
@@ -216,20 +209,3 @@ end
 #         @test_throws ArgumentError total_outcomes(X, symbolization_XFs)
 #     end
 # end
-
-@testset "Missing symbols" begin
-    x = [1, 2, 3, 4, 2, 1, 0]
-    m, τ = 3, 1
-    # With these parameters, embedding vectors and ordinal patterns are
-    #    (1, 2, 3) -> (1, 2, 3)
-    #    (2, 3, 4) -> (1, 2, 3)
-    #    (3, 4, 2) -> (3, 1, 2)
-    #    (4, 2, 1) -> (3, 2, 1)
-    #    (2, 1, 0) -> (3, 2, 1),
-    # so there are three occurring patterns and m! - 3 = 3*2*1 - 3 = 3 missing patterns
-    @test missing_outcomes(OrdinalPatterns(; m, τ), x) == 3
-
-    m, τ = 2, 1
-    y = [1, 2, 1, 2] # only two patterns, none missing
-    @test missing_outcomes(OrdinalPatterns(; m, τ), x) == 0
-end

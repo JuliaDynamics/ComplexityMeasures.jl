@@ -13,6 +13,9 @@ Current available encodings are:
 - [`OrdinalPatternEncoding`](@ref).
 - [`GaussianCDFEncoding`](@ref).
 - [`RectangularBinEncoding`](@ref).
+- [`RelativeMeanEncoding`](@ref).
+- [`RelativeFirstDifferenceEncoding`](@ref).
+- [`CombinationEncoding`](@ref), which can combine any of the above encodings.
 """
 abstract type Encoding end
 
