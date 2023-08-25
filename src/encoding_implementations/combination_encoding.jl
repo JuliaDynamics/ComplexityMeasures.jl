@@ -50,25 +50,25 @@ c = CombinationEncoding(encodings)
 d = decode(c, ω)
 ```
 """
-struct CombinationEncoding{E, L, C} <: Encoding
+struct CombinationEncoding{N, L, C} <: Encoding
     # An iterable of encodings.
-    encodings::E
+    encodings::NTuple{N, Encoding}
 
     # internal fields: LinearIndices/CartesianIndices for encodings/decodings.
     linear_indices::L
     cartesian_indices::C
 
-    function CombinationEncoding(encodings::E, l::L, c::C) where {E, L, C}
+    function CombinationEncoding(encodings::NTuple{N, Encoding}, l::L, c::C) where {N, L, C}
         if any(e isa CombinationEncoding for e in encodings)
             s = "CombinationEncoding doesn't accept a CombinationEncoding as one of its " *
              "sub-encodings."
             throw(ArgumentError(s))
         end
-        new{E, L, C}(encodings, l, c)
+        new{N, L, C}(encodings, l, c)
     end
 end
 CombinationEncoding(encodings) = CombinationEncoding(encodings...)
-function CombinationEncoding(encodings::Vararg{<:Encoding, N}) where N
+function CombinationEncoding(encodings::Vararg{Encoding, N}) where N
     ranges = tuple([1:total_outcomes(e) for e in encodings]...)
     linear_indices = LinearIndices(ranges)
     cartesian_indices = CartesianIndices(ranges)
