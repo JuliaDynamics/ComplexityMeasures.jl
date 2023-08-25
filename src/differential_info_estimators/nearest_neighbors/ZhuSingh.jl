@@ -9,7 +9,7 @@ export ZhuSingh
     ZhuSingh <: DifferentialInfoEstimator
     ZhuSingh(definition = Shannon(); k = 1, w = 0)
 
-The `ZhuSingh` estimator [Zhu2015](@cite)[Singh2003](@cite) computes the
+The `ZhuSingh` estimator [Zhu2015](@cite) computes the
 [`Shannon`](@ref) differential [`information`](@ref) of a multi-dimensional
 [`StateSpaceSet`](@ref), with logarithms to the `base` specified in `definition`.
 
