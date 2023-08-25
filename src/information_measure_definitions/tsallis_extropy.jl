@@ -4,7 +4,7 @@ export TsallisExtropy
     TsallisExtropy <: InformationMeasure
     TsallisExtropy(; base = 2)
 
-The Tsallis extropy (Xue & Deng[^Xue2023]).
+The Tsallis extropy [Xue2023](@cite).
 
 ## Description
 
@@ -22,10 +22,6 @@ on the interval ``[0, 1]`` by normalizing to to the maximal Tsallis extropy, giv
 ```math
 J_T(P) = \\dfrac{(N - 1)N^{q - 1} - (N - 1)^q}{(q - 1)N^{q - 1}}
 ```
-
-[^Xue2023]:
-    Xue, Y., & Deng, Y. (2023). Tsallis extropy. Communications in Statistics-Theory and
-    Methods, 52(3), 751-762.
 """
 struct TsallisExtropy{Q,K,B} <: InformationMeasure
     q::Q

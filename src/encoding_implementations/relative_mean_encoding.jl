@@ -10,7 +10,7 @@ vector has with respect to a predefined minimum and maximum value (`minval` and
 
 ## Description
 
-This encoding is inspired by Azami & Escudero[^Azami2016]'s algorithm for amplitude-aware
+This encoding is inspired by [Azami2016](@citet)'s algorithm for amplitude-aware
 permutation entropy. They use a linear combination of amplitude information and
 first differences information of state vectors to correct probabilities. Here, however,
 we explicitly encode the amplitude-part of the correction as an a integer symbol
@@ -29,11 +29,6 @@ element ``x_i`` can take is `minval`/`maxval`, respectively. Finally, the interv
 
 When used with [`decode`](@ref), the left-edge of the bin that the normalized ``Λ``
 fell into is returned.
-
-[^Azami2016]:
-    Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy:
-    Illustration in spike detection and signal segmentation. Computer methods and
-    programs in biomedicine, 128, 40-51.
 """
 struct RelativeMeanEncoding{R} <: Encoding
     n::Int

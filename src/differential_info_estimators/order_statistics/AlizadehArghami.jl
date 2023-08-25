@@ -4,10 +4,9 @@ export AlizadehArghami
     AlizadehArghami <: DifferentialInfoEstimator
     AlizadehArghami(definition = Shannon(); m::Int = 1)
 
-The `AlizadehArghami`estimator computes the [`Shannon`](@ref) differential
-[`information`](@ref) of a timeseries using the
-method from Alizadeh & Arghami (2010)[^Alizadeh2010], with logarithms to the `base`
-specified in `definition`.
+The `AlizadehArghami` estimator computes the [`Shannon`](@ref) differential
+[`information`](@ref) of a timeseries using the method from [Alizadeh2010](@citet), with
+logarithms to the `base` specified in `definition`.
 
 The `AlizadehArghami` estimator belongs to a class of differential entropy estimators based
 on [order statistics](https://en.wikipedia.org/wiki/Order_statistic). It only works for
@@ -41,10 +40,6 @@ the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correcti
 \\hat{H}_{A}(\\bar{X}, m, n) = \\hat{H}_{V}(\\bar{X}, m, n) +
 \\dfrac{2}{n}\\left(m \\log(2) \\right).
 ```
-
-[^Alizadeh2010]:
-    Alizadeh, N. H., & Arghami, N. R. (2010). A new estimator of entropy.
-    Journal of the Iranian Statistical Society (JIRSS).
 
 See also: [`information`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).

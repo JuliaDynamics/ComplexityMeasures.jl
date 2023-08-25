@@ -4,17 +4,14 @@ export ShannonExtropy
     ShannonExtropy <: InformationMeasure
     ShannonExtropy(; base = 2)
 
-The Shannon extropy (Lad et al., 2015[^Lad2015]), used with [`extropy`](@ref) to compute
+The Shannon extropy [Lad2015](@cite), used with [`extropy`](@ref) to compute
 
 ```math
-J(x) -\\sum_{i=1}^N (1 - p[i]) \\log{(1 - p[i])},
+J(x) = -\\sum_{i=1}^N (1 - p[i]) \\log{(1 - p[i])},
 ```
 
 for a probability distribution ``P = \\{p_1, p_2, \\ldots, p_N\\}``,
 with the ``\\log`` at the given `base`.
-
-[^Lad2015]:
-    Lad, F., Sanfilippo, G., & Agro, G. (2015). Extropy: Complementary dual of entropy.
 """
 Base.@kwdef struct ShannonExtropy{B} <: InformationMeasure
     base::B = 2

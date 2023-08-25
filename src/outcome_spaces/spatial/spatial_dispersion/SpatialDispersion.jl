@@ -14,15 +14,15 @@ import Base.maximum
 A dispersion-based [`OutcomeSpace`](@ref) that generalises [`Dispersion`](@ref) for
 input data that are high-dimensional arrays.
 
-`SpatialDispersion` is based on Azami et al. (2019)[^Azami2019]'s 2D square dispersion
+`SpatialDispersion` is based on [Azami2019](@citet)'s 2D square dispersion
 (Shannon) entropy estimator, but is here implemented as a pure probabilities
 probabilities estimator that is generalized for `N`-dimensional input data `x`,
 with arbitrary neighborhood regions (stencils) and (optionally) periodic boundary
 conditions.
 
-In combination with [`information`](@ref) and [`information_normalized`](@ref), this probabilities
-estimator can be used to compute (normalized) generalized spatiotemporal dispersion
-[`InformationMeasure`](@ref) of any type.
+In combination with [`information`](@ref) and [`information_normalized`](@ref), this
+probabilities estimator can be used to compute (normalized) generalized spatiotemporal
+dispersion [`InformationMeasure`](@ref) of any type.
 
 ## Arguments
 
@@ -101,7 +101,6 @@ est = SpatialDispersion(stencil, first(imgs))
 h_vs_t = information_normalized.(Ref(est), imgs)
 ```
 
-
 Computing generalized spatiotemporal dispersion entropy is trivial, e.g. with
 [`Renyi`](@ref):
 
@@ -113,10 +112,6 @@ information(Renyi(q = 2), est, x)
 
 See also: [`SpatialOrdinalPatterns`](@ref), [`GaussianCDFEncoding`](@ref),
 [`symbolize`](@ref).
-
-[^Azami2019]: Azami, H., da Silva, L. E. V., Omoto, A. C. M., & Humeau-Heurtier, A. (2019).
-    Two-dimensional dispersion entropy: An information-theoretic method for irregularity
-    analysis of images. Signal Processing: Image Communication, 75, 178-187.
 """
 struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}

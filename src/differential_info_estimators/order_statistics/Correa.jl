@@ -5,7 +5,7 @@ export Correa
     Correa(definition = Shannon(); m::Int = 1)
 
 The `Correa` estimator computes the [`Shannon`](@ref) differential [`information`](@ref)
-of a timeseries using the method from Correa (1995)[^Correa1995], with logarithms to the
+of a timeseries using the method from [Correa1995](@citet), with logarithms to the
 `base` specified in `definition`.
 
 The `Correa` estimator belongs to a class of differential entropy estimators based
@@ -49,10 +49,6 @@ where
 ```math
 \\tilde{X}_{(i)} = \\dfrac{1}{2m + 1} \\sum_{j = i - m}^{i + m} X_{(j)}.
 ```
-
-[^Correa1995]:
-    Correa, J. C. (1995). A new estimator of entropy. Communications in Statistics-Theory
-    and Methods, 24(10), 2439-2449.
 
 See also: [`information`](@ref), [`AlizadehArghami`](@ref), [`Ebrahimi`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).

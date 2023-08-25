@@ -19,7 +19,7 @@ indices that would sort `χ` in ascending order.
 
 The Lehmer code, as implemented here, is a bijection between the set of `factorial(m)`
 possible permutations for a length-`m` sequence, and the integers `1, 2, …, factorial(m)`.
-The encoding step uses algorithm 1 in Berger et al. (2019)[^Berger2019], which is
+The encoding step uses algorithm 1 in [Berger2019](@citet), which is
 highly optimized.
 The decoding step is much slower due to missing optimizations (pull requests welcomed!).
 
@@ -44,10 +44,6 @@ julia> decode(c, i)
 
 If you want to encode something that is already a permutation pattern, then you
 can use the non-exported `permutation_to_integer` function.
-
-[^Berger2019]:
-    Berger et al. "Teaching Ordinal Patterns to a Computer: Efficient
-    Encoding Algorithms Based on the Lehmer Code." Entropy 21.10 (2019): 1023.
 """
 struct OrdinalPatternEncoding{M, F} <: Encoding
     perm::MVector{M, Int}

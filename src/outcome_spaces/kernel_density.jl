@@ -6,7 +6,7 @@ export NaiveKernel, KDTree, BruteForce
     NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean()) <: OutcomeSpace
 
 An [`OutcomeSpace`](@ref) based on a "naive" kernel density estimation approach (KDE), as
-discussed in Prichard and Theiler (1995) [^PrichardTheiler1995].
+discussed in [PrichardTheiler1995](@citet).
 
 Probabilities ``P(\\mathbf{x}, \\epsilon)`` are assigned to every point ``\\mathbf{x}`` by
 counting how many other points occupy the space spanned by
@@ -34,10 +34,6 @@ The outcome space `Ω` for `NaiveKernel` are the indices of the input data, `eac
 Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 The reason to not return the data points themselves is because duplicate data points may
 not get assigned same probabilities (due to having different neighbors).
-
-[^PrichardTheiler1995]:
-    Prichard, D., & Theiler, J. (1995). Generalized redundancies for time series analysis.
-    Physica D: Nonlinear Phenomena, 84(3-4), 476-493.
 """
 struct NaiveKernel{KM, M <: Metric} <: OutcomeSpace
     ϵ::Float64

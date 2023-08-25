@@ -20,7 +20,7 @@ is approximated over the bins, then bin probabilities are estimated as the invar
 associated with that transfer operator. Assumes that the input data are sequential
 (time-ordered).
 
-This implementation follows the grid estimator approach in Diego et al. (2019)[^Diego2019].
+This implementation follows the grid estimator approach in [Diego2019](@citet).
 
 ## Outcome space
 
@@ -85,10 +85,6 @@ repeats until the difference between the distributions over consecutive iteratio
 below some threshold.
 
 See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
-
-[^Diego2019]:
-    Diego, D., Haaga, K. A., & Hannisdal, B. (2019). Transfer entropy computation
-    using the Perron-Frobenius operator. Physical Review E, 99(4), 042212.
 """
 struct TransferOperator{R<:AbstractBinning} <: OutcomeSpace
     binning::R
@@ -343,8 +339,7 @@ invariantmeasure(iv)
     invariantmeasure(iv::InvariantMeasure) → (ρ::Probabilities, bins::Vector{<:SVector})
 
 From a pre-computed invariant measure, return the probabilities and associated bins.
-The element `ρ[i]` is the probability of visitation to the box `bins[i]`. Analogous to
-[`binhist`](@ref).
+The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
 
 
 !!! hint "Transfer operator approach vs. naive histogram approach"

@@ -60,12 +60,13 @@ kldivergence(px, py)
 ```@example MAIN
 kldivergence(py, px)
 ```
+
 (`Inf` because there are events with 0 probability in `px`)
 
 ## Differential entropy: estimator comparison
 
 Here, we compare how the nearest neighbor differential entropy estimators
-([`Kraskov`](@ref), [`KozachenkoLeonenko`](@ref), [`Zhu`](@ref) and [`ZhuSingh`](@ref))
+([`Kraskov`](@ref), [`KozachenkoLeonenko`](@ref), [`Zhu`](@ref), [`ZhuSingh`](@ref), etc.)
 converge towards the true entropy value for increasing time series length.
 
 ComplexityMeasures.jl also provides entropy estimators based on
@@ -88,17 +89,18 @@ e = Shannon(; base = MathConstants.e)
 # kNN estimators
 # --------------------------
 w = 0 # Theiler window of 0 (only exclude the point itself during neighbor searches)
+ent = Shannon(; base = ℯ)
 knn_estimators = [
     # with k = 1, Kraskov is virtually identical to
     # Kozachenko-Leonenko, so pick a higher number of neighbors for Kraskov
-    Kraskov(; k = 3, base = ℯ, w),
-    KozachenkoLeonenko(; base = ℯ, w),
-    Zhu(; k = 3, base = ℯ, w),
-    ZhuSingh(; k = 3, base = ℯ, w),
-    Gao(; k = 3, base = ℯ, corrected = false, w),
-    Gao(; k = 3, base = ℯ, corrected = true, w),
-    Goria(; k = 3, w, base = ℯ),
-    Lord(; k = 20, w, base = ℯ) # more neighbors for accurate ellipsoid estimation
+    Kraskov(ent; k = 3, w),
+    KozachenkoLeonenko(ent; w),
+    Zhu(ent; k = 3, w),
+    ZhuSingh(ent; k = 3, w),
+    Gao(ent; k = 3, corrected = false, w),
+    Gao(ent; k = 3, corrected = true, w),
+    Goria(ent; k = 3, w),
+    Lord(ent; k = 20, w) # more neighbors for accurate ellipsoid estimation
 ]
 
 # Test each estimator `nreps` times over time series of varying length.
@@ -124,7 +126,7 @@ for (i, est_os) in enumerate(estimators_os)
         pts = randn(maximum(Ns)) # raw timeseries, not a `StateSpaceSet`
         for (k, N) in enumerate(Ns)
             m = floor(Int, N / 100) # Scale `m` to timeseries length
-            est = est_os(; m, base = ℯ) # Instantiate estimator with current `m`
+            est = est_os(ent; m) # Instantiate estimator with current `m`
             Hs_uniform_os[i][k][j] = information(est, pts[1:N])
         end
     end
@@ -247,7 +249,7 @@ Here, we show the sensitivity of the various entropies to variations in their pa
 
 ### Curado entropy
 
-Here, we reproduce Figure 2 from Curado & Nobre (2004)[^Curado2004], showing
+Here, we reproduce Figure 2 from [Curado2004](@citet), showing
 how the [`Curado`](@ref) entropy changes as function of the parameter `a` for a range of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
 
@@ -265,9 +267,6 @@ end
 axislegend(ax)
 fig
 ```
-
-[^Curado2004]: Curado, E. M., & Nobre, F. D. (2004). On the stability of analytic
-    entropic forms. Physica A: Statistical Mechanics and its Applications, 335(1-2), 94-106.
 
 ### Kaniadakis entropy
 
@@ -298,7 +297,7 @@ fig
 
 ### Stretched exponential entropy
 
-Here, we reproduce the example from Anteneodo & Plastino (1999)[^Anteneodo1999], showing
+Here, we reproduce the example from [Anteneodo1999](@citet), showing
 how the stretched exponential entropy changes as function of the parameter `η` for a range
 of two-element probability distributions given by
 `Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)`.
@@ -320,19 +319,15 @@ axislegend(ax)
 fig
 ```
 
-[^Anteneodo1999]: Anteneodo, C., & Plastino, A. R. (1999). Maximum entropy approach to
-    stretched exponential probability distributions. Journal of Physics A: Mathematical
-    and General, 32(7), 1089.
-
 ## [Discrete entropy: dispersion entropy](@id dispersion_example)
 
-Here we compute dispersion entropy (Rostaghi et al. 2016)[^Rostaghi2016],
+Here we compute dispersion entropy [Rostaghi2016](@cite),
 using the use the [`Dispersion`](@ref) probabilities estimator, for a time
 series consisting of normally distributed noise with a single spike in the middle of the
 signal.
 We compute the entropies over a range subsets of the data, using a sliding window
 consisting of 70 data points, stepping the window 10 time steps at a time.
-This example is adapted from Li et al. (2021)[^Li2019].
+This example is adapted from [Li2019](@citet).
 
 ```@example MAIN
 using ComplexityMeasures
@@ -373,13 +368,6 @@ axislegend(position = :rc)
 ylims!(0, max(maximum(pes), 1))
 fig
 ```
-
-[^Rostaghi2016]:
-    Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series
-    analysis. IEEE Signal Processing Letters, 23(5), 610-614.
-[^Li2019]:
-    Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
-    complexity measure for sensor signal. Sensors, 19(23), 5203.
 
 ## Discrete entropy: normalized entropy for comparing different signals
 
@@ -492,12 +480,12 @@ for [`SpatialDispersion`](@ref)).
 
 ## Complexity: reverse dispersion entropy
 
-Here, we compare regular dispersion entropy (Rostaghi et al., 2016)[^Rostaghi2016], and
-reverse dispersion entropy Li et al. (2021)[^Li2019] for a time series consisting
+Here, we compare regular dispersion entropy [Rostaghi2016](@cite), and
+reverse dispersion entropy [Li2019](@cite) for a time series consisting
 of normally distributed noise with a single spike in the middle of the signal.
 We compute the entropies over a range subsets of the data, using a sliding window
 consisting of 70 data points, stepping the window 10 time steps at a time.
-This example reproduces parts of figure 3 in Li et al. (2021), but results here are not
+This example reproduces parts of figure 3 in [Li2019](@cite), but results here are not
 exactly the same as in the original paper, because their examples are based on randomly
 generated numbers and do not provide code that specify random number seeds.
 
@@ -549,13 +537,6 @@ axislegend(position = :rc)
 ylims!(0, max(maximum(pes), 1))
 fig
 ```
-
-[^Rostaghi2016]:
-    Rostaghi, M., & Azami, H. (2016). Dispersion entropy: A measure for time-series
-    analysis. IEEE Signal Processing Letters, 23(5), 610-614.
-[^Li2019]:
-    Li, Y., Gao, X., & Wang, L. (2019). Reverse dispersion entropy: a new
-    complexity measure for sensor signal. Sensors, 19(23), 5203.
 
 ## Complexity: missing dispersion patterns
 
@@ -628,21 +609,17 @@ for this signal.
 Of course, to robustly reject the null hypothesis, we'd need to generate a sufficient number
 of surrogate realizations, and actually compute quantiles to compare with.
 
-[^Zhou2022]:
-    Zhou, Q., Shang, P., & Zhang, B. (2022). Using missing dispersion patterns
-    to detect determinism and nonlinearity in time series data. Nonlinear Dynamics, 1-20.
-
 ## Complexity: approximate entropy
 
-Here, we reproduce the Henon map example with ``R=0.8`` from Pincus (1991),
-comparing our values with relevant values from table 1 in Pincus (1991).
+Here, we reproduce the Henon map example with ``R=0.8`` from [Pincus1991](@citet),
+comparing our values with relevant values from table 1 in [Pincus1991](@citet).
 
 We use `DiscreteDynamicalSystem` from `DynamicalSystemsBase` to represent the map,
 and use the `trajectory` function from the same package to iterate the map
 for different initial conditions, for multiple time series lengths.
 
 Finally, we summarize our results in box plots and compare the values to those
-obtained by Pincus (1991).
+obtained by [Pincus1991](@citet).
 
 ```@example MAIN
 using ComplexityMeasures
@@ -692,7 +669,7 @@ fig = Figure()
 # Example time series
 a1 = Axis(fig[1,1]; xlabel = "Time (t)", ylabel = "Value")
 sys = henon(u₀ = [0.5, 0.1], R = 0.8)
-x, y = columns(trajectory(sys, 100, Ttr = 500))
+x, y = columns(first(trajectory(sys, 100, Ttr = 500))) # we don't need time indices
 lines!(a1, 1:length(x), x, label = "x")
 lines!(a1, 1:length(y), y, label = "y")
 
@@ -778,7 +755,9 @@ fig
 
 ## Statistical complexity of iterated maps
 
-In this example, we reproduce parts of Fig. 1 in Rosso et al. (2007): We compute the statistical complexity of the Henon, logistic and Schuster map, as well as that of k-noise.
+In this example, we reproduce parts of Fig. 1 in [Rosso2007](@citet): We compute the
+statistical complexity of the Henon, logistic and Schuster map, as well as that of k-noise.
+
 ```@example MAIN
 using ComplexityMeasures
 using Distances

@@ -22,7 +22,8 @@ const PermProbEst = PermutationOutcomeSpace
     OrdinalPatterns <: OutcomeSpace
     OrdinalPatterns(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
-An [`OutcomeSpace`](@ref) based on ordinal permutation patterns.
+An [`OutcomeSpace`](@ref) based on ordinal permutation patterns, originally introduced in
+[BandtPompe2002](@citet)'s paper on permutation entropy.
 
 When passed to [`probabilities`](@ref) the output depends on the input data type:
 
@@ -32,7 +33,7 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     we find its permutation pattern ``\\pi_{i}``. Probabilities are then
     estimated as the frequencies of the encoded permutation symbols
     by using [`CountOccurrences`](@ref). When giving the resulting probabilities to
-    [`information`](@ref), the original permutation entropy is computed [^BandtPompe2002].
+    [`information`](@ref), the original permutation entropy is computed [BandtPompe2002](@cite).
 - **Multivariate data**. If applied to a an `D`-dimensional `StateSpaceSet`,
     then no embedding is constructed, `m` must be equal to `D` and `τ` is ignored.
     Each vector ``\\bf{x}_i`` of the dataset is mapped
@@ -40,8 +41,8 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     relative magnitudes of the elements of ``\\bf{x}_i``.
     Like above, probabilities are estimated as the frequencies of the permutation symbols.
     The resulting probabilities can be used to compute multivariate permutation
-    entropy[^He2016], although here we don't perform any further subdivision
-    of the permutation patterns (as in Figure 3 of[^He2016]).
+    entropy [He2016](@cite), although here we don't perform any further subdivision
+    of the permutation patterns (as in Figure 3 of [He2016](@citet)).
 
 Internally, [`OrdinalPatterns`](@ref) uses the [`OrdinalPatternEncoding`](@ref)
 to represent ordinal patterns as integers for efficient computations.
@@ -53,12 +54,13 @@ For a version of this estimator that can be used on spatial data, see
 [`SpatialOrdinalPatterns`](@ref).
 
 !!! note "Handling equal values in ordinal patterns"
-    In Bandt & Pompe (2002), equal values are ordered after their order of appearance, but
+    In [BandtPompe2002](@citet), equal values are ordered after their order of appearance, but
     this can lead to erroneous temporal correlations, especially for data with
-    low amplitude resolution [^Zunino2017]. Here, by default, if two values are equal,
+    low amplitude resolution [Zunino2017](@cite). Here, by default, if two values are equal,
     then one of the is randomly assigned as "the largest", using
     `lt = ComplexityMeasures.isless_rand`.
-    To get the behaviour from Bandt and Pompe (2002), use `lt = Base.isless`.
+    To get the behaviour from [BandtPompe2002](@citet), use
+    `lt = Base.isless`.
 
 ## Outcome space
 
@@ -69,13 +71,13 @@ There are `factorial(m)` such patterns.
 For example, the outcome `[2, 3, 1]` corresponds to the ordinal pattern of having
 the smallest value in the second position, the next smallest value in the third
 position, and the next smallest, i.e. the largest value in the first position.
-See also [`OrdinalPatternEncoding`(@ref).
+See also [`OrdinalPatternEncoding`](@ref).
 
 ## In-place symbolization
 
 `OrdinalPatterns` also implements the in-place [`probabilities!`](@ref)
-for `StateSpaceSet` input (or embedded vector input) for reducing allocations in looping scenarios.
-The length of the pre-allocated symbol vector must be the length of the dataset.
+for `StateSpaceSet` input (or embedded vector input) for reducing allocations in looping
+scenarios. The length of the pre-allocated symbol vector must be the length of the dataset.
 For example
 
 ```julia
@@ -86,16 +88,6 @@ x = StateSpaceSet(rand(N, m)) # some input dataset
 πs_ts = zeros(Int, N) # length must match length of `x`
 p = probabilities!(πs_ts, est, x)
 ```
-
-[^BandtPompe2002]: Bandt, Christoph, and Bernd Pompe. "Permutation entropy: a natural
-    complexity measure for timeseries." Physical review letters 88.17 (2002): 174102.
-[^Zunino2017]: Zunino, L., Olivares, F., Scholkmann, F., & Rosso, O. A. (2017).
-    Permutation entropy based timeseries analysis: Equalities in the input signal can
-    lead to false conclusions. Physics Letters A, 381(22), 1883-1892.
-[^He2016]:
-    He, S., Sun, K., & Wang, H. (2016). Multivariate permutation entropy and its
-    application for complexity analysis of chaotic systems. Physica A: Statistical
-    Mechanics and its Applications, 461, 812-823.
 """
 struct OrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
@@ -107,8 +99,8 @@ end
     WeightedOrdinalPatterns(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
 
 A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
-based on the weighted permutation entropy[^Fadlallah2013]. The outcome space and keywords
-are the same as in [`OrdinalPatterns`](@ref).
+based on the weighted permutation entropy [Fadlallah2013](@cite). The outcome space and
+keywords are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 
@@ -130,11 +122,6 @@ of the same pattern.
     are completely separated processes, ensuring that we compute the arithmetic mean
     correctly for each vector of the input dataset (which may be a delay-embedded
     timeseries).
-
-
-[^Fadlallah2013]: Fadlallah, et al. "Weighted-permutation entropy: A complexity
-    measure for time series incorporating amplitude information." Physical Review E 87.2
-    (2013): 022911.
 """
 struct WeightedOrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
@@ -148,8 +135,8 @@ is_counting_based(o::WeightedOrdinalPatterns) = false
     AmplitudeAwareOrdinalPatterns(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
 
 A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
-based on the amplitude-aware permutation entropy[^Azami2016]. The outcome space and keywords
-are the same as in [`OrdinalPatterns`](@ref).
+based on the amplitude-aware permutation entropy [Azami2016](@cite). The outcome space and
+keywords are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 
@@ -166,10 +153,6 @@ with ``0 \\leq A \\leq 1``. When ``A=0`` , only internal differences between the
 elements of
 ``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector
 elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is used.
-
-[^Azami2016]: Azami, H., & Escudero, J. (2016). Amplitude-aware permutation entropy:
-    Illustration in spike detection and signal segmentation. Computer methods and programs
-    in biomedicine, 128, 40-51.
 """
 struct AmplitudeAwareOrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}

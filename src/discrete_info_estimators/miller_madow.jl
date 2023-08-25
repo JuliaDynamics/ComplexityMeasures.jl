@@ -5,7 +5,7 @@ export MillerMadow
     MillerMadow(measure::Shannon = Shannon())
 
 The `MillerMadow` estimator is used with [`information`](@ref) to compute the
-discrete [`Shannon`](@ref) entropy according to Miller (1955)[^Miller1955].
+discrete [`Shannon`](@ref) entropy according to [Miller1955](@citet).
 
 # Description
 
@@ -16,15 +16,8 @@ H_S^{MM} = H_S^{plugin} + \\dfrac{m - 1}{2N},
 ```
 
 where ``H_S^{plugin}`` is the Shannon entropy estimated using the [`PlugIn`](@ref)
-estimator, `m` is the number of bins with nonzero probability (as defined in Paninski,
-2003[^Paninski2003]), and `N` is the number of observations.
-
-[^Miller1955]:
-    Miller, G. (1955). Note on the bias of information estimates. Information theory in
-    psychology: Problems and methods.
-[^Paninski2003]:
-    Paninski, L. (2003). Estimation of entropy and mutual information. Neural computation,
-    15(6), 1191-1253.
+estimator, `m` is the number of bins with nonzero probability (as defined in
+[Paninski2003](@citet)), and `N` is the number of observations.
 """
 Base.@kwdef struct MillerMadow{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
     definition::I = Shannon()

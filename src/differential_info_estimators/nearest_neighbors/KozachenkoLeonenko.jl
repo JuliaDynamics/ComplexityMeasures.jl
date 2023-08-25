@@ -4,9 +4,9 @@ export KozachenkoLeonenko
     KozachenkoLeonenko <: DifferentialInfoEstimator
     KozachenkoLeonenko(definition = Shannon(); w::Int = 0)
 
-The `KozachenkoLeonenko` estimator computes the [`Shannon`](@ref) differential
-[`information`](@ref) of a multi-dimensional [`StateSpaceSet`](@ref), with logarithms to
-the `base` specified in `definition`.
+The `KozachenkoLeonenko` estimator [KozachenkoLeonenko1987](@cite)
+computes the [`Shannon`](@ref) differential [`information`](@ref) of a multi-dimensional
+[`StateSpaceSet`](@ref), with logarithms to the `base` specified in `definition`.
 
 ## Description
 
@@ -19,9 +19,8 @@ the [Shannon](@ref) differential entropy
 H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))]
 ```
 
-using the nearest neighbor method from Kozachenko &
-Leonenko (1987)[^KozachenkoLeonenko1987], as described in Charzyńska and
-Gambin[^Charzyńska2016].
+using the nearest neighbor method from [KozachenkoLeonenko1987](@citet), as described in
+[Charzyńska2015](@citet).
 
 `w` is the Theiler window, which determines if temporal neighbors are excluded
 during neighbor searches (defaults to `0`, meaning that only the point itself is excluded
@@ -29,13 +28,7 @@ when searching for neighbours).
 
 In contrast to [`Kraskov`](@ref), this estimator uses only the *closest* neighbor.
 
-
 See also: [`information`](@ref), [`Kraskov`](@ref), [`DifferentialInfoEstimator`](@ref).
-
-[^Charzyńska2016]: Charzyńska, A., & Gambin, A. (2016). Improvement of the k-NN entropy
-    estimator with applications in systems biology. InformationMeasure, 18(1), 13.
-[^KozachenkoLeonenko1987]: Kozachenko, L. F., & Leonenko, N. N. (1987). Sample estimate of
-    the entropy of a random vector. Problemy Peredachi Informatsii, 23(2), 9-16.
 """
 struct KozachenkoLeonenko{I <: InformationMeasure} <: NNDifferentialInfoEstimator{I}
     definition::I

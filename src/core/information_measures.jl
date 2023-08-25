@@ -1,4 +1,5 @@
 export InformationMeasure
+export InformationMeasureEstimator
 export DiscreteInfoEstimator, DifferentialInfoEstimator
 
 """
@@ -10,7 +11,7 @@ In this package, we define "information measures" as functionals of probability 
 functions ("discrete" measures), or of probability density functions ("differential"
 measures). Examples are (generalized) entropies such as [`Shannon`](@ref) or
 [`Renyi`](@ref), or extropies like [`ShannonExtropy`](@ref).
-[^Amigó2018] provides a useful review of generalized entropies.
+[Amigó2018](@citet) provides a useful review of generalized entropies.
 
 ## Used with
 
@@ -42,10 +43,6 @@ for usage examples.
 A particular information measure may have both a discrete and a continuous/differential
 definition, which are estimated using a [`DifferentialInfoEstimator`](@ref) or
 a [`DifferentialInfoEstimator`](@ref), respectively.
-
-[^Amigó2018]:
-    Amigó, J. M., Balogh, S. G., & Hernández, S. (2018). A brief review of
-    generalized entropies. [Entropy, 20(11), 813.](https://www.mdpi.com/1099-4300/20/11/813)
 """
 abstract type InformationMeasure end
 
@@ -191,6 +188,3 @@ See [`information`](@ref) for usage.
 - [`Ebrahimi`](@ref).
 """
 abstract type DifferentialInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
-
-
-

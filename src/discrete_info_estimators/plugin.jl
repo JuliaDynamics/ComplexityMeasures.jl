@@ -16,7 +16,7 @@ maximum-likelihood ([`RelativeAmount`](@ref) estimates of the probabilities.
 
 The plugin-estimator of [`Shannon`](@ref) entropy underestimates the true entropy,
 with a bias that grows with the number of distinct [`outcomes`](@ref) (Arora et al.,
-2022)[^Arora2022]:
+2022)[Arora2022](@cite),
 
 ```math
 bias(H_S^{plugin}) = -\\dfrac{K-1}{2N} + o(N^-1).
@@ -27,10 +27,6 @@ have tried to remedy this by proposing alternative Shannon entropy estimators. F
 the [`MillerMadow`](@ref) estimator is a simple correction to the plug-in estimator that
 adds back the bias term above. Many other estimators exist; see
 [`DiscreteInfoEstimator`](@ref)s for an overview.
-
-[^Arora2022]:
-    Arora, A., Meister, C., & Cotterell, R. (2022). Estimating the entropy of linguistic
-    distributions. arXiv preprint arXiv:2204.01469.
 """
 Base.@kwdef struct PlugIn{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
     definition::I = Shannon()

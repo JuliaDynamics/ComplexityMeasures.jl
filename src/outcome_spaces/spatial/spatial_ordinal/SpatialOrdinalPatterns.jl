@@ -14,10 +14,9 @@ generalises [`OrdinalPatterns`](@ref) to high-dimensional arrays.
 The order `m` of the permutation pattern is extracted from the `stencil`, see below.
 
 `SpatialOrdinalPatterns` is based on the 2D and 3D *spatiotemporal permutation entropy*
-estimators by by Ribeiro et al. (2012)[^Ribeiro2012] and Schlemmer et al.
-(2018)[^Schlemmer2018]), respectively, but is here implemented as a pure probabilities
-probabilities estimator that is generalized for `D`-dimensional input array `x`,
-with arbitrary regions (stencils) to get patterns form
+estimators by [Ribeiro2012](@citet) and [Schlemmer2018](@citet), respectively, but is here
+implemented as a pure probabilities probabilities estimator that is generalized for
+`D`-dimensional input array `x`, with arbitrary regions (stencils) to get patterns form
 and (possibly) periodic boundary conditions.
 
 See below for ways to specify the `stencil`. If `periodic = true`, then the stencil wraps
@@ -65,14 +64,6 @@ Stencils are passed in one of the following three ways:
     This method can only generate (hyper)rectangular stencils. To create the same estimator as
     in the previous examples, use here `stencil = ((2, 2), (1, 1))`.
     When passing a stencil using `extent` and `lag`, `m = prod(extent)`.
-
-[^Ribeiro2012]:
-    Ribeiro et al. (2012). Complexity-entropy causality plane as a complexity measure
-    for two-dimensional patterns. https://doi.org/10.1371/journal.pone.0040689
-
-[^Schlemmer2018]:
-    Schlemmer et al. (2018). Spatiotemporal Permutation InformationMeasure as a Measure for
-    Complexity of Cardiac Arrhythmia. https://doi.org/10.3389/fphy.2018.00039
 """
 struct SpatialOrdinalPatterns{D,P,V,M,F} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}

@@ -19,7 +19,7 @@ p(\\omega_k) = \\dfrac{n_k}{N},
 where ``n_k`` is the number of times the `k`-th outcome was observed in the (encoded)
 sample.
 
-This estimation is known as _Maximum Likelihood Estimation_.
+This estimation is known as _maximum likelihood estimation_.
 However, `RelativeAmount` also serves as the fall-back probabilities estimator for [`OutcomeSpace`](@ref)s
 that are not count-based and only yield "pseudo-counts", for example [`WaveletOverlap`](@ref) or
 [`PowerSpectrum`](@ref). These outcome spaces do not yield counts, but pre-normalized
@@ -31,8 +31,8 @@ Hence, this estimator is called `RelativeAmount`.
 ```julia
 using ComplexityMeasures
 x = cumsum(randn(100))
-ps = probabilities(OrdinalPatterns(m = 3), x) # RelativeAmount is the default estimator
-ps_mle = probabilities(RelativeAmount(OrdinalPatterns(m = 3)), x) # equivalent
+ps = probabilities(SymbolicPermutation(m = 3), x) # RelativeAmount is the default estimator
+ps_mle = probabilities(RelativeAmount(SymbolicPermutation(m = 3)), x) # equivalent
 ps == ps_mle # true
 ```
 
