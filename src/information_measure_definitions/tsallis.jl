@@ -20,7 +20,7 @@ with `k` standing for the Boltzmann constant. It is defined as
 S_q(p) = \\frac{k}{q - 1}\\left(1 - \\sum_{i} p[i]^q\\right)
 ```
 
-The maximum value of the Tsallis entropy is ````k(L^{1 - q} - 1)/(1 - q)``,
+The maximum value of the Tsallis entropy is ``k(L^{1 - q} - 1)/(1 - q)``,
 with ``L`` the [`total_outcomes`](@ref).
 """
 struct Tsallis{Q,K,B} <: Entropy

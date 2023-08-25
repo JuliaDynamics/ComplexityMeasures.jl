@@ -7,7 +7,7 @@ export ShannonExtropy
 The Shannon extropy [Lad2015](@cite), used with [`extropy`](@ref) to compute
 
 ```math
-J(x) -\\sum_{i=1}^N (1 - p[i]) \\log{(1 - p[i])},
+J(x) = -\\sum_{i=1}^N (1 - p[i]) \\log{(1 - p[i])},
 ```
 
 for a probability distribution ``P = \\{p_1, p_2, \\ldots, p_N\\}``,
