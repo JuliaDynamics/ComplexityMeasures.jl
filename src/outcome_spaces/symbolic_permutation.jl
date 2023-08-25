@@ -71,7 +71,7 @@ There are `factorial(m)` such patterns.
 For example, the outcome `[2, 3, 1]` corresponds to the ordinal pattern of having
 the smallest value in the second position, the next smallest value in the third
 position, and the next smallest, i.e. the largest value in the first position.
-See also [`OrdinalPatternEncoding`(@ref).
+See also [`OrdinalPatternEncoding`](@ref).
 
 ## In-place symbolization
 
