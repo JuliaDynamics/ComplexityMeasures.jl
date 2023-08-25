@@ -9,7 +9,7 @@ using QuadGK
 
 The `Schürmann` estimator is used with [`information`](@ref) to compute the
 discrete [`Shannon`](@ref) entropy with the bias-corrected estimator
-given in [^Schurmann2004](@citet).
+given in [Schurmann2004](@citet).
 
 See detailed description for [`GeneralizedSchürmann`](@ref) for details.
 """
