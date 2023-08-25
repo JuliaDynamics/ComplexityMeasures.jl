@@ -94,6 +94,32 @@ struct OrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
     τ::Int
 end
 
+function counts(est::OrdinalPatterns{m}, x) where m
+    return first(counts_and_symbols(est, x))
+end
+
+function counts_and_outcomes(est::OrdinalPatterns{m}, x) where m
+    cts, πs = counts_and_symbols(est, x)
+    # Now we compute the outcomes. (`πs` is already sorted in `fasthist!`)
+    outcomes = decode.(Ref(est.encoding), unique!(πs))
+
+    return cts, outcomes
+end
+
+function counts_and_symbols(est::OrdinalPatterns{m}, x) where m
+    if x isa AbstractVector
+        dataset = embed(x, m, est.τ)
+    else
+        dataset = x
+    end
+    m != dimension(dataset) && throw(ArgumentError(
+        "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
+    ))
+    πs = zeros(Int, length(dataset))
+    cts = fasthist!(πs, est, dataset)
+    return cts, πs
+end
+
 """
     WeightedOrdinalPatterns <: OutcomeSpace
     WeightedOrdinalPatterns(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
@@ -205,6 +231,7 @@ function probabilities!(::Vector{Int}, ::PermProbEst, ::AbstractVector)
     """)
 end
 
+
 function fasthist!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceSet{m}) where {m}
     # TODO: The following loop can probably be parallelized!
     @inbounds for (i, χ) in enumerate(x)
@@ -309,13 +336,4 @@ Encode relative amplitude information of the elements of `a`.
 """
 function AAPE(x, A::Real = 0.5, m::Int = length(x))
     (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
-end
-
-###########################################################################################
-# `OrdinalPatterns` specific
-###########################################################################################
-# We can actually get raw non-normalized counts for `OrdinalPatterns`. This is not
-# possible for the weighted alternatives.
-function counts_and_outcomes(est::OrdinalPatterns{m}, x::Vector_or_SSSet) where {m}
-    return weighted_counts_and_outcomes(est, x)
 end

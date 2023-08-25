@@ -440,6 +440,11 @@ function transfermatrix(iv::InvariantMeasure)
     return iv.to.transfermatrix, iv.to.bins
 end
 
+function probabilities(est::TransferOperator, x::Array_or_SSSet)
+    to = transferoperator(StateSpaceSet(x), est.binning)
+    return Probabilities(invariantmeasure(to).ρ)
+end
+
 function probabilities_and_outcomes(est::TransferOperator, x::Array_or_SSSet)
     to = transferoperator(StateSpaceSet(x), est.binning)
     probs = invariantmeasure(to).ρ

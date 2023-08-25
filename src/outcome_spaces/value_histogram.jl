@@ -48,36 +48,25 @@ An alias for [`ValueHistogram`](@ref).
 """
 const VisitationFrequency = ValueHistogram
 
-# The source code of `ValueHistogram` operates as rather simple calls to
-# the underlying encoding and the `frequencies` function and extensions.
-# See the `rectangular_binning.jl` file for more.
-function probabilities(est::ValueHistogram, x)
-    encoding = RectangularBinEncoding(est.binning, x)
-    Probabilities(fasthist(encoding, x)[1])
-end
-
 outcomes(est::ValueHistogram, x) = last(counts_and_outcomes(est, x))
+
+# --------------------------------------------------------------------------------
+# The source code of `ValueHistogram` operates as rather simple calls to
+# the underlying encoding and the `fasthist`/`fasthist!` functions.
+# See the `encoding_implementations/rectangular_binning.jl` file for more.
+# --------------------------------------------------------------------------------
+function counts(est::ValueHistogram, x)
+    return counts(RectangularBinEncoding(est.binning, x), x)
+end
 
 function counts_and_outcomes(est::ValueHistogram, x)
     encoding = RectangularBinEncoding(est.binning, x)
-    freqs, outcomes = counts_and_outcomes(encoding, x)
-    return freqs, outcomes
+    return counts_and_outcomes(encoding, x)
 end
 
-function counts_and_outcomes(encoding::RectangularBinEncoding, x)
-    freqs, bins = fasthist(encoding, x) # bins are integers here
-    unique!(bins) # `bins` is already sorted from `frequencies!`
-    # Here we transfor the cartesian coordinate based bins into data unit bins:
-    outcomes = map(b -> decode(encoding, b), bins)
-    return freqs, vec(outcomes)
+function outcome_space(est::ValueHistogram, x)
+    return outcome_space(RectangularBinEncoding(est.binning, x))
 end
-
-function probabilities_and_outcomes(encoding::RectangularBinEncoding, x)
-    freqs, outcomes = counts_and_outcomes(encoding, x)
-    return Probabilities(freqs), outcomes
-end
-
-outcome_space(est::ValueHistogram, x) = outcome_space(RectangularBinEncoding(est.binning, x))
 
 function outcome_space(est::ValueHistogram{<:FixedRectangularBinning})
     return outcome_space(RectangularBinEncoding(est.binning))

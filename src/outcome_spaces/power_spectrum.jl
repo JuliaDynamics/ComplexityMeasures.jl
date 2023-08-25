@@ -24,13 +24,15 @@ Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
 struct PowerSpectrum <: OutcomeSpace end
 
-function probabilities_and_outcomes(est::PowerSpectrum, x)
+function probabilities(est::PowerSpectrum, x)
     @assert x isa AbstractVector{<:Real} "`PowerSpectrum` only works for timeseries input!"
     f = FFTW.rfft(x)
     probs = Probabilities(abs2.(f))
-    events = FFTW.rfftfreq(length(x))
+end
 
-    return probs, events
+function probabilities_and_outcomes(est::PowerSpectrum, x)
+    events = FFTW.rfftfreq(length(x))
+    return probabilities(est, x), events
 end
 
 outcome_space(::PowerSpectrum, x) = FFTW.rfftfreq(length(x))

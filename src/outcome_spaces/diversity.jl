@@ -40,8 +40,8 @@ end
 
 function counts(est::Diversity, x::AbstractVector{T}) where T <: Real
     ds, rbc = similarities_and_binning(est, x)
-    bins = fasthist(rbc, ds)[1]
-    return bins
+    cts = fasthist(rbc, ds)[1]
+    return cts
 end
 
 function counts_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real

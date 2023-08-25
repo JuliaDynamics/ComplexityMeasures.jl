@@ -30,10 +30,15 @@ end
 WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
 
 # RelativeAmount estimation on "pseudo-counts"
-function probabilities_and_outcomes(est::WaveletOverlap, x)
+function probabilities(o::WaveletOverlap, x)
     x isa AbstractVector{<:Real} || error("`WaveletOverlap` only works for timeseries input!")
-    freqs = time_scale_density(x, est.wl)
-    return Probabilities(freqs), 1:length(freqs)
+    relative_freqs = time_scale_density(x, o.wl)
+    return Probabilities(relative_freqs)
+end
+
+function probabilities_and_outcomes(o::WaveletOverlap, x)
+    probs = probabilities(o, x)
+    return probs, 1:length(probs)
 end
 
 function outcome_space(::WaveletOverlap, x)

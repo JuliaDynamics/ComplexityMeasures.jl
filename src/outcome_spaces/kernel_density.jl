@@ -45,20 +45,35 @@ end
 # Although we do count for NaiveKernel, there is a potential many-to-one mapping for each
 # point, so that the counts won't add up to the total number of points. Therefore,
 # we can't use this estimator for counting-based probabilities estimation.
-
 function NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
     ϵ ≤ 0 && throw(ArgumentError("Radius ϵ must be larger than zero!"))
     return NaiveKernel(ϵ, method, w, metric)
+end
+
+function probabilities(est::NaiveKernel, x::AbstractVector{<:Real})
+    return probabilities(est, StateSpaceSet(x))
+end
+
+function probabilities(est::NaiveKernel, x::AbstractStateSpaceSet)
+    idxs = neighbor_cts(est, x)
+    return Probabilities(length.(idxs))
 end
 
 function probabilities_and_outcomes(est::NaiveKernel, x::AbstractVector{<:Real})
     probabilities_and_outcomes(est, StateSpaceSet(x))
 end
 function probabilities_and_outcomes(est::NaiveKernel, x::AbstractStateSpaceSet)
+    idxs = neighbor_cts(est, x)
+    return Probabilities(length.(idxs)), eachindex(x)
+end
+
+function neighbor_cts(est::NaiveKernel, x)
     theiler = Theiler(est.w)
     ss = searchstructure(est.method, vec(x), est.metric)
+
+    # idxs[i] := idxs of neighbors to point x[i]
     idxs = bulkisearch(ss, vec(x), WithinRange(est.ϵ), theiler)
-    return Probabilities(length.(idxs)), eachindex(x)
+    return idxs
 end
 
 outcome_space(::NaiveKernel, x) = eachindex(x)

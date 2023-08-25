@@ -21,6 +21,11 @@ export is_counting_based
 # because counting is not defined over their outcome spaces (e.g. [`WaveletOverlap`](@ref)
 #  use pre-normalized relative "frequencies", not counts, to estimate probabilities).
 ###########################################################################################
+
+function counts(x)
+    return fasthist!(copy(x))
+end
+
 """
     counts_and_outcomes(o::OutcomeSpace, x) → (cts::Vector{Int}, Ω::Vector)
 
@@ -75,13 +80,14 @@ Like [`allcounts_and_outcomes`](@ref), but only returns the counts.
 """
 allcounts(o::OutcomeSpace, x::Array_or_SSSet) = first(allcounts_and_outcomes(o, x))
 
+# This function must explicitly overriden by count-based `OutcomeSpaces`.
 """
     counts(o::OutcomeSpace, x) → cts::Vector{Int}
 
 Like [`counts_and_outcomes`](@ref), but only returns the counts.
 """
 function counts(o::OutcomeSpace, x)
-    return first(counts_and_outcomes(o, x))
+    throw(ArgumentError("`counts_and_outcomes` not implemented for estimator $(typeof(o))."))
 end
 
 """
