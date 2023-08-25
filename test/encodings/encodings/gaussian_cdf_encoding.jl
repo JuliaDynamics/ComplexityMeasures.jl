@@ -3,8 +3,12 @@ using ComplexityMeasures
 using Statistics: mean, std
 using StaticArrays: SVector
 
-# Convenience constructor.
-@test GaussianCDFEncoding(rand(3); μ = 0.0, σ = 0.1) isa GaussianCDFEncoding
+# Constructors
+# ----------------------------------------------------------------
+@test GaussianCDFEncoding{3}(; μ = 0.0, σ = 0.1) isa GaussianCDFEncoding{3}
+
+# Backwards compatibility (only scalars were encodable in previous versions)
+@test GaussianCDFEncoding(; μ = 0.0, σ = 0.1) isa GaussianCDFEncoding{1}
 
 # Analytical tests
 ################################################################
@@ -29,7 +33,7 @@ x = rand(1000)
 c = 4
 m = 4
 τ = 1
-s = GaussianCDFEncoding(c = c; μ, σ)
+s = GaussianCDFEncoding{1}(; μ, σ, c)
 
 # Symbols should be in the set [1, 2, …, c].
 symbols = encode.(Ref(s), x)
@@ -39,7 +43,7 @@ symbols = encode.(Ref(s), x)
 y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
 μ = mean(y)
 σ = std(y)
-encoding = GaussianCDFEncoding(c = 3; μ, σ)
+encoding = GaussianCDFEncoding{1}(; μ, σ, c = 3);
 s = encode.(Ref(encoding), y)
 s_elwise_paper = [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
 @test s == s_elwise_paper
@@ -51,11 +55,12 @@ y = [9.0, 8.0, 1.0, 12.0, 5.0, -3.0, 1.5, 8.01, 2.99, 4.0, -1.0, 10.0]
 s_elwise_paper = [3, 3, 1, 3, 2, 1, 1, 3, 2, 2, 1, 3]
 μ = mean(y)
 σ = std(y)
-encoding = GaussianCDFEncoding(length(y); c = 3, μ, σ)
+m = length(y)
+encoding = GaussianCDFEncoding{m}(; μ, σ, c = 3);
 s = encode(encoding, y)
 @test s isa Int
 @test s == encoding.linear_indices[s_elwise_paper...]
 @test 1 ≤ s ≤ total_outcomes(encoding)
 @test decode(encoding, s) isa AbstractVector{<:SVector}
 
-@test_throws ArgumentError encode(GaussianCDFEncoding(length(y) - 1; c = 3, μ, σ), y)
+@test_throws ArgumentError encode(GaussianCDFEncoding{m-1}(; c = 3, μ, σ), y)

@@ -4,20 +4,19 @@ export GaussianCDFEncoding
 
 """
     GaussianCDFEncoding <: Encoding
-    GaussianCDFEncoding(m::Int = 1; μ, σ, c::Int = 3)
-    GaussianCDFEncoding(χ::AbstractVector; μ, σ, c::Int = 3)
+    GaussianCDFEncoding{m}(; μ, σ, c::Int = 3)
 
 An encoding scheme that [`encode`](@ref)s a scalar or vector `χ` into one of the integers
 `sᵢ ∈ [1, 2, …, c]` based on the normal cumulative distribution function (NCDF),
 and [`decode`](@ref)s the `sᵢ` into subintervals of `[0, 1]` (with some loss of information).
 
-The size of the input to be encoded must be known beforehand, and one must set
-`m = length(χ)`, where `χ` is the input (`m = 1` for scalars, `m ≥ 2` for vectors).
-Alternatively, provide the vector `χ` to the constructor to infer `m` automatically.
+## Initializing a `GaussianCDFEncoding`
 
-Notice that the decoding step does not yield an element of any outcome space of the
-estimators that use `GaussianCDFEncoding` internally, such as [`Dispersion`](@ref).
-That is because these estimators additionally delay embed the encoded data.
+The size of the input to be encoded must be known beforehand. One must therefore set
+`m = length(χ)`, where `χ` is the input (`m = 1` for scalars, `m ≥ 2` for vectors).
+To do so, one must explicitly give `m` as a type parameter: e.g.
+`encoding = GaussianCDFEncoding{3}(; μ = 0.0, σ = 0.1)` to encode 3-element vectors,
+or `encoding = GaussianCDFEncoding{1}(; μ = 0.0, σ = 0.1)` to encode scalars.
 
 ## Description
 
@@ -39,6 +38,10 @@ Next, the interval `[0, 1]` is equidistantly binned and enumerated ``1, 2, \\ldo
 Because of the floor operation, some information is lost, so when used with
 [`decode`](@ref), each decoded `sᵢ` is mapped to a *subinterval* of `[0, 1]`.
 This subinterval is returned as a length-`1` `Vector{SVector}`.
+
+Notice that the decoding step does not yield an element of any outcome space of the
+estimators that use `GaussianCDFEncoding` internally, such as [`Dispersion`](@ref).
+That is because these estimators additionally delay embed the encoded data.
 
 ### Encoding/decoding vectors
 
@@ -77,7 +80,6 @@ julia> decode(encoding, 3)
 ```
 """
 struct GaussianCDFEncoding{m, T, L <: LinearIndices, C <: CartesianIndices, R} <: Encoding
-    m::Int
     c::Int
     σ::T
     μ::T
@@ -89,7 +91,7 @@ struct GaussianCDFEncoding{m, T, L <: LinearIndices, C <: CartesianIndices, R} <
     binencoder::R # RectangularBinEncoding
 
     # The input `m` restricts what length the input scalar/vector can be.
-    function GaussianCDFEncoding(m::Int = 1; μ::T, σ::T, c::Int = 3) where T
+    function GaussianCDFEncoding{m}(; μ::T, σ::T, c::Int = 3) where {m, T}
         m >= 1 || throw(ArgumentError("m must be an integer ≥ 1. Got $m."))
         ranges = tuple([1:c for i in 1:m]...)
         cartesian_indices = CartesianIndices(ranges)
@@ -98,10 +100,12 @@ struct GaussianCDFEncoding{m, T, L <: LinearIndices, C <: CartesianIndices, R} <
         C = typeof(cartesian_indices)
         binencoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, c + 1))
         R = typeof(binencoder)
-        new{m, T, L, C, R}(m, c, σ, μ, linear_indices, cartesian_indices, binencoder)
+        new{m, T, L, C, R}(c, σ, μ, linear_indices, cartesian_indices, binencoder)
     end
 end
-GaussianCDFEncoding(x::AbstractVector; kwargs...) = GaussianCDFEncoding(length(x); kwargs...)
+
+# Backwards compatibility (previously, only scalars were encodable)
+GaussianCDFEncoding(; kwargs...) = GaussianCDFEncoding{1}(; kwargs...)
 
 function total_outcomes(encoding::GaussianCDFEncoding{m}) where m
     c = encoding.c
