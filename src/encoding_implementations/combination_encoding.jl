@@ -88,5 +88,5 @@ function decode(encoding::CombinationEncoding, ω::Int)
 end
 
 function total_outcomes(encoding::CombinationEncoding)
-    return prod(total_outcomes(e) for e in encoding.encodings)
+    return prod(total_outcomes.(encoding.encodings))
 end
