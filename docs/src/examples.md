@@ -485,7 +485,7 @@ reverse dispersion entropy [Li2019](@cite) for a time series consisting
 of normally distributed noise with a single spike in the middle of the signal.
 We compute the entropies over a range subsets of the data, using a sliding window
 consisting of 70 data points, stepping the window 10 time steps at a time.
-This example reproduces parts of figure 3 in [Li2021](@cite), but results here are not
+This example reproduces parts of figure 3 in [Li2019](@cite), but results here are not
 exactly the same as in the original paper, because their examples are based on randomly
 generated numbers and do not provide code that specify random number seeds.
 
