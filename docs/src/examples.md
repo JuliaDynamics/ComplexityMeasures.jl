@@ -65,9 +65,11 @@ kldivergence(py, px)
 
 ## Differential entropy: estimator comparison
 
+### Shannon entropy
+
 Here, we compare how the nearest neighbor differential entropy estimators
 ([`Kraskov`](@ref), [`KozachenkoLeonenko`](@ref), [`Zhu`](@ref), [`ZhuSingh`](@ref), etc.)
-converge towards the true entropy value for increasing time series length.
+converge towards the true [`Shannon`](@ref) entropy value for increasing time series length.
 
 ComplexityMeasures.jl also provides entropy estimators based on
 [order statistics](https://en.wikipedia.org/wiki/Order_statistic). These estimators
@@ -100,7 +102,8 @@ knn_estimators = [
     Gao(ent; k = 3, corrected = false, w),
     Gao(ent; k = 3, corrected = true, w),
     Goria(ent; k = 3, w),
-    Lord(ent; k = 20, w) # more neighbors for accurate ellipsoid estimation
+    Lord(ent; k = 20, w), # more neighbors for accurate ellipsoid estimation
+    LeonenkoProzantoSavani(ent; k = 3),
 ]
 
 # Test each estimator `nreps` times over time series of varying length.
@@ -137,7 +140,7 @@ end
 # -------------
 fig = Figure(resolution = (700, 11 * 200))
 labels_knn = ["KozachenkoLeonenko", "Kraskov", "Zhu", "ZhuSingh", "Gao (not corrected)",
-    "Gao (corrected)", "Goria", "Lord"]
+    "Gao (corrected)", "Goria", "Lord", "LeonenkoProzantoSavani"]
 labels_os = ["Vasicek", "Ebrahimi", "AlizadehArghami", "Correa"]
 
 for (i, e) in enumerate(knn_estimators)
@@ -168,6 +171,129 @@ fig
 
 All estimators approach the true differential entropy, but those based on order statistics
 are negatively biased for small sample sizes.
+
+### Rényi entropy
+
+Here, we see how the [`LeonenkoProzantoSavani`](@ref) estimator approaches the known
+target [`Rényi`](@ref) entropy of a multivariate normal distribution
+for increasing time series length. We'll consider the Rényi entropy with `q = 2`.
+
+```@example MAIN
+
+using ComplexityMeasures
+import ComplexityMeasures: information # we're overriding this function in the example
+using CairoMakie, Statistics
+using Distributions: MvNormal
+import Distributions.entropy as dentropy
+using Random
+rng = MersenneTwister(1234)
+
+"""
+    information(e::Renyi, 𝒩::MvNormal; base = 2)
+
+Compute the analytical value of the `Renyi` entropy for a multivariate normal distribution.
+"""
+function information(e::Renyi, 𝒩::MvNormal; base = 2)
+    q = e.q
+    if q ≈ 1.0
+        h = dentropy(𝒩)
+    else
+        Σ = 𝒩.Σ
+        D = length(𝒩.μ)
+        h = dentropy(𝒩) - (D / 2) * (1 + log(q) / (1 - q))
+    end
+    return convert_logunit(h, ℯ, base)
+end
+
+nreps = 30
+Ns = [100:100:500; 1000:1000:5000]
+def = Renyi(q = 2, base = 2)
+
+𝒩 = MvNormal([-1, 1], [1, 0.5]) 
+h_true = information(def, 𝒩; base = 2)
+
+# Estimate `nreps` times for each time series length
+
+hs = [zeros(nreps) for N in Ns]
+for (i, N) in enumerate(Ns)
+    for j = 1:nreps
+        pts = StateSpaceSet(transpose(rand(rng, 𝒩, N)))
+        hs[i][j] = information(LeonenkoProzantoSavani(def; k = 5), pts)
+    end
+end
+
+# We plot the mean and standard deviation of the estimator again the true value
+hs_mean, hs_stdev = mean.(hs), std.(hs)
+
+fig = Figure()
+ax = Axis(fig[1, 1]; ylabel = "h (bits)")
+lines!(ax, Ns, hs_mean; color = Cycled(1), label = "LeonenkoProzantoSavani")
+band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev, 
+    alpha = 0.5, color = (Main.COLORS[1], 0.5))
+hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
+axislegend()
+fig
+```
+
+### Tsallis entropy
+
+Here, we see how the [`LeonenkoProzantoSavani`](@ref) estimator approaches the known
+target [`Tsallis`](@ref) entropy of a multivariate normal distribution
+for increasing time series length. We'll consider the Rényi entropy with `q = 2`.
+
+```@example MAIN
+using ComplexityMeasures
+import ComplexityMeasures: information # we're overriding this function in the example
+using CairoMakie, Statistics
+using Distributions: MvNormal
+import Distributions.entropy as dentropy
+using Random
+rng = MersenneTwister(1234)
+
+"""
+    information(e::Tsallis, 𝒩::MvNormal; base = 2)
+
+Compute the analytical value of the `Tsallis` entropy for a multivariate normal distribution.
+"""
+function information(e::Tsallis, 𝒩::MvNormal; base = 2)
+    q = e.q
+    Σ = 𝒩.Σ
+    D = length(𝒩.μ)
+    # uses the function from the example above
+    hr = information(Renyi(q = q), 𝒩; base = ℯ) # stick with natural log, convert after
+    h = (exp((1 - q) * hr) - 1) / (1 - q)
+    return convert_logunit(h, ℯ, base)
+end
+
+nreps = 30
+Ns = [100:100:500; 1000:1000:5000]
+def = Tsallis(q = 2, base = 2)
+
+𝒩 = MvNormal([-1, 1], [1, 0.5]) 
+h_true = information(def, 𝒩; base = 2)
+
+# Estimate `nreps` times for each time series length
+
+hs = [zeros(nreps) for N in Ns]
+for (i, N) in enumerate(Ns)
+    for j = 1:nreps
+        pts = StateSpaceSet(transpose(rand(rng, 𝒩, N)))
+        hs[i][j] = information(LeonenkoProzantoSavani(def; k = 5), pts)
+    end
+end
+
+# We plot the mean and standard deviation of the estimator again the true value
+hs_mean, hs_stdev = mean.(hs), std.(hs)
+
+fig = Figure()
+ax = Axis(fig[1, 1]; ylabel = "h (bits)")
+lines!(ax, Ns, hs_mean; color = Cycled(1), label = "LeonenkoProzantoSavani")
+band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev, 
+    alpha = 0.5, color = (Main.COLORS[1], 0.5))
+hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
+axislegend()
+fig
+```
 
 ## Discrete entropy: permutation entropy
 

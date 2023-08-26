@@ -21,26 +21,34 @@ meaning that only the point itself is excluded when searching for neighbours).
 
 For details, see [LeonenkoProzantoSavani2008](@citet).
 """
-struct LeonenkoProzantoSavani{I} <: DifferentialInfoEstimator{I}
+struct LeonenkoProzantoSavani{I <: InformationMeasure} <: DifferentialInfoEstimator{I}
     definition::I
     k::Int
     w::Int
 
-    function LeonenkoProzantoSavani(definition::I, k, w)
-        if !(I isa Shannon || I isa Renyi || I isa Tsallis)
+    function LeonenkoProzantoSavani(definition::I, k, w) where I
+        if !(I <: Shannon || (I <: Renyi) || I <: Tsallis)
             s = "`definition` must be either a `Shannon`, `Renyi` or `Tsallis` instance."
             throw(ArgumentError(s))
         end
+        if k <= 1
+            throw(ArgumentError("`k` must be ≥ 2. Got k=$k."))
+        end
+
         new{I}(definition, k, w)
     end
 end
-function LeonenkoProzantoSavani(definition = Shannon(); k = 1, w = 0)
+function LeonenkoProzantoSavani(definition = Shannon(); k = 2, w = 0)
     return LeonenkoProzantoSavani(definition, k, w)
+end
+
+function information(est::LeonenkoProzantoSavani, x::AbstractVector{<:Real})
+    return information(est, StateSpaceSet(x))
 end
 
 function information(est::LeonenkoProzantoSavani{<:Shannon}, x::AbstractStateSpaceSet)
     h = Î(1.0, est, x) # measured in nats
-    return convert_logunit(h, ℯ, e.base)
+    return convert_logunit(h, ℯ, est.definition.base)
 end
 
 function information(est::LeonenkoProzantoSavani{<:Renyi}, x::AbstractStateSpaceSet)
@@ -55,7 +63,7 @@ function information(est::LeonenkoProzantoSavani{<:Renyi}, x::AbstractStateSpace
     return convert_logunit(h, ℯ, base)
 end
 
-function entropy(est::LeonenkoProzantoSavani{<:Tsallis}, x::AbstractStateSpaceSet)
+function information(est::LeonenkoProzantoSavani{<:Tsallis}, x::AbstractStateSpaceSet)
     q = est.definition.q
     base = est.definition.base
 
