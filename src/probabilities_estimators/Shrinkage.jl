@@ -64,7 +64,6 @@ struct Shrinkage{O <: OutcomeSpace, T <: Union{Nothing, Real, Vector{<:Real}}, L
 end
 
 Shrinkage(o::OutcomeSpace; t = nothing, λ = nothing) = Shrinkage(o, t, λ)
-
 function probabilities_and_outcomes(est::Shrinkage, x)
     probs, Ω = probabilities_and_outcomes(est.outcomemodel, x)
     return probs_and_outs_from_histogram(est, probs, Ω, x)

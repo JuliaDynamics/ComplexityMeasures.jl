@@ -7,6 +7,9 @@ using ComplexityMeasures, Test
     x = sin.(t .+  cos.(t/0.1)) .- 0.1;
 
     @testset "WaveletOverlap" begin
+        # Only works for timeseries inputs
+        @test_throws ArgumentError probabilities(WaveletOverlap(), 2)
+
         wl = ComplexityMeasures.Wavelets.WT.Daubechies{4}()
         est = WaveletOverlap(wl)
         ps = probabilities(est, x)
@@ -17,6 +20,9 @@ using ComplexityMeasures, Test
     end
 
     @testset "Fourier Spectrum" begin
+        # Only works for timeseries inputs
+        @test_throws ArgumentError probabilities(PowerSpectrum(), 2)
+
         N = 1000
         t = range(0, 10π, N)
         x = sin.(t)

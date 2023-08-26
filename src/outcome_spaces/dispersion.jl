@@ -87,7 +87,20 @@ function symbolize(est::Dispersion, x)
     return symbols::Vector{Int}
 end
 
+function counts(o::Dispersion, x::AbstractVector{<:Real})
+    return first(counts_and_dispersion_patterns(o, x))
+end
+
 function counts_and_outcomes(o::Dispersion, x::AbstractVector{<:Real})
+    cts, dispersion_patterns = counts_and_dispersion_patterns(o, x)
+    # `dispersion_patterns` is sorted when computing the histogram, so patterns match
+    # the histogram values, but `dispersion_patterns` still contains repeated values,
+    # so we return the unique values.
+    outs = unique!(dispersion_patterns)
+    return cts, outs
+end
+
+function counts_and_dispersion_patterns(o::Dispersion, x::AbstractVector{<:Real})
     N = length(x)
     symbols = symbolize(o, x)
     # We must use genembed, not embed, to make sure the zero lag is included
@@ -95,11 +108,8 @@ function counts_and_outcomes(o::Dispersion, x::AbstractVector{<:Real})
     τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
     dispersion_patterns = genembed(symbols, τs, ones(m))
     cts = fasthist!(dispersion_patterns) # this sorts `dispersion_patterns`
-    # `dispersion_patterns` is sorted when computing the histogram, so patterns match
-    # the histogram values, but `dispersion_patterns` still contains repeated values,
-    # so we return the unique values.
-    outs = unique(dispersion_patterns.data)
-    return cts, outs
+
+    return cts, dispersion_patterns.data
 end
 
 function outcome_space(est::Dispersion)
