@@ -1,5 +1,6 @@
 using ComplexityMeasures, Test
 using ComplexityMeasures: convert_logunit
+import ComplexityMeasures: information
 using Random
 rng = Xoshiro(1234)
 
