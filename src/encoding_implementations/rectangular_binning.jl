@@ -285,10 +285,23 @@ function fasthist(encoder::RectangularBinEncoding, x)
     return hist, bins
 end
 
-# Convenience compatibility with counting api.
-counts(encoder::RectangularBinEncoding, x) = fasthist(encoder, x)
-
 function discard_minus_ones!(bins)
     idxs = findall(isequal(-1), bins)
     deleteat!(bins, idxs)
+end
+
+# ----------------------------------------------------------------
+# Convenience compatibility with counting api.
+# ----------------------------------------------------------------
+function counts(encoding::RectangularBinEncoding, x)
+    cts = first(fasthist(encoding, x))
+    return cts
+end
+
+function counts_and_outcomes(encoding::RectangularBinEncoding, x)
+    cts, bins = fasthist(encoding, x) # bins are integers here
+    unique!(bins) # `bins` is already sorted from `frequencies!`
+    # Here we transform the cartesian coordinate based bins into data unit bins:
+    outcomes = map(b -> decode(encoding, b), bins)
+    return cts, vec(outcomes)
 end

@@ -34,7 +34,6 @@ using Random
             est = ValueHistogram(bin)
             out = outcome_space(est, x)
             @test length(out) == n^2
-
             p = probabilities(est, x)
             # all bins are covered due to random data
             @test length(p) == 100

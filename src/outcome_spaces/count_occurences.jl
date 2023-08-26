@@ -15,7 +15,7 @@ Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 struct CountOccurrences <: CountBasedOutcomeSpace end
 
 is_counting_based(o::CountOccurrences) = true
-
+counts(::CountOccurrences, x) = counts(x)
 function counts_and_outcomes(::CountOccurrences, x)
     z = copy(x)
     cts = fasthist!(z)
@@ -25,12 +25,3 @@ end
 
 outcome_space(::CountOccurrences, x) = sort!(unique(x))
 probabilities(::CountOccurrences, x) = probabilities(x)
-counts(::CountOccurrences, x) = counts(x)
-
-function probabilities(x)
-    # Fast histograms code is in the `histograms` folder
-    return Probabilities(counts(x))
-end
-function counts(x)
-    return fasthist!(copy(x))
-end

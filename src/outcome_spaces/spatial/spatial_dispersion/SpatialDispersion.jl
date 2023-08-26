@@ -188,10 +188,6 @@ function counts(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
     return fasthist!(symbols)
 end
 
-function probabilities(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
-    return Probabilities(counts(est, x))
-end
-
 function counts_and_outcomes(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
     symbols = symbol_distribution(est, x)
 
