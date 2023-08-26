@@ -24,9 +24,9 @@ If your new outcome space is counting-based, then
 
 If your new outcome space is not counting-based, then
 
-6. Implement dispatch for [`probabilities`](@ref) for your [`OutcomeSpace`](@ref) type.
-7. Implement dispatch for [`probabilities_and_outcomes`](@ref) for your
-    [`OutcomeSpace`](@ref) type.
+6. Implement dispatch for [`probabilities_and_outcomes`](@ref) for your
+    [`OutcomeSpace`](@ref) type. You'll then get the methods for
+    [`probabilities`](@ref) and [`outcomes`](@ref) for free.
 
 Finally,
 

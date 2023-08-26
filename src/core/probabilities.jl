@@ -176,7 +176,11 @@ See also: [`probabilities_and_outcomes`](@ref), [`allprobabilities`](@ref),
 [`ProbabilitiesEstimator`](@ref).
 """
 function probabilities(o::OutcomeSpace, x)
-    return Probabilities(counts(o, x))
+    if is_counting_based(o)
+        return Probabilities(counts(o, x))
+    else
+        return first(probabilities_and_outcomes(o, x))
+    end
 end
 # The above method is overriden for non-count based outcome spaces. For count-based
 # outcome space, `counts(o::OutcomeSpace, x)` must be defined.
