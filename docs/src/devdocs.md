@@ -20,13 +20,16 @@ All PRs contributing new functionality must be well tested and well documented. 
 
 If your new outcome space is counting-based, then
 
-5. Implement dispatch for [`counts_and_outcomes`](@ref) for your [`OutcomeSpace`](@ref) type.
+5. Implement dispatch for [`counts_and_outcomes`](@ref) for your [`OutcomeSpace`](@ref)
+    type. You'll then get [`counts`](@ref) for free. Optionally, you can
+    implement [`counts`](@ref) too if it leads to performance gains.
 
 If your new outcome space is not counting-based, then
 
 6. Implement dispatch for [`probabilities_and_outcomes`](@ref) for your
     [`OutcomeSpace`](@ref) type. You'll then get the methods for
-    [`probabilities`](@ref) and [`outcomes`](@ref) for free.
+    [`probabilities`](@ref) and [`outcomes`](@ref) for free. Optionally, you can
+    implement [`probabilities`](@ref) too if it leads to performance gains.
 
 Finally,
 

@@ -88,7 +88,7 @@ allcounts(o::OutcomeSpace, x::Array_or_SSSet) = first(allcounts_and_outcomes(o, 
 Like [`counts_and_outcomes`](@ref), but only returns the counts.
 """
 function counts(o::OutcomeSpace, x)
-    return counts_and_outcomes(o, x)
+    return first(counts_and_outcomes(o, x))
 end
 
 """
