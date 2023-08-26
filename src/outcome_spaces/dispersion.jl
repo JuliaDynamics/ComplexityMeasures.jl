@@ -96,7 +96,7 @@ function counts_and_outcomes(o::Dispersion, x::AbstractVector{<:Real})
     # `dispersion_patterns` is sorted when computing the histogram, so patterns match
     # the histogram values, but `dispersion_patterns` still contains repeated values,
     # so we return the unique values.
-    outs = unique(dispersion_patterns)
+    outs = unique!(dispersion_patterns)
     return cts, outs
 end
 
