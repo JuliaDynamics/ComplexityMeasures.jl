@@ -14,17 +14,23 @@ rng = Xoshiro(1234)
 # Check if the estimator converge to true values for some distributions with
 # analytically derivable entropy.
 # -------------------------------------------------------------------------------------
+
 # Entropy to log with base b of a uniform distribution on [0, 1] = ln(1 - 0)/(ln(b)) = 0
 U = 0.00
+pts = rand(rng, npts)
+ea = information(LeonenkoProzantoSavani(Shannon(base = 2), k = 5), pts)
+@test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
+
 # Entropy with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
 N = round(0.5*log(2π) + 0.5, digits = 2)
 N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
-
 npts = 100000
-ea = information(LeonenkoProzantoSavani(k = 5), rand(rng, npts))
-ea_n3 = information(LeonenkoProzantoSavani(Shannon(base = 3), k = 5), randn(rng, npts))
 
-@test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
+pts = randn(rng, npts)
+ea_n3_s = information(LeonenkoProzantoSavani(Shannon(base = 3), k = 5), pts)
+ea_n3_r = information(LeonenkoProzantoSavani(Renyi(base = 3, q = 1), k = 5), pts)
+ea_n3_t = information(LeonenkoProzantoSavani(Renyi(base = 3, q = 1), k = 5), pts)
+@test ea_n3_r ≈ ea_n3_t ≈ ea_n3_s
 @test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
 
 # -------------------------------------------------------------------------------------
