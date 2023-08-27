@@ -28,7 +28,7 @@ npts = 100000
 pts = randn(rng, npts)
 ea_n3_s = information(LeonenkoProzantoSavani(Shannon(base = 3), k = 5), pts)
 ea_n3_r = information(LeonenkoProzantoSavani(Renyi(base = 3, q = 1), k = 5), pts)
-ea_n3_t = information(LeonenkoProzantoSavani(Renyi(base = 3, q = 1), k = 5), pts)
+ea_n3_t = information(LeonenkoProzantoSavani(Tsallis(base = 3, q = 1), k = 5), pts)
 @test ea_n3_r ≈ ea_n3_t ≈ ea_n3_s
 @test N_base3 * 0.98 ≤ ea_n3 ≤ N_base3 * 1.02
 
