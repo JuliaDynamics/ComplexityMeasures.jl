@@ -75,7 +75,6 @@ function information(est::LeonenkoProzantoSavani{<:Tsallis}, x::AbstractStateSpa
     return convert_logunit(h, ℯ, base)
 end
 
-# TODO: this gives nan??
 # Use notation from original paper
 function Î(q, est::LeonenkoProzantoSavani, x::AbstractStateSpaceSet{D}) where D
     (; k, w) = est
@@ -84,7 +83,7 @@ function Î(q, est::LeonenkoProzantoSavani, x::AbstractStateSpaceSet{D}) where 
     Cₖ = (gamma(k) / gamma(k + 1 - q))^(1 / (1 - q))
     tree = KDTree(x, Euclidean())
     idxs, ds = bulksearch(tree, x, NeighborNumber(k), Theiler(w))
-    if q ≈ 1.0 # equations 3.9 & 3.10 in Leonenko et al. (2008)
+    if q == 1.0 # equations 3.9 & 3.10 in Leonenko et al. (2008)
         h = (1 / N) * sum(log.(ξᵢ_shannon(last(dᵢ), Vₘ, N, D, k) for dᵢ in ds))
     else # equations 3.1 & 3.2 in Leonenko et al. (2008)
         h = (1 / N) * sum(ξᵢ_renyi_tsallis(last(dᵢ), Cₖ, Vₘ, N, D)^(1 - q) for dᵢ in ds)
