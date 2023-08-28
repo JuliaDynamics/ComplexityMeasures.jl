@@ -186,5 +186,6 @@ See [`information`](@ref) for usage.
 - [`Correa`](@ref).
 - [`Vasicek`](@ref).
 - [`Ebrahimi`](@ref).
+- [`LeonenkoProzantoSavani`](@ref).
 """
 abstract type DifferentialInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end

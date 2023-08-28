@@ -16,6 +16,8 @@ Further additions to the library in v3:
 - New entropy definition: identification entropy (`Identification`).
 - Minor documentation fixes.
 - `GaussianCDFEncoding` now can be used with vector-valued inputs.
+- New `LeonenkoProzantoSavani` differential entropy estimator. Works with `Shannon`,
+    `Renyi` and `Tsallis` entropies.
 
 ### Bug fixes
 
