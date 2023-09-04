@@ -2,7 +2,7 @@ export AddConstant
 
 """
     AddConstant <: ProbabilitiesEstimator
-    AddConstant(o::OutcomeSpace, c = 1.0)
+    AddConstant(; c = 1.0)
 
 A generic add-constant probabilities estimator for counting-based [`OutcomeSpace`](@ref)s,
 where several literature estimators can be obtained tuning `c`. Currently ``c``
@@ -35,37 +35,41 @@ the number of *possible* outcomes.
     all outcomes, even those that are not observed, are assigned non-zero probabilities.
     This might affect your results if using e.g. [`missing_outcomes`](@ref).
 """
-struct AddConstant{O <: OutcomeSpace, A} <: ProbabilitiesEstimator
-    outcomemodel::O
+struct AddConstant{A} <: ProbabilitiesEstimator
     c::A
 
-    function AddConstant(o::O, c::A) where {O <: OutcomeSpace, A}
-        verify_counting_based(o, "AddConstant")
-        new{O, A}(o, c)
+    function AddConstant(; c::A = 1.0) where {A}
+        new{A}(c)
     end
 end
-AddConstant(outcomemodel::OutcomeSpace; c = 1.0) = AddConstant(outcomemodel, c)
 
-function probabilities_and_outcomes(est::AddConstant, x)
-    cts, Ω_observed = counts_and_outcomes(est.outcomemodel, x) # Ω_observed is now Ω.
-    return probs_and_outs_from_histogram(est, cts, Ω_observed, x)
+function probabilities(est::AddConstant, outcomemodel::OutcomeSpace, x)
+    verify_counting_based(outcomemodel, "AddConstant")
+
+    cts, outs = counts_and_outcomes(outcomemodel, x)
+    return probs_and_outs_from_histogram(est, outcomemodel, cts, outs, x)
 end
 
 # Assigns non-zero probability to unobserved outcomes.
-function allprobabilities_and_outcomes(est::AddConstant, x)
-    cts, Ω_observed = allcounts_and_outcomes(est.outcomemodel, x) # Ω_observed is now Ω.
-    return probs_and_outs_from_histogram(est, cts, Ω_observed, x)
+function allprobabilities(est::AddConstant, outcomemodel::OutcomeSpace, x)
+    verify_counting_based(outcomemodel, "AddConstant")
+
+    cts, outs = allcounts_and_outcomes(outcomemodel, x)
+    return probs_and_outs_from_histogram(est, outcomemodel, cts, outs, x)
 end
 
-function probs_and_outs_from_histogram(est::AddConstant, cts_observed, Ω_observed, x)
-    (; outcomemodel, c) = est
-    m = length(Ω_observed)
+# Only defined for 1D pmfs.
+function probs_and_outs_from_histogram(est::AddConstant, outcomemodel::OutcomeSpace,
+        cts::Counts{T, 1}, outs, x) where T
+
+    c = est.c
+    m = length(cts)
     n = encoded_space_cardinality(outcomemodel, x) # Normalize based on *encoded* data.
     probs = zeros(m)
-    for (k, nₖ) in enumerate(cts_observed)
+    for (k, nₖ) in enumerate(cts)
         probs[k] = (nₖ + c) / (n + (c * m))
     end
     @assert sum(probs) ≈ 1
 
-    return Probabilities(probs), Ω_observed
+    return Probabilities(probs, (x1 = outs,))
 end

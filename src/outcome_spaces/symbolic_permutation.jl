@@ -95,15 +95,9 @@ struct OrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
 end
 
 function counts(est::OrdinalPatterns{m}, x) where m
-    return first(counts_and_symbols(est, x))
-end
-
-function counts_and_outcomes(est::OrdinalPatterns{m}, x) where m
     cts, πs = counts_and_symbols(est, x)
-    # Now we compute the outcomes. (`πs` is already sorted in `fasthist!`)
-    outcomes = decode.(Ref(est.encoding), unique!(πs))
-
-    return cts, outcomes
+    outcomes = map(ω -> decode(est.encoding, ω), unique!(πs))
+    return Counts(cts, (outcomes,))
 end
 
 function counts_and_symbols(est::OrdinalPatterns{m}, x) where m
@@ -220,7 +214,9 @@ function probabilities(est::PermProbEst{m}, x::AbstractStateSpaceSet{D}) where {
         "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
     ))
     πs = zeros(Int, length(x))
-    return probabilities!(πs, est, x)
+    probs = probabilities!(πs, est, x) # this sorts πs
+
+    return probs
 end
 
 function probabilities!(::Vector{Int}, ::PermProbEst, ::AbstractVector)
@@ -260,8 +256,23 @@ function symbolize(est::PermProbEst{m}, x) where m
     return πs
 end
 
+# Special treatment for counting-based
+function probabilities!(πs::Vector{Int}, est::OrdinalPatterns{m}, x::AbstractStateSpaceSet{m}) where {m}
+    # This sorts πs in-place. For `OrdinalPatterns`, this returns actual integer counts.
+    observed_counts = fasthist!(πs, est, x) # This sorts πs in-place
+    outs = decode.(Ref(est.encoding), unique(πs)) # Therefore, the outcomes are just the unique values in `πs`
+    c::Counts = Counts(observed_counts, (x1 = outs,))
+    return Probabilities(c)
+end
+
+# The scaled versions
 function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceSet{m}) where {m}
-    return Probabilities(fasthist!(πs, est, x))
+    # This sorts πs in-place. For `WeightedOrdinalPatterns` and
+    # `AmplitudeAwareOrdinalPatterns`, this returned normalized counts (i.e. numbers on
+    # [0, 1]).
+    observed_pseudofreqs = fasthist!(πs, est, x)
+    outs = decode.(Ref(est.encoding), unique(πs)) # Therefore, the outcomes are just the unique values in `πs`
+    return Probabilities(observed_pseudofreqs, (x1 = outs,))
 end
 
 # A generic "weighted counts" + outcomes function. We need this because

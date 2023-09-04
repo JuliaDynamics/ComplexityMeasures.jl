@@ -442,20 +442,15 @@ end
 
 function probabilities(est::TransferOperator, x::Array_or_SSSet)
     to = transferoperator(StateSpaceSet(x), est.binning)
-    return Probabilities(invariantmeasure(to).ρ)
-end
-
-function probabilities_and_outcomes(est::TransferOperator, x::Array_or_SSSet)
-    to = transferoperator(StateSpaceSet(x), est.binning)
     probs = invariantmeasure(to).ρ
 
     # Note: bins are *not* sorted. They occur in the order of first appearance, according
     # to the input time series. Taking the unique bins preserves the order of first
-    # appearance
+    # appearance.
     bins = to.bins
     unique!(bins)
-    outcomes = decode.(Ref(to.encoding), bins) # coordinates of the visited bins
-    return probs, outcomes
+    outs = decode.(Ref(to.encoding), bins) # coordinates of the visited bins
+    return Probabilities(probs, (x1 = outs,))
 end
 
 outcome_space(est::TransferOperator, x) = outcome_space(est.binning, x)

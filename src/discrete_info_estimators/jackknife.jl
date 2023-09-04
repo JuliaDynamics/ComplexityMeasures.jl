@@ -29,13 +29,14 @@ Base.@kwdef struct Jackknife{I <: InformationMeasure} <: DiscreteInfoEstimator{I
     definition::I = Shannon()
 end
 
-function information(hest::Jackknife, pest::ProbabilitiesEstimator, x)
+function information(hest::Jackknife, pest::ProbabilitiesEstimator,
+        outcomemodel::OutcomeSpace, x)
     (; definition) = hest
     N = length(x)
 
     # The original estimate
     est_plugin = PlugIn(definition)
-    i_plugin = information(est_plugin, pest, x)
+    i_plugin = information(est_plugin.definition, pest, outcomemodel, x)
 
     # The jackknifed estimates
     # TODO: this can be parallelized
@@ -43,7 +44,7 @@ function information(hest::Jackknife, pest::ProbabilitiesEstimator, x)
     for i in eachindex(x)
         idxs = setdiff(1:N, i)
         xᵢ = @views x[idxs]
-        i_jackknifed[i] = information(est_plugin, pest, xᵢ)
+        i_jackknifed[i] = information(est_plugin.definition, pest, outcomemodel, xᵢ)
     end
 
     # The jackknifed estimate

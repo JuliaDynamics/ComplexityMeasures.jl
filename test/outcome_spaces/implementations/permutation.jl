@@ -15,14 +15,14 @@ using ComplexityMeasures.DelayEmbeddings: embed
 end
 
 @testset "Analytic, symbolic" begin
-    est = OrdinalPatterns(m = 3, τ = 1)
+    o = OrdinalPatterns(m = 3, τ = 1)
     N = 1000
     x = StateSpaceSet(repeat([1.1 2.2 3.3], 10))
     y = StateSpaceSet(rand(Random.MersenneTwister(123), N, 3))
 
     @testset "direct" begin
-        p1 = probabilities(est, x)
-        p2 = probabilities(est, y)
+        p1 = probabilities(o, x)
+        p2 = probabilities(o, y)
         @test sum(vec(p1)) ≈ 1.0
         @test sum(vec(p2)) ≈ 1.0
         @test length(p1) == 1 # analytic
@@ -31,15 +31,15 @@ end
 
     @testset "pre-allocated" begin
         s = zeros(Int, N)
-        p2 = probabilities!(s, est, y)
+        p2 = probabilities!(s, o, y)
         @test sum(p2) ≈ 1.0
     end
 
     @testset "vector" begin
         z = y[:, 1]
         w = view(z, 1:length(z)-1)
-        p1 = probabilities(est, z)
-        p2 = probabilities(est, w)
+        p1 = probabilities(o, z)
+        p2 = probabilities(o, w)
         @test sum(vec(p1)) ≈ sum(vec(p2)) ≈ 1
     end
 
@@ -53,9 +53,9 @@ end
     D = embed(x, m, τ)
     @testset "$(S)" for S in (OrdinalPatterns,
         WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
-        est = S(m = m, τ = τ)
-        p1 = probabilities(est, x)
-        p2 = probabilities(est, D)
+        o = S(m = m, τ = τ)
+        p1 = probabilities(o, x)
+        p2 = probabilities(o, D)
         @test all(p1 .≈ p2)
         @test all(p -> 0.03 < p < 0.05, p2)
     end
@@ -69,12 +69,12 @@ end
     @testset "$(S)" for S in (OrdinalPatterns,
         WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
         # don't randomize in the case of equal values, so use Base.isless
-        est = S(m = 2, lt = Base.isless)
-        probs, πs = probabilities_and_outcomes(est, x)
+        o = S(m = 2, lt = Base.isless)
+        probs, πs = probabilities_and_outcomes(o, x)
         @test πs == SVector{2, Int}.([[1, 2], [2, 1]])
         @test probs == [3/5, 2/5]
-        est3 = S(m = 3)
-        @test outcome_space(est3) == [
+        o3 = S(m = 3)
+        @test outcome_space(o3) == [
             [1, 2, 3],
             [1, 3, 2],
             [2, 1, 3],
@@ -82,7 +82,7 @@ end
             [3, 1, 2],
             [3, 2, 1],
         ]
-        @test total_outcomes(est3) == factorial(3)
-        @test issorted(outcome_space(est3))
+        @test total_outcomes(o3) == factorial(3)
+        @test issorted(outcome_space(o3))
     end
 end

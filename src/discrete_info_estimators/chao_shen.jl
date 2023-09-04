@@ -28,27 +28,26 @@ Base.@kwdef struct ChaoShen{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
 end
 
 # Only works for real-count estimators.
-function information(hest::ChaoShen{<:Shannon}, pest::ProbabilitiesEstimator, x)
+function information(hest::ChaoShen{<:Shannon}, pest::ProbabilitiesEstimator, o::OutcomeSpace, x)
     (; definition) = hest
+
     # Count singletons in the sample
-    frequencies, outcomes = counts_and_outcomes(pest, x)
+    cts = counts(o, x)
     f₁ = 0
-    for f in frequencies
+    for f in cts
         if f == 1
             f₁ += 1
         end
     end
-    # We should be using `N = length(x)`, but since some probabilities estimators
-    # return pseudo counts, we need to consider those instead of counting actual
-    # observations.
-    N = sum(frequencies)
+
+    N = sum(cts)
     if f₁ == N
         f₁ == N - 1
     end
     C = 1 - (f₁ / N)
 
-    # Estimate Shannon entropy
-    probs = Probabilities(frequencies)
+    # Estimate Shannon entropy, with Chao-Shen correction.
+    probs = Probabilities(cts)
     h = -sum(chao_shenᵢ(pᵢ, definition.base, N, C) for pᵢ in probs)
     return h
 end

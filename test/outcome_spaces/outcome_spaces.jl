@@ -14,16 +14,16 @@ end
     # should be. Bins 1 2 and 3 have one entry, bin 4 has zero, bin 5
     # has two entries, bins 6 7 8 have zero, bin 9 has 1 and bin 10 zero
     x = [0.05, 0.15, 0.25, 0.45, 0.46, 0.85]
-    est = ValueHistogram(FixedRectangularBinning((0:0.1:1,)))
+    o = ValueHistogram(FixedRectangularBinning((0:0.1:1,)))
     correct = [1, 1, 1, 0, 2, 0, 0, 0, 1, 0]
     correct = correct ./ sum(correct)
 
-    miss = missing_outcomes(est, x)
+    miss = missing_outcomes(o, x)
     @test miss == 5
 
-    p = allprobabilities(est, x)
+    p = allprobabilities(o, x)
 
-    @test p == correct
+    @test p ≈ correct
 end
 
 @testset "Ordinal" begin
@@ -31,22 +31,22 @@ end
     # except the final one that is the 312. That permutation is
     # fourth in the order of the ordinal patterns for m=3
     x = [1, 2, 3, 4, 5, 6, 1]
-    est = OrdinalPatterns(m = 3)
-    probs, outs = probabilities_and_outcomes(est, x)
+    o = OrdinalPatterns(m = 3)
+    probs, outs = probabilities_and_outcomes(o, x)
     correct = [4, 0, 0, 0, 1, 0]
     correct = correct ./ sum(correct)
-    p = allprobabilities(est, x)
+    p = allprobabilities(o, x)
     @test p == correct
 
-    miss = missing_outcomes(est, x)
+    miss = missing_outcomes(o, x)
     @test miss == 4
 
     # Make sure that different outcome would get different allprobs
     x = [1, 2, 3, 4, 5, 6, 5.5]
-    probs, outs = probabilities_and_outcomes(est, x)
+    probs, outs = probabilities_and_outcomes(o, x)
     correct = [4, 1, 0, 0, 0, 0]
     correct = correct ./ sum(correct)
-    p = allprobabilities(est, x)
+    p = allprobabilities(o, x)
     @test p == correct
 end
 
@@ -67,7 +67,7 @@ end
             @test length(cts) == length(Ω)
 
             cts = counts(os[i], x)
-            @test cts isa Vector{Int}
+            @test cts isa Counts
         end
     end
 
@@ -83,7 +83,7 @@ end
             @test length(cts) == length(Ω)
 
             cts = counts(os[i], x)
-            @test cts isa Vector{Int}
+            @test cts isa Counts
         end
     end
 end

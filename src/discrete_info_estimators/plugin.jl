@@ -34,10 +34,10 @@ end
 
 # Using the plugin-estimator is the same as plugging probabilities into the
 # relevant definitions.
-function information(hest::PlugIn, pest::ProbabilitiesEstimator, x)
-    probs = probabilities(pest, x)
+function information(hest::PlugIn, pest::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    probs = probabilities(pest, o, x)
     return information(hest.definition, probs)
 end
 information(hest::PlugIn, probs::Probabilities) = information(hest.definition, probs)
-information_normalized(e::PlugIn, est, x) = information_normalized(e.definition, est, x)
+information_normalized(e::PlugIn, est, o, x) = information_normalized(e.definition, est, o, x)
 information_maximum(e::PlugIn, args...) = information_maximum(e.definition, args...)

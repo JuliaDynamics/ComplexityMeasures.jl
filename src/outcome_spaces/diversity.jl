@@ -39,21 +39,6 @@ Base.@kwdef struct Diversity <: CountBasedOutcomeSpace
 end
 
 function counts(est::Diversity, x::AbstractVector{T}) where T <: Real
-    ds, rbc = similarities_and_binning(est, x)
-    cts = fasthist(rbc, ds)[1]
-    return cts
-end
-
-function counts_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
-    ds, rbc = similarities_and_binning(est, x)
-    cts, outcomes = counts_and_outcomes(rbc, ds)
-    return cts, outcomes
-end
-
-outcome_space(est::Diversity) = outcome_space(encoding_for_diversity(est.nbins))
-total_outcomes(est::Diversity) = est.nbins
-
-function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T <: Real
     # embed and then calculate cosine similary for each consecutive pair of delay vectors
     τs = 0:est.τ:(est.m - 1)*est.τ
     Y = genembed(x, τs)
@@ -63,8 +48,11 @@ function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T 
     end
     # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval
     rbc = encoding_for_diversity(est.nbins)
-    return ds, rbc
+    return counts(rbc, ds)::Counts
 end
+
+outcome_space(est::Diversity) = outcome_space(encoding_for_diversity(est.nbins))
+total_outcomes(est::Diversity) = est.nbins
 
 function encoded_space_cardinality(est::Diversity, x::AbstractVector{<:Real})
     n_pts_embedded = length(x) - (est.m - 1)*est.τ

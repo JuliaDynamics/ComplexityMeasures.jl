@@ -60,15 +60,15 @@ function genentropy(x::Array_or_SSSet, ε::Real; q = 1.0, base = MathConstants.e
     `genentropy(x::Array_or_SSSet, ε::Real; q, base)` is deprecated.
     Use instead: `information(Renyi(q, base), ValueHistogram(ε), x)`.
     """
-    return information(Renyi(q, base), RelativeAmount(ValueHistogram(ε)), x)
+    return information(Renyi(q, base), RelativeAmount(), ValueHistogram(ε), x)
 end
 
-function genentropy(x::Array_or_SSSet, est::OutcomeSpace; q = 1.0, base = MathConstants.e)
+function genentropy(x::Array_or_SSSet, o::OutcomeSpace; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is deprecated.
     Use instead: `information(Renyi(q, base), est, x)`.
     """
-    return information(Renyi(q, base), RelativeAmount(est), x)
+    return information(Renyi(q, base), RelativeAmount(), o, x)
 end
 
 @deprecate SymbolicPermutation OrdinalPatterns

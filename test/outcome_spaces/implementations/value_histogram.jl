@@ -31,24 +31,24 @@ using Random
 
     for bin in binnings
         @testset "bin isa $(nameof(typeof(bin)))" begin
-            est = ValueHistogram(bin)
-            out = outcome_space(est, x)
+            o = ValueHistogram(bin)
+            out = outcome_space(o, x)
             @test length(out) == n^2
-            p = probabilities(est, x)
+            p = probabilities(o, x)
             # all bins are covered due to random data
             @test length(p) == 100
             # ensure uniform coverage since input is uniformly random
             @test all(e -> 0.009 ≤ e ≤ 0.011, p)
 
-            p2, o = probabilities_and_outcomes(est, x)
+            p2, outs = probabilities_and_outcomes(o, x)
             @test p2 == p
-            @test o isa Vector{SVector{2, Float64}}
-            @test length(o) == length(p)
-            @test all(x -> x < 1, maximum(o))
-            o2 = outcomes(est, x)
-            @test o2 == o
+            @test outs isa Vector{SVector{2, Float64}}
+            @test length(outs) == length(p)
+            @test all(x -> x < 1, maximum(outs))
+            o2 = outcomes(o, x)
+            @test o2 == outs
 
-            ospace = outcome_space(est, x)
+            ospace = outcome_space(o, x)
             @test ospace isa Vector{SVector{2, Float64}}
             @test size(ospace) == (n*n, )
             @test SVector(0.0, 0.0) ∈ ospace

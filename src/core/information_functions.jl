@@ -80,20 +80,20 @@ j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(o), x)
 ```
 """
 function information(e::InformationMeasure, o::OutcomeSpace, x)
-    return information(PlugIn(e), RelativeAmount(o), x)
+    return information(PlugIn(e), RelativeAmount(), o, x)
 end
-function information(e::InformationMeasure, est::ProbabilitiesEstimator, x)
-    return information(PlugIn(e), est, x)
+function information(e::InformationMeasure, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    return information(PlugIn(e), est, o, x)
 end
 function information(e::DiscreteInfoEstimator, o::OutcomeSpace, x)
-    return information(e, RelativeAmount(o), x)
+    return information(e, RelativeAmount(), o, x)
 end
 
 # dispatch for `information(e, ps::Probabilities)`
 # is in the individual information definition or discrete estimator files
 
 # Convenience
-information(est::OutcomeSpace, x) = information(Shannon(), est, x)
+information(o::OutcomeSpace, x) = information(Shannon(), o, x)
 information(probs::Probabilities) = information(Shannon(), probs)
 
 # from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
@@ -202,8 +202,11 @@ function information_normalized(e::InformationMeasure, o::OutcomeSpace, x)
     end
     return information(e, o, x) / infomax
 end
-function information_normalized(o::OutcomeSpace, x::Array_or_SSSet)
+function information_normalized(o::OutcomeSpace, x)
     return information_normalized(Shannon(), o, x)
+end
+function information_normalized(est::DiscreteInfoEstimator, o::OutcomeSpace, x)
+    return information_normalized(est.definition, o, x)
 end
 
 

@@ -11,8 +11,8 @@ using ComplexityMeasures, Test
         @test_throws ArgumentError probabilities(WaveletOverlap(), 2)
 
         wl = ComplexityMeasures.Wavelets.WT.Daubechies{4}()
-        est = WaveletOverlap(wl)
-        ps = probabilities(est, x)
+        o = WaveletOverlap(wl)
+        ps = probabilities(o, x)
         @test length(ps) == 7
         @test ps isa Probabilities
         @test information(Renyi(q = 1, base = 2), WaveletOverlap(), x) isa Real
@@ -28,15 +28,15 @@ using ComplexityMeasures, Test
         x = sin.(t)
         y = @. sin(t) + sin(sqrt(3)*t)
         z = randn(N)
-        est = PowerSpectrum()
-        ents = [information(Renyi(), est, w) for w in (x,y,z)]
+        o = PowerSpectrum()
+        ents = [information(Renyi(), o, w) for w in (x,y,z)]
         @test ents[1] < ents[2] < ents[3]
         # Test event stuff (analytically, using sine wave)
-        probs, outs = probabilities_and_outcomes(est, x)
+        probs, outs = probabilities_and_outcomes(o, x)
         @test length(outs) == length(probs) == 501
         @test outs[1] ≈ 0 atol=1e-16 # 0 frequency, i.e., mean value
         @test probs[1] ≈ 0 atol=1e-16  # sine wave has 0 mean value
         @test outs[end] == 0.5 # Nyquist frequency, 1/2 the sampling rate (Which is 1)
-        @test issorted(outcome_space(est, x))
+        @test issorted(outcome_space(o, x))
     end
 end

@@ -20,7 +20,7 @@ function counts_and_outcomes(::CountOccurrences, x)
     z = copy(x)
     cts = fasthist!(z)
     # notice that `z` is now sorted within `frequencies!` so we can skip sorting
-    return cts, unique!(z)
+    return Counts(cts), unique!(z)
 end
 
 outcome_space(::CountOccurrences, x) = sort!(unique(x))

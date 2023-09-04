@@ -29,12 +29,13 @@ struct WaveletOverlap{W<:Wavelets.WT.OrthoWaveletClass} <: OutcomeSpace
 end
 WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
 
-function probabilities_and_outcomes(o::WaveletOverlap, x)
+function probabilities(o::WaveletOverlap, x)
     if !(x isa AbstractVector{<:Real})
         throw(ArgumentError("`WaveletOverlap` only works for timeseries input!"))
     end
     relative_freqs = time_scale_density(x, o.wl)
-    return Probabilities(relative_freqs), 1:length(relative_freqs)
+    outs = 1:length(relative_freqs)
+    return Probabilities(relative_freqs, (x1 = outs,))
 end
 
 function outcome_space(::WaveletOverlap, x)

@@ -59,11 +59,6 @@ function counts(est::ValueHistogram, x)
     return counts(RectangularBinEncoding(est.binning, x), x)
 end
 
-function counts_and_outcomes(est::ValueHistogram, x)
-    encoding = RectangularBinEncoding(est.binning, x)
-    return counts_and_outcomes(encoding, x)
-end
-
 function outcome_space(est::ValueHistogram, x)
     return outcome_space(RectangularBinEncoding(est.binning, x))
 end

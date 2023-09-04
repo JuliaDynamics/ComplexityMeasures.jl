@@ -27,9 +27,9 @@ Base.@kwdef struct HorvitzThompson{I <: InformationMeasure} <: DiscreteInfoEstim
     definition::I = Shannon()
 end
 
-function information(hest::HorvitzThompson{<:Shannon}, pest::ProbabilitiesEstimator, x)
+function information(hest::HorvitzThompson{<:Shannon}, pest::ProbabilitiesEstimator, o::OutcomeSpace, x)
     (; definition) = hest
-    probs = probabilities(pest, x)
+    probs = probabilities(pest, o, x)
     N = length(x)
     h = -sum(horwitz_thompsonᵢ(pᵢ, definition.base, N) for pᵢ in probs)
     return h

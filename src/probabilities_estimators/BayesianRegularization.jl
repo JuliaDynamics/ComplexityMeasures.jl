@@ -2,10 +2,10 @@ export BayesianRegularization
 
 """
     BayesianRegularization <: ProbabilitiesEstimator
-    BayesianRegularization(outcome_space::OutcomeSpace, a = 1.0)
+    BayesianRegularization(; a = 1.0)
 
 The `BayesianRegularization` estimator is used with [`probabilities`](@ref) and related
-functions to estimate probabilities over the given `m`-element counting-based
+functions to estimate probabilities an `m`-element counting-based
 [`OutcomeSpace`](@ref) using Bayesian regularization of cell counts [Hausser2009](@cite).
 See [`ProbabilitiesEstimator`](@ref) for usage.
 
@@ -62,30 +62,29 @@ For [`allprobabilities`](@ref), `m = total_outcomes(o, x)`, where `o` is the
 ```julia
 using ComplexityMeasures
 x = cumsum(randn(100))
-ps_bayes = probabilities(BayesianRegularization(OrdinalPatterns(m = 3), a = 0.5), x)
+ps_bayes = probabilities(BayesianRegularization(a = 0.5), OrdinalPatterns(m = 3), x)
 ```
 
 See also: [`RelativeAmount`](@ref), [`Shrinkage`](@ref).
 """
-struct BayesianRegularization{O <: OutcomeSpace, A} <: ProbabilitiesEstimator
-    outcomemodel::O
+struct BayesianRegularization{A} <: ProbabilitiesEstimator
     a::A
-    function BayesianRegularization(o::O, c::A) where {O <: OutcomeSpace, A}
-        verify_counting_based(o, "BayesianRegularization")
-        new{O, A}(o, c)
+    function BayesianRegularization(; a::A = 1.0) where {A}
+        new{A}(a)
     end
 end
-BayesianRegularization(outcomemodel::OutcomeSpace; a = 1.0) = BayesianRegularization(outcomemodel, a)
 
 # We need to implement `probabilities_and_outcomes` and `allprobabilities` separately,
 # because the number of elements in the outcome space determines the factor `A`, since
 # A = sum(aₖ). Explicitly modelling the entire outcome space, instead of considering
 # only the observed outcomes, will therefore affect the estimated probabilities.
-function probabilities_and_outcomes(est::BayesianRegularization, x)
-    (; outcomemodel, a) = est
+function probabilities(est::BayesianRegularization, outcomemodel::OutcomeSpace, x)
+    verify_counting_based(outcomemodel, "BayesianRegularization")
 
-    observed_counts, observed_outcomes = counts_and_outcomes(outcomemodel, x)
-    M = length(observed_outcomes)
+    a = est.a
+
+    observed_cts, observed_outcomes = counts_and_outcomes(outcomemodel, x)
+    M = length(observed_cts)
 
     if a isa Vector{<:Real}
         length(a) == M || throw(DimensionMismatch("length(a) must equal the number of elements in the observed outcome space (got $M outcomes, but length(a)=$(length(a)))."))
@@ -100,16 +99,18 @@ function probabilities_and_outcomes(est::BayesianRegularization, x)
 
     # Estimate probability for each observed outcome.
     for i = 1:M
-        yᵢ = observed_counts[i]
+        yᵢ = observed_cts[i]
         aₖ = get_aₖ_bayes(a, i)
         probs[i] = θ̂bayes(yᵢ, aₖ, n, A)
     end
 
-    return Probabilities(probs), observed_outcomes
+    return Probabilities(probs, (x1 = observed_outcomes, ))
 end
 
-function allprobabilities_and_outcomes(est::BayesianRegularization, x)
-    (; outcomemodel, a) = est
+function allprobabilities(est::BayesianRegularization, outcomemodel::OutcomeSpace, x)
+    verify_counting_based(outcomemodel, "BayesianRegularization")
+
+    a = est.a
 
     # Normalization factor is based on the *encoded* data.
     n = encoded_space_cardinality(outcomemodel, x)
@@ -121,7 +122,7 @@ function allprobabilities_and_outcomes(est::BayesianRegularization, x)
         length(a) == M || throw(DimensionMismatch("length(a) must equal the number of " *
         "elements in the outcome space (got $M outcomes, but length(a)=$(length(a)))."))
     end
-    observed_counts, observed_outcomes = counts_and_outcomes(est.outcomemodel, x)
+    observed_counts, observed_outcomes = counts_and_outcomes(outcomemodel, x)
 
     # Estimate posterior distribution.
     probs = zeros(M)
@@ -134,7 +135,7 @@ function allprobabilities_and_outcomes(est::BayesianRegularization, x)
         probs[idx] = θ̂bayes(yᵢ, aₖ, n, A)
     end
 
-    return Probabilities(probs), Ω
+    return Probabilities(probs, (x1 = Ω,))
 end
 
 get_aₖ_bayes(a, i) = a isa Real ? a : a[i]
