@@ -81,7 +81,7 @@ function encode(encoding::CombinationEncoding, χ)
     return ω
 end
 
-function decode(encoding::CombinationEncoding, ω::Int)
+function decode(encoding::CombinationEncoding, ω::Integer)
     es = encoding.encodings
     cidx = encoding.cartesian_indices[ω]
     return map(e -> decode(e, cidx[findfirst(eᵢ -> eᵢ == e, es)]), es)

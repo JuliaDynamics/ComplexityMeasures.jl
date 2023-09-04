@@ -84,7 +84,7 @@ function encode(encoding::RelativeFirstDifferenceEncoding, x::AbstractVector{<:R
     return encode(binencoder, Λ_normalized)
 end
 
-function decode(encoding::RelativeFirstDifferenceEncoding, ω::Int)
+function decode(encoding::RelativeFirstDifferenceEncoding, ω::Integer)
     # Return the left-edge of the bin.
     return decode(encoding.binencoder, ω)
 end
