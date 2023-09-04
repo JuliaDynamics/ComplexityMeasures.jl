@@ -253,7 +253,8 @@ function probabilities_and_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace
 end
 
 function probabilities_and_outcomes(est::ProbabilitiesEstimator, args...)
-    error("`probabilities_and_outcomes` not implemented for estimator $(typeof(est)).")
+    s = "`probabilities_and_outcomes` not implemented for estimator $(typeof(est))."
+    throw(ArgumentError(s))
 end
 
 function outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
