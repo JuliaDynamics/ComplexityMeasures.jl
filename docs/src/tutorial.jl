@@ -110,10 +110,11 @@ hcat(countsy, countsy ./ sum(countsy), probsy)
 # By definition columns 2 and 3 are identical.
 # However, there are other ways to estimate probabilities that may account for biases in counting outcomes from finite data.
 # Alternative estimators for probabilities are subtypes of [`ProbabilitiesEstimator`](@ref).
-# `ProbabilitiesEstimator`s wrap outcome space instances and dictate alternative ways to estimate probabilities.
+# `ProbabilitiesEstimator`s  dictate alternative ways to estimate probabilities, given
+# some outcome space and unput data.
 # For example, one could use [`BayesianRegularization`](@ref).
 
-probsy_bayes = probabilities(BayesianRegularization(o), y)
+probsy_bayes = probabilities(BayesianRegularization(), o, y)
 
 probsy_bayes .- probsy
 
