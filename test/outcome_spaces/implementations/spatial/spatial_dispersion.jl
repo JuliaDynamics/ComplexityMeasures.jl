@@ -56,3 +56,8 @@ o_y_presymb = SpatialDispersion(stencil, y; skip_encoding =  true, L = 2)
 
 @test outcome_space(o_y) == outcome_space(Dispersion(c = o_y.c, m = o_y.m))
 @test outcome_space(o_y_presymb) == outcome_space(Dispersion(c = 2, m = o_y.m))
+
+# With enough points and few enough symbols, we should observe all symbols.
+z = rand(Xoshiro(1234), 0:1, 300, 300);
+o_z = SpatialDispersion(stencil, z, c = 2)
+@test total_outcomes(o_z) == length(outcomes(o_z, z))
