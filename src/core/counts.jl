@@ -98,6 +98,31 @@ function print_dims(io::IO, mime, dims, T)
 end
 
 # We strictly deal with single inputs here. For multi-inputs, see CausalityTools.jl
+"""
+    counts(o::OutcomeSpace, x) → cts::Counts{<:Integer, 1}
+    counts(x) → cts::Counts{<:Integer, 1}
+
+Count how often each outcome `Ωᵢ ∈ Ω` appears in the (encoded) input data `x`, where
+`Ω = outcome_space(o, x)` (if no [`OutcomeSpace`](@ref) is specified,
+[`CountOccurrences`](@ref) is used).
+
+Returns a [`Counts`](@ref) instance where the marginals are labelled with the outcomes,
+so that it is easy to trace what is being counted. If you need both the counts and
+the corresponding outcomes explicitly, use [`counts_and_outcomes`](@ref).
+
+## Description
+
+For [`OutcomeSpace`](@ref)s that uses [`encode`](@ref) to discretize, it is possible to
+count how often each outcome ``\\omega_i \\in \\Omega``, where ``\\Omega`` is the
+set of possible outcomes, is observed in the discretized/encoded input data.
+Thus, we can assign to each outcome ``\\omega_i`` a count ``f(\\omega_i)``, such that
+``\\sum_{i=1}^N f(\\omega_i) = N``, where ``N`` is the number of observations in the
+(encoded) input data.
+`counts` returns the counts ``f(\\omega_i)_{obs}``
+and outcomes only for the *observed* outcomes ``\\omega_i^{obs}`` (those outcomes
+that actually appear in the input data). If you need the counts for
+*unobserved* outcomes as well, use [`allcounts`](@ref)/[`allcounts_and_outcomes`](@ref).
+"""
 function counts(x)
     xc = copy(x)
     cts = fasthist!(xc) # sorts `xc` in-place
@@ -133,31 +158,6 @@ end
 function outcomes(c::Counts{<:Integer, N}, idxs) where N
     map(i -> c.cts.dims[i].val.data, tuple(idxs...))
 end
-
-"""
-    counts(o::OutcomeSpace, x) → cts::Counts{<:Integer, 1}
-
-Count how often each outcome `Ωᵢ ∈ Ω` appears in the (encoded) input data `x`, where
-`Ω = outcome_space(o, x)`.
-
-Returns a [`Counts`](@ref) instance where the marginals are labelled with the outcomes,
-so that it is easy to trace what is being counted. If you need both the counts and
-the corresponding outcomes explicitly, use [`counts_and_outcomes`](@ref).
-
-## Description
-
-For [`OutcomeSpace`](@ref)s that uses [`encode`](@ref) to discretize, it is possible to
-count how often each outcome ``\\omega_i \\in \\Omega``, where ``\\Omega`` is the
-set of possible outcomes, is observed in the discretized/encoded input data.
-Thus, we can assign to each outcome ``\\omega_i`` a count ``f(\\omega_i)``, such that
-``\\sum_{i=1}^N f(\\omega_i) = N``, where ``N`` is the number of observations in the
-(encoded) input data.
-`counts` returns the counts ``f(\\omega_i)_{obs}``
-and outcomes only for the *observed* outcomes ``\\omega_i^{obs}`` (those outcomes
-that actually appear in the input data). If you need the counts for
-*unobserved* outcomes as well, use [`allcounts`](@ref)/[`allcounts_and_outcomes`](@ref).
-"""
-function counts(::OutcomeSpace, x) end
 
 function counts_and_outcomes(o::OutcomeSpace, x)
     if is_counting_based(o)
