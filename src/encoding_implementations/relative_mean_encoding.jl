@@ -64,7 +64,7 @@ function encode(encoding::RelativeMeanEncoding, x::AbstractVector)
     return encode(binencoder, Λ_normalized)
 end
 
-function decode(encoding::RelativeMeanEncoding, ω::Int)
+function decode(encoding::RelativeMeanEncoding, ω::Integer)
     # Return the left-edge of the bin.
     return decode(encoding.binencoder, ω)
 end
