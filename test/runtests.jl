@@ -6,6 +6,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
 @testset "ComplexityMeasures.jl" begin
     # Core
     testfile("counts/counts.jl")
+    testfile("probabilities/probabilities.jl")
 
     # Outcome spaces
     testfile("outcome_spaces/outcome_spaces.jl")

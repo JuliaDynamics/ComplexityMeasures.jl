@@ -392,7 +392,7 @@ function missing_outcomes(o::OutcomeSpace, x; all::Bool = true)
     return L - O
 end
 
-function missing_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+function missing_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x; all::Bool = true)
     if all
         probs = allprobabilities(est, o, x)
         L = length(probs)
