@@ -102,13 +102,16 @@ end
     counts(o::OutcomeSpace, x) → cts::Counts{<:Integer, 1}
     counts(x) → cts::Counts{<:Integer, 1}
 
-Count how often each outcome `Ωᵢ ∈ Ω` appears in the (encoded) input data `x`, where
-`Ω = outcome_space(o, x)` (if no [`OutcomeSpace`](@ref) is specified,
-[`CountOccurrences`](@ref) is used).
+Discretize/encode `x` into a finite set of outcomes `Ω` specified by the provided
+[`OutcomeSpace`](@ref) `o`, then count how often each outcome `Ωᵢ ∈ Ω` (i.e.
+each "discretized value", or "encoded symbol") appears.
 
 Returns a [`Counts`](@ref) instance where the marginals are labelled with the outcomes,
-so that it is easy to trace what is being counted. If you need both the counts and
-the corresponding outcomes explicitly, use [`counts_and_outcomes`](@ref).
+so that it is easy to trace what is being counted. Use [`outcomes`](@ref) on the
+resulting [`Counts`](@ref) to get these explicitly. Alternatively, us
+[`counts_and_outcomes`](@ref) to get both in one operation.
+
+If no [`OutcomeSpace`](@ref) is specified, then [`CountOccurrences`](@ref) is used.
 
 ## Description
 
@@ -164,16 +167,15 @@ function counts_and_outcomes(o::OutcomeSpace, x)
         cts::Counts = counts(o, x)
         return cts, outcomes(cts)
     end
-    throw(ArgumentError("`counts_and_outcomes` not implemented for outcome space $(typeof(o))."))
+    s = "`counts_and_outcomes` not implemented for outcome space $(typeof(o))."
+    throw(ArgumentError(s))
 end
 
 """
-    allcounts(o::OutcomeSpace, x::Array_or_SSSet) → (cts::Vector{Int}, Ω::Vector)
+    allcounts(o::OutcomeSpace, x::Array_or_SSSet) → cts::Counts{<:Integer, 1}
 
 Like [`counts`](@ref), but ensures that *all* outcomes `Ωᵢ ∈ Ω`,
 where `Ω = outcome_space(o, x)`), are included.
-
-Returns the `cts` and `Ω` as a tuple where `length(cts) == length(Ω)`.
 """
 function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
     cts, outs = counts_and_outcomes(o, x)
@@ -190,9 +192,9 @@ function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
 end
 
 """
-    allcounts_and_outcomes(o::OutcomeSpace, x) → (cts::Vector{Int}, Ω::Vector)
+    allcounts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts{<:Integer, 1}, Ω::Vector)
 
-Like [`allcounts`](@ref), but also returns the outcomes explicitly.
+Like [`allcounts`](@ref), but also returns the outcomes `Ω` explicitly.
 """
 function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
     cts::Counts = allcounts(o, x)

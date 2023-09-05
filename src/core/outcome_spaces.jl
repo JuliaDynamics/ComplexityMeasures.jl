@@ -17,6 +17,9 @@ while each outcome is called a "symbol" or an "event".
 
 An outcome space also defines a set of rules for mapping input data to
 to each outcome ``\\omega_i`` (i.e. [encoding](@ref encodings)/discretizing).
+Some [`OutcomeSpace`](@ref)s first apply a transformation, e.g. a delay embedding, to
+the data before discretizing/encoding, while other [`OutcomeSpace`](@ref)s
+discretize/encode the data directly.
 
 ## Implementations
 
