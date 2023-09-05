@@ -2,7 +2,7 @@ cd(@__DIR__)
 using ComplexityMeasures
 # Temporarily needed until new minor version of DimensionalData.jl is available
 # (current version is 0.24.14)
-using Pkg; Pkg.add(url="https://github.com/rafaqz/DimensionalData.jl#main")
+using Pkg; Pkg.develop(url="https://github.com/rafaqz/DimensionalData.jl#main")
 
 # Convert tutorial file to markdown
 import Literate
