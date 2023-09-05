@@ -162,6 +162,15 @@ function outcomes(c::Counts{<:Integer, N}, idxs) where N
     map(i -> c.cts.dims[i].val.data, tuple(idxs...))
 end
 
+"""
+    counts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts, Ω)
+
+Like [`counts`](@ref), but also return the outcomes `Ω` explicitly. `Ω[i]` is the
+outcome corresponding to the count `cts[i]`.
+
+The element type of `Ω` depends on the estimator. `Ω` is a subset of the
+[`outcome_space`](@ref) of `o`.
+"""
 function counts_and_outcomes(o::OutcomeSpace, x)
     if is_counting_based(o)
         cts::Counts = counts(o, x)
