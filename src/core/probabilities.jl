@@ -256,12 +256,14 @@ end
 
 
 """
-    probabilities_and_outcomes(est, x)
+    probabilities_and_outcomes([est::ProbabilitiesEstimator],
+        o::OutcomeSpace, x) → (probs::Probabilities, Ω)
 
-Return `probs, outs`, where `probs = probabilities(est, x)` and
-`outs[i]` is the outcome with probability `probs[i]`.
-The element type of `outs` depends on the estimator.
-`outs` is a subset of the [`outcome_space`](@ref) of `est`.
+Like [`probabilities`](@ref), but also return the outcomes `Ω` explicitly. `Ω[i]` is the
+outcome corresponding to the probabilities `probs[i]`.
+
+The element type of `Ω` depends on the estimator. `Ω` is a subset of the
+[`outcome_space`](@ref) of `o`.
 
 See also [`outcomes`](@ref), [`total_outcomes`](@ref).
 """
