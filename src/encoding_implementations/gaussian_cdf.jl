@@ -136,7 +136,7 @@ function encode(encoding::GaussianCDFEncoding{m}, x::AbstractVector) where m
     return ω
 end
 
-function decode(encoding::GaussianCDFEncoding, ω::Int)
+function decode(encoding::GaussianCDFEncoding, ω::Integer)
     cidxs = Tuple(encoding.cartesian_indices[ω])
     return [decode(encoding.binencoder, cᵢ) for cᵢ in cidxs]
 end

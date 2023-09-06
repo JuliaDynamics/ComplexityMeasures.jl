@@ -31,7 +31,7 @@ inappropriate elements `χ` that cannot be encoded according to `c`.
 function encode end
 
 """
-    decode(c::Encoding, i::Int) -> ω
+    decode(c::Encoding, i::Integer) -> ω
 
 Decode an encoded element `i` into the outcome `ω ∈ Ω` it corresponds to.
 

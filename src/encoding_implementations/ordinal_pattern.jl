@@ -91,7 +91,7 @@ end
 # I couldn't find any efficient algorithm in the literature for converting
 # between factorial number system representations and Lehmer codes, so we'll just have to
 # use this naive approach for now. It is probably possible to do this in a faster way.
-function decode(::OrdinalPatternEncoding{m}, s::Int) where {m}
+function decode(::OrdinalPatternEncoding{m}, s::Integer) where {m}
     # Convert integer to its factorial number representation. Each factorial number
     # corresponds to a unique permutation of the numbers `1, 2, ..., m`.
     f::SVector{m, Int} = base10_to_factorial(s - 1, m) # subtract 1 because we add 1 above

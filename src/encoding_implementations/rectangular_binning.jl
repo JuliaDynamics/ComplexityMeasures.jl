@@ -229,7 +229,7 @@ function cartesian_bin_index(e::RectangularBinEncoding, point)
     return cartidx
 end
 
-function decode(e::RectangularBinEncoding, bin::Int)
+function decode(e::RectangularBinEncoding, bin::Integer)
     if checkbounds(Bool, e.ci, bin)
         @inbounds cartesian = e.ci[bin]
     else
