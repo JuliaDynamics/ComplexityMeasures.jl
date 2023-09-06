@@ -88,6 +88,10 @@ x = StateSpaceSet(rand(N, m)) # some input dataset
 πs_ts = zeros(Int, N) # length must match length of `x`
 p = probabilities!(πs_ts, est, x)
 ```
+
+## Implements
+
+- [`symbolize`](@ref). Used for encoding time series.
 """
 struct OrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
@@ -347,4 +351,9 @@ Encode relative amplitude information of the elements of `a`.
 """
 function AAPE(x, A::Real = 0.5, m::Int = length(x))
     (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
+end
+
+function symbolize(o::OrdinalPatterns{m}, x::AbstractVector) where {m}
+    emb = embed(x, m, o.τ).data
+    return encode.(Ref(o.encoding), emb)
 end

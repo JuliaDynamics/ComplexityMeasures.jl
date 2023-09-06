@@ -55,6 +55,10 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
     categories representing "outliers" both above and below the mean are represented,
     not only values close to the mean.
 
+## Implements
+
+- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
+
 For a version of this estimator that can be used on high-dimensional arrays, see
 [`SpatialDispersion`](@ref).
 """
@@ -66,26 +70,6 @@ Base.@kwdef struct Dispersion{S <: Encoding} <: CountBasedOutcomeSpace
     check_unique::Bool = false
 end
 
-# A helper function that makes sure the algorithm doesn't crash when input contains
-# a singular value.
-function symbolize(est::Dispersion, x)
-    σ = std(x)
-    μ = mean(x)
-    ENCODING_TYPE = est.encoding
-    encoding = ENCODING_TYPE(; σ, μ, c = est.c)
-
-    if est.check_unique
-        if length(unique(x)) == 1
-            symbols = repeat([1], length(x))
-        else
-            symbols = encode.(Ref(encoding), x)
-        end
-    else
-        symbols = encode.(Ref(encoding), x)
-    end
-
-    return symbols::Vector{Int}
-end
 
 function counts(o::Dispersion, x::AbstractVector{<:Real})
     N = length(x)
@@ -111,4 +95,25 @@ total_outcomes(est::Dispersion)::Int = est.c ^ est.m
 function encoded_space_cardinality(o::Dispersion, x)
     N = length(x)
     return N - (o.m - 1)*o.τ
+end
+
+function symbolize(est::Dispersion, x)
+    σ = std(x)
+    μ = mean(x)
+    ENCODING_TYPE = est.encoding
+    encoding = ENCODING_TYPE(; σ, μ, c = est.c)
+
+    # A helper function that makes sure the algorithm doesn't crash when input contains
+    # a singular value.
+    if est.check_unique
+        if length(unique(x)) == 1
+            symbols = repeat([1], length(x))
+        else
+            symbols = encode.(Ref(encoding), x)
+        end
+    else
+        symbols = encode.(Ref(encoding), x)
+    end
+
+    return symbols::Vector{Int}
 end

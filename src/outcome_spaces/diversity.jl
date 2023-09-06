@@ -31,6 +31,10 @@ Diversity probabilities are computed as follows.
 
 The outcome space for `Diversity` is the bins of the `[-1, 1]` interval,
 and the return configuration is the same as in [`ValueHistogram`](@ref) (left bin edge).
+
+## Implements
+
+- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
 Base.@kwdef struct Diversity <: CountBasedOutcomeSpace
     m::Int = 2
@@ -66,4 +70,16 @@ cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt
 function encoding_for_diversity(nbins::Int)
     binning = FixedRectangularBinning((range(-1.0, nextfloat(1.0); length = nbins+1),))
     return RectangularBinEncoding(binning)
+end
+
+function symbolize(o::Diversity, x::AbstractVector{T}) where T
+    τs = 0:o.τ:(o.m - 1)*o.τ
+    Y = genembed(x, τs)
+    ds = zeros(Float64, length(Y) - 1)
+    @inbounds for i in 1:(length(Y)-1)
+        ds[i] = cosine_similarity(Y[i], Y[i+1])
+    end
+    # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval
+    rbc = encoding_for_diversity(o.nbins)
+    return encode.(Ref(rbc), ds)
 end

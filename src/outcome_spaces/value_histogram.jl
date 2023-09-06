@@ -35,6 +35,10 @@ returns the outcomes in the same array format as the underlying binning
 
 For [`FixedRectangularBinning`](@ref) the [`outcome_space`](@ref) is well-defined from the
 binning, but for [`RectangularBinning`](@ref) input `x` is needed as well.
+
+## Implements
+
+- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
 struct ValueHistogram{B<:AbstractBinning} <: CountBasedOutcomeSpace
     binning::B
@@ -65,4 +69,54 @@ end
 
 function outcome_space(est::ValueHistogram{<:FixedRectangularBinning})
     return outcome_space(RectangularBinEncoding(est.binning))
+end
+
+function symbolize(o::ValueHistogram{<:FixedRectangularBinning{D}}, x::AbstractVector) where D
+    verify_input(o.binning, x)
+    # range = first(o.binning.ranges)
+    # ϵmin, ϵmax = minimum(range) - 100eps(), maximum(range) + 100eps()
+    # @show ϵmin, ϵmax, o.binning.ranges[1]
+    # N = length(range)
+    # f = FixedRectangularBinning(ϵmin, ϵmax, N, 1)
+    encoder = RectangularBinEncoding(o.binning)
+    # TODO: should we warn if points outside the binning are considered? Probably not,
+    # since being outside the binning is a valid state.
+    return encode.(Ref(encoder), x)
+end
+
+function symbolize(o::ValueHistogram{<:FixedRectangularBinning}, x::AbstractStateSpaceSet{D}) where D
+    verify_input(o.binning, x)
+    encoder = RectangularBinEncoding(o.binning)
+    return encode.(Ref(encoder), x.data)
+end
+
+function symbolize(o::ValueHistogram{<:RectangularBinning}, x::AbstractVector{<:Real})
+    encoder = RectangularBinEncoding(o.binning, x)
+    return encode.(Ref(encoder), x)
+end
+
+function symbolize(o::ValueHistogram{<:RectangularBinning}, x::AbstractStateSpaceSet{D}) where D
+    encoder = RectangularBinEncoding(o.binning, x)
+    return encode.(Ref(encoder), x.data)
+end
+
+# Some input checks
+#----------------------------------------------------------------
+function verify_input(f::FixedRectangularBinning, x::AbstractStateSpaceSet{D}) where D
+    if length(f.ranges) != D
+        l = length(f.ranges)
+        s = "The number of ranges for the `FixedRectangularBinning` is $l, but the input"*
+            " `StateSpaceSet` is $D-dimensional. Please provide a "*
+                "`FixedRectangularBinning` with $D ranges."
+        throw(DimensionMismatch(s))
+    end
+end
+function verify_input(f::FixedRectangularBinning, x::AbstractVector)
+    if length(f.ranges) != 1
+        l = length(f.ranges)
+        s = "The number of ranges for the `FixedRectangularBinning` is $l, but the "*
+            " dimension is 1-dimensional (a vector). Please provide a "*
+                "`FixedRectangularBinning` with only 1 range."
+        throw(DimensionMismatch(s))
+    end
 end
