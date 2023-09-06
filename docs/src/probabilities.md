@@ -145,5 +145,6 @@ GaussianCDFEncoding
 RectangularBinEncoding
 RelativeMeanEncoding
 RelativeFirstDifferenceEncoding
+UniqueElementsEncoding
 CombinationEncoding
 ```
