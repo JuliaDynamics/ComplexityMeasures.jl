@@ -8,7 +8,7 @@ probests = [
     WeightedOrdinalPatterns(),
     WaveletOverlap(),
     PowerSpectrum(),
-    ValueHistogram(RectangularBinning(3)),
+    ValueBinning(RectangularBinning(3)),
     Diversity()
 ]
 h = Shannon()

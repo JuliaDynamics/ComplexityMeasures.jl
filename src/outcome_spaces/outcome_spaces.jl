@@ -1,5 +1,5 @@
 include("unique_elements.jl")
-include("value_histogram.jl")
+include("value_binning.jl")
 include("symbolic_permutation.jl")
 include("kernel_density.jl")
 include("power_spectrum.jl")

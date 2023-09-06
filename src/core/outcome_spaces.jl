@@ -26,7 +26,7 @@ discretize/encode the data directly.
 | Outcome space                           | Principle                    | Input data                | Counting-compatible |
 | :-------------------------------------- | :--------------------------- | :------------------------ | :------------------ |
 | [`UniqueElements`](@ref)                | Count of unique elements     | `Any`                     | ✔                  |
-| [`ValueHistogram`](@ref)                | Binning (histogram)          | `Vector`, `StateSpaceSet` | ✔                  |
+| [`ValueBinning`](@ref)                  | Binning (histogram)          | `Vector`, `StateSpaceSet` | ✔                  |
 | [`TransferOperator`](@ref)              | Binning (transfer operator)  | `Vector`, `StateSpaceSet` | ✖                  |
 | [`NaiveKernel`](@ref)                   | Kernel density estimation    | `StateSpaceSet`           | ✖                  |
 | [`OrdinalPatterns`](@ref)               | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✔                  |
@@ -61,7 +61,7 @@ There are two main types of outcome spaces.
     particular outcome ``\\omega_i``. These outcome spaces use
     [`encode`](@ref) to discretize the input data. Examples are
     [`OrdinalPatterns`](@ref) (which encodes input data into ordinal patterns) or
-    [`ValueHistogram`](@ref) (which discretizes points onto a regular grid).
+    [`ValueBinning`](@ref) (which discretizes points onto a regular grid).
     The table below lists which outcome spaces are counting compatible.
 - Non-counting compatible outcome spaces have no well-defined way of counting explicitly
     how often each point in the input data is mapped to a particular outcome ``\\omega_i``.
@@ -84,7 +84,7 @@ is based on counting.
 
 Some outcome space models can deduce ``\\Omega`` without knowledge of the input, such as
 [`OrdinalPatterns`](@ref). Other outcome spaces require knowledge of the input data
-for concretely specifying ``\\Omega``, such as [`ValueHistogram`](@ref) with
+for concretely specifying ``\\Omega``, such as [`ValueBinning`](@ref) with
 [`RectangularBinning`](@ref). If `o` is some outcome space model and `x` some input data, then
 [`outcome_space`](@ref)`(o, x)` returns the possible outcomes ``\\Omega``. To get the
 cardinality of ``\\Omega``, use [`total_outcomes`](@ref).

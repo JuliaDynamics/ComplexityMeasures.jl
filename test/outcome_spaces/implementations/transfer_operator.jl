@@ -37,6 +37,6 @@ binnings = [
     @test probabilities(o, D) isa Probabilities
     @test probabilities_and_outcomes(o, D) isa Tuple{Probabilities, Vector{SVector{2, Float64}}}
 
-    # Test that gives approximately same entropy as ValueHistogram:
-    abs(information(TransferOperator(b), D) - information(ValueHistogram(b), D) ) < 0.1 # or something like that
+    # Test that gives approximately same entropy as ValueBinning:
+    abs(information(TransferOperator(b), D) - information(ValueBinning(b), D) ) < 0.1 # or something like that
 end

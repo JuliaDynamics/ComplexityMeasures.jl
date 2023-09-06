@@ -15,12 +15,12 @@ using Random: Xoshiro
     @test information_normalized(PlugIn(s), o1, x) == information_normalized(s, o1, x)
 
     # entropy wrapper function
-    @test entropy(Shannon(MathConstants.e), ValueHistogram(4), x) ==
-        information(Shannon(MathConstants.e), ValueHistogram(4), x)
+    @test entropy(Shannon(MathConstants.e), ValueBinning(4), x) ==
+        information(Shannon(MathConstants.e), ValueBinning(4), x)
 
     y = rand(50)
-    @test entropy(Jackknife(), ValueHistogram(4), y) ==
-        information(Jackknife(), ValueHistogram(4), y)
+    @test entropy(Jackknife(), ValueBinning(4), y) ==
+        information(Jackknife(), ValueBinning(4), y)
 end
 
 @testset "info interface: errors" begin

@@ -1,29 +1,29 @@
-export ValueHistogram, VisitationFrequency
+export ValueBinning, ValueHistogram, VisitationFrequency
 # Binnings are defined in the encoding folder!
 
 """
-    ValueHistogram(b::AbstractBinning) <: OutcomeSpace
+    ValueBinning(b::AbstractBinning) <: OutcomeSpace
 
 An [`OutcomeSpace`](@ref) based on binning the values of the data as dictated by
 the binning scheme `b` and formally computing their histogram, i.e.,
 the frequencies of points in the bins. An alias to this is `VisitationFrequency`.
 Available binnings are subtypes of [`AbstractBinning`](@ref).
 
-The `ValueHistogram` estimator has a linearithmic time complexity
+The `ValueBinning` estimator has a linearithmic time complexity
 (`n log(n)` for `n = length(x)`) and a linear space complexity (`l` for `l = dimension(x)`).
 This allows computation of probabilities (histograms) of high-dimensional
 datasets and with small box sizes `ε` without memory overflow and with maximum performance.
 For performance reasons,
 the probabilities returned never contain 0s and are arbitrarily ordered.
 
-    ValueHistogram(ϵ::Union{Real,Vector})
+    ValueBinning(ϵ::Union{Real,Vector})
 
 A convenience method that accepts same input as [`RectangularBinning`](@ref)
 and initializes this binning directly.
 
 ## Outcomes
 
-The outcome space for `ValueHistogram` is the unique bins constructed
+The outcome space for `ValueBinning` is the unique bins constructed
 from `b`. Each bin is identified by its left (lowest-value) corner,
 because bins are always left-closed-right-open intervals `[a, b)`.
 The bins are in data units, not integer (cartesian indices units), and
@@ -40,38 +40,45 @@ binning, but for [`RectangularBinning`](@ref) input `x` is needed as well.
 
 - [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
-struct ValueHistogram{B<:AbstractBinning} <: CountBasedOutcomeSpace
+struct ValueBinning{B<:AbstractBinning} <: CountBasedOutcomeSpace
     binning::B
 end
-ValueHistogram(ϵ::Union{Real,Vector}) = ValueHistogram(RectangularBinning(ϵ))
+ValueBinning(ϵ::Union{Real,Vector}) = ValueBinning(RectangularBinning(ϵ))
 
 """
     VisitationFrequency
 
-An alias for [`ValueHistogram`](@ref).
+An alias for [`ValueBinning`](@ref).
 """
-const VisitationFrequency = ValueHistogram
+const VisitationFrequency = ValueBinning
 
-outcomes(est::ValueHistogram, x) = last(counts_and_outcomes(est, x))
+"""
+    ValueHistogram
+
+An alias for [`ValueBinning`](@ref).
+"""
+const ValueHistogram = ValueBinning
+
+outcomes(est::ValueBinning, x) = last(counts_and_outcomes(est, x))
 
 # --------------------------------------------------------------------------------
-# The source code of `ValueHistogram` operates as rather simple calls to
+# The source code of `ValueBinning` operates as rather simple calls to
 # the underlying encoding and the `fasthist`/`fasthist!` functions.
 # See the `encoding_implementations/rectangular_binning.jl` file for more.
 # --------------------------------------------------------------------------------
-function counts(est::ValueHistogram, x)
+function counts(est::ValueBinning, x)
     return counts(RectangularBinEncoding(est.binning, x), x)
 end
 
-function outcome_space(est::ValueHistogram, x)
+function outcome_space(est::ValueBinning, x)
     return outcome_space(RectangularBinEncoding(est.binning, x))
 end
 
-function outcome_space(est::ValueHistogram{<:FixedRectangularBinning})
+function outcome_space(est::ValueBinning{<:FixedRectangularBinning})
     return outcome_space(RectangularBinEncoding(est.binning))
 end
 
-function symbolize(o::ValueHistogram{<:FixedRectangularBinning{D}}, x::AbstractVector) where D
+function symbolize(o::ValueBinning{<:FixedRectangularBinning{D}}, x::AbstractVector) where D
     verify_input(o.binning, x)
     encoder = RectangularBinEncoding(o.binning)
     # TODO: should we warn if points outside the binning are considered? Probably not,
@@ -79,18 +86,18 @@ function symbolize(o::ValueHistogram{<:FixedRectangularBinning{D}}, x::AbstractV
     return encode.(Ref(encoder), x)
 end
 
-function symbolize(o::ValueHistogram{<:FixedRectangularBinning}, x::AbstractStateSpaceSet{D}) where D
+function symbolize(o::ValueBinning{<:FixedRectangularBinning}, x::AbstractStateSpaceSet{D}) where D
     verify_input(o.binning, x)
     encoder = RectangularBinEncoding(o.binning)
     return encode.(Ref(encoder), x.data)
 end
 
-function symbolize(o::ValueHistogram{<:RectangularBinning}, x::AbstractVector{<:Real})
+function symbolize(o::ValueBinning{<:RectangularBinning}, x::AbstractVector{<:Real})
     encoder = RectangularBinEncoding(o.binning, x)
     return encode.(Ref(encoder), x)
 end
 
-function symbolize(o::ValueHistogram{<:RectangularBinning}, x::AbstractStateSpaceSet{D}) where D
+function symbolize(o::ValueBinning{<:RectangularBinning}, x::AbstractStateSpaceSet{D}) where D
     encoder = RectangularBinEncoding(o.binning, x)
     return encode.(Ref(encoder), x.data)
 end

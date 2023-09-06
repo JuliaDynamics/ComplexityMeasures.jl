@@ -14,7 +14,7 @@ end
     # should be. Bins 1 2 and 3 have one entry, bin 4 has zero, bin 5
     # has two entries, bins 6 7 8 have zero, bin 9 has 1 and bin 10 zero
     x = [0.05, 0.15, 0.25, 0.45, 0.46, 0.85]
-    o = ValueHistogram(FixedRectangularBinning((0:0.1:1,)))
+    o = ValueBinning(FixedRectangularBinning((0:0.1:1,)))
     correct = [1, 1, 1, 0, 2, 0, 0, 0, 1, 0]
     correct = correct ./ sum(correct)
 
@@ -59,7 +59,7 @@ end
             UniqueElements(),
             OrdinalPatterns(m = 3),
             Dispersion(),
-            ValueHistogram(RectangularBinning(3)),
+            ValueBinning(RectangularBinning(3)),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
             @test typeof(os[i]) <: ComplexityMeasures.CountBasedOutcomeSpace

@@ -12,7 +12,7 @@ rng = MersenneTwister(1234)
         OrdinalPatterns(m = 3),
         Dispersion(),
         Diversity(),
-        ValueHistogram(RectangularBinning(3)),
+        ValueBinning(RectangularBinning(3)),
     ]
     @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
         est = AddConstant()

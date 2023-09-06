@@ -15,7 +15,7 @@ os_count = [
     OrdinalPatterns(m = 3),
     Dispersion(),
     Diversity(),
-    ValueHistogram(RectangularBinning(3)),
+    ValueBinning(RectangularBinning(3)),
 ]
 
 x = rand(rng, 100)

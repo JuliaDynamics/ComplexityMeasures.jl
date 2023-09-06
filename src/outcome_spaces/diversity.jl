@@ -30,7 +30,7 @@ Diversity probabilities are computed as follows.
 ## Outcome space
 
 The outcome space for `Diversity` is the bins of the `[-1, 1]` interval,
-and the return configuration is the same as in [`ValueHistogram`](@ref) (left bin edge).
+and the return configuration is the same as in [`ValueBinning`](@ref) (left bin edge).
 
 ## Implements
 

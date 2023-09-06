@@ -58,7 +58,7 @@ We tried our best to keep pre-2.0 functions working and throw deprecation warnin
 If we missed code that should be working, please let us know by opening an issue.
 
 For example, `geninformation(x::Array_or_SSSet, ε::Real; q, base)` is deprecated
-in favor of `information(Renyi(q, base), ValueHistogram(ε), x)`.
+in favor of `information(Renyi(q, base), ValueBinning(ε), x)`.
 """
 
 if display_update

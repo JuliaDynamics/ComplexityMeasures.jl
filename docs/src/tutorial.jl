@@ -45,7 +45,7 @@
 # probabilities to each outcome $p(\omega)$, such that $p(\Omega)=1$. $\omega$ are called
 # _outcomes_ or _events_.
 # In code, outcome spaces are subtypes of [`OutcomeSpace`](@ref).
-# For example, one outcome space is the [`ValueHistogram`](@ref), which is the most
+# For example, one outcome space is the [`ValueBinning`](@ref), which is the most
 # commonly known outcome space, and corresponds to discretizing data by putting the data
 # values into bins of a specific size.
 
@@ -53,7 +53,7 @@ using ComplexityMeasures
 
 x = randn(10_000)
 ε = 0.1 # bin width
-o = ValueHistogram(ε)
+o = ValueBinning(ε)
 o isa OutcomeSpace
 
 # Such outcome spaces may be given to [`probabilities`](@ref) to estimate the corresponding

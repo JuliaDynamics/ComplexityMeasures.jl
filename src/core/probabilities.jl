@@ -198,7 +198,7 @@ are estimated from the counts using some [`ProbabilitiesEstimator`](@ref) (first
 
 Due to performance optimizations, whether the returned probabilities
 contain `0`s as entries or not depends on the outcome space.
-E.g., in [`ValueHistogram`](@ref) `0`s are skipped, while in
+E.g., in [`ValueBinning`](@ref) `0`s are skipped, while in
 [`PowerSpectrum`](@ref) `0` are not skipped, because we get them for free.
 
 Use [`allprobabilities`](@ref)/[`allprobabilities_and_outcomes`](@ref) to guarantee that
@@ -209,7 +209,7 @@ zero probabilities are also returned (may be slower).
 ```julia
 x = randn(500)
 ps = probabilities(OrdinalPatterns(m = 3), x)
-ps = probabilities(ValueHistogram(RectangularBinning(5)), x)
+ps = probabilities(ValueBinning(RectangularBinning(5)), x)
 ps = probabilities(WaveletOverlap(), x)
 ```
 
@@ -225,7 +225,7 @@ ps = probabilities(RelativeAmount(OrdinalPatterns(m = 3)), x)
 
 # Some more sophisticated ways of estimating probabilities:
 ps = probabilities(BayesianRegularization(OrdinalPatterns(m = 3)), x)
-ps = probabilities(Shrinkage(ValueHistogram(RectangularBinning(5))), x)
+ps = probabilities(Shrinkage(ValueBinning(RectangularBinning(5))), x)
 
 # Only the `RelativeAmount` estimator works with non-counting based outcome spaces,
 # like for example `WaveletOverlap`.

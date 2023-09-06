@@ -41,7 +41,7 @@ This will use the "naive" [`PlugIn`](@ref) estimator for the measure, and the "n
 
 ```julia
 x = randn(100) # some input data
-o = ValueHistogram(RectangularBinning(5)) # a 5-bin histogram outcome space
+o = ValueBinning(RectangularBinning(5)) # a 5-bin histogram outcome space
 h_s = information(Shannon(), o, x)
 ```
 
@@ -69,7 +69,7 @@ probabilites estimators will only work with counting-compatible [`OutcomeSpace`]
 
 ```julia
 x = randn(100)
-o = ValueHistogram(RectangularBinning(5))
+o = ValueBinning(RectangularBinning(5))
 
 # Estimate Shannon entropy estimation using various dedicated estimators
 h_s = information(MillerMadow(Shannon()), RelativeAmount(), o, x)

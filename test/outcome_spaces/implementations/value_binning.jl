@@ -31,7 +31,7 @@ using Random
 
     for bin in binnings
         @testset "bin isa $(nameof(typeof(bin)))" begin
-            o = ValueHistogram(bin)
+            o = ValueBinning(bin)
             out = outcome_space(o, x)
             @test length(out) == n^2
             p = probabilities(o, x)
@@ -67,15 +67,15 @@ using Random
         n = 10 # boxes cover 0 - 1 in steps of slightly more than 0.1
         ε = nextfloat(0.1) # this guarantees that we get the same as the `n` above!
         for bin in (RectangularBinning(n), RectangularBinning(ε))
-            p = probabilities(ValueHistogram(bin), x)
+            p = probabilities(ValueBinning(bin), x)
             @test length(p) == 10
             @test all(e -> 0.09 ≤ e ≤ 0.11, p)
         end
     end
 
     @testset "convenience" begin
-        @test ValueHistogram(n) == ValueHistogram(RectangularBinning(n))
-        @test ValueHistogram(ε) == ValueHistogram(RectangularBinning(ε))
+        @test ValueBinning(n) == ValueBinning(RectangularBinning(n))
+        @test ValueBinning(ε) == ValueBinning(RectangularBinning(ε))
     end
 
 end

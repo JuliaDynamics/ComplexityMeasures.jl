@@ -31,7 +31,7 @@ UniqueElements
 ### Histograms
 
 ```@docs
-ValueHistogram
+ValueBinning
 AbstractBinning
 RectangularBinning
 FixedRectangularBinning
