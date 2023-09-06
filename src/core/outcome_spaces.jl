@@ -27,15 +27,15 @@ discretize/encode the data directly.
 | :-------------------------------------- | :--------------------------- | :------------------------ | :------------------ |
 | [`UniqueElements`](@ref)                | Count of unique elements     | `Any`                     | ✔                  |
 | [`ValueBinning`](@ref)                  | Binning (histogram)          | `Vector`, `StateSpaceSet` | ✔                  |
-| [`TransferOperator`](@ref)              | Binning (transfer operator)  | `Vector`, `StateSpaceSet` | ✖                  |
-| [`NaiveKernel`](@ref)                   | Kernel density estimation    | `StateSpaceSet`           | ✖                  |
 | [`OrdinalPatterns`](@ref)               | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✔                  |
-| [`WeightedOrdinalPatterns`](@ref)       | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
-| [`AmplitudeAwareOrdinalPatterns`](@ref) | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
 | [`SpatialOrdinalPatterns`](@ref)        | Ordinal patterns in space    | `Array`                   | ✔                  |
 | [`Dispersion`](@ref)                    | Dispersion patterns          | `Vector`                  | ✔                  |
 | [`SpatialDispersion`](@ref)             | Dispersion patterns in space | `Array`                   | ✔                  |
-| [`Diversity`](@ref)                     | Cosine similarity            | `Vector`                  | ✔                  |
+| [`CosineSimilarityBinning`](@ref)                     | Cosine similarity            | `Vector`                  | ✔                  |
+| [`TransferOperator`](@ref)              | Binning (transfer operator)  | `Vector`, `StateSpaceSet` | ✖                  |
+| [`NaiveKernel`](@ref)                   | Kernel density estimation    | `StateSpaceSet`           | ✖                  |
+| [`WeightedOrdinalPatterns`](@ref)       | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
+| [`AmplitudeAwareOrdinalPatterns`](@ref) | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
 | [`WaveletOverlap`](@ref)                | Wavelet transform            | `Vector`                  | ✖                  |
 | [`PowerSpectrum`](@ref)                 | Fourier transform            | `Vector`                  | ✖                  |
 
