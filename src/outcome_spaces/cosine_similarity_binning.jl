@@ -1,9 +1,9 @@
 using DelayEmbeddings
 
-export Diversity
+export CosineSimilarityBinning, Diversity
 
 """
-    Diversity(; m::Int, τ::Int, nbins::Int)
+    CosineSimilarityBinning(; m::Int, τ::Int, nbins::Int)
 
 A [`OutcomeSpace`](@ref) based on the cosine similarity [Wang2020](@cite).
 
@@ -14,7 +14,7 @@ The implementation here allows for `τ != 1`, which was not considered in the or
 
 ## Description
 
-Diversity probabilities are computed as follows.
+CosineSimilarityBinning probabilities are computed as follows.
 
 1. From the input time series `x`, using embedding lag `τ` and embedding dimension `m`,
     construct the embedding
@@ -29,20 +29,27 @@ Diversity probabilities are computed as follows.
 
 ## Outcome space
 
-The outcome space for `Diversity` is the bins of the `[-1, 1]` interval,
+The outcome space for `CosineSimilarityBinning` is the bins of the `[-1, 1]` interval,
 and the return configuration is the same as in [`ValueBinning`](@ref) (left bin edge).
 
 ## Implements
 
 - [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
-Base.@kwdef struct Diversity <: CountBasedOutcomeSpace
+Base.@kwdef struct CosineSimilarityBinning <: CountBasedOutcomeSpace
     m::Int = 2
     τ::Int = 1 # Note: the original paper does not allow τ != 1
     nbins::Int = 5
 end
 
-function counts(est::Diversity, x::AbstractVector{T}) where T <: Real
+"""
+    Diversity
+
+An alias to [`CosineSimilarityBinning`](@ref).
+"""
+const Diversity = CosineSimilarityBinning
+
+function counts(est::CosineSimilarityBinning, x::AbstractVector{T}) where T <: Real
     # embed and then calculate cosine similary for each consecutive pair of delay vectors
     τs = 0:est.τ:(est.m - 1)*est.τ
     Y = genembed(x, τs)
@@ -55,10 +62,10 @@ function counts(est::Diversity, x::AbstractVector{T}) where T <: Real
     return counts(rbc, ds)::Counts
 end
 
-outcome_space(est::Diversity) = outcome_space(encoding_for_diversity(est.nbins))
-total_outcomes(est::Diversity) = est.nbins
+outcome_space(est::CosineSimilarityBinning) = outcome_space(encoding_for_diversity(est.nbins))
+total_outcomes(est::CosineSimilarityBinning) = est.nbins
 
-function encoded_space_cardinality(est::Diversity, x::AbstractVector{<:Real})
+function encoded_space_cardinality(est::CosineSimilarityBinning, x::AbstractVector{<:Real})
     n_pts_embedded = length(x) - (est.m - 1)*est.τ
     # Since we consider cosine similarities for consecutive pairs of embedding points,
     # the last point isn't considered for the histogram.
@@ -72,7 +79,7 @@ function encoding_for_diversity(nbins::Int)
     return RectangularBinEncoding(binning)
 end
 
-function symbolize(o::Diversity, x::AbstractVector{T}) where T
+function symbolize(o::CosineSimilarityBinning, x::AbstractVector{T}) where T
     τs = 0:o.τ:(o.m - 1)*o.τ
     Y = genembed(x, τs)
     ds = zeros(Float64, length(Y) - 1)

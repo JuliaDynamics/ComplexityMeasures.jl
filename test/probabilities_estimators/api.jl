@@ -14,7 +14,7 @@ os_count = [
     UniqueElements(),
     OrdinalPatterns(m = 3),
     Dispersion(),
-    Diversity(),
+    CosineSimilarityBinning(),
     ValueBinning(RectangularBinning(3)),
 ]
 

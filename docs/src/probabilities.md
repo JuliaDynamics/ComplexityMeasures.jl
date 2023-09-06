@@ -78,9 +78,10 @@ WaveletOverlap
 PowerSpectrum
 ```
 
-### Diversity
+### Cosine similarity binning
 
 ```@docs
+CosineSimilarityBinning
 Diversity
 ```
 

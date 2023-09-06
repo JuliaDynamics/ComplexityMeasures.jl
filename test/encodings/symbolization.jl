@@ -27,10 +27,10 @@ o = Dispersion()
 @test symbolize(o, x) isa Vector{<:Integer}
 
 # ----------------------------------------------------------------
-# Diversity
+# CosineSimilarityBinning
 # ----------------------------------------------------------------
 x = randn(rng, 100)
-o = Diversity()
+o = CosineSimilarityBinning()
 @test symbolize(o, x) isa Vector{<:Integer}
 
 # ----------------------------------------------------------------

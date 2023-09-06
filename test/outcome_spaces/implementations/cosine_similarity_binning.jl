@@ -5,13 +5,13 @@ x = [1, 2, 13, 7, 9, 5, 4]
 nbins = 10
 m = 3
 τ = 1
-o = Diversity(; nbins, m, τ)
+o = CosineSimilarityBinning(; nbins, m, τ)
 @test probabilities(o, x) == [0.5, 0.5]
 @test round(information_normalized(o, x), digits = 4) == 0.3010
 
 @test total_outcomes(o) == 10
 
-# Diversity divides the interval [-1, 1] into nbins subintervals.
+# CosineSimilarityBinning divides the interval [-1, 1] into nbins subintervals.
 binsize = (1-(-1))/10
 probs, events = probabilities_and_outcomes(o, x)
 

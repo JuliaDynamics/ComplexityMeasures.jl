@@ -9,7 +9,7 @@ probests = [
     WaveletOverlap(),
     PowerSpectrum(),
     ValueBinning(RectangularBinning(3)),
-    Diversity()
+    CosineSimilarityBinning()
 ]
 h = Shannon()
 hests = [

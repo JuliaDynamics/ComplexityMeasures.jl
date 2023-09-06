@@ -11,7 +11,7 @@ rng = MersenneTwister(1234)
         UniqueElements(),
         OrdinalPatterns(m = 3),
         Dispersion(),
-        Diversity(),
+        CosineSimilarityBinning(),
         ValueBinning(RectangularBinning(3)),
     ]
     @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
