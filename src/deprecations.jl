@@ -18,6 +18,8 @@ end
 @deprecate DiscreteEntropyEstimator DiscreteInfoEstimator
 @deprecate MLEntropy PlugIn
 
+@deprecate CountOccurrences UniqueElements
+
 # From before 2.0:
 @deprecate TimeScaleMODWT WaveletOverlap
 function probabilities(x::Vector_or_SSSet, ε::Union{Real, Vector{<:Real}})

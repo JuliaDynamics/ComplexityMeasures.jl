@@ -1,7 +1,7 @@
-export CountOccurrences
+export UniqueElements
 
 """
-    CountOccurrences()
+    UniqueElements()
 
 An [`OutcomeSpace`](@ref) based on straight-forward counting of distinct elements in
 a univariate time series or multivariate dataset. This is the same as giving no
@@ -16,18 +16,18 @@ Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 
 - [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
-struct CountOccurrences <: CountBasedOutcomeSpace end
+struct UniqueElements <: CountBasedOutcomeSpace end
 
-is_counting_based(o::CountOccurrences) = true
-counts(::CountOccurrences, x) = counts(x)
-function counts_and_outcomes(::CountOccurrences, x)
+is_counting_based(o::UniqueElements) = true
+counts(::UniqueElements, x) = counts(x)
+function counts_and_outcomes(::UniqueElements, x)
     z = copy(x)
     cts = fasthist!(z)
     # notice that `z` is now sorted within `frequencies!` so we can skip sorting
     return Counts(cts), unique!(z)
 end
 
-outcome_space(::CountOccurrences, x) = sort!(unique(x))
-probabilities(::CountOccurrences, x) = probabilities(x)
+outcome_space(::UniqueElements, x) = sort!(unique(x))
+probabilities(::UniqueElements, x) = probabilities(x)
 
-symbolize(o::CountOccurrences, x::AbstractVector) = x
+symbolize(o::UniqueElements, x::AbstractVector) = x

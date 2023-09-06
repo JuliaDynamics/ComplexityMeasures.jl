@@ -111,7 +111,7 @@ so that it is easy to trace what is being counted. Use [`outcomes`](@ref) on the
 resulting [`Counts`](@ref) to get these explicitly. Alternatively, us
 [`counts_and_outcomes`](@ref) to get both in one operation.
 
-If no [`OutcomeSpace`](@ref) is specified, then [`CountOccurrences`](@ref) is used.
+If no [`OutcomeSpace`](@ref) is specified, then [`UniqueElements`](@ref) is used.
 
 ## Description
 

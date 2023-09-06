@@ -61,7 +61,7 @@ The [`OutcomeSpace`](@ref) dictates this transformation. This is useful for enco
 time series data.
 
 The length of the returned `s` depends on the [`OutcomeSpace`](@ref). Some outcome
-spaces preserve the input data length (e.g. [`CountOccurrences`](@ref)), while
+spaces preserve the input data length (e.g. [`UniqueElements`](@ref)), while
 some outcome spaces (e.g. [`OrdinalPatterns`](@ref)) do e.g. delay embeddings before
 encoding, so that `length(s) < length(x)`.
 
@@ -73,7 +73,7 @@ If `x` is a `Vector`, then a `Vector{<:Integer}` is returned. If `x` is a
 
 # Concrete implementations
 
-    symbolize(o::CountOccurrences, x::VectorOrStateSpaceSet)
+    symbolize(o::UniqueElements, x::VectorOrStateSpaceSet)
     symbolize(o::OrdinalPatterns, x::VectorOrStateSpaceSet)
     symbolize(o::Dispersion, x::VectorOrStateSpaceSet)
 

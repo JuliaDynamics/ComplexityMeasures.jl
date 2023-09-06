@@ -5,10 +5,10 @@ rng = Xoshiro(1234)
 
 
 # ----------------------------------------------------------------
-# CountOccurrences
+# UniqueElements
 # ----------------------------------------------------------------
 x = randn(rng, 100)
-o = OrdinalPatterns(m = 3)
+o = UniqueElements()
 @test symbolize(o, x) isa Vector{<:Integer}
 
 

@@ -2,7 +2,7 @@ using Test, Random
 rng = MersenneTwister(1234)
 
 x = rand(1:5, 1000)
-o = CountOccurrences()
+o = UniqueElements()
 
 h = information(ChaoShen(Shannon()), o, x)
 @test h isa Real

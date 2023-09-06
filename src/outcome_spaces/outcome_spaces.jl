@@ -1,4 +1,4 @@
-include("count_occurences.jl")
+include("unique_elements.jl")
 include("value_histogram.jl")
 include("symbolic_permutation.jl")
 include("kernel_density.jl")

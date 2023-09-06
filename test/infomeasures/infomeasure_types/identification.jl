@@ -9,8 +9,8 @@
 
 # Maximal for a uniform distribution
 x = [0.1, 0.1, 0.1, 0.1, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4, 0.4]
-@test information_normalized(Identification(), CountOccurrences(), x) ≈ 1.0
+@test information_normalized(Identification(), UniqueElements(), x) ≈ 1.0
 
 # Submaximal for a non-uniform distribution
 y = [0.1, 0.2, 0.2, 0.25, 0.2, 0.351, 0.312, 0.3, 0.3, 0.4, 0.4]
-@test information_normalized(Identification(), CountOccurrences(), y) < 1.0
+@test information_normalized(Identification(), UniqueElements(), y) < 1.0

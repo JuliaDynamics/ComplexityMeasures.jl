@@ -52,7 +52,7 @@ x = [rand(Bool) for _ in 1:10000] # coin toss
 ps = probabilities(x) # gives about [0.5, 0.5] by definition
 h = information(ps) # gives 1, about 1 bit by definition (Shannon entropy by default)
 h = information(Shannon(), ps) # syntactically equivalent to the above
-h = information(Shannon(), CountOccurrences(), x) # syntactically equivalent to above
+h = information(Shannon(), UniqueElements(), x) # syntactically equivalent to above
 h = information(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin toss
 h = information(OrdinalPatterns(;m=3), x) # gives about 2, again by definition
 ```

@@ -11,7 +11,7 @@ end
 
 # Counting-basedoutcome spaces work with any estimator
 os_count = [
-    CountOccurrences(),
+    UniqueElements(),
     OrdinalPatterns(m = 3),
     Dispersion(),
     Diversity(),

@@ -32,7 +32,7 @@ When passed to [`probabilities`](@ref) the output depends on the input data type
     vectors ``\\{ \\bf{x}_i \\}_{i=1}^{N-(m-1)\\tau}``. Then, for each ``\\bf{x}_i``,
     we find its permutation pattern ``\\pi_{i}``. Probabilities are then
     estimated as the frequencies of the encoded permutation symbols
-    by using [`CountOccurrences`](@ref). When giving the resulting probabilities to
+    by using [`UniqueElements`](@ref). When giving the resulting probabilities to
     [`information`](@ref), the original permutation entropy is computed [BandtPompe2002](@cite).
 - **Multivariate data**. If applied to a an `D`-dimensional `StateSpaceSet`,
     then no embedding is constructed, `m` must be equal to `D` and `τ` is ignored.

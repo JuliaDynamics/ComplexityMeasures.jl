@@ -12,7 +12,7 @@ h = Shannon(; base = 2); j = ShannonExtropy(; base = 3)
 
 # Minimized for one-element distributions, where there is total order.
 x = [0.1, 0.1, 0.1]
-est = CountOccurrences()
+est = UniqueElements()
 @test information(ElectronicEntropy(), est, x) == 0.0
 @test information_normalized(ElectronicEntropy(), est, x) == 0.0
 

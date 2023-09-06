@@ -10,7 +10,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
 
     # Outcome spaces
     testfile("outcome_spaces/outcome_spaces.jl")
-    testfile("outcome_spaces/implementations/count_occurrences.jl")
+    testfile("outcome_spaces/implementations/unique_elements.jl")
     testfile("outcome_spaces/implementations/value_histogram.jl")
     testfile("outcome_spaces/implementations/transfer_operator.jl")
     testfile("outcome_spaces/implementations/naive_kernel.jl")

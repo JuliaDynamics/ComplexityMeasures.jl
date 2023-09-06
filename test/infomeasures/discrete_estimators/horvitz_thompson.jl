@@ -2,7 +2,7 @@ using Test, Random
 rng = MersenneTwister(1234)
 
 x = rand(rng, 1:5, 1000)
-pest = CountOccurrences()
+pest = UniqueElements()
 
 h = information(HorvitzThompson(Shannon()), pest, x)
 @test h isa Real

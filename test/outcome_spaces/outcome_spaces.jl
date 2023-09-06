@@ -56,7 +56,7 @@ end
         x = rand(rng, 1:10., 100)
 
         os = [
-            CountOccurrences(),
+            UniqueElements(),
             OrdinalPatterns(m = 3),
             Dispersion(),
             ValueHistogram(RectangularBinning(3)),

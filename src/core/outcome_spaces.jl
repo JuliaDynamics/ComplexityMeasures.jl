@@ -25,7 +25,7 @@ discretize/encode the data directly.
 
 | Outcome space                           | Principle                    | Input data                | Counting-compatible |
 | :-------------------------------------- | :--------------------------- | :------------------------ | :------------------ |
-| [`CountOccurrences`](@ref)              | Count of unique elements     | `Any`                     | ✔                  |
+| [`UniqueElements`](@ref)                | Count of unique elements     | `Any`                     | ✔                  |
 | [`ValueHistogram`](@ref)                | Binning (histogram)          | `Vector`, `StateSpaceSet` | ✔                  |
 | [`TransferOperator`](@ref)              | Binning (transfer operator)  | `Vector`, `StateSpaceSet` | ✖                  |
 | [`NaiveKernel`](@ref)                   | Kernel density estimation    | `StateSpaceSet`           | ✖                  |

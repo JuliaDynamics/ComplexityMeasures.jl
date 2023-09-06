@@ -25,7 +25,7 @@ missing_outcomes
 ### Count occurrences
 
 ```@docs
-CountOccurrences
+UniqueElements
 ```
 
 ### Histograms

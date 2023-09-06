@@ -238,7 +238,7 @@ ps = probabilities(BayesianRegularization(WaveletOverlap()), x) # errors
 Estimate probabilities by using directly counting the elements of `x`, assuming that
 `Ω = sort(unique(x))`, i.e. that the outcome space is the unique elements of `x`.
 This is mostly useful when `x` contains categorical data. It is syntactically equivalent
-to `probabilities(RelativeAmount(), CountOccurrences(), x)`.
+to `probabilities(RelativeAmount(), UniqueElements(), x)`.
 
 See also: [`counts`](@ref), [`probabilities_and_outcomes`](@ref),
 [`allprobabilities`](@ref), [`allprobabilities_and_outcomes`](@ref),
@@ -251,7 +251,7 @@ end
 # outcome space, `counts(o::OutcomeSpace, x)` must be defined.
 
 function probabilities(x)
-    return probabilities(RelativeAmount(), CountOccurrences(), x)
+    return probabilities(RelativeAmount(), UniqueElements(), x)
 end
 
 
