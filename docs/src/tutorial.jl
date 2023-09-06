@@ -2,13 +2,9 @@
 
 # The goal of this tutorial is threefold:
 
-# 1. To convey the _terminology_ used by ComplexityMeasures.jl: key terms, what they mean,
-#   and how they are used within the codebase.
-# 2. To provide a _rough overview_ of the overall features provided by
-#   ComplexityMeasures.jl.
-# 3. To introduce the _main API functions_ of ComplexityMeasures.jl in a single,
-#   self-contained document: how these functions connect to key terms, what are their main
-#   inputs and outputs, and how they are used in realistic scientific scripting.
+# 1. To convey the _terminology_ used by ComplexityMeasures.jl: key terms, what they mean, and how they are used within the codebase.
+# 2. To provide a _rough overview_ of the overall features provided by ComplexityMeasures.jl.
+# 3. To introduce the _main API functions_ of ComplexityMeasures.jl in a single, self-contained document: how these functions connect to key terms, what are their main inputs and outputs, and how they are used in realistic scientific scripting.
 
 # !!! note
 #     The documentation and exposition of ComplexityMeasures.jl is inspired by chapter 5 of
@@ -126,7 +122,7 @@ probsx = allprobabilities(o, x)
 probsy = allprobabilities(o, y)
 outsx = outsy = outcome_space(o)
 
-hcat(probsx, probsy, outsx)
+hcat(outsx, probsx, probsy)
 
 # The number of _possible_ outcomes, i.e., the cardinality of the outcome space, can always
 # be found using [`total_outcomes`](@ref):
@@ -142,7 +138,8 @@ total_outcomes(o)
 
 countsy = counts(o, y)
 probsy = probabilities(o, y)
-hcat(countsy, countsy ./ sum(countsy), probsy)
+outsy = outcomes(probsy)
+hcat(outsy, countsy, countsy ./ sum(countsy), probsy)
 
 # By definition, columns 2 and 3 are identical. However, there are other ways to estimate
 # probabilities that may account for biases in counting outcomes from finite data.
@@ -155,7 +152,7 @@ probsy_bayes = probabilities(BayesianRegularization(), o, y)
 
 probsy_bayes .- probsy
 
-# While the corrections of [`BayesianRegularization`](@ref) are small, they are
+# While the corrections of [`BayesianRegularization`](@ref) are small in this case, they are
 # nevertheless measurable.
 #
 # When calling [`probabilities`](@ref) only with an outcome space instance and some input
