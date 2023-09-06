@@ -73,11 +73,6 @@ end
 
 function symbolize(o::ValueHistogram{<:FixedRectangularBinning{D}}, x::AbstractVector) where D
     verify_input(o.binning, x)
-    # range = first(o.binning.ranges)
-    # ϵmin, ϵmax = minimum(range) - 100eps(), maximum(range) + 100eps()
-    # @show ϵmin, ϵmax, o.binning.ranges[1]
-    # N = length(range)
-    # f = FixedRectangularBinning(ϵmin, ϵmax, N, 1)
     encoder = RectangularBinEncoding(o.binning)
     # TODO: should we warn if points outside the binning are considered? Probably not,
     # since being outside the binning is a valid state.
