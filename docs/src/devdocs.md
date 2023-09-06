@@ -25,6 +25,8 @@ If your new outcome space is counting-based, then
     `DimArray`). Follow existing implementations for guidelines, and ensure that
     the outcomes are the dimension labels on the array. You'll then get
     [`counts_and_outcomes`](@ref) for free.
+6. Implement dispatch for [`symbolize`](@ref). This will ensure that the outcome space
+    also works automatically with any discrete estimators in CausalityTools.jl.
 
 If your new outcome space is not counting-based, then
 
