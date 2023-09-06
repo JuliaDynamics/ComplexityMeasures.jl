@@ -55,12 +55,12 @@ unique element, then a `InexactError` is thrown when trying to compute probabili
     categories representing "outliers" both above and below the mean are represented,
     not only values close to the mean.
 
+For a version of this estimator that can be used on high-dimensional arrays, see
+[`SpatialDispersion`](@ref).
+
 ## Implements
 
 - [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
-
-For a version of this estimator that can be used on high-dimensional arrays, see
-[`SpatialDispersion`](@ref).
 """
 Base.@kwdef struct Dispersion{S <: Encoding} <: CountBasedOutcomeSpace
     encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`
