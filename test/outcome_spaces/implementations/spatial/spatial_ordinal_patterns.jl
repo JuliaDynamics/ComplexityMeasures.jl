@@ -87,6 +87,7 @@ x = rand(100, 100)
 stencil = [1 1; 1 1];
 est = SpatialOrdinalPatterns(stencil, x)
 hsp = information_normalized(Renyi(), est, x)
+println(est)
 @test round(hsp, digits = 2) == 1.00
 
 @test outcome_space(est) == outcome_space(OrdinalPatterns(m = 4))
