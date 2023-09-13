@@ -2,13 +2,20 @@ using ComplexityMeasures
 using Test
 using Random
 
+@testset "Custom show method for SpatialOrdinalPatterns" begin
+    stencil = CartesianIndex.([(0,0), (1,0), (0,1), (1,1)])
+    est = SpatialOrdinalPatterns(stencil, rand(10, 10))
+
+    out = repr(est)
+    expected_line = "Spatial symbolic permutation probabilities estimatorof order 4 and for 2-dimensional data. Periodic: true. Stencil:\n4-element Vector{CartesianIndex{2}}:\n CartesianIndex(0, 0)\n CartesianIndex(1, 0)\n CartesianIndex(0, 1)\n CartesianIndex(1, 1)"
+    @test occursin(expected_line, out)
+end
 x = [1 2 1; 8 3 4; 6 7 5]
 # Re-create the Ribeiro et al, 2012 using stencil
 # (you get 4 symbols in a 3x3 matrix. For this matrix, the upper left
 # and bottom right are the same symbol. So three probabilities in the end).
 stencil = CartesianIndex.([(0,0), (1,0), (0,1), (1,1)])
 est = SpatialOrdinalPatterns(stencil, x; periodic = false)
-println(est)
 
 # Generic tests
 ps = probabilities(est, x)
@@ -21,14 +28,12 @@ h = information(Renyi(base = 2), est, x)
 # the symbols will always be equal in top-left and bottom-right
 stencil = CartesianIndex.([(0,0), (1,0), (1,1), (0,1)])
 est = SpatialOrdinalPatterns(stencil, x; periodic = false)
-println(est)
 @test information(Renyi(base = 2), est, x) == 1.5
 
 # But for sanity, let's ensure we get a different number
 # for a different stencil
 stencil = CartesianIndex.([(0,0), (1,0), (2,0)])
 est = SpatialOrdinalPatterns(stencil, x; periodic = false)
-println(est)
 ps = sort(probabilities(est, x))
 @test ps[1] == 1/3
 @test ps[2] == 2/3
@@ -37,13 +42,11 @@ ps = sort(probabilities(est, x))
 extent = (2, 2)
 lag = (1, 1)
 est = SpatialOrdinalPatterns((extent, lag), x; periodic = false)
-println(est)
 @test information(Renyi(base = 2), est, x) == 1.5
 
 # and let's also test the matrix-way of specifying the stencil
 stencil = [1 1; 1 1];
 est = SpatialOrdinalPatterns(stencil, x; periodic = false)
-println(est)
 @test information(Renyi(base = 2), est, x) == 1.5
 # when the stencil is square, it is also easy to get an analytical set of outcomes.
 # 1 2 1    count column major order and get vectors, starting in top left corner,
@@ -58,7 +61,6 @@ ps, outs = probabilities_and_outcomes(est, x)
 stencil = CartesianIndex.([(0,0,0), (0,1,0), (0,0,1), (1,0,0)])
 z = reshape(1:125, (5,5,5));
 est = SpatialOrdinalPatterns(stencil, z; periodic = false)
-println(est)
 # Analytically the total stencils are of length 4*4*4 = 64
 # but all of them given the same probabilities because of the layout
 ps = probabilities(est, z)
@@ -93,7 +95,6 @@ x = rand(100, 100)
 stencil = [1 1; 1 1];
 est = SpatialOrdinalPatterns(stencil, x)
 hsp = information_normalized(Renyi(), est, x)
-println(est)
 @test round(hsp, digits = 2) == 1.00
 
 @test outcome_space(est) == outcome_space(OrdinalPatterns(m = 4))
