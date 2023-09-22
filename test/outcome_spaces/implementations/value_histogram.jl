@@ -42,14 +42,14 @@ using Random
 
             p2, o = probabilities_and_outcomes(est, x)
             @test p2 == p
-            @test o isa Vector{SVector{2, Float64}}
+            @test o isa Vector{SVector{2, <:AbstractFloat}}
             @test length(o) == length(p)
             @test all(x -> x < 1, maximum(o))
             o2 = outcomes(est, x)
             @test o2 == o
 
             ospace = outcome_space(est, x)
-            @test ospace isa Vector{SVector{2, Float64}}
+            @test ospace isa Vector{SVector{2, <:AbstractFloat}}
             @test size(ospace) == (n*n, )
             @test SVector(0.0, 0.0) ∈ ospace
             @test issorted(ospace)

@@ -35,7 +35,7 @@ binnings = [
 
     est = TransferOperator(binnings[i])
     @test probabilities(est, D) isa Probabilities
-    @test probabilities_and_outcomes(est, D) isa Tuple{Probabilities, Vector{SVector{2, Float64}}}
+    @test probabilities_and_outcomes(est, D) isa Tuple{Probabilities, Vector{SVector{2, <:AbstractFloat}}}
 
     # Test that gives approximately same entropy as ValueHistogram:
     abs(information(TransferOperator(b), D) - information(ValueHistogram(b), D) ) < 0.1 # or something like that

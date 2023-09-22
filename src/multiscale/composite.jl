@@ -93,7 +93,7 @@ function multiscale(alg::Composite, e::InformationMeasure,
         maxscale::Int = 8)
 
     downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
-    hs = zeros(Float64, maxscale)
+    hs = zeros(<:AbstractFloat, maxscale)
     for s in 1:maxscale
         hs[s] = mean(entropy.(Ref(e), Ref(est), downscaled_timeseries[s]))
     end
@@ -106,7 +106,7 @@ function multiscale_normalized(alg::Composite, e::InformationMeasure, est::Proba
         maxscale::Int = 8)
 
     downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
-    hs = zeros(Float64, maxscale)
+    hs = zeros(<:AbstractFloat, maxscale)
     for s in 1:maxscale
         hs[s] = mean(information_normalized.(Ref(e), Ref(est), downscaled_timeseries[s]))
     end

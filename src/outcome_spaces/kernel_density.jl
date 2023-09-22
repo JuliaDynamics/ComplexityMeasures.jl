@@ -36,7 +36,7 @@ The reason to not return the data points themselves is because duplicate data po
 not get assigned same probabilities (due to having different neighbors).
 """
 struct NaiveKernel{KM, M <: Metric} <: OutcomeSpace
-    ϵ::Float64
+    ϵ::<:AbstractFloat
     method::KM
     w::Int
     metric::M

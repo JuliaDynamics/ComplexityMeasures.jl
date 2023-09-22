@@ -57,7 +57,7 @@ function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T 
     # embed and then calculate cosine similary for each consecutive pair of delay vectors
     τs = 0:est.τ:(est.m - 1)*est.τ
     Y = genembed(x, τs)
-    ds = zeros(Float64, length(Y) - 1)
+    ds = zeros(<:AbstractFloat, length(Y) - 1)
     @inbounds for i in 1:(length(Y)-1)
         ds[i] = cosine_similarity(Y[i], Y[i+1])
     end

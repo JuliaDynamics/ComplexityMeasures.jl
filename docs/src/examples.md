@@ -914,7 +914,7 @@ schuster_rule(x, p, n) = @inbounds SVector((x[1]+x[1]^p[1]) % 1)
 # generate noise with power spectrum that falls like 1/f^k
 function k_noise(k=3)
     function f(N)
-        x = rand(Float64, N)
+        x = rand(<:AbstractFloat, N)
         # generate power spectrum of random numbers and multiply by f^(-k/2)
         x_hat = fft(x) .* abs.(vec(fftfreq(length(x)))) .^ (-k/2)
         # set to zero for frequency zero

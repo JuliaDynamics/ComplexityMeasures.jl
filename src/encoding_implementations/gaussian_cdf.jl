@@ -74,7 +74,7 @@ julia> es = encode.(Ref(encoding), x)
  5
 
 julia> decode(encoding, 3)
-2-element SVector{2, Float64} with indices SOneTo(2):
+2-element SVector{2, <:AbstractFloat} with indices SOneTo(2):
  0.4
  0.6
 ```

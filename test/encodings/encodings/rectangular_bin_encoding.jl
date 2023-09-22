@@ -40,7 +40,7 @@ binnings = [
 end
 
 @testset "maxi in range corrected (###)" begin
-    X = SVector{2, Float64}.(vec(collect(Iterators.product(0:0.05:0.99, 0:0.05:0.99))))
+    X = SVector{2, <:AbstractFloat}.(vec(collect(Iterators.product(0:0.05:0.99, 0:0.05:0.99))))
     X = StateSpaceSet(X)
     # From FractalDimensions.jl
     function _data_boxing(X, encoding)

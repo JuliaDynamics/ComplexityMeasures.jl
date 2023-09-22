@@ -72,7 +72,7 @@ Base.@kwdef struct StatisticalComplexity{E, D, H} <: ComplexityEstimator
     dist::D = JSDivergence()
     est::E = RelativeAmount(OrdinalPatterns())
     entr::H = Renyi()
-    entr_val::Base.RefValue{Float64} = Ref(0.0)
+    entr_val::Base.RefValue{<:AbstractFloat} = Ref(0.0)
 end
 
 function complexity(c::StatisticalComplexity, x)
@@ -152,7 +152,7 @@ function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
 
     L = total_outcomes(c.est)
     # avoid having to resize later by just making result containers vectors straight away.
-    hs_cs_max = zeros(SVector{2, Float64}, (L-1)*num_max)
+    hs_cs_max = zeros(SVector{2, <:AbstractFloat}, (L-1)*num_max)
 
     p = Probabilities(zeros(L), true) # can't normalize zeros, so let's pretend this is already normalized
     prob_params = linearpermissiverange(0; stop = 1 / L, length = num_max)
@@ -174,7 +174,7 @@ function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
     hs_cs_max = hs_cs_max[args]
 
     prob_params = linearpermissiverange(1/L; stop=1, length=num_min)
-    hs_cs_min = zeros(SVector{2, Float64}, num_min)
+    hs_cs_min = zeros(SVector{2, <:AbstractFloat}, num_min)
     p = ones(L)
 
     for i in 1:num_min

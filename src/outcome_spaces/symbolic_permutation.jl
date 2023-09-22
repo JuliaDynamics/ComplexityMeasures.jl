@@ -183,7 +183,7 @@ elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is use
 struct AmplitudeAwareOrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
-    A::Float64
+    A::<:AbstractFloat
 end
 
 is_counting_based(o::AmplitudeAwareOrdinalPatterns) = false

@@ -210,7 +210,7 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
 
     I = Int32[]
     J = Int32[]
-    P = Float64[]
+    P = <:AbstractFloat[]
 
     # Preallocate target index for the case where there is only
     # one point of the orbit visiting a bin.
@@ -360,14 +360,14 @@ The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
 See also: [`InvariantMeasure`](@ref).
 """
 function invariantmeasure(to::TransferOperatorApproximationRectangular;
-        N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8)
+        N::Int = 200, tolerance::<:AbstractFloat = 1e-8, delta::<:AbstractFloat = 1e-8)
 
     TO = to.transfermatrix
     #=
     # Start with a random distribution `Ρ` (big rho). Normalise it so that it
     # sums to 1 and forms a true probability distribution over the partition elements.
     =#
-    Ρ = rand(Float64, 1, size(to.transfermatrix, 1))
+    Ρ = rand(<:AbstractFloat, 1, size(to.transfermatrix, 1))
     Ρ = Ρ ./ sum(Ρ, dims = 2)
 
     #=

@@ -30,11 +30,11 @@ Binning instructions are deduced from the type of `ϵ` as follows:
 
 1. `ϵ::Int` divides each coordinate axis into `ϵ` equal-length intervals
     that cover all data.
-2. `ϵ::Float64` divides each coordinate axis into intervals of fixed size `ϵ`, starting
+2. `ϵ::<:AbstractFloat` divides each coordinate axis into intervals of fixed size `ϵ`, starting
     from the axis minima until the data is completely covered by boxes.
 3. `ϵ::Vector{Int}` divides the i-th coordinate axis into `ϵ[i]` equal-length
     intervals that cover all data.
-4. `ϵ::Vector{Float64}` divides the i-th coordinate axis into intervals of fixed size
+4. `ϵ::Vector{Fl<:AbstractFloatoat64}` divides the i-th coordinate axis into intervals of fixed size
     `ϵ[i]`, starting from the axis minima until the data is completely covered by boxes.
 
 `RectangularBinning` ensures all input data are covered by extending the created
@@ -160,7 +160,7 @@ function FixedRectangularBinning(b::RectangularBinning, x)
     T = eltype(x)
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
-    if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
+    if ϵ isa <:AbstractFloat || ϵ isa AbstractVector{<:AbstractFloat}
         widths = SVector{D,T}(ϵ .* ones(SVector{D,T}))
         # To ensure all points are guaranteed to be covered, we add the width
         # to the max, if the max isn't included in the resulting range.
