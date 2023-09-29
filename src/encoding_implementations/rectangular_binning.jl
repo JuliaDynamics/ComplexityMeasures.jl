@@ -160,7 +160,7 @@ function FixedRectangularBinning(b::RectangularBinning, x)
     T = eltype(x)
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
-    if ϵ isa Float64 || ϵ isa AbstractVector{<:AbstractFloat}
+    if ϵ isa AbstractFloat || ϵ isa AbstractVector{<:AbstractFloat}
         widths = SVector{D,T}(ϵ .* ones(SVector{D,T}))
         # To ensure all points are guaranteed to be covered, we add the width
         # to the max, if the max isn't included in the resulting range.
