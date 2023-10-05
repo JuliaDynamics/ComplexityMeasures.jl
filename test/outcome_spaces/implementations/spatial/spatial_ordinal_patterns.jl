@@ -2,6 +2,14 @@ using ComplexityMeasures
 using Test
 using Random
 
+@testset "Custom show method for SpatialOrdinalPatterns" begin
+    stencil = CartesianIndex.([(0,0), (1,0), (0,1), (1,1)])
+    est = SpatialOrdinalPatterns(stencil, rand(10, 10))
+
+    out = repr(est)
+    expected_line = "Spatial symbolic permutation probabilities estimatorof order 4 and for 2-dimensional data. Periodic: true. Stencil:\n4-element Vector{CartesianIndex{2}}:\n CartesianIndex(0, 0)\n CartesianIndex(1, 0)\n CartesianIndex(0, 1)\n CartesianIndex(1, 1)"
+    @test occursin(expected_line, out)
+end
 x = [1 2 1; 8 3 4; 6 7 5]
 # Re-create the Ribeiro et al, 2012 using stencil
 # (you get 4 symbols in a 3x3 matrix. For this matrix, the upper left
