@@ -90,10 +90,11 @@ function Base.show(io::IO, mime::MIME"text/plain", c::Counts)
     print_dims(io, mime, c.cts, typeof(c))
 end
 
-# Modified from DimensionalData.jl
+# Modified from DimensionalData.jl. Controls printing of both
+# `Counts` and `Probabilities`.
 function print_dims(io::IO, mime, dims, T)
-    printstyled(io, "$T, represented as "; color=:light_black)
-    ctx = IOContext(io, :inset => "  ")
+    printstyled(io, "$(T.name.name) "; color=:light_black)
+    ctx = IOContext(io, :inset => " ")
     return show(ctx, mime, dims)
 end
 
