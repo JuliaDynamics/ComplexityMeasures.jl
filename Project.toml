@@ -36,5 +36,5 @@ Scratch = "1"
 SpecialFunctions = "0.10, 1.0, 2"
 StateSpaceSets = "1.0.4"  # contains important bugfix
 StaticArrays = "0.12, 1.0"
-Wavelets = "0.9"
+Wavelets = "0.10"
 julia = "1.5"
