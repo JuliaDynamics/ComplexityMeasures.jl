@@ -69,11 +69,6 @@ function Probabilities(x::AbstractArray{<:Integer, N}) where N
 end
 Probabilities(x::Counts) = Probabilities(x.cts, x.cts.dims)
 
-# default show used by display() on the REPL
-function Base.show(io::IO, mime::MIME"text/plain", p::Probabilities)
-    print_dims(io, mime, p.p, typeof(p))
-end
-
 # extend DimensionalData interface:
 for f in (:dims, :refdims, :data, :name, :metadata, :layerdims)
     @eval $(f)(c::Probabilities) = $(f)(c.p)
