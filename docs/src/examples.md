@@ -8,8 +8,11 @@ Here, we draw some random points from a 2D normal distribution. Then, we use ker
 using ComplexityMeasures
 using CairoMakie
 using Distributions: MvNormal
+using LinearAlgebra
 
-𝒩 = MvNormal([1, -4], 2)
+μ = [1.0, -4.0]
+σ = [2.0, 2.0]
+𝒩 = MvNormal(μ, LinearAlgebra.Diagonal(map(abs2, σ)))
 N = 500
 D = StateSpaceSet(sort([rand(𝒩) for i = 1:N]))
 x, y = columns(D)
@@ -209,7 +212,9 @@ nreps = 30
 Ns = [100:100:500; 1000:1000:5000]
 def = Renyi(q = 2, base = 2)
 
-𝒩 = MvNormal([-1, 1], [1, 0.5]) 
+μ = [-1, 1]
+σ = [1, 0.5]
+𝒩 = MvNormal(μ, LinearAlgebra.Diagonal(map(abs2, σ)))
 h_true = information(def, 𝒩; base = 2)
 
 # Estimate `nreps` times for each time series length
@@ -269,7 +274,9 @@ nreps = 30
 Ns = [100:100:500; 1000:1000:5000]
 def = Tsallis(q = 2, base = 2)
 
-𝒩 = MvNormal([-1, 1], [1, 0.5]) 
+μ = [-1, 1]
+σ = [1, 0.5]
+𝒩 = MvNormal(μ, LinearAlgebra.Diagonal(map(abs2, σ)))
 h_true = information(def, 𝒩; base = 2)
 
 # Estimate `nreps` times for each time series length
