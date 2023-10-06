@@ -58,4 +58,8 @@ using ComplexityMeasures.DelayEmbeddings: embed
         probs, out = probabilities_and_outcomes(o, rand(1000))
         @test all(x -> x ∈ Ω, out)
     end
+
+    # Codification of vector inputs (time series)
+    x = rand(30)
+    @test codify(Dispersion(), x) isa Vector{Int}
 end

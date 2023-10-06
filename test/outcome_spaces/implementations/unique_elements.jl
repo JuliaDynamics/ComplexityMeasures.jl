@@ -35,3 +35,7 @@ for q in (0.5, 1.0, 2.0)
     h = information(Renyi(q), UniqueElements(), D)
     @test 1.99 < h < 2.01
 end
+
+# Codification of vector inputs (time series)
+x = [1, 3, 2, 1, 2, 2, 1, 3, 1]
+@test codify(UniqueElements(), x) isa Vector{Int}

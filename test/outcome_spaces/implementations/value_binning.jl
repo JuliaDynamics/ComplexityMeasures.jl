@@ -57,7 +57,6 @@ using Random
             # ensure 1 is included, and must also be in the last bin
             rbe = RectangularBinEncoding(bin, x)
             @test encode(rbe, SVector(1.0, 1.0)) == n^2
-
         end
     end
 
@@ -77,7 +76,6 @@ using Random
         @test ValueBinning(n) == ValueBinning(RectangularBinning(n))
         @test ValueBinning(ε) == ValueBinning(RectangularBinning(ε))
     end
-
 end
 
 @testset "Encodings, edge cases" begin
@@ -125,5 +123,47 @@ end
         rbe = RectangularBinEncoding(bin, x)
         visited_bins = map(pᵢ -> encode(rbe, pᵢ), x)
         @test -1 ∉ visited_bins
+    end
+end
+
+@testset "Codification of vector inputs (time series)" begin 
+    rng = MersenneTwister(1234)
+
+    # Scalar time series
+    # ------------------
+    x = rand(rng, 100) # some number on [0, 1]
+    # All following binnings are equivalent
+    # (`nextfloat` is necessary in Fixed, due to the promise given in the regular)
+    n = 10
+    ε = nextfloat(0.1) # when dividing 0-nextfloat(1) into 10, you get this width
+    binnings = [
+        RectangularBinning(n),
+        RectangularBinning(n, true),
+        RectangularBinning(ε),
+        FixedRectangularBinning(range(0, nextfloat(1.0); length = n), 1, true),
+        FixedRectangularBinning(range(0, nextfloat(1.0); length = n), 1, false),
+    ]
+
+    for bin in binnings
+        o = ValueBinning(bin)
+        ospace = outcome_space(o, x)
+        codes = codify(o, x)
+        @test codes isa Vector{Int}
+    end
+
+    # Higher dimensions
+    y = StateSpaceSet(rand(rng, 100, 2)) # tuples whose elements are on [0, 1]
+    binnings = [
+        RectangularBinning(n),
+        RectangularBinning(n, true),
+        RectangularBinning(ε),
+        FixedRectangularBinning(range(0, nextfloat(1.0); length = n), 2, true),
+        FixedRectangularBinning(range(0, nextfloat(1.0); length = n), 2, false),
+    ]
+    for bin in binnings
+        o = ValueBinning(bin)
+        ospace = outcome_space(o, y)
+        codes = codify(o, y)
+        @test codes isa Vector{Int}
     end
 end

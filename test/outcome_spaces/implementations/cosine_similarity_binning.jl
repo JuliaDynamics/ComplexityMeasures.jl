@@ -29,3 +29,7 @@ bins = floor.(Int, (ds .- (-1.0)) / binsize)
 # follows, and should correspond with the events.
 coords = (bins .* binsize) .+ (-1.0)
 @test all(round.(only.(events), digits = 13) == round.(unique(coords), digits = 13))
+
+# Codification of vector inputs (time series)
+x = rand(30)
+@test codify(CosineSimilarityBinning(), x) isa Vector{Int}

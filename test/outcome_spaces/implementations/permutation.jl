@@ -86,3 +86,10 @@ end
         @test issorted(outcome_space(o3))
     end
 end
+
+@testset "codification for $(S)" for S in (OrdinalPatterns,
+    WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
+    # Codification of vector inputs (time series)
+    x = rand(30)
+    @test codify(S(), x) isa Vector{Int}
+end
