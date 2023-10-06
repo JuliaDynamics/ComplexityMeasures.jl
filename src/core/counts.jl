@@ -100,14 +100,13 @@ end
 
 # We strictly deal with single inputs here. For multi-inputs, see CausalityTools.jl
 """
-    counts(o::OutcomeSpace, x) → cts::Counts{<:Integer, 1}
-    counts(x) → cts::Counts{<:Integer, 1}
+    counts([o::OutcomeSpace,] x) → cts::Counts
 
 Discretize/encode `x` into a finite set of outcomes `Ω` specified by the provided
 [`OutcomeSpace`](@ref) `o`, then count how often each outcome `Ωᵢ ∈ Ω` (i.e.
 each "discretized value", or "encoded symbol") appears.
 
-Returns a [`Counts`](@ref) instance where the marginals are labelled with the outcomes,
+Return a [`Counts`](@ref) instance where the marginals are labelled with the outcomes,
 so that it is easy to trace what is being counted. Use [`outcomes`](@ref) on the
 resulting [`Counts`](@ref) to get these explicitly. Alternatively, us
 [`counts_and_outcomes`](@ref) to get both in one operation.
