@@ -79,7 +79,7 @@ function encoding_for_diversity(nbins::Int)
     return RectangularBinEncoding(binning)
 end
 
-function symbolize(o::CosineSimilarityBinning, x::AbstractVector{T}) where T
+function codify(o::CosineSimilarityBinning, x::AbstractVector{T}) where T
     τs = 0:o.τ:(o.m - 1)*o.τ
     Y = genembed(x, τs)
     ds = zeros(Float64, length(Y) - 1)

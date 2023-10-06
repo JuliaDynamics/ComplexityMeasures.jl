@@ -244,7 +244,7 @@ function fasthist!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceS
     return cts
 end
 
-function symbolize(est::PermProbEst{m}, x) where m
+function codify(est::PermProbEst{m}, x) where m
     if x isa AbstractVector
         dataset = embed(x, m, est.τ)
     else
@@ -353,7 +353,7 @@ function AAPE(x, A::Real = 0.5, m::Int = length(x))
     (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
 end
 
-function symbolize(o::OrdinalPatterns{m}, x::AbstractVector) where {m}
+function codify(o::OrdinalPatterns{m}, x::AbstractVector) where {m}
     emb = embed(x, m, o.τ).data
     return encode.(Ref(o.encoding), emb)
 end

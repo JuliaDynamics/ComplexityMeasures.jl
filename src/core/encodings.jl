@@ -39,18 +39,18 @@ Decode an encoded element `i` into the outcome `ω ∈ Ω` it corresponds to.
 """
 function decode end
 
-export symbolize
+export codify
 
-# `symbolize` is the function that actually performs the transformation of the
+# `codify` is the function that actually performs the transformation of the
 # input data to elements of the (encoded) outcome space. This method is used both internally
 # here, where relevant, but is most important upstream, where it is used to ensure
 # that multivariate time series data is always encoded to integers.
 """
 
-    symbolize(o::OutcomeSpace, x::Vector) → s::Vector{Int}
-    symbolize(o::OutcomeSpace, x::AbstractStateSpaceSet{D}) → s::NTuple{D, Vector{Int}
+    codify(o::OutcomeSpace, x::Vector) → s::Vector{Int}
+    codify(o::OutcomeSpace, x::AbstractStateSpaceSet{D}) → s::NTuple{D, Vector{Int}
 
-Symbolize `x` according to the outcome space `o`.
+Codify `x` according to the outcome space `o`.
 
 ## Description
 
@@ -73,10 +73,10 @@ If `x` is a `Vector`, then a `Vector{<:Integer}` is returned. If `x` is a
 
 # Concrete implementations
 
-    symbolize(o::UniqueElements, x::VectorOrStateSpaceSet)
-    symbolize(o::OrdinalPatterns, x::VectorOrStateSpaceSet)
-    symbolize(o::Dispersion, x::VectorOrStateSpaceSet)
+    codify(o::UniqueElements, x::VectorOrStateSpaceSet)
+    codify(o::OrdinalPatterns, x::VectorOrStateSpaceSet)
+    codify(o::Dispersion, x::VectorOrStateSpaceSet)
 
 These are listed for convenience.
 """
-function symbolize end
+function codify end

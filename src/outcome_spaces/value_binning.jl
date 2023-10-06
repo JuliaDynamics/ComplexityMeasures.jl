@@ -78,7 +78,7 @@ function outcome_space(est::ValueBinning{<:FixedRectangularBinning})
     return outcome_space(RectangularBinEncoding(est.binning))
 end
 
-function symbolize(o::ValueBinning{<:FixedRectangularBinning{D}}, x::AbstractVector) where D
+function codify(o::ValueBinning{<:FixedRectangularBinning{D}}, x::AbstractVector) where D
     verify_input(o.binning, x)
     encoder = RectangularBinEncoding(o.binning)
     # TODO: should we warn if points outside the binning are considered? Probably not,
@@ -86,18 +86,18 @@ function symbolize(o::ValueBinning{<:FixedRectangularBinning{D}}, x::AbstractVec
     return encode.(Ref(encoder), x)
 end
 
-function symbolize(o::ValueBinning{<:FixedRectangularBinning}, x::AbstractStateSpaceSet{D}) where D
+function codify(o::ValueBinning{<:FixedRectangularBinning}, x::AbstractStateSpaceSet{D}) where D
     verify_input(o.binning, x)
     encoder = RectangularBinEncoding(o.binning)
     return encode.(Ref(encoder), x.data)
 end
 
-function symbolize(o::ValueBinning{<:RectangularBinning}, x::AbstractVector{<:Real})
+function codify(o::ValueBinning{<:RectangularBinning}, x::AbstractVector{<:Real})
     encoder = RectangularBinEncoding(o.binning, x)
     return encode.(Ref(encoder), x)
 end
 
-function symbolize(o::ValueBinning{<:RectangularBinning}, x::AbstractStateSpaceSet{D}) where D
+function codify(o::ValueBinning{<:RectangularBinning}, x::AbstractStateSpaceSet{D}) where D
     encoder = RectangularBinEncoding(o.binning, x)
     return encode.(Ref(encoder), x.data)
 end

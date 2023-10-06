@@ -73,7 +73,7 @@ end
 
 function counts(o::Dispersion, x::AbstractVector{<:Real})
     N = length(x)
-    symbols = symbolize(o, x)
+    symbols = codify(o, x)
     # We must use genembed, not embed, to make sure the zero lag is included
     m, τ = o.m, o.τ
     τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
@@ -97,7 +97,7 @@ function encoded_space_cardinality(o::Dispersion, x)
     return N - (o.m - 1)*o.τ
 end
 
-function symbolize(est::Dispersion, x)
+function codify(est::Dispersion, x)
     σ = std(x)
     μ = mean(x)
     ENCODING_TYPE = est.encoding

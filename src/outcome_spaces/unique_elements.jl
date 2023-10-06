@@ -30,7 +30,7 @@ end
 outcome_space(::UniqueElements, x) = sort!(unique(x))
 probabilities(::UniqueElements, x) = probabilities(x)
 
-function symbolize(o::UniqueElements, x)
+function codify(o::UniqueElements, x)
     encoding = UniqueElementsEncoding(x)
     encode.(Ref(encoding), x)
 end
