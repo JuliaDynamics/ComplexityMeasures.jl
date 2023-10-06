@@ -18,6 +18,7 @@ const Vector_or_SSSet = Union{<:AbstractVector{<:Real}, <:AbstractStateSpaceSet}
 include("core/outcome_spaces.jl")
 include("core/counts.jl")
 include("core/probabilities.jl")
+include("core/print_counts_probs.jl") # pretty printing
 include("core/information_measures.jl")
 include("core/information_functions.jl")
 include("core/encodings.jl")

@@ -85,19 +85,6 @@ for f in (:length, :size, :eachindex, :eltype, :parent,
 end
 Base.IteratorSize(::Counts) = Base.HasLength()
 
-# default show used by display() on the REPL
-function Base.show(io::IO, mime::MIME"text/plain", c::Counts)
-    print_dims(io, mime, c.cts, typeof(c))
-end
-
-# Modified from DimensionalData.jl. Controls printing of both
-# `Counts` and `Probabilities`.
-function print_dims(io::IO, mime, dims, T)
-    printstyled(io, "$(T.name.name) "; color=:light_black)
-    ctx = IOContext(io, :inset => " ")
-    return show(ctx, mime, dims)
-end
-
 # We strictly deal with single inputs here. For multi-inputs, see CausalityTools.jl
 """
     counts([o::OutcomeSpace,] x) → cts::Counts
