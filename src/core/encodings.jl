@@ -57,7 +57,7 @@ Codify `x` according to the outcome space `o`.
 The reason this function exists is that we don't always want to [`encode`](@ref) the
 entire input `x` at once. Sometimes, it is desirable to first apply some transformation to
 `x` first, then apply [`encoding`](@ref)s in a point-wise manner in the transformed space.
-The [`OutcomeSpace`](@ref) dictates this transformation. This is useful for encoding
+(the [`OutcomeSpace`](@ref) dictates this transformation). This is useful for encoding
 time series data.
 
 The length of the returned `s` depends on the [`OutcomeSpace`](@ref). Some outcome
@@ -74,8 +74,10 @@ If `x` is a `Vector`, then a `Vector{<:Integer}` is returned. If `x` is a
 # Concrete implementations
 
     codify(o::UniqueElements, x::VectorOrStateSpaceSet)
-    codify(o::OrdinalPatterns, x::VectorOrStateSpaceSet)
     codify(o::Dispersion, x::VectorOrStateSpaceSet)
+    codify(o::ValueBinning, x::VectorOrStateSpaceSet)
+    codify(o::OrdinalPatterns, x::AbstractVector)
+    codify(o::CosineSimilarityBinning, x::AbstractVector)
 
 These are listed for convenience.
 """
