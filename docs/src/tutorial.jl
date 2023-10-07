@@ -21,7 +21,8 @@
 # (often, complexity measures are entropy variants). These complexity measures can
 # highlight some aspects of the dynamics more than others, or distinguish one type of
 # dynamics from another, or classify timeseries into classes with different dynamics,
-# among other things. ComplexityMeasures.jl implements hundreds such measures, and hence
+# among other things. Typically, more "complex" data have higher complexity measure value.
+# ComplexityMeasures.jl implements hundreds such measures, and hence
 # it is named as such. To enable this, ComplexityMeasures.jl is more than a collection
 # "dynamic statistics": it is also a framework for rigorously defining probability spaces
 # and estimating probabilities from input data.
@@ -57,22 +58,32 @@ o = ValueBinning(ε)
 o isa OutcomeSpace
 
 # Such outcome spaces may be given to [`probabilities`](@ref) to estimate the corresponding
-# probabilities.
+# probabilities, which are returned as a dedicated [`Probabilities`](@ref) type like so:
 
 probs = probabilities(o, x)
 
 # In this example the probabilities are the (normalized) heights of each bin of the
 # histogram. The bins, which are the _elements_ of the outcome space, are shown in the
-# margin of the histogram. To obtain the probabilities *and* the bins explicitly, one can use
-# the [`outcomes`](@ref) function.
+# margin, left of the probabilities. This convenience printing syntax is useful for visual
+# inspection of the probabilities data. However, don't let it worry you.
+# The `Probabilities` can be used identically to a standard Julia numerical `Vector`.
+# You can obtain the maximum probability
 
-outcomes(o, x)
+maximum(probs)
 
-# Alternatively, one can get both by using [`probabilities_and_outcomes`](@ref).
+# Or iterate over the contained probabilities values
+s = 0.0
+for p in probs
+    s += p
+end
+s/length(probs) # mean probability
 
-probs, outs = probabilities_and_outcomes(o, x)
+# Et cetera. To obtain the outcomes explicitly as their own vector
+# you can use the [`outcomes`](@ref) function
+outs = outcomes(probs)
 
-# Here, the outcomes are the left edges of each bin. This allows us to straightforwardly
+# For the `ValueBinning` example that we use,
+# the outcomes are the left edges of each bin. This allows us to straightforwardly
 # visualize the results.
 using CairoMakie
 left_edges = first.(outs) # covert `Vector{SVector}` into `Vector{Real}`
@@ -117,7 +128,6 @@ probsx = probabilities(o, x)
 # [`outcome_space`](@ref):
 
 o = OrdinalPatterns()
-
 probsx = allprobabilities(o, x)
 probsy = allprobabilities(o, y)
 outsx = outsy = outcome_space(o)
@@ -129,7 +139,7 @@ hcat(outsx, probsx, probsy)
 
 total_outcomes(o)
 
-# ## Beyond the basics: probabilities *estimators*
+# ## Beyond the basics: probabilities _estimators_
 
 # So far we have been estimating probabilities by counting the amount of times each
 # possible outcome was encountered in the data, then normalizing. This is called "maximum
@@ -137,11 +147,16 @@ total_outcomes(o)
 # [`counts`](@ref) functions.
 
 countsy = counts(o, y)
+
+# Counts are printed like `Probabilities`: they display the outcomes they match
+# to on the left marginal, but otherwise can be used as standard Julia numerical `Vector`s.
+# To go from outcomes to probabilities, we divide with the total:
+
 probsy = probabilities(o, y)
 outsy = outcomes(probsy)
 hcat(outsy, countsy, countsy ./ sum(countsy), probsy)
 
-# By definition, columns 2 and 3 are identical. However, there are other ways to estimate
+# By definition, columns 3 and 4 are identical. However, there are other ways to estimate
 # probabilities that may account for biases in counting outcomes from finite data.
 # Alternative estimators for probabilities are subtypes of [`ProbabilitiesEstimator`](@ref).
 # `ProbabilitiesEstimator`s  dictate alternative ways to estimate probabilities, given
@@ -165,6 +180,7 @@ probsy_bayes .- probsy
 # over probabilities estimated from data over some particular outcome space.
 # For example, the well known _permutation entropy_ [BandtPompe2002](@cite) is exactly the
 # Shannon entropy of the probabilities `probsy` we computed above based on ordinal patterns.
+# To compute it, we use the [`entropy`](@ref) function.
 
 perm_ent_x = entropy(OrdinalPatterns(), x)
 perm_ent_y = entropy(OrdinalPatterns(), y)
