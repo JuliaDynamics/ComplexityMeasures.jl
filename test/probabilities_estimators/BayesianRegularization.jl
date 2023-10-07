@@ -9,25 +9,26 @@ rng = MersenneTwister(1234)
         x = rand(rng, 1:10., 100)
 
         os = [
-            CountOccurrences(),
+            UniqueElements(),
             OrdinalPatterns(m = 3),
             Dispersion(),
-            Diversity(),
-            ValueHistogram(RectangularBinning(3)),
+            CosineSimilarityBinning(),
+            ValueBinning(RectangularBinning(3)),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
-            est = BayesianRegularization(os[i])
+            est = BayesianRegularization()
+            outcomemodel = os[i]
 
-            ps, Ωobs = probabilities_and_outcomes(est, x)
+            ps, Ωobs = probabilities_and_outcomes(est, outcomemodel, x)
             @test ps isa Probabilities
-            @test probabilities(est, x) == ps
-            @test outcomes(est, x) == Ωobs
+            @test probabilities(est, outcomemodel, x) == ps
+            @test outcomes(est, outcomemodel, x) == Ωobs
 
-            ps, Ωall = allprobabilities_and_outcomes(est, x)
+            ps, Ωall = allprobabilities_and_outcomes(est, outcomemodel, x)
             @test ps isa Probabilities
-            @test sort(Ωall) == outcome_space(est, x)
-            @test allprobabilities(est, x) isa Probabilities
-            @test sort(outcome_space(est, x)) == sort(Ωall)
+            @test sort(Ωall) == outcome_space(est, outcomemodel, x)
+            @test allprobabilities(est, outcomemodel, x) isa Probabilities
+            @test sort(outcome_space(est, outcomemodel, x)) == sort(Ωall)
         end
 
         # Spatial estimators (all of them are currently counting-based)
@@ -38,16 +39,17 @@ rng = MersenneTwister(1234)
             SpatialOrdinalPatterns([0 1; 1 0], x),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
-            est = BayesianRegularization(os[i])
-            ps, Ωobs = probabilities_and_outcomes(est, x)
+            est = BayesianRegularization()
+            o = os[i]
+            ps, Ωobs = probabilities_and_outcomes(est, o, x)
             @test ps isa Probabilities
-            @test outcomes(est, x) == Ωobs
-            @test probabilities(est, x) == ps
+            @test outcomes(est, o, x) == Ωobs
+            @test probabilities(est, o, x) == ps
 
-            ps, Ωall = allprobabilities_and_outcomes(est, x)
+            ps, Ωall = allprobabilities_and_outcomes(est, o, x)
             @test ps isa Probabilities
-            @test sort(Ωall) == sort(outcome_space(est, x))
-            @test allprobabilities(est, x) == ps
+            @test sort(Ωall) == sort(outcome_space(est, o, x))
+            @test allprobabilities(est, o, x) == ps
         end
     end
 end

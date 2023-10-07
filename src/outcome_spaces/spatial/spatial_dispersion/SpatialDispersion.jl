@@ -154,6 +154,16 @@ function Base.show(io::IO, est::SpatialDispersion{D,P,V,S}) where {D,P,V,S}
     print(io, """\nBoundaries: $(P ? "Periodic" : "Non-periodic")""")
 end
 
+function counts(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
+    symbols = symbol_distribution(est, x)
+
+    # We don't care about the fact that `frequencies!` sorts in-place here, because we
+    # only need the unique values of `symbols` for the outcomes.
+    cts = fasthist!(symbols) # fasthist!(x) mutates x --- `symbols` gets sorted here
+    outcomes = unique!(symbols)
+    return Counts(cts, (outcomes,))
+end
+
 function symbol_distribution(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
     # This looks funny, but E is just a type representing some encoding that accept
     # the keyword argument `c`, which dictates how many discrete categories to use,
@@ -181,21 +191,6 @@ end
 
 function encoded_space_cardinality(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
     return length(symbol_distribution(est, x))
-end
-
-function counts(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
-    symbols = symbol_distribution(est, x)
-    return fasthist!(symbols)
-end
-
-function counts_and_outcomes(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
-    symbols = symbol_distribution(est, x)
-
-    # We don't care about the fact that `frequencies!` sorts in-place here, because we
-    # only need the unique values of `symbols` for the outcomes.
-    cts = fasthist!(symbols) # fasthist!(x) mutates x --- `symbols` gets sorted here
-    outcomes = unique!(symbols)
-    return cts, outcomes
 end
 
 function total_outcomes(est::SpatialDispersion)::Int

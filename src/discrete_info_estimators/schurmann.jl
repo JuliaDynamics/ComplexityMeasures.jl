@@ -21,16 +21,16 @@ function Schürmann(definition::I; a::A = 1.0) where {I, A}
     a > 0 || throw(ArgumentError("a must be strict positive. Got $a."))
     return Schürmann(; definition, a)
 end
-
-function information(hest::Schürmann{<:Shannon}, pest::ProbabilitiesEstimator, x)
+function information(hest::Schürmann{<:Shannon}, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
     (; definition, a) = hest
+
     # We should be using `N = length(x)`, but since some probabilities estimators
     # return pseudo counts, we need to consider those instead of counting actual
     # observations.
-    freqs = counts(pest, x)
-    N = sum(freqs)
+    cts = counts(o, x)
+    N = sum(cts)
 
-    h = digamma(N) - 1/N * sum(nᵢ * Sₙ(a, nᵢ) for nᵢ in freqs)
+    h = digamma(N) - 1/N * sum(nᵢ * Sₙ(a, nᵢ) for nᵢ in cts)
 
     # The Schürmann estimate of `h` is based on the natural logarithm, so we must convert
     # to the desired base.

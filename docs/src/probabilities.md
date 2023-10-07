@@ -25,13 +25,13 @@ missing_outcomes
 ### Count occurrences
 
 ```@docs
-CountOccurrences
+UniqueElements
 ```
 
 ### Histograms
 
 ```@docs
-ValueHistogram
+ValueBinning
 AbstractBinning
 RectangularBinning
 FixedRectangularBinning
@@ -78,9 +78,10 @@ WaveletOverlap
 PowerSpectrum
 ```
 
-### Diversity
+### Cosine similarity binning
 
 ```@docs
+CosineSimilarityBinning
 Diversity
 ```
 
@@ -145,5 +146,6 @@ GaussianCDFEncoding
 RectangularBinEncoding
 RelativeMeanEncoding
 RelativeFirstDifferenceEncoding
+UniqueElementsEncoding
 CombinationEncoding
 ```

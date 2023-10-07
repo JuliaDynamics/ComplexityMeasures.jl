@@ -53,7 +53,9 @@ end
 
 # We know the analytical expression for the Rényi entropy of a multivariate normal.
 # It is implemented in the function above.
-𝒩 = MvNormal([0, 1], [1, 1])
+μ = [0, 1]
+σ = [1, 1]
+𝒩 = MvNormal(μ, LinearAlgebra.Diagonal(map(abs2, σ)))
 h_true = information(Renyi(q = 2), 𝒩, base = 2)
 𝒩pts = StateSpaceSet(transpose(rand(rng, 𝒩, npts)))
 h_estimated = information(LeonenkoProzantoSavani(Renyi(q = 2, base = 2), k = 10), 𝒩pts)
@@ -76,7 +78,10 @@ end
 
 # We know the analytical expression for the Tsallis entropy of a multivariate normal.
 # It is implemented in the function above.
-𝒩 = MvNormal([0, 1], [1, 1])
+μ = [0, 1]
+σ = [1, 1]
+𝒩 = MvNormal(μ, LinearAlgebra.Diagonal(map(abs2, σ)))
+
 h_true = information(Tsallis(q = 2), 𝒩, base = 2)
 𝒩pts = StateSpaceSet(transpose(rand(rng, 𝒩, npts)))
 h_estimated = information(LeonenkoProzantoSavani(Tsallis(q = 2, base = 2), k = 10), 𝒩pts)

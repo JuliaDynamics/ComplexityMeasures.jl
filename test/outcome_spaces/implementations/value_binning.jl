@@ -31,24 +31,24 @@ using Random
 
     for bin in binnings
         @testset "bin isa $(nameof(typeof(bin)))" begin
-            est = ValueHistogram(bin)
-            out = outcome_space(est, x)
+            o = ValueBinning(bin)
+            out = outcome_space(o, x)
             @test length(out) == n^2
-            p = probabilities(est, x)
+            p = probabilities(o, x)
             # all bins are covered due to random data
             @test length(p) == 100
             # ensure uniform coverage since input is uniformly random
             @test all(e -> 0.009 ≤ e ≤ 0.011, p)
 
-            p2, o = probabilities_and_outcomes(est, x)
+            p2, outs = probabilities_and_outcomes(o, x)
             @test p2 == p
-            @test o isa Vector{SVector{2, Float64}}
-            @test length(o) == length(p)
-            @test all(x -> x < 1, maximum(o))
-            o2 = outcomes(est, x)
-            @test o2 == o
+            @test outs isa Vector{SVector{2, Float64}}
+            @test length(outs) == length(p)
+            @test all(x -> x < 1, maximum(outs))
+            o2 = outcomes(o, x)
+            @test o2 == outs
 
-            ospace = outcome_space(est, x)
+            ospace = outcome_space(o, x)
             @test ospace isa Vector{SVector{2, Float64}}
             @test size(ospace) == (n*n, )
             @test SVector(0.0, 0.0) ∈ ospace
@@ -57,7 +57,6 @@ using Random
             # ensure 1 is included, and must also be in the last bin
             rbe = RectangularBinEncoding(bin, x)
             @test encode(rbe, SVector(1.0, 1.0)) == n^2
-
         end
     end
 
@@ -67,17 +66,16 @@ using Random
         n = 10 # boxes cover 0 - 1 in steps of slightly more than 0.1
         ε = nextfloat(0.1) # this guarantees that we get the same as the `n` above!
         for bin in (RectangularBinning(n), RectangularBinning(ε))
-            p = probabilities(ValueHistogram(bin), x)
+            p = probabilities(ValueBinning(bin), x)
             @test length(p) == 10
             @test all(e -> 0.09 ≤ e ≤ 0.11, p)
         end
     end
 
     @testset "convenience" begin
-        @test ValueHistogram(n) == ValueHistogram(RectangularBinning(n))
-        @test ValueHistogram(ε) == ValueHistogram(RectangularBinning(ε))
+        @test ValueBinning(n) == ValueBinning(RectangularBinning(n))
+        @test ValueBinning(ε) == ValueBinning(RectangularBinning(ε))
     end
-
 end
 
 @testset "Encodings, edge cases" begin
@@ -126,4 +124,56 @@ end
         visited_bins = map(pᵢ -> encode(rbe, pᵢ), x)
         @test -1 ∉ visited_bins
     end
+end
+
+@testset "Codification of vector inputs (time series)" begin 
+    rng = MersenneTwister(1234)
+
+    # Scalar time series
+    # ------------------
+    x = rand(rng, 100) # some number on [0, 1]
+    # All following binnings are equivalent
+    # (`nextfloat` is necessary in Fixed, due to the promise given in the regular)
+    n = 10
+    ε = nextfloat(0.1) # when dividing 0-nextfloat(1) into 10, you get this width
+    binnings = [
+        RectangularBinning(n),
+        RectangularBinning(n, true),
+        RectangularBinning(ε),
+        FixedRectangularBinning(range(0, nextfloat(1.0); length = n), 1, true),
+        FixedRectangularBinning(range(0, nextfloat(1.0); length = n), 1, false),
+    ]
+
+    for bin in binnings
+        o = ValueBinning(bin)
+        ospace = outcome_space(o, x)
+        codes = codify(o, x)
+        @test codes isa Vector{Int}
+    end
+
+    # Higher dimensions
+    y = StateSpaceSet(rand(rng, 100, 2)) # tuples whose elements are on [0, 1]
+    binnings = [
+        RectangularBinning(n),
+        RectangularBinning(n, true),
+        RectangularBinning(ε),
+        FixedRectangularBinning(range(0, nextfloat(1.0); length = n), 2, true),
+        FixedRectangularBinning(range(0, nextfloat(1.0); length = n), 2, false),
+    ]
+    for bin in binnings
+        o = ValueBinning(bin)
+        ospace = outcome_space(o, y)
+        codes = codify(o, y)
+        @test codes isa Vector{Int}
+    end
+
+    
+    # When the dimensions of the fixed rectangular binning and input data don't match
+    ranges = (0:0.1:1, range(0, 1; length = 101), range(0, 3.2; step = 0.33))
+    f = FixedRectangularBinning(ranges)
+    o = ValueBinning(f)
+    x = rand(rng, 100)
+    y = StateSpaceSet(rand(rng, 100, 2))
+    @test_throws DimensionMismatch codify(o, x)
+    @test_throws DimensionMismatch codify(o, y)
 end

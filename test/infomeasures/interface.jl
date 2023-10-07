@@ -8,20 +8,19 @@ using Random: Xoshiro
 
     # Maximum likelihood is the default estimator for discrete information measures.
     s = Shannon()
-    e1 = PowerSpectrum()
-    e2 = OrdinalPatterns(; m = 2)
+    o1 = PowerSpectrum()
+    o2 = OrdinalPatterns(; m = 2)
     x = rand(Xoshiro(1234), 10_000)
-    @test information_maximum(PlugIn(s), e2) == information_maximum(s, e2)
-    @test information_normalized(PlugIn(s), e1, x) == information_normalized(s, e1, x)
+    @test information_maximum(PlugIn(s), o2) == information_maximum(s, o2)
+    @test information_normalized(PlugIn(s), o1, x) == information_normalized(s, o1, x)
 
     # entropy wrapper function
-    @test entropy(Shannon(MathConstants.e), ValueHistogram(4), x) ==
-    information(Shannon(MathConstants.e), ValueHistogram(4), x)
+    @test entropy(Shannon(MathConstants.e), ValueBinning(4), x) ==
+        information(Shannon(MathConstants.e), ValueBinning(4), x)
 
     y = rand(50)
-    @test entropy(Jackknife(), ValueHistogram(4), y) ==
-    information(Jackknife(), ValueHistogram(4), y)
-
+    @test entropy(Jackknife(), ValueBinning(4), y) ==
+        information(Jackknife(), ValueBinning(4), y)
 end
 
 @testset "info interface: errors" begin

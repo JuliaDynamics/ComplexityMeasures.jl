@@ -18,14 +18,16 @@ end
 @deprecate DiscreteEntropyEstimator DiscreteInfoEstimator
 @deprecate MLEntropy PlugIn
 
+@deprecate CountOccurrences UniqueElements
+
 # From before 2.0:
 @deprecate TimeScaleMODWT WaveletOverlap
 function probabilities(x::Vector_or_SSSet, ε::Union{Real, Vector{<:Real}})
     @warn """
     `probabilities(x::Vector_or_SSSet, ε::Real)`
-    is deprecated, use `probabilities(ValueHistogram(ε), x)`.
+    is deprecated, use `probabilities(ValueBinning(ε), x)`.
     """
-    probabilities(ValueHistogram(ε), x)
+    probabilities(ValueBinning(ε), x)
 end
 
 function probabilities(x, est::OutcomeSpace)
@@ -58,17 +60,17 @@ end
 function genentropy(x::Array_or_SSSet, ε::Real; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(x::Array_or_SSSet, ε::Real; q, base)` is deprecated.
-    Use instead: `information(Renyi(q, base), ValueHistogram(ε), x)`.
+    Use instead: `information(Renyi(q, base), ValueBinning(ε), x)`.
     """
-    return information(Renyi(q, base), RelativeAmount(ValueHistogram(ε)), x)
+    return information(Renyi(q, base), RelativeAmount(), ValueBinning(ε), x)
 end
 
-function genentropy(x::Array_or_SSSet, est::OutcomeSpace; q = 1.0, base = MathConstants.e)
+function genentropy(x::Array_or_SSSet, o::OutcomeSpace; q = 1.0, base = MathConstants.e)
     @warn """
     `genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is deprecated.
     Use instead: `information(Renyi(q, base), est, x)`.
     """
-    return information(Renyi(q, base), RelativeAmount(est), x)
+    return information(Renyi(q, base), RelativeAmount(), o, x)
 end
 
 @deprecate SymbolicPermutation OrdinalPatterns

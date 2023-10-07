@@ -20,16 +20,22 @@ All PRs contributing new functionality must be well tested and well documented. 
 
 If your new outcome space is counting-based, then
 
-5. Implement dispatch for [`counts_and_outcomes`](@ref) for your [`OutcomeSpace`](@ref)
-    type. You'll then get [`counts`](@ref) for free. Optionally, you can
-    implement [`counts`](@ref) too if it leads to performance gains.
+5. Implement dispatch for [`counts`](@ref) for your [`OutcomeSpace`](@ref)
+    type. This method should return a [`Counts`](@ref) instance (just a wrapper around a
+    `DimArray`). Follow existing implementations for guidelines, and ensure that
+    the outcomes are the dimension labels on the array. You'll then get
+    [`counts_and_outcomes`](@ref) for free.
+6. Implement dispatch for [`symbolize`](@ref). This will ensure that the outcome space
+    also works automatically with any discrete estimators in CausalityTools.jl.
 
 If your new outcome space is not counting-based, then
 
-6. Implement dispatch for [`probabilities_and_outcomes`](@ref) for your
-    [`OutcomeSpace`](@ref) type. You'll then get the methods for
-    [`probabilities`](@ref) and [`outcomes`](@ref) for free. Optionally, you can
-    implement [`probabilities`](@ref) too if it leads to performance gains.
+6. Implement dispatch for [`probabilities`](@ref) for your
+    [`OutcomeSpace`](@ref) type. This method should return a [`Probabilities`](@ref)
+    instance (also just a wrapper around `DimArray` with the constraint that the
+    entries of the array must sum to 1). Follow existing implementations for guidelines, and ensure that the outcomes are the dimension labels on the probabilities array. You'll
+    then get the methods [`probabilities_and_outcomes`](@ref) and [`outcomes`](@ref) for
+    free.
 
 Finally,
 
@@ -45,12 +51,7 @@ Finally,
 The following methods may be extended for your [`OutcomeSpace`](@ref) if doing so
 leads to performance benefits.
 
-1. [`counts`](@ref). Implementing this method for your [`OutcomeSpace`](@ref) type
-    is typically more performant than dispatching to `first(counts_and_outcomes(...))`.
-    In fact, most existing count-based outcome spaces implements [`counts`](@ref) explicitly.
-2. [`outcomes`](@ref). By default calls [`probabilities_and_outcomes`](@ref) and returns
-    the second value.
-3. [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref).
+1. [`total_outcomes`](@ref). By default it returns the `length` of [`outcome_space`](@ref).
     This is the function that most typically has performance benefits if implemented
     explicitly, so most existing estimators extend it by default.
 
@@ -61,20 +62,14 @@ leads to performance benefits.
 1. Define your type and make it subtype [`ProbabilitiesEstimator`](@ref).
 2. Add a docstring to your type following the style of the docstrings of other
     [`ProbabilitiesEstimator`](@ref)s.
-3. Implement dispatch for [`probabilities_and_outcomes`](@ref) for your
-    [`ProbabilitiesEstimator`](@ref) type.
-4. Implement dispatch for [`allprobabilities_and_outcomes`](@ref) for your
-    [`ProbabilitiesEstimator`](@ref) type.
+3. Implement dispatch for [`probabilities`](@ref) for your
+    [`ProbabilitiesEstimator`](@ref) type. You'll then get
+    [`probabilities_and_outcomes`](@ref) for free.
+4. Implement dispatch for [`allprobabilities`](@ref) for your
+    [`ProbabilitiesEstimator`](@ref) type. You'll then get
+    [`allprobabilities_and_outcomes`](@ref) for free.
 5. Add your new [`ProbabilitiesEstimator`](@ref) type to the list of probabilities
     estimators in the probabilities estimators documentation section.
-
-### Optional steps
-
-The following methods may be extended for your [`ProbabilitiesEstimator`](@ref) if doing so
-leads to performance benefits.
-
-1. [`probabilities`](@ref).
-2. [`allprobabilities`](@ref).
 
 ## Adding a new `InformationMeasureEstimator`
 

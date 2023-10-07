@@ -49,20 +49,17 @@ function GeneralizedSchürmann(definition::I; a::A = 1.0) where {I, A}
     all(a .> 0) || throw(ArgumentError("All elements of `a` must be strict positive. Got $a."))
     return GeneralizedSchürmann(; definition, a)
 end
-function information(hest::GeneralizedSchürmann{<:Shannon}, pest::ProbabilitiesEstimator, x)
+function information(hest::GeneralizedSchürmann{<:Shannon}, pest::ProbabilitiesEstimator, o::OutcomeSpace, x)
     (; definition, a) = hest
 
-    freqs = counts(pest, x)
-    # We should be using `N = length(x)`, but since some probabilities estimators
-    # return pseudo counts, we need to consider those instead of counting actual
-    # observations.
-    N = sum(freqs)
+    cts = counts(pest, o, x)
+    N = sum(cts)
 
     if a isa Real
-        h = digamma(N) - 1/N * sum(nᵢ * Gₙ(a, nᵢ) for nᵢ in freqs)
+        h = digamma(N) - 1/N * sum(nᵢ * Gₙ(a, nᵢ) for nᵢ in cts)
     else
-        # Assumes a[i] corresponds to freqs[i]
-        h = digamma(N) - 1/N * sum(nᵢ * Gₙ(aᵢ, nᵢ) for (nᵢ, aᵢ) in zip(freqs, a))
+        # Assumes a[i] corresponds to cts[i]
+        h = digamma(N) - 1/N * sum(nᵢ * Gₙ(aᵢ, nᵢ) for (nᵢ, aᵢ) in zip(cts, a))
     end
 
     # Grassberger's estimate of `h` is based on the natural logarithm, so we must convert

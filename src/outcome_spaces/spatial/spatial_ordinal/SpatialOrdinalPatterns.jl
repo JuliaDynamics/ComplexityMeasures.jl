@@ -96,39 +96,17 @@ end
 
 function counts!(s, est::SpatialOrdinalPatterns, x)
     encodings_from_permutations!(s, est, x)
-    return counts(s)
-end
-
-function counts_and_outcomes(est::SpatialOrdinalPatterns, x)
-    # TODO: This can be literally a call to `symbolize` and then
-    # calling probabilities on it. Should do once the `symbolize` refactoring is done.
-    s = zeros(Int, length(est.valid))
-    counts_and_outcomes!(s, est, x)
-end
-
-function counts_and_outcomes!(s, est::SpatialOrdinalPatterns, x)
-    encodings_from_permutations!(s, est, x)
     observed_outcomes = decode.(Ref(est.encoding), s)
-    return counts(s), sort!(unique(observed_outcomes))
+    outs = sort!(unique(observed_outcomes))
+    z = copy(s)
+    cts = fasthist!(z)
+    return Counts(cts, (outs,))
 end
 
 # Don't use generic dispatch, because we need to use `counts`!.
 function probabilities!(est::SpatialOrdinalPatterns, x, s)
     s = zeros(Int, length(est.valid))
-    counts!(s, est, x)
-    return Probabilities(counts(s))
-end
-
-# Don't use generic dispatch, because we need to use `counts_and_outcomes`!.
-function probabilities_and_outcomes!(s, est::SpatialOrdinalPatterns, x)
-    cts, outs = counts_and_outcomes!(s, est, x)
-    return Probabilities(cts), outs
-end
-
-# Don't use generic dispatch, because we need to use `probabilities_and_outcomes`!.
-function probabilities_and_outcomes(est::SpatialOrdinalPatterns, x)
-    s = zeros(Int, length(est.valid))
-    return probabilities_and_outcomes!(s, est, x)
+    return Probabilities(counts!(s, est, x))
 end
 
 # Pretty printing

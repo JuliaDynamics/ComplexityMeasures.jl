@@ -58,7 +58,9 @@ end
 
 # So that SymbolicPerm stuff fallback here
 total_outcomes(::OrdinalPatternEncoding{m}) where {m} = factorial(m)
-outcome_space(::OrdinalPatternEncoding{m}) where {m} = permutations(1:m) |> collect
+function outcome_space(::OrdinalPatternEncoding{m}) where {m}
+    collect(SVector{m}(p) for p in permutations(1:m))
+end
 
 # Notice that `χ` is an element of a `StateSpaceSet`, so most definitely a static vector in
 # our code. However we allow `AbstractVector` if a user wanna use `encode` directly.

@@ -74,7 +74,7 @@ increase of the probability corresponding to the last bin (here `[0.9, 1)`)!
 `histsize = map(r -> length(r)-1, ranges)`!**
 
 `FixedRectangularBinning` leads to a well-defined outcome space without knowledge of input
-data, see [`ValueHistogram`](@ref).
+data, see [`ValueBinning`](@ref).
 """
 struct FixedRectangularBinning{R<:Tuple} <: AbstractBinning
     ranges::R
@@ -268,7 +268,7 @@ outcome_space(RectangularBinEncoding(b, args...))
 ##################################################################
 # low level histogram call
 ##################################################################
-# This method is called by `probabilities(est::ValueHistogram, x::Array_or_SSSet)`
+# This method is called by `probabilities(est::ValueBinning, x::Array_or_SSSet)`
 # `fasthist!` is in the `estimators/value_histogram` folder.
 """
     fasthist(c::RectangularBinEncoding, x::Vector_or_SSSet)
@@ -294,14 +294,9 @@ end
 # Convenience compatibility with counting api.
 # ----------------------------------------------------------------
 function counts(encoding::RectangularBinEncoding, x)
-    cts = first(fasthist(encoding, x))
-    return cts
-end
-
-function counts_and_outcomes(encoding::RectangularBinEncoding, x)
     cts, bins = fasthist(encoding, x) # bins are integers here
     unique!(bins) # `bins` is already sorted from `frequencies!`
     # Here we transform the cartesian coordinate based bins into data unit bins:
     outcomes = map(b -> decode(encoding, b), bins)
-    return cts, vec(outcomes)
+    return Counts(cts, (outcomes,))
 end

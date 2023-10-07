@@ -3,7 +3,7 @@ export Shrinkage
 # TODO: make sure we act correctly for `probabilities` and `allprobabilities`.
 """
     Shrinkage{<:OutcomeSpace} <: ProbabilitiesEstimator
-    Shrinkage(model::OutcomeSpace; t = nothing, λ = nothing)
+    Shrinkage(; t = nothing, λ = nothing)
 
 The `Shrinkage` estimator is used with [`probabilities`](@ref) and related functions
 to estimate probabilities over the given `m`-element counting-based
@@ -53,30 +53,28 @@ ps_shrink = probabilities(Shrinkage(OrdinalPatterns(m = 3)), x)
 
 See also: [`RelativeAmount`](@ref), [`BayesianRegularization`](@ref).
 """
-struct Shrinkage{O <: OutcomeSpace, T <: Union{Nothing, Real, Vector{<:Real}}, L <: Union{Nothing, Real}} <: ProbabilitiesEstimator
-    outcomemodel::O
+struct Shrinkage{T <: Union{Nothing, Real, Vector{<:Real}}, L <: Union{Nothing, Real}} <: ProbabilitiesEstimator
     t::T
     λ::L
-    function Shrinkage(o::O, t::T, λ::L) where {O <: OutcomeSpace, T, L}
-        verify_counting_based(o, "Shrinkage")
-        new{O, T, L}(o, t, λ)
+    function Shrinkage(; t::T = nothing, λ::L = nothing) where {T, L}
+        new{T, L}(t, λ)
     end
 end
 
-Shrinkage(o::OutcomeSpace; t = nothing, λ = nothing) = Shrinkage(o, t, λ)
-function probabilities_and_outcomes(est::Shrinkage, x)
-    probs, Ω = probabilities_and_outcomes(est.outcomemodel, x)
-    return probs_and_outs_from_histogram(est, probs, Ω, x)
+function probabilities(est::Shrinkage, outcomemodel::OutcomeSpace, x)
+    probs, Ω = probabilities_and_outcomes(RelativeAmount(), outcomemodel, x)
+    return probs_and_outs_from_histogram(est, outcomemodel, probs, Ω, x)
 end
 
-# TODO: this doesn't work for SymbolicDispersion estimator.
-function allprobabilities_and_outcomes(est::Shrinkage, x)
-    probs_all, Ω_all = allprobabilities_and_outcomes(est.outcomemodel, x)
-    return probs_and_outs_from_histogram(est, probs_all, Ω_all, x)
+function allprobabilities(est::Shrinkage, outcomemodel::OutcomeSpace, x)
+    probs_all, Ω_all = allprobabilities_and_outcomes(outcomemodel, x)
+    return probs_and_outs_from_histogram(est, outcomemodel, probs_all, Ω_all, x)
 end
 
-function probs_and_outs_from_histogram(est::Shrinkage, probs_observed, Ω_observed, x)
-    (; outcomemodel, t) = est
+function probs_and_outs_from_histogram(est::Shrinkage, outcomemodel::OutcomeSpace,
+        probs_observed, Ω_observed, x)
+    verify_counting_based(outcomemodel, "Shrinkage")
+    t = est.t
 
     n = encoded_space_cardinality(outcomemodel, x) # Normalize based on *encoded* data.
     m = length(Ω_observed)
@@ -95,7 +93,7 @@ function probs_and_outs_from_histogram(est::Shrinkage, probs_observed, Ω_observ
         probs[idx] = θₖ_shrink(probs_observed[k], λ, tₖ)
     end
     @assert sum(probs) ≈ 1.0
-    return Probabilities(probs), Ω_observed
+    return Probabilities(probs, (x1 = Ω_observed,))
 end
 
 function get_λ(est, n, probs_observed, t, m)

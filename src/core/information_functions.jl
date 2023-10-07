@@ -12,14 +12,16 @@ const InfoMeasureOrEst = Union{InformationMeasure, DiscreteInfoEstimator}
 const ProbEstOrOutcomeSpace = Union{OutcomeSpace, ProbabilitiesEstimator}
 
 """
-    information([e::DiscreteInfoEstimator,] est::ProbabilitiesEstimator, x) → h::Real
+    information([e::DiscreteInfoEstimator,] est::ProbabilitiesEstimator, o::OutcomeSpace, x) → h::Real
 
 Estimate a discrete information measure from input data `x` using the provided
-[`DiscreteInfoEstimator`](@ref) and [`ProbabilitiesEstimator`](@ref).
+[`DiscreteInfoEstimator`](@ref) and [`ProbabilitiesEstimator`](@ref) over the
+given [`OutcomeSpace`](@ref).
+
 As an alternative, you can provide an [`InformationMeasure`](@ref)
 for the first argument (which will default to [`PlugIn`](@ref) estimation) or an
-[`OutcomeSpace`](@ref) for the second argument (which will default to the [`RelativeAmount`](@ref)
-estimator).
+[`OutcomeSpace`](@ref) for the second argument (which will default to the
+[`RelativeAmount`](@ref) probabilities estimator).
 
 
     information([e::DiscreteInfoEstimator,] p::Probabilities) → h::Real
@@ -39,7 +41,7 @@ This will use the "naive" [`PlugIn`](@ref) estimator for the measure, and the "n
 
 ```julia
 x = randn(100) # some input data
-o = ValueHistogram(RectangularBinning(5)) # a 5-bin histogram outcome space
+o = ValueBinning(RectangularBinning(5)) # a 5-bin histogram outcome space
 h_s = information(Shannon(), o, x)
 ```
 
@@ -50,14 +52,15 @@ x = [rand(Bool) for _ in 1:10000] # coin toss
 ps = probabilities(x) # gives about [0.5, 0.5] by definition
 h = information(ps) # gives 1, about 1 bit by definition (Shannon entropy by default)
 h = information(Shannon(), ps) # syntactically equivalent to the above
-h = information(Shannon(), CountOccurrences(), x) # syntactically equivalent to above
+h = information(Shannon(), UniqueElements(), x) # syntactically equivalent to above
 h = information(Renyi(2.0), ps) # also gives 1, order `q` doesn't matter for coin toss
 h = information(OrdinalPatterns(;m=3), x) # gives about 2, again by definition
 ```
 
 ## Examples (bias-corrected estimation)
 
-It is known that both [`PlugIn`](@ref) and [`RelativeAmount`](@ref) estimation are biased. The
+It is known that both [`PlugIn`](@ref) estimation for information measures and
+[`RelativeAmount`](@ref) estimation for probabilities are biased. The
 scientific literature abounds with estimators that correct for this bias, both on the
 measure-estimation level and on the probability-estimation level.
 We thus provide the option to use any [`DiscreteInfoEstimator`](@ref) in combination with
@@ -66,34 +69,34 @@ probabilites estimators will only work with counting-compatible [`OutcomeSpace`]
 
 ```julia
 x = randn(100)
-o = ValueHistogram(RectangularBinning(5))
+o = ValueBinning(RectangularBinning(5))
 
 # Estimate Shannon entropy estimation using various dedicated estimators
-h_s = information(MillerMadow(Shannon()), RelativeAmount(o), x)
-h_s = information(HorvitzThompson(Shannon()), Shrinkage(o), x)
-h_s = information(Schürmann(Shannon()), Shrinkage(o), x)
+h_s = information(MillerMadow(Shannon()), RelativeAmount(), o, x)
+h_s = information(HorvitzThompson(Shannon()), Shrinkage(), o, x)
+h_s = information(Schürmann(Shannon()), Shrinkage(), o, x)
 
 # Estimate information measures using the generic `Jackknife` estimator
-h_r = information(Jackknife(Renyi()), Shrinkage(o), x)
-j_t = information(Jackknife(TsallisExtropy()), BayesianRegularization(o), x)
-j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(o), x)
+h_r = information(Jackknife(Renyi()), Shrinkage(), o, x)
+j_t = information(Jackknife(TsallisExtropy()), BayesianRegularization(), o, x)
+j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(),  x)
 ```
 """
 function information(e::InformationMeasure, o::OutcomeSpace, x)
-    return information(PlugIn(e), RelativeAmount(o), x)
+    return information(PlugIn(e), RelativeAmount(), o, x)
 end
-function information(e::InformationMeasure, est::ProbabilitiesEstimator, x)
-    return information(PlugIn(e), est, x)
+function information(e::InformationMeasure, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    return information(PlugIn(e), est, o, x)
 end
 function information(e::DiscreteInfoEstimator, o::OutcomeSpace, x)
-    return information(e, RelativeAmount(o), x)
+    return information(e, RelativeAmount(), o, x)
 end
 
 # dispatch for `information(e, ps::Probabilities)`
 # is in the individual information definition or discrete estimator files
 
 # Convenience
-information(est::OutcomeSpace, x) = information(Shannon(), est, x)
+information(o::OutcomeSpace, x) = information(Shannon(), o, x)
 information(probs::Probabilities) = information(Shannon(), probs)
 
 # from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
@@ -154,7 +157,7 @@ without knowledge of input `x`, in which case the function dispatches to
 
 The same as above, but computed directly from the number of total outcomes `L`.
 """
-function information_maximum(e::InformationMeasure, est::ProbEstOrOutcomeSpace, x)
+function information_maximum(e::InformationMeasure, est::ProbEstOrOutcomeSpace,  x)
     L = total_outcomes(est, x)
     return information_maximum(e, L)
 end
@@ -202,8 +205,11 @@ function information_normalized(e::InformationMeasure, o::OutcomeSpace, x)
     end
     return information(e, o, x) / infomax
 end
-function information_normalized(o::OutcomeSpace, x::Array_or_SSSet)
+function information_normalized(o::OutcomeSpace, x)
     return information_normalized(Shannon(), o, x)
+end
+function information_normalized(est::DiscreteInfoEstimator, o::OutcomeSpace, x)
+    return information_normalized(est.definition, o, x)
 end
 
 

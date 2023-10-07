@@ -6,36 +6,37 @@ rng = MersenneTwister(1234)
         x = rand(rng, 1:10., 100)
 
         os = [
-            CountOccurrences(),
+            UniqueElements(),
             OrdinalPatterns(m = 3),
             Dispersion(),
-            Diversity(),
-            ValueHistogram(RectangularBinning(3)),
+            CosineSimilarityBinning(),
+            ValueBinning(RectangularBinning(3)),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
-            est = RelativeAmount(os[i])
+            est = RelativeAmount()
+            o = os[i]
 
-            cts, Ωobs = allcounts_and_outcomes(est, x)
-            @test sort(Ωobs) == sort(outcome_space(est, x))
-            @test length(cts) == total_outcomes(est, x)
-            @test allcounts(est, x) == cts
+            cts, Ωobs = allcounts_and_outcomes(o, x)
+            @test sort(Ωobs) == sort(outcome_space(o, x))
+            @test length(cts) == total_outcomes(o, x)
+            @test allcounts(o, x) == cts
 
-            cts, Ωobs = counts_and_outcomes(est, x)
-            @test cts isa Vector{Int}
-            @test length(cts) <= total_outcomes(est, x)
-            @test length(Ωobs) <= total_outcomes(est, x)
-            @test counts(est, x) == cts
+            cts, Ωobs = counts_and_outcomes(o, x)
+            @test cts isa Counts{<:Integer, 1}
+            @test length(cts) <= total_outcomes(o, x)
+            @test length(Ωobs) <= total_outcomes(o, x)
+            @test counts(o, x) == cts
 
-            ps, Ωobs = probabilities_and_outcomes(est, x)
+            ps, Ωobs = probabilities_and_outcomes(est, o, x)
             @test ps isa Probabilities
-            @test probabilities(est, x) == ps
-            @test outcomes(est, x) == Ωobs
+            @test probabilities(o, x) == ps
+            @test outcomes(o, x) == Ωobs
 
-            ps, Ωall = allprobabilities_and_outcomes(est, x)
+            ps, Ωall = allprobabilities_and_outcomes(est, o, x)
             @test ps isa Probabilities
-            @test sort(Ωall) == outcome_space(est, x)
-            @test allprobabilities(est, x) isa Probabilities
-            @test sort(outcome_space(est, x)) == sort(Ωall)
+            @test sort(Ωall) == outcome_space(o, x)
+            @test allprobabilities(o, x) isa Probabilities
+            @test sort(outcome_space(o, x)) == sort(Ωall)
         end
 
         # Spatial estimators (all of them are currently counting-based)
@@ -46,16 +47,17 @@ rng = MersenneTwister(1234)
             SpatialOrdinalPatterns([0 1; 1 0], x),
         ]
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
-            est = RelativeAmount(os[i])
-            ps, Ωobs = probabilities_and_outcomes(est, x)
+            est = RelativeAmount()
+            o = os[i]
+            ps, Ωobs = probabilities_and_outcomes(est, o, x)
             @test ps isa Probabilities
-            @test outcomes(est, x) == Ωobs
-            @test probabilities(est, x) == ps
+            @test outcomes(o, x) == Ωobs
+            @test probabilities(o, x) == ps
 
-            ps, Ωall = allprobabilities_and_outcomes(est, x)
+            ps, Ωall = allprobabilities_and_outcomes(est, o, x)
             @test ps isa Probabilities
-            @test sort(Ωall) == sort(outcome_space(est, x))
-            @test allprobabilities(est, x) == ps
+            @test sort(Ωall) == sort(outcome_space(o, x))
+            @test allprobabilities(o, x) == ps
         end
     end
 end
@@ -73,17 +75,18 @@ end
         NaiveKernel(0.1),
     ]
     @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
-        est = RelativeAmount(os[i])
-        ps, Ωobs = probabilities_and_outcomes(est, x)
+        est = RelativeAmount()
+        o = os[i]
+        ps, Ωobs = probabilities_and_outcomes(o, x)
         @test ps isa Probabilities
-        @test outcomes(est, x) == Ωobs
-        @test probabilities(est, x) ≈ ps
+        @test outcomes(o, x) == Ωobs
+        @test probabilities(o, x) ≈ ps
 
-        ps, Ωall = allprobabilities_and_outcomes(est, x)
+        ps, Ωall = allprobabilities_and_outcomes(o, x)
         @test ps isa Probabilities
-        @test sort(Ωall) == sort(outcome_space(est, x))
+        @test sort(Ωall) == sort(outcome_space(o, x))
 
         # `TransferOperator` uses randomization, so exact comparison sometimes fails
-        @test allprobabilities(est, x) ≈ ps
+        @test allprobabilities(o, x) ≈ ps
     end
 end

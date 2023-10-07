@@ -2,7 +2,7 @@ using Test, Random
 rng = MersenneTwister(1234)
 
 x = rand(1:5, 1000)
-pest = CountOccurrences()
+pest = UniqueElements()
 
 h = information(MillerMadow(Shannon()), pest, x)
 @test h isa Real

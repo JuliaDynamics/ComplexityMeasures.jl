@@ -82,7 +82,7 @@ rng = MersenneTwister(1234)
     # where the outcome space is not defined a priori
     c = StatisticalComplexity(
         dist=JSDivergence(),
-        est=ValueHistogram(0.1),
+        est=ValueBinning(0.1),
         entr=Tsallis()
     )
     @test_throws ErrorException complexity(c, x)

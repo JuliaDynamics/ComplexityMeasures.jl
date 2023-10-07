@@ -1,9 +1,9 @@
 using DelayEmbeddings
 
-export Diversity
+export CosineSimilarityBinning, Diversity
 
 """
-    Diversity(; m::Int, τ::Int, nbins::Int)
+    CosineSimilarityBinning(; m::Int, τ::Int, nbins::Int)
 
 A [`OutcomeSpace`](@ref) based on the cosine similarity [Wang2020](@cite).
 
@@ -14,7 +14,7 @@ The implementation here allows for `τ != 1`, which was not considered in the or
 
 ## Description
 
-Diversity probabilities are computed as follows.
+CosineSimilarityBinning probabilities are computed as follows.
 
 1. From the input time series `x`, using embedding lag `τ` and embedding dimension `m`,
     construct the embedding
@@ -29,31 +29,27 @@ Diversity probabilities are computed as follows.
 
 ## Outcome space
 
-The outcome space for `Diversity` is the bins of the `[-1, 1]` interval,
-and the return configuration is the same as in [`ValueHistogram`](@ref) (left bin edge).
+The outcome space for `CosineSimilarityBinning` is the bins of the `[-1, 1]` interval,
+and the return configuration is the same as in [`ValueBinning`](@ref) (left bin edge).
+
+## Implements
+
+- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
-Base.@kwdef struct Diversity <: CountBasedOutcomeSpace
+Base.@kwdef struct CosineSimilarityBinning <: CountBasedOutcomeSpace
     m::Int = 2
     τ::Int = 1 # Note: the original paper does not allow τ != 1
     nbins::Int = 5
 end
 
-function counts(est::Diversity, x::AbstractVector{T}) where T <: Real
-    ds, rbc = similarities_and_binning(est, x)
-    cts = fasthist(rbc, ds)[1]
-    return cts
-end
+"""
+    Diversity
 
-function counts_and_outcomes(est::Diversity, x::AbstractVector{T}) where T <: Real
-    ds, rbc = similarities_and_binning(est, x)
-    cts, outcomes = counts_and_outcomes(rbc, ds)
-    return cts, outcomes
-end
+An alias to [`CosineSimilarityBinning`](@ref).
+"""
+const Diversity = CosineSimilarityBinning
 
-outcome_space(est::Diversity) = outcome_space(encoding_for_diversity(est.nbins))
-total_outcomes(est::Diversity) = est.nbins
-
-function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T <: Real
+function counts(est::CosineSimilarityBinning, x::AbstractVector{T}) where T <: Real
     # embed and then calculate cosine similary for each consecutive pair of delay vectors
     τs = 0:est.τ:(est.m - 1)*est.τ
     Y = genembed(x, τs)
@@ -63,10 +59,13 @@ function similarities_and_binning(est::Diversity, x::AbstractVector{T}) where T 
     end
     # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval
     rbc = encoding_for_diversity(est.nbins)
-    return ds, rbc
+    return counts(rbc, ds)::Counts
 end
 
-function encoded_space_cardinality(est::Diversity, x::AbstractVector{<:Real})
+outcome_space(est::CosineSimilarityBinning) = outcome_space(encoding_for_diversity(est.nbins))
+total_outcomes(est::CosineSimilarityBinning) = est.nbins
+
+function encoded_space_cardinality(est::CosineSimilarityBinning, x::AbstractVector{<:Real})
     n_pts_embedded = length(x) - (est.m - 1)*est.τ
     # Since we consider cosine similarities for consecutive pairs of embedding points,
     # the last point isn't considered for the histogram.
@@ -78,4 +77,16 @@ cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt
 function encoding_for_diversity(nbins::Int)
     binning = FixedRectangularBinning((range(-1.0, nextfloat(1.0); length = nbins+1),))
     return RectangularBinEncoding(binning)
+end
+
+function codify(o::CosineSimilarityBinning, x::AbstractVector{T}) where T
+    τs = 0:o.τ:(o.m - 1)*o.τ
+    Y = genembed(x, τs)
+    ds = zeros(Float64, length(Y) - 1)
+    @inbounds for i in 1:(length(Y)-1)
+        ds[i] = cosine_similarity(Y[i], Y[i+1])
+    end
+    # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval
+    rbc = encoding_for_diversity(o.nbins)
+    return encode.(Ref(rbc), ds)
 end

@@ -18,6 +18,7 @@ const Vector_or_SSSet = Union{<:AbstractVector{<:Real}, <:AbstractStateSpaceSet}
 include("core/outcome_spaces.jl")
 include("core/counts.jl")
 include("core/probabilities.jl")
+include("core/print_counts_probs.jl") # pretty printing
 include("core/information_measures.jl")
 include("core/information_functions.jl")
 include("core/encodings.jl")
@@ -58,7 +59,7 @@ We tried our best to keep pre-2.0 functions working and throw deprecation warnin
 If we missed code that should be working, please let us know by opening an issue.
 
 For example, `geninformation(x::Array_or_SSSet, ε::Real; q, base)` is deprecated
-in favor of `information(Renyi(q, base), ValueHistogram(ε), x)`.
+in favor of `information(Renyi(q, base), ValueBinning(ε), x)`.
 """
 
 if display_update

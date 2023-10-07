@@ -38,19 +38,12 @@ ps == ps_mle # true
 
 See also: [`BayesianRegularization`](@ref), [`Shrinkage`](@ref).
 """
-struct RelativeAmount{O <: OutcomeSpace} <: ProbabilitiesEstimator
-    outcomemodel::O
-end
+struct RelativeAmount <: ProbabilitiesEstimator end
 
-probabilities(est::RelativeAmount, x) = probabilities(est.outcomemodel, x)
-allprobabilities(est::RelativeAmount, x) = allprobabilities(est.outcomemodel, x)
-counts_and_outcomes(est::RelativeAmount, x) = counts_and_outcomes(est.outcomemodel, x)
-counts(est::RelativeAmount, x) = counts(est.outcomemodel, x)
-
-function probabilities_and_outcomes(est::RelativeAmount, x)
-    return probabilities_and_outcomes(est.outcomemodel, x)
-end
-
-function allprobabilities_and_outcomes(est::RelativeAmount, x)
-    return allprobabilities_and_outcomes(est.outcomemodel, x)
+function probabilities(est::RelativeAmount, outcomemodel::OutcomeSpace, x)
+    if is_counting_based(outcomemodel)
+        return Probabilities(counts(outcomemodel, x))
+    else
+        return probabilities(outcomemodel, x)
+    end
 end

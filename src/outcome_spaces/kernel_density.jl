@@ -56,15 +56,9 @@ end
 
 function probabilities(est::NaiveKernel, x::AbstractStateSpaceSet)
     idxs = neighbor_cts(est, x)
-    return Probabilities(length.(idxs))
-end
-
-function probabilities_and_outcomes(est::NaiveKernel, x::AbstractVector{<:Real})
-    probabilities_and_outcomes(est, StateSpaceSet(x))
-end
-function probabilities_and_outcomes(est::NaiveKernel, x::AbstractStateSpaceSet)
-    idxs = neighbor_cts(est, x)
-    return Probabilities(length.(idxs)), eachindex(x)
+    probs = length.(idxs)
+    outs = eachindex(x)
+    return Probabilities(probs, (x1 = outs,))
 end
 
 function neighbor_cts(est::NaiveKernel, x)

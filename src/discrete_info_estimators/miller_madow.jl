@@ -23,9 +23,9 @@ Base.@kwdef struct MillerMadow{I <: InformationMeasure} <: DiscreteInfoEstimator
     definition::I = Shannon()
 end
 
-function information(hest::MillerMadow{<:Shannon}, pest::ProbabilitiesEstimator, x)
+function information(hest::MillerMadow{<:Shannon}, pest::ProbabilitiesEstimator, o::OutcomeSpace, x)
     N = length(x)
-    probs = allprobabilities(pest, x)
+    probs = allprobabilities(pest, o, x)
     # Estimate of the number of bins with nonzero pN-probability; here estimated as
     # in Paninski (2003)
     m̂ = count(probs .> 0.0)

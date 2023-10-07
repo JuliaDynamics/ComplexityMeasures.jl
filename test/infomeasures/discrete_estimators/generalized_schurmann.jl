@@ -2,7 +2,7 @@ using Test, Random
 rng = MersenneTwister(1234)
 
 x = rand(rng, 1:5, 1000)
-pest = CountOccurrences()
+pest = UniqueElements()
 
 h_singlea = information(GeneralizedSchürmann(Shannon(); a = 1.0), pest, x)
 @test h_singlea isa Real
@@ -41,7 +41,7 @@ end
 nreps = 2_000_000
 hs = zeros(nreps)
 #hest = GeneralizedSchürmann(Shannon(; base = 2)) # results are given in bits
-pest = CountOccurrences()
+pest = UniqueElements()
 for i = 1:nreps
     hs[i] = information(PlugIn(Shannon()), pest, rand(rng, 0:1, 3))
 end
@@ -50,7 +50,7 @@ end
 # Compare
 hs = zeros(nreps)
 hest = GeneralizedSchürmann(Shannon(; base = 2); a = 1) # results are given in bits
-pest = CountOccurrences()
+pest = UniqueElements()
 
 for i = 1:nreps
     hs[i] = information(hest, pest, rand(rng, 0:1, 3))
