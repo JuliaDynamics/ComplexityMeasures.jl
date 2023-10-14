@@ -28,6 +28,11 @@ Further additions to the library in v3:
     (consistent with `RectangularBinEncoding`), regardless of whether the input is a scalar
     or a vector.
 
+### Warnings
+
+- Using the `TransferOperator` outcome space with a binning with `precise == false` will
+    now trigger a warning.
+
 ### Renaming
 
 - `SymbolicPermutation` is now `OrdinalPatterns`.

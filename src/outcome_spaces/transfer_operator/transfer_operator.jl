@@ -188,7 +188,11 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
         boundary_condition = :circular) where {D, T<:Real}
 
     L = length(pts)
+    if !binning.precise
+        @warn "`binning.precise == false`. You may be getting points outside the binning."
+    end
     encoding = RectangularBinEncoding(binning, pts)
+
 
     # The L points visits a total of L bins, which are the following bins (referenced
     # here as cartesian coordinates, not absolute bins):
@@ -216,7 +220,7 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
     # one point of the orbit visiting a bin.
     target_bin_j::Int = 0
     n_visitsᵢ::Int = 0
-
+   
     if boundary_condition == :circular
         append!(visits_whichbin, [1])
     elseif boundary_condition == :random
@@ -415,7 +419,6 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     if abs(colsum_distribution - 1) > delta
         distribution = distribution ./ colsum_distribution
     end
-
     # Extract the elements of the invariant measure corresponding to these indices
     return InvariantMeasure(to, Probabilities(distribution))
 end
