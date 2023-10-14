@@ -27,11 +27,10 @@ Further additions to the library in v3:
     `[0, 1]` subintervals, and always returns the decoded symbol as a `Vector{SVector}`
     (consistent with `RectangularBinEncoding`), regardless of whether the input is a scalar
     or a vector.
-
-### Warnings
-
-- Using the `TransferOperator` outcome space with a binning with `precise == false` will
-    now trigger a warning.
+- Using the `TransferOperator` outcome space with a `RectangularBinning` or
+    `FixedRectangularBinning` with `precise == false` will now trigger a warning.
+    This was previously causing random bugs because some bins were encoded as `-1`,
+    indicating that the point is outside the binning - even if it wasn't.
 
 ### Renaming
 
