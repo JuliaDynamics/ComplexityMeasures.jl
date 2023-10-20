@@ -121,10 +121,11 @@ BayesianRegularization
 Shrinkage
 ```
 
-## [Encodings API](@id encodings)
+## [Encodings/Symbolizations API](@id encodings)
 
 Count-based [`OutcomeSpace`](@ref)s first "encode" input data into an intermediate representation indexed by the positive integers.
 This intermediate representation is called an "encoding".
+Alternative name for "encoding" in the literature is "symbolize".
 
 The encodings API is defined by:
 
