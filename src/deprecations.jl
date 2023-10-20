@@ -82,3 +82,16 @@ function OrdinalPatternEncoding(m::Int, lt::F = isless_rand) where {F}
     "Pass it as a type parameter instead: `OrdinalPattern...{m}`."
     return OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
 end
+# Initializations
+function OrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+    m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
+    return OrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
+end
+function WeightedOrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+    m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
+    return WeightedOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
+end
+function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+    m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
+    return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
+end

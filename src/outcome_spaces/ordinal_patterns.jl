@@ -19,10 +19,12 @@ abstract type OrdinalOutcomeSpace{m} <: CountBasedOutcomeSpace end
 ###########################################################################################
 """
     OrdinalPatterns <: OutcomeSpace
-    OrdinalPatterns(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
+    OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
-An [`OutcomeSpace`](@ref) based on ordinal permutation patterns, originally introduced in
-[BandtPompe2002](@citet)'s paper on permutation entropy.
+An [`OutcomeSpace`](@ref) based on lengh-`m` ordinal permutation patterns, originally
+introduced in [BandtPompe2002](@citet)'s paper on permutation entropy.
+Note that `m` is given as a type parameter, so that when it is a literal integer
+there are performance accelerations.
 
 When passed to [`probabilities`](@ref) the output depends on the input data type:
 
@@ -82,15 +84,11 @@ For example
 ```julia
 using ComplexityMeasures
 m, N = 2, 100
-est = OrdinalPatterns(; m, τ)
+est = OrdinalPatterns{m}(τ)
 x = StateSpaceSet(rand(N, m)) # some input dataset
 πs_ts = zeros(Int, N) # length must match length of `x`
 p = probabilities!(πs_ts, est, x)
 ```
-
-## Implements
-
-- [`symbolize`](@ref). Used for encoding time series.
 """
 struct OrdinalPatterns{M,F} <: OrdinalOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
@@ -119,11 +117,11 @@ end
 
 """
     WeightedOrdinalPatterns <: OutcomeSpace
-    WeightedOrdinalPatterns(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
+    WeightedOrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
 A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
 based on the weighted permutation entropy [Fadlallah2013](@cite). The outcome space and
-keywords are the same as in [`OrdinalPatterns`](@ref).
+arguments are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 
@@ -155,11 +153,11 @@ is_counting_based(o::WeightedOrdinalPatterns) = false
 
 """
     AmplitudeAwareOrdinalPatterns <: OutcomeSpace
-    AmplitudeAwareOrdinalPatterns(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
+    AmplitudeAwareOrdinalPatterns{m}(τ = 1, A = 0.5, lt = ComplexityMeasures.isless_rand)
 
 A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
 based on the amplitude-aware permutation entropy [Azami2016](@cite). The outcome space and
-keywords are the same as in [`OrdinalPatterns`](@ref).
+arguments are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 
@@ -186,15 +184,15 @@ end
 is_counting_based(o::AmplitudeAwareOrdinalPatterns) = false
 
 # Initializations
-function OrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function OrdinalPatterns{m}(τ::Int = 1, lt::F=isless_rand) where {m, F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return OrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function WeightedOrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=isless_rand) where {m, F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return WeightedOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand) where {m, F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
