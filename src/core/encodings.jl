@@ -22,10 +22,9 @@ abstract type Encoding end
 """
     encode(c::Encoding, χ) -> i::Int
 
-Encode an element `χ ∈ x` of input data `x` (those given to [`probabilities`](@ref))
-using encoding `c`.
-
-The special value of `-1` is reserved as a return value for
+Encode an element `χ ∈ x` of input data `x` (those given to [`counts`](@ref))
+into the positive integers `i ≥ 0` using encoding `c`.
+The special value of `i = -1` is used as a return value for
 inappropriate elements `χ` that cannot be encoded according to `c`.
 """
 function encode end
@@ -34,8 +33,7 @@ function encode end
     decode(c::Encoding, i::Integer) -> ω
 
 Decode an encoded element `i` into the outcome `ω ∈ Ω` it corresponds to.
-
-`Ω` is the [`outcome_space`](@ref) of a probabilities estimator that uses encoding `c`.
+`Ω` is the [`outcome_space`](@ref) that uses encoding `c`.
 """
 function decode end
 
@@ -61,7 +59,7 @@ The reason this function exists is that we don't always want to [`encode`](@ref)
 entire input `x` at once. Sometimes, it is desirable to first apply some transformation to
 `x` first, then apply [`encoding`](@ref)s in a point-wise manner in the transformed space.
 (the [`OutcomeSpace`](@ref) dictates this transformation). This is useful for encoding
-time series data.
+timeseries data.
 
 The length of the returned `s` depends on the [`OutcomeSpace`](@ref). Some outcome
 spaces preserve the input data length (e.g. [`UniqueElements`](@ref)), while

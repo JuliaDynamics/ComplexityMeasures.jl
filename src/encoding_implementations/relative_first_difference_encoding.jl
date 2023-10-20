@@ -5,7 +5,7 @@ export RelativeFirstDifferenceEncoding
     RelativeFirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
 
 `RelativeFirstDifferenceEncoding` encodes a vector based on the relative position the average
-of the *first differences* of the vectors has  with respect to a predefined minimum and
+of the *first differences* of the vectors has with respect to a predefined minimum and
 maximum value (`minval` and `maxval`, respectively).
 
 ## Description
