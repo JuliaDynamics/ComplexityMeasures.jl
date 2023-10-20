@@ -51,6 +51,9 @@ export codify
     codify(o::OutcomeSpace, x::AbstractStateSpaceSet{D}) → s::NTuple{D, Vector{Int}
 
 Codify `x` according to the outcome space `o`.
+If `x` is a `Vector`, then a `Vector{<:Integer}` is returned. If `x` is a
+`StateSpaceSet{D}`, then symbolization is done column-wise and an
+`NTuple{D, Vector{<:Integer}}` is returned, where `D = dimension(x)`.
 
 ## Description
 
@@ -64,21 +67,5 @@ The length of the returned `s` depends on the [`OutcomeSpace`](@ref). Some outco
 spaces preserve the input data length (e.g. [`UniqueElements`](@ref)), while
 some outcome spaces (e.g. [`OrdinalPatterns`](@ref)) do e.g. delay embeddings before
 encoding, so that `length(s) < length(x)`.
-
-## Returns
-
-If `x` is a `Vector`, then a `Vector{<:Integer}` is returned. If `x` is a
-`StateSpaceSet{D}`, then symbolization is done column-wise and an
-`NTuple{D, Vector{<:Integer}}` is returned, where `D = dimension(x)`.
-
-# Concrete implementations
-
-    codify(o::UniqueElements, x::VectorOrStateSpaceSet)
-    codify(o::Dispersion, x::VectorOrStateSpaceSet)
-    codify(o::ValueBinning, x::VectorOrStateSpaceSet)
-    codify(o::OrdinalPatterns, x::AbstractVector)
-    codify(o::CosineSimilarityBinning, x::AbstractVector)
-
-These are listed for convenience.
 """
 function codify end
