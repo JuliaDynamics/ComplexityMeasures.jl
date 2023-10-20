@@ -131,11 +131,13 @@ The encodings API is defined by:
 - [`Encoding`](@ref)
 - [`encode`](@ref)
 - [`decode`](@ref)
+- [`codify`](@ref)
 
 ```@docs
 Encoding
 encode
 decode
+codify
 ```
 
 ### Available encodings
