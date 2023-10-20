@@ -76,3 +76,9 @@ end
 @deprecate SymbolicPermutation OrdinalPatterns
 @deprecate SymbolicWeightedPermutation WeightedOrdinalPatterns
 @deprecate SymbolicAmplitudeAwarePermutation AmplitudeAwareOrdinalPatterns
+
+function OrdinalPatternEncoding(m::Int, lt::F = isless_rand) where {F}
+    @warn "Passing `m` as an argument to `OrdinalPattern...(m = ...)` is deprecated. "*
+    "Pass it as a type parameter instead: `OrdinalPattern...{m}`."
+    return OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
+end
