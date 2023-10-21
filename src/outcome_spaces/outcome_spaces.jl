@@ -1,6 +1,6 @@
 include("unique_elements.jl")
 include("value_binning.jl")
-include("symbolic_permutation.jl")
+include("ordinal_patterns.jl")
 include("kernel_density.jl")
 include("power_spectrum.jl")
 include("wavelet_overlap.jl")
