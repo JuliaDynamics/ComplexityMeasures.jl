@@ -19,7 +19,7 @@ The keyword argument `r` is mandatory if an input timeseries `x` is not provided
 - `r::Real`: The radius used when querying for nearest neighbors around points. Its value
     should be determined from the input data, for example as some proportion of the
     standard deviation of the data.
-- `m::Int = 1`: The embedding dimension.
+- `m::Int = 2`: The embedding dimension.
 - `τ::Int = 1`: The embedding lag.
 
 ## Description
