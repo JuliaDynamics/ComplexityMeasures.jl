@@ -12,18 +12,19 @@ Subtypes must implement fields:
 - `lt::Function`: A function determining how ties are to be broken when constructing
     permutation patterns from embedding vectors.
 """
-abstract type PermutationOutcomeSpace{m} <: CountBasedOutcomeSpace end
-const PermProbEst = PermutationOutcomeSpace
+abstract type OrdinalOutcomeSpace{m} <: CountBasedOutcomeSpace end
 
 ###########################################################################################
 # Types and docstrings
 ###########################################################################################
 """
     OrdinalPatterns <: OutcomeSpace
-    OrdinalPatterns(; m = 3, τ = 1, lt::Function = ComplexityMeasures.isless_rand)
+    OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
-An [`OutcomeSpace`](@ref) based on ordinal permutation patterns, originally introduced in
-[BandtPompe2002](@citet)'s paper on permutation entropy.
+An [`OutcomeSpace`](@ref) based on lengh-`m` ordinal permutation patterns, originally
+introduced in [BandtPompe2002](@citet)'s paper on permutation entropy.
+Note that `m` is given as a type parameter, so that when it is a literal integer
+there are performance accelerations.
 
 When passed to [`probabilities`](@ref) the output depends on the input data type:
 
@@ -83,17 +84,13 @@ For example
 ```julia
 using ComplexityMeasures
 m, N = 2, 100
-est = OrdinalPatterns(; m, τ)
+est = OrdinalPatterns{m}(τ)
 x = StateSpaceSet(rand(N, m)) # some input dataset
 πs_ts = zeros(Int, N) # length must match length of `x`
 p = probabilities!(πs_ts, est, x)
 ```
-
-## Implements
-
-- [`symbolize`](@ref). Used for encoding time series.
 """
-struct OrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
+struct OrdinalPatterns{M,F} <: OrdinalOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
 end
@@ -120,11 +117,11 @@ end
 
 """
     WeightedOrdinalPatterns <: OutcomeSpace
-    WeightedOrdinalPatterns(; τ = 1, m = 3, lt::Function = ComplexityMeasures.isless_rand)
+    WeightedOrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)
 
 A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
 based on the weighted permutation entropy [Fadlallah2013](@cite). The outcome space and
-keywords are the same as in [`OrdinalPatterns`](@ref).
+arguments are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 
@@ -147,7 +144,7 @@ of the same pattern.
     correctly for each vector of the input dataset (which may be a delay-embedded
     timeseries).
 """
-struct WeightedOrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
+struct WeightedOrdinalPatterns{M,F} <: OrdinalOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
 end
@@ -156,11 +153,11 @@ is_counting_based(o::WeightedOrdinalPatterns) = false
 
 """
     AmplitudeAwareOrdinalPatterns <: OutcomeSpace
-    AmplitudeAwareOrdinalPatterns(; τ = 1, m = 3, A = 0.5, lt = ComplexityMeasures.isless_rand)
+    AmplitudeAwareOrdinalPatterns{m}(τ = 1, A = 0.5, lt = ComplexityMeasures.isless_rand)
 
 A variant of [`OrdinalPatterns`](@ref) that also incorporates amplitude information,
 based on the amplitude-aware permutation entropy [Azami2016](@cite). The outcome space and
-keywords are the same as in [`OrdinalPatterns`](@ref).
+arguments are the same as in [`OrdinalPatterns`](@ref).
 
 ## Description
 
@@ -178,7 +175,7 @@ elements of
 ``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector
 elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is used.
 """
-struct AmplitudeAwareOrdinalPatterns{M,F} <: PermutationOutcomeSpace{M}
+struct AmplitudeAwareOrdinalPatterns{M,F} <: OrdinalOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
     τ::Int
     A::Float64
@@ -187,33 +184,33 @@ end
 is_counting_based(o::AmplitudeAwareOrdinalPatterns) = false
 
 # Initializations
-function OrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function OrdinalPatterns{m}(τ::Int = 1, lt::F=isless_rand) where {m, F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return OrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function WeightedOrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=isless_rand) where {m, F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return WeightedOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand) where {m, F}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
 
 ###########################################################################################
-# Implementation of the whole `probabilities` API on abstract `PermProbEst`
+# Implementation of the whole `probabilities` API on abstract `OrdinalOutcomeSpace`
 ###########################################################################################
 # Probabilities etc. simply initialize the datasets and containers of the encodings
 # and just map everythihng using `encode`. The only difference between the three
 # types is whether they compute some additional weights that are affecting
 # how the probabilities are counted.
 
-function probabilities(est::PermProbEst{m}, x::AbstractVector{T}) where {m, T<:Real}
+function probabilities(est::OrdinalOutcomeSpace{m}, x::AbstractVector{T}) where {m, T<:Real}
     dataset::StateSpaceSet{m,T} = embed(x, m, est.τ)
     return probabilities(est, dataset)
 end
 
-function probabilities(est::PermProbEst{m}, x::AbstractStateSpaceSet{D}) where {m, D}
+function probabilities(est::OrdinalOutcomeSpace{m}, x::AbstractStateSpaceSet{D}) where {m, D}
     m != D && throw(ArgumentError(
         "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
     ))
@@ -223,7 +220,7 @@ function probabilities(est::PermProbEst{m}, x::AbstractStateSpaceSet{D}) where {
     return probs
 end
 
-function probabilities!(::Vector{Int}, ::PermProbEst, ::AbstractVector)
+function probabilities!(::Vector{Int}, ::OrdinalOutcomeSpace, ::AbstractVector)
     error("""
     In-place `probabilities!` for `OrdinalPatterns` can only be used by
     StateSpaceSet input, not timeseries. First embed the timeseries or use the
@@ -232,7 +229,7 @@ function probabilities!(::Vector{Int}, ::PermProbEst, ::AbstractVector)
 end
 
 
-function fasthist!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceSet{m}) where {m}
+function fasthist!(πs::Vector{Int}, est::OrdinalOutcomeSpace{m}, x::AbstractStateSpaceSet{m}) where {m}
     # TODO: The following loop can probably be parallelized!
     @inbounds for (i, χ) in enumerate(x)
         πs[i] = encode(est.encoding, χ)
@@ -244,7 +241,7 @@ function fasthist!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceS
     return cts
 end
 
-function codify(est::PermProbEst{m}, x) where m
+function codify(est::OrdinalOutcomeSpace{m}, x) where m
     if x isa AbstractVector
         dataset = embed(x, m, est.τ)
     else
@@ -270,7 +267,7 @@ function probabilities!(πs::Vector{Int}, est::OrdinalPatterns{m}, x::AbstractSt
 end
 
 # The scaled versions
-function probabilities!(πs::Vector{Int}, est::PermProbEst{m}, x::AbstractStateSpaceSet{m}) where {m}
+function probabilities!(πs::Vector{Int}, est::OrdinalOutcomeSpace{m}, x::AbstractStateSpaceSet{m}) where {m}
     # This sorts πs in-place. For `WeightedOrdinalPatterns` and
     # `AmplitudeAwareOrdinalPatterns`, this returned normalized counts (i.e. numbers on
     # [0, 1]).
@@ -283,7 +280,7 @@ end
 # `OrdinalPatterns` is counting-compatible (i.e. returns a true histogram `Vector{Int}`),
 # while `WeightedOrdinalPatterns` and `AmplitudeAwareOrdinalPatterns` returns
 # a normalized histogram, and are thus *not* counting compatible.
-function weighted_counts_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
+function weighted_counts_and_outcomes(est::OrdinalOutcomeSpace{m}, x::Vector_or_SSSet) where {m}
     # A bit of code duplication here, because we actually need the processed
     # `πs` to invert it with `decode`. This can surely be optimized with some additional
     # function that both maps to integers with `decode` but also keeps track of
@@ -304,18 +301,18 @@ function weighted_counts_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) w
     return freqs, outcomes
 end
 
-function probabilities_and_outcomes(est::PermProbEst{m}, x::Vector_or_SSSet) where {m}
+function probabilities_and_outcomes(est::OrdinalOutcomeSpace{m}, x::Vector_or_SSSet) where {m}
     freqs, outcomes = weighted_counts_and_outcomes(est, x)
     return Probabilities(freqs), outcomes
 end
 
 # fallback
-total_outcomes(est::PermutationOutcomeSpace) = total_outcomes(est.encoding)
-outcome_space(est::PermutationOutcomeSpace) = outcome_space(est.encoding)
+total_outcomes(est::OrdinalOutcomeSpace) = total_outcomes(est.encoding)
+outcome_space(est::OrdinalOutcomeSpace) = outcome_space(est.encoding)
 
 # If `x` is state space set, delay embedding is ignored and all elements
 # are mapped to outcomes. Otherwise, delay embedding is done.
-function encoded_space_cardinality(o::PermProbEst{m}, x::AbstractArray) where {m}
+function encoded_space_cardinality(o::OrdinalOutcomeSpace{m}, x::AbstractArray) where {m}
     N = length(x)
     return N - (m - 1)*o.τ
 end
