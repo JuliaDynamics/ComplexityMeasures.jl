@@ -19,12 +19,14 @@ rng = MersenneTwister(1234)
             est = BayesianRegularization()
             outcomemodel = os[i]
 
-            ps, Ωobs = probabilities_and_outcomes(est, outcomemodel, x)
+            ps, Ωobs = probabilities(est, outcomemodel, x)
+            Ωobs = outcomes(ps)
             @test ps isa Probabilities
             @test probabilities(est, outcomemodel, x) == ps
             @test outcomes(est, outcomemodel, x) == Ωobs
 
-            ps, Ωall = allprobabilities_and_outcomes(est, outcomemodel, x)
+            ps, Ωall = allprobabilities(est, outcomemodel, x)
+            Ωall = outcomes(ps)
             @test ps isa Probabilities
             @test sort(Ωall) == outcome_space(est, outcomemodel, x)
             @test allprobabilities(est, outcomemodel, x) isa Probabilities
@@ -41,12 +43,14 @@ rng = MersenneTwister(1234)
         @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
             est = BayesianRegularization()
             o = os[i]
-            ps, Ωobs = probabilities_and_outcomes(est, o, x)
+            ps, Ωobs = probabilities(est, o, x)
+            Ωobs = outcomes(ps)
             @test ps isa Probabilities
             @test outcomes(est, o, x) == Ωobs
             @test probabilities(est, o, x) == ps
 
-            ps, Ωall = allprobabilities_and_outcomes(est, o, x)
+            ps, Ωall = allprobabilities(est, o, x)
+            Ωall = outcomes(ps)
             @test ps isa Probabilities
             @test sort(Ωall) == sort(outcome_space(est, o, x))
             @test allprobabilities(est, o, x) == ps

@@ -5,7 +5,7 @@ rng = MersenneTwister(1234)
 # The BayesianRegularization estimator is only defined for counting-based `ProbabilitiesEstimators`.
 
 @testset "AddConstant: Counting-based outcome space" begin
-    x = rand(rng, 1:10., 100)
+    x = rand(rng, 1:10.0, 100)
 
     os = [
         UniqueElements(),
@@ -18,12 +18,14 @@ rng = MersenneTwister(1234)
         est = AddConstant()
         outcomemodel = os[i]
 
-        ps, Ωobs = probabilities_and_outcomes(est, outcomemodel, x)
+        ps = probabilities(est, outcomemodel, x)
+        Ωobs = outcomes(ps)
         @test ps isa Probabilities
         @test probabilities(est, outcomemodel, x) == ps
         @test outcomes(est, outcomemodel, x) == Ωobs
 
-        ps, Ωall = allprobabilities_and_outcomes(est, outcomemodel, x)
+        ps = allprobabilities(est, outcomemodel, x)
+        Ωall = outcomes(ps)
         @test ps isa Probabilities
         @test sort(Ωall) == outcome_space(outcomemodel, x)
         @test allprobabilities(est, outcomemodel, x) isa Probabilities
@@ -40,12 +42,14 @@ rng = MersenneTwister(1234)
     @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
         est = AddConstant()
         outcomemodel = os[i]
-        ps, Ωobs = probabilities_and_outcomes(est, outcomemodel, x)
+        ps, Ωobs = probabilities(est, outcomemodel, x)
+        Ωobs = outcomes(ps)
         @test ps isa Probabilities
         @test outcomes(est, outcomemodel, x) == Ωobs
         @test probabilities(est, outcomemodel, x) == ps
 
-        ps, Ωall = allprobabilities_and_outcomes(est, outcomemodel, x)
+        ps, Ωall = allprobabilities(est, outcomemodel, x)
+        Ωall = outcomes(ps)
         @test ps isa Probabilities
         @test sort(Ωall) == sort(outcome_space(est, outcomemodel, x))
         @test allprobabilities(est, outcomemodel, x) == ps
