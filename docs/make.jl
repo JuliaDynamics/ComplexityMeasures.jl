@@ -3,7 +3,7 @@ using ComplexityMeasures
 
 # Convert tutorial file to markdown
 import Literate
-Literate.markdown("src/tutorial.jl", "src")
+Literate.markdown("src/tutorial.jl", "src"; credit = false)
 
 pages = [
     "index.md",

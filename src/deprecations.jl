@@ -95,3 +95,20 @@ function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
+
+# This function has no reason to exist now that outcomes are
+# bundled into probabilities...!
+export allprobabilities_and_outcomes
+function allprobabilities_and_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace,
+        x::Array_or_SSSet)
+    probs::Probabilities = allprobabilities(est, o, x)
+    return probs, outcomes(probs)
+end
+function allprobabilities_and_outcomes(o::OutcomeSpace, x)
+    return allprobabilities_and_outcomes(RelativeAmount(), o, x)
+end
+
+export probabilities_and_outcomes
+function probabilities_and_outcomes(o::OutcomeSpace, x)
+    return probabilities_and_outcomes(RelativeAmount(), o, x)
+end

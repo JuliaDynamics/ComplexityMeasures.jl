@@ -87,7 +87,7 @@ outs = outcomes(probs)
 # visualize the results.
 using CairoMakie
 left_edges = first.(outs) # covert `Vector{SVector}` into `Vector{Real}`
-barplot(left_edges, probs; axis = (ylabel = "probability",))
+barplot(left_edges, probs; axis = (ylabel = "probability", ylims = (0, nothing)))
 
 # Naturally, there are other outcome spaces one may use, and one can find the list of
 # implemented ones in [`OutcomeSpace`](@ref).
@@ -131,7 +131,7 @@ o = OrdinalPatterns()
 probsx = allprobabilities(o, x)
 probsy = allprobabilities(o, y)
 outsx = outsy = outcome_space(o)
-
+## display all quantities as parallel columns
 hcat(outsx, probsx, probsy)
 
 # The number of _possible_ outcomes, i.e., the cardinality of the outcome space, can always
