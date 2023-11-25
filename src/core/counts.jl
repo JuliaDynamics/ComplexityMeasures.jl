@@ -124,7 +124,6 @@ function counts(x)
 end
 unique!(xc::AbstractStateSpaceSet) = unique!(vec(xc))
 
-
 # -----------------------------------------------------------------
 # Outcomes are simply the labels on the marginal dimensional.
 # For 1D, we return the outcomes as-is. For ND, we return
@@ -150,9 +149,11 @@ end
 
 Like [`counts`](@ref), but ensures that *all* outcomes `Ωᵢ ∈ Ω`,
 where `Ω = outcome_space(o, x)`), are included.
+Outcomes that do not occur in the data `x` get 0 count.
 """
 function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
-    cts, outs = counts_and_outcomes(o, x)
+    cts = counts(o, x)
+    outs = outcomes(cts)
     ospace = vec(outcome_space(o, x))
     m = length(ospace)
     allcts = zeros(Int, m)
@@ -163,16 +164,6 @@ function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
         end
     end
     return Counts(allcts, (x1 = ospace,))
-end
-
-"""
-    allcounts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts{<:Integer, 1}, Ω::Vector)
-
-Like [`allcounts`](@ref), but also returns the outcomes `Ω` explicitly.
-"""
-function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
-    cts::Counts = allcounts(o, x)
-    return cts, outcomes(cts)
 end
 
 """

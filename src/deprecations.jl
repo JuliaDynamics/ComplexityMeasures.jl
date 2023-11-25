@@ -113,7 +113,7 @@ function probabilities_and_outcomes(o::OutcomeSpace, x)
     return probabilities_and_outcomes(RelativeAmount(), o, x)
 end
 
-export counts_and_outcomes
+export counts_and_outcomes, allcounts_and_outcomes
 
 """
     counts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts, Ω)
@@ -139,4 +139,14 @@ function counts_and_outcomes(x)
 end
 function counts_and_outcomes(est::ProbabilitiesEstimator, outcomemodel::OutcomeSpace, x)
     return allcounts_and_outcomes(outcomemodel, x)
+end
+
+"""
+    allcounts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts{<:Integer, 1}, Ω::Vector)
+
+Like [`allcounts`](@ref), but also returns the outcomes `Ω` explicitly.
+"""
+function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
+    cts::Counts = allcounts(o, x)
+    return cts, outcomes(cts)
 end
