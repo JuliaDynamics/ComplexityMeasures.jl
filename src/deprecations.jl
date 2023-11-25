@@ -112,3 +112,31 @@ export probabilities_and_outcomes
 function probabilities_and_outcomes(o::OutcomeSpace, x)
     return probabilities_and_outcomes(RelativeAmount(), o, x)
 end
+
+export counts_and_outcomes
+
+"""
+    counts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts, Ω)
+
+Like [`counts`](@ref), but also return the outcomes `Ω` explicitly. `Ω[i]` is the
+outcome corresponding to the count `cts[i]`.
+
+The element type of `Ω` depends on the estimator. `Ω` is a subset of the
+[`outcome_space`](@ref) of `o`.
+"""
+function counts_and_outcomes(o::OutcomeSpace, x)
+    if is_counting_based(o)
+        cts::Counts = counts(o, x)
+        return cts, outcomes(cts)
+    end
+    s = "`counts_and_outcomes` not implemented for outcome space $(typeof(o))."
+    throw(ArgumentError(s))
+end
+
+function counts_and_outcomes(x)
+    cts::Counts = counts(x)
+    return cts, outcomes(cts)
+end
+function counts_and_outcomes(est::ProbabilitiesEstimator, outcomemodel::OutcomeSpace, x)
+    return allcounts_and_outcomes(outcomemodel, x)
+end
