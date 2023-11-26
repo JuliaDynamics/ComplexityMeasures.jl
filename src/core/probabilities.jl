@@ -227,38 +227,11 @@ function probabilities(x)
     return probabilities(RelativeAmount(), UniqueElements(), x)
 end
 
-
-"""
-    probabilities_and_outcomes([est::ProbabilitiesEstimator],
-        o::OutcomeSpace, x) → (probs::Probabilities, Ω)
-
-Like [`probabilities`](@ref), but also return the outcomes `Ω` explicitly. `Ω[i]` is the
-outcome corresponding to the probabilities `probs[i]`.
-
-The element type of `Ω` depends on the estimator. `Ω` is a subset of the
-[`outcome_space`](@ref) of `o`.
-
-See also [`outcomes`](@ref), [`total_outcomes`](@ref).
-"""
-function probabilities_and_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
-    probs::Probabilities = probabilities(est, o, x)
-    return probs, outcomes(probs)
-end
-
-function probabilities_and_outcomes(est::ProbabilitiesEstimator, args...)
-    s = "`probabilities_and_outcomes` not implemented for estimator $(typeof(est))."
-    throw(ArgumentError(s))
-end
-
-function outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
-    return outcomes(o, x)
-end
-function outcome_space(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
-    return outcome_space(o, x)
-end
-
-function total_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
-    return total_outcomes(o, x)
+# Functions related to outcomes are propagated
+for f in (:outcomes, :outcome_space, :total_outcomes)
+    @eval function $(f)(::ProbabilitiesEstimator, o::OutcomeSpace, x)
+        return $(f)(o, x)
+    end
 end
 
 """

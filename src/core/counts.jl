@@ -6,8 +6,6 @@ import Base.unique!
 
 export Counts
 export counts
-export counts_and_outcomes
-export allcounts_and_outcomes
 export allcounts
 export is_counting_based
 

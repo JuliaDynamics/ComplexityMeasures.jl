@@ -96,57 +96,21 @@ function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F
     return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
 
-# This function has no reason to exist now that outcomes are
-# bundled into probabilities...!
-export allprobabilities_and_outcomes
-function allprobabilities_and_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace,
-        x::Array_or_SSSet)
-    probs::Probabilities = allprobabilities(est, o, x)
-    return probs, outcomes(probs)
-end
-function allprobabilities_and_outcomes(o::OutcomeSpace, x)
-    return allprobabilities_and_outcomes(RelativeAmount(), o, x)
-end
+# These convenience functions provide a trivial level of convenience
+# and therefore we shouldn't burden the API with that many more names.
+for f in (:counts, :allcounts, :probabilities, :allprobabilities)
+    newf = Symbol(f, :_and_outcomes)
+    @eval begin
+        """
+            $($(newf))_and_outcomes(args...)
 
-export probabilities_and_outcomes
-function probabilities_and_outcomes(o::OutcomeSpace, x)
-    return probabilities_and_outcomes(RelativeAmount(), o, x)
-end
-
-export counts_and_outcomes, allcounts_and_outcomes
-
-"""
-    counts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts, Ω)
-
-Like [`counts`](@ref), but also return the outcomes `Ω` explicitly. `Ω[i]` is the
-outcome corresponding to the count `cts[i]`.
-
-The element type of `Ω` depends on the estimator. `Ω` is a subset of the
-[`outcome_space`](@ref) of `o`.
-"""
-function counts_and_outcomes(o::OutcomeSpace, x)
-    if is_counting_based(o)
-        cts::Counts = counts(o, x)
-        return cts, outcomes(cts)
+        Convenience function that is equivalent with
+        ```julia
+        c = $($(f))(args...)
+        return c, outcomes(c)
+        ```
+        """
+        $(newf)(args...) = (x = $(f)(args...); return x, outcomes(x))
+        export $(newf)
     end
-    s = "`counts_and_outcomes` not implemented for outcome space $(typeof(o))."
-    throw(ArgumentError(s))
-end
-
-function counts_and_outcomes(x)
-    cts::Counts = counts(x)
-    return cts, outcomes(cts)
-end
-function counts_and_outcomes(est::ProbabilitiesEstimator, outcomemodel::OutcomeSpace, x)
-    return allcounts_and_outcomes(outcomemodel, x)
-end
-
-"""
-    allcounts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts{<:Integer, 1}, Ω::Vector)
-
-Like [`allcounts`](@ref), but also returns the outcomes `Ω` explicitly.
-"""
-function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
-    cts::Counts = allcounts(o, x)
-    return cts, outcomes(cts)
 end

@@ -1,3 +1,4 @@
+using ComplexityMeasures
 using Test
 using Random
 rng = Xoshiro(1234)
@@ -16,4 +17,4 @@ p = probabilities(est, outcomemodel, x)
 
 # Error messages.
 struct MyEstimator <: ProbabilitiesEstimator end
-@test_throws ArgumentError probabilities(MyEstimator(), x)
+@test_throws MethodError probabilities(MyEstimator(), x)
