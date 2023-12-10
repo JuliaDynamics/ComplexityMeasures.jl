@@ -1,6 +1,7 @@
 # ComplexityMeasures.jl
 
-[![Docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliadynamics.github.io/ComplexityMeasures.jl/stable/)
+[![docsdev](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/dev/)
+[![docsstable](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/)
 [![CI](https://github.com/juliadynamics/ComplexityMeasures.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/ComplexityMeasures.jl/actions)
 [![codecov](https://codecov.io/gh/JuliaDynamics/ComplexityMeasures.jl/branch/main/graph/badge.svg?token=6XlPGg5nRG)](https://codecov.io/gh/JuliaDynamics/ComplexityMeasures.jl)
 [![Package Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/ComplexityMeasures)](https://pkgs.genieframework.com?packages=ComplexityMeasures)
@@ -21,6 +22,6 @@ ComplexityMeasures.jl can be used as a standalone package, or as part of other p
 
 To install it, run `import Pkg; Pkg.add("ComplexityMeasures")`.
 
-All further information is provided in the documentation, which you can either find [online](https://juliadynamics.github.io/ComplexityMeasures.jl/dev/) or build locally by running the `docs/make.jl` file.
+All further information is provided in the documentation, which you can either find [online](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/complexitymeasures/stable/) or build locally by running the `docs/make.jl` file.
 
 _Previously, this package was called Entropies.jl._

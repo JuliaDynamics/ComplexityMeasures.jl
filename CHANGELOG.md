@@ -39,6 +39,10 @@ Further additions to the library in v3:
 - `SymbolicAmplitudeAwarePermutation` is now `AmplitudeAwareOrdinalPatterns`.
 - `SpatialSymbolicPermutation` is now `SpatialOrdinalPatterns`.
 
+### Deprecations
+
+- Passing `m` as a positional or keyword argument to ordinal pattern outcome space or encoding is deprecated. It is given as a type parameter now, e.g., `OrdinalPatterns{m}(...)` instead of `OrdinalPatterns(m = ..., ...)`.
+
 ## 2.7.1
 
 - Fix bug in calculation of statistical complexity

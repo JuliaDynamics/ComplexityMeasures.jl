@@ -5,7 +5,7 @@ export OrdinalPatternEncoding
 
 """
     OrdinalPatternEncoding <: Encoding
-    OrdinalPatternEncoding(m::Int, lt = ComplexityMeasures.isless_rand)
+    OrdinalPatternEncoding{m}(lt = ComplexityMeasures.isless_rand)
 
 An encoding scheme that [`encode`](@ref)s length-`m` vectors into
 their permutation/ordinal patterns and then into the integers based on the Lehmer
@@ -49,12 +49,10 @@ struct OrdinalPatternEncoding{M, F} <: Encoding
     perm::MVector{M, Int}
     lt::F
 end
-function OrdinalPatternEncoding{m}(lt::F) where {m,F}
+function OrdinalPatternEncoding{m}(lt::F = isless_rand) where {m,F}
     OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
 end
-function OrdinalPatternEncoding(m = 3, lt::F = isless_rand) where {F}
-    return OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
-end
+OrdinalPatternEncoding() = OrdinalPatternEncoding{3}(isless_rand)
 
 # So that SymbolicPerm stuff fallback here
 total_outcomes(::OrdinalPatternEncoding{m}) where {m} = factorial(m)
