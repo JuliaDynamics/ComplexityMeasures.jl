@@ -1,5 +1,6 @@
 using DelayEmbeddings, SparseArrays
 using StaticArrays
+using Random
 
 include("GroupSlices.jl")
 
@@ -10,7 +11,7 @@ export
 
 """
     TransferOperator <: OutcomeSpace
-    TransferOperator(b::AbstractBinning; warn_precise = true)
+    TransferOperator(b::AbstractBinning; warn_precise = true, rng = Random.default_rng())
 
 An [`OutcomeSpace`](@ref) based on binning data into rectangular boxes dictated by
 the given binning scheme `b`.
@@ -88,22 +89,27 @@ eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The d
 In practice, the invariant measure ``\\mathbf{\\rho}^N`` is computed using
 [`invariantmeasure`](@ref), which also approximates the transfer matrix. The invariant
 distribution is initialized as a length-`N` random distribution which is then applied to
-``P^{N}``.
+``P^{N}``. For reproducibility in this step, set the `rng`.
 The resulting length-`N` distribution is then applied to ``P^{N}`` again. This process
 repeats until the difference between the distributions over consecutive iterations is
 below some threshold.
 
-See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
+See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref),
+[`invariantmeasure`](@ref).
 """
-struct TransferOperator{R<:AbstractBinning} <: OutcomeSpace
+struct TransferOperator{R<:AbstractBinning, RNG} <: OutcomeSpace
     binning::R
     warn_precise::Bool
-    function TransferOperator(b::R; warn_precise = true) where R <: AbstractBinning
-        return new{R}(b, warn_precise)
+    rng::RNG
+    function TransferOperator(b::R; 
+            rng::RNG = Random.default_rng(), 
+            warn_precise = true) where {R <: AbstractBinning, RNG}
+        return new{R, RNG}(b, warn_precise, rng)
     end
 end
-function TransferOperator(ϵ::Union{Real,Vector}; warn_precise = true)
-    return TransferOperator(RectangularBinning(ϵ), warn_precise)
+function TransferOperator(ϵ::Union{Real,Vector}; 
+        rng = Random.default_rng(), warn_precise = true)
+    return TransferOperator(RectangularBinning(ϵ), warn_precise, rng)
 end
 
 # If x is not sorted, we need to look at all pairwise comparisons
@@ -240,7 +246,7 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
     if boundary_condition == :circular
         append!(visits_whichbin, [1])
     elseif boundary_condition == :random
-        append!(visits_whichbin, [rand(1:length(visits_whichbin))])
+        append!(visits_whichbin, [rand(rng, 1:length(visits_whichbin))])
     else
         error("Boundary condition $(boundary_condition) not implemented")
     end
@@ -330,7 +336,8 @@ end
 import LinearAlgebra: norm
 
 """
-    invariantmeasure(x::AbstractStateSpaceSet, binning::RectangularBinning) → iv::InvariantMeasure
+    invariantmeasure(x::AbstractStateSpaceSet, binning::RectangularBinning;
+        rng = Random.default_rng()) → iv::InvariantMeasure
 
 Estimate an invariant measure over the points in `x` based on binning the data into
 rectangular boxes dictated by the `binning`, then approximate the transfer
@@ -380,14 +387,15 @@ The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
 See also: [`InvariantMeasure`](@ref).
 """
 function invariantmeasure(to::TransferOperatorApproximationRectangular;
-        N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8)
+        N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8,
+        rng = Random.default_rng())
 
     TO = to.transfermatrix
     #=
     # Start with a random distribution `Ρ` (big rho). Normalise it so that it
     # sums to 1 and forms a true probability distribution over the partition elements.
     =#
-    Ρ = rand(Float64, 1, size(to.transfermatrix, 1))
+    Ρ = rand(rng, Float64, 1, size(to.transfermatrix, 1))
     Ρ = Ρ ./ sum(Ρ, dims = 2)
 
     #=
@@ -441,9 +449,9 @@ end
 
 function invariantmeasure(x::AbstractStateSpaceSet,
         binning::Union{FixedRectangularBinning, RectangularBinning};
-        warn_precise = true)
+        warn_precise = true, rng = Random.default_rng())
     to = transferoperator(x, binning; warn_precise)
-    return invariantmeasure(to)
+    return invariantmeasure(to; rng)
 end
 
 """
@@ -463,7 +471,7 @@ end
 function probabilities(est::TransferOperator, x::Array_or_SSSet)
     to = transferoperator(StateSpaceSet(x), est.binning; 
         warn_precise = est.warn_precise)
-    probs = invariantmeasure(to).ρ
+    probs = invariantmeasure(to; rng = est.rng).ρ
 
     # Note: bins are *not* sorted. They occur in the order of first appearance, according
     # to the input time series. Taking the unique bins preserves the order of first
