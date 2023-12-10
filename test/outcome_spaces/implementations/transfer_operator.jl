@@ -40,3 +40,8 @@ binnings = [
     # Test that gives approximately same entropy as ValueBinning:
     abs(information(TransferOperator(b), D) - information(ValueBinning(b), D) ) < 0.1 # or something like that
 end
+
+# Warn if we're not using precise binnings.
+imprecise_warning = "`binning.precise == false`. You may be getting points outside the binning."
+b = RectangularBinning(5)
+@test_logs (:warn, imprecise_warning) ComplexityMeasures.transferoperator(D, b; warn_precise = true)

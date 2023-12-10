@@ -10,7 +10,7 @@ export
 
 """
     TransferOperator <: OutcomeSpace
-    TransferOperator(b::AbstractBinning)
+    TransferOperator(b::AbstractBinning; warn_precise = true)
 
 An [`OutcomeSpace`](@ref) based on binning data into rectangular boxes dictated by
 the given binning scheme `b`.
@@ -21,6 +21,15 @@ associated with that transfer operator. Assumes that the input data are sequenti
 (time-ordered).
 
 This implementation follows the grid estimator approach in [Diego2019](@citet).
+
+## Precision
+
+The default behaviour when using [`RectangularBinning`](@ref) or
+[`FixedRectangularBinning`](@ref) is to accept some loss of precision on the 
+bin boundaries for speed-ups, but this may lead to issues for `TransferOperator`
+where some points may be encoded as the symbol `-1` ("outside the binning").
+The `warn_precise` keyword controls whether the user is warned when a less 
+precise binning is used.
 
 ## Outcome space
 
@@ -88,8 +97,14 @@ See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
 """
 struct TransferOperator{R<:AbstractBinning} <: OutcomeSpace
     binning::R
+    warn_precise::Bool
+    function TransferOperator(b::R; warn_precise = true) where R <: AbstractBinning
+        return new{R}(b, warn_precise)
+    end
 end
-TransferOperator(ϵ::Union{Real,Vector}) = TransferOperator(RectangularBinning(ϵ))
+function TransferOperator(ϵ::Union{Real,Vector}; warn_precise = true)
+    return TransferOperator(RectangularBinning(ϵ), warn_precise)
+end
 
 # If x is not sorted, we need to look at all pairwise comparisons
 function inds_in_terms_of_unique(x)
@@ -185,10 +200,11 @@ rectangular partition given by the `binning`.
 """
 function transferoperator(pts::AbstractStateSpaceSet{D, T},
         binning::Union{FixedRectangularBinning, RectangularBinning};
-        boundary_condition = :circular) where {D, T<:Real}
+        boundary_condition = :circular, 
+        warn_precise = true) where {D, T<:Real}
 
     L = length(pts)
-    if !binning.precise
+    if warn_precise && !binning.precise
         @warn "`binning.precise == false`. You may be getting points outside the binning."
     end
     encoding = RectangularBinEncoding(binning, pts)
@@ -424,9 +440,10 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
 end
 
 function invariantmeasure(x::AbstractStateSpaceSet,
-        binning::Union{FixedRectangularBinning, RectangularBinning})
-    to = transferoperator(x, binning)
-    invariantmeasure(to)
+        binning::Union{FixedRectangularBinning, RectangularBinning};
+        warn_precise = true)
+    to = transferoperator(x, binning; warn_precise)
+    return invariantmeasure(to)
 end
 
 """
@@ -444,7 +461,8 @@ function transfermatrix(iv::InvariantMeasure)
 end
 
 function probabilities(est::TransferOperator, x::Array_or_SSSet)
-    to = transferoperator(StateSpaceSet(x), est.binning)
+    to = transferoperator(StateSpaceSet(x), est.binning; 
+        warn_precise = est.warn_precise)
     probs = invariantmeasure(to).ρ
 
     # Note: bins are *not* sorted. They occur in the order of first appearance, according
