@@ -60,3 +60,4 @@ rng = MersenneTwister(1234)
 p1 = probabilities(TransferOperator(b; rng), D)
 p2 = probabilities(TransferOperator(b; rng), D)
 @test !all(p1 .== p2)
+@test p1[1] ≈ p2[1] # But we should be close
