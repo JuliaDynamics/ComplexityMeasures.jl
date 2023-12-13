@@ -35,7 +35,7 @@ function probabilities(o::WaveletOverlap, x)
     end
     relative_freqs = time_scale_density(x, o.wl)
     outs = 1:length(relative_freqs)
-    return Probabilities(relative_freqs, (x1 = outs,))
+    return Probabilities(relative_freqs, outs)
 end
 
 function outcome_space(::WaveletOverlap, x)

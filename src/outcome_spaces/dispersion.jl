@@ -80,7 +80,7 @@ function counts(o::Dispersion, x::AbstractVector{<:Real})
     dispersion_patterns = genembed(symbols, τs, ones(m)).data
     cts = fasthist!(dispersion_patterns) # This sorts `dispersion_patterns`
     outs = unique!(dispersion_patterns) # Therefore, outcomes are the sorted patterns.
-    return Counts(cts, (x1 = outs,))
+    return Counts(cts, outs)
 end
 
 function outcome_space(est::Dispersion)

@@ -103,8 +103,7 @@ function probabilities(est::BayesianRegularization, outcomemodel::OutcomeSpace, 
         aₖ = get_aₖ_bayes(a, i)
         probs[i] = θ̂bayes(yᵢ, aₖ, n, A)
     end
-
-    return Probabilities(probs, (x1 = observed_outcomes, ))
+    return Probabilities(probs, observed_outcomes)
 end
 
 function allprobabilities(est::BayesianRegularization, outcomemodel::OutcomeSpace, x)
@@ -135,7 +134,7 @@ function allprobabilities(est::BayesianRegularization, outcomemodel::OutcomeSpac
         probs[idx] = θ̂bayes(yᵢ, aₖ, n, A)
     end
 
-    return Probabilities(probs, (x1 = Ω,))
+    return Probabilities(probs, Ω)
 end
 
 get_aₖ_bayes(a, i) = a isa Real ? a : a[i]

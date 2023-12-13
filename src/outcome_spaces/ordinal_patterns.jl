@@ -98,7 +98,7 @@ end
 function counts(est::OrdinalPatterns{m}, x) where m
     cts, πs = counts_and_symbols(est, x)
     outcomes = map(ω -> decode(est.encoding, ω), unique!(πs))
-    return Counts(cts, (outcomes,))
+    return Counts(cts, outcomes)
 end
 
 function counts_and_symbols(est::OrdinalPatterns{m}, x) where m
@@ -262,7 +262,7 @@ function probabilities!(πs::Vector{Int}, est::OrdinalPatterns{m}, x::AbstractSt
     # This sorts πs in-place. For `OrdinalPatterns`, this returns actual integer counts.
     observed_counts = fasthist!(πs, est, x) # This sorts πs in-place
     outs = decode.(Ref(est.encoding), unique(πs)) # Therefore, the outcomes are just the unique values in `πs`
-    c::Counts = Counts(observed_counts, (x1 = outs,))
+    c::Counts = Counts(observed_counts, outs)
     return Probabilities(c)
 end
 
@@ -273,7 +273,7 @@ function probabilities!(πs::Vector{Int}, est::OrdinalOutcomeSpace{m}, x::Abstra
     # [0, 1]).
     observed_pseudofreqs = fasthist!(πs, est, x)
     outs = decode.(Ref(est.encoding), unique(πs)) # Therefore, the outcomes are just the unique values in `πs`
-    return Probabilities(observed_pseudofreqs, (x1 = outs,))
+    return Probabilities(observed_pseudofreqs, outs)
 end
 
 # A generic "weighted counts" + outcomes function. We need this because
@@ -303,7 +303,7 @@ end
 
 function probabilities_and_outcomes(est::OrdinalOutcomeSpace{m}, x::Vector_or_SSSet) where {m}
     freqs, outcomes = weighted_counts_and_outcomes(est, x)
-    return Probabilities(freqs), outcomes
+    return Probabilities(freqs, outcomes), outcomes
 end
 
 # fallback

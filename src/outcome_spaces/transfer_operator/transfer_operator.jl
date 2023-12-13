@@ -479,7 +479,7 @@ function probabilities(est::TransferOperator, x::Array_or_SSSet)
     bins = to.bins
     unique!(bins)
     outs = decode.(Ref(to.encoding), bins) # coordinates of the visited bins
-    return Probabilities(probs, (x1 = outs,))
+    return Probabilities(probs, outs)
 end
 
 outcome_space(est::TransferOperator, x) = outcome_space(est.binning, x)

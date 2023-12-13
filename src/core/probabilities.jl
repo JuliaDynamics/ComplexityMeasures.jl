@@ -1,5 +1,3 @@
-using DimensionalData: DimArray
-using DimensionalData.Dimensions: Dim
 
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
@@ -20,58 +18,64 @@ values sum to 1, so that `p` can be interpreted as `N`-dimensional probability m
 function. In most use cases, `p` will be a vector. `p` behaves exactly like
 its contained data `x` with respect to indexing and iteration.
 """
-struct Probabilities{T, N, A <: AbstractDimArray} <: AbstractArray{T, N}
-    p::A
-    function Probabilities(x::AbstractArray{T, N},
-            dimlabels::Union{NamedTuple, Tuple, Nothing} = nothing,
-            normed::Bool = false) where {T <: Real, N}
-        if !(typeof(x) <: AbstractDimArray)
-            if dimlabels isa NamedTuple || dimlabels isa Dim
-                # Use provided dimension labels and outcomes directly.
-                p = DimArray(x, dimlabels)
-            else
-                # Enumerate outcomes with positive integers and name dimensions generically
-                # x1, x2, ...
-                if dimlabels isa Nothing
-                    s = size(x)
-                    dims = (Pair(Symbol("x$i"), 1:s[i]) for i = 1:N)
-                    p = DimArray(x, NamedTuple(dims))
-                # `dimlabels` isa Tuple; use the provided outcomes, but assign them
-                # to generically named dimensions x1, x2, ...
-                else
-                    dims = (Pair(Symbol("x$i"), dimlabels[i]) for i = 1:N)
-                    p = DimArray(x, NamedTuple(dims))
-                end
+struct Probabilities{T, N, S} <: AbstractArray{T, N}
+    # The frequency table.
+    p::AbstractArray{T, N}
+
+    # Outcomes[i] has the same number of elements as `cts` along dimension `i`.
+    outcomes::Tuple{Vararg{V, N} where V <: AbstractVector} where N
+    
+    # A label for each dimension
+    dimlabels::NTuple{N, <:S} 
+
+    function Probabilities(x::AbstractArray{T, N}, 
+            outcomes::Tuple{Vararg{V, N} where V},
+            dimlabels::NTuple{N, S};
+            normed::Bool = false) where {T, N, S}
+        if !normed # `normed` is an internal argument that skips checking the sum.
+            s = sum(x, dims = 1:N)
+            if s ≠ 1
+                p = x ./ s
             end
         else
-            p = x
-        end
-        if !normed # `normed` is an internal argument that skips checking the sum.
-            s = sum(p.data, dims = 1:N)
-            if s ≠ 1
-                p = p ./ s
+            if T <: Integer
+                p = float.(x)
+            else
+                p = x
             end
         end
-
-        return new{T, N, typeof(p)}(p)
+        
+        return new{eltype(p), N, S}(p, outcomes, dimlabels)
     end
 
-    function Probabilities(x::AbstractDimArray{T, N}) where {T, N}
-        return new{T, N, typeof(x)}(x)
+    function Probabilities(x::AbstractArray{T, N}, outcomes::Tuple; normed::Bool = false) where {T, N}
+        return Probabilities(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...); normed)
     end
 end
+
+# If no outcomes are given, generically name them.
+function Probabilities(x::AbstractArray{T, N}; normed::Bool = false) where {T, N}
+    # One set of outcomes per dimension
+    outs = tuple(([Symbol("outcome$j") for j = 1:size(x)[i]] for i = 1:N)...)
+    return Probabilities(x, outs; normed)
+end
+
 # Backwards compatibility
-Probabilities(x, normed::Bool) = Probabilities(x, nothing, normed)
+Probabilities(x, normed::Bool) = Probabilities(x; normed)
 
 function Probabilities(x::AbstractArray{<:Integer, N}) where N
     s = sum(x)
-    return Probabilities(x ./ s, true)
+    return Probabilities(x ./ s; normed = true)
 end
-Probabilities(x::Counts) = Probabilities(x.cts, x.cts.dims)
+Probabilities(x::Counts) = Probabilities(x.cts, x.outcomes, x.dimlabels)
 
-# extend DimensionalData interface:
-for f in (:dims, :refdims, :data, :name, :metadata, :layerdims)
-    @eval $(f)(c::Probabilities) = $(f)(c.p)
+
+# Convenience wrappers for 1D case
+function Probabilities(x::AbstractVector, outcomes::AbstractVector; normed::Bool = false)
+    return Probabilities(x, (outcomes, ); normed)
+end
+function Probabilities(x::AbstractVector, outcomes::AbstractVector, label; normed::Bool = false)
+    return Probabilities(x, (outcomes, ), (label, ); normed)
 end
 
 # extend base Array interface:
@@ -91,19 +95,21 @@ Base.IteratorSize(::Probabilities) = Base.HasLength()
 # For 1D, we return the outcomes as-is. For ND, we return
 # a tuple of the outcomes --- one element per dimension.
 # -----------------------------------------------------------------
-outcomes(c::Probabilities{T, 1}) where T= first(c.p.dims).val.data
+function outcomes(p::Probabilities{T, 1}) where T
+    return first(p.outcomes)
+end
 
 # Integer indexing returns the outcomes for that dimension directly.
-function outcomes(c::Probabilities{T, N}, i::Int) where {T, N}
-    return c.p.dims[i].val.data
+function outcomes(p::Probabilities{T, N}, i::Int) where {T, N}
+    return p.outcomes[i]
 end
 
-function outcomes(c::Probabilities{T, N}) where {T, N}
-    return map(i -> c.p.dims[i].val.data, tuple(1:N...))
+function outcomes(p::Probabilities{T, N}) where {T, N}
+    return map(i -> p.outcomes[i], tuple(1:N...))
 end
 
-function outcomes(c::Probabilities{T, N}, idxs) where {T, N}
-    map(i -> c.p.dims[i].val.data, tuple(idxs...))
+function outcomes(p::Probabilities{T, N}, idxs) where {T, N}
+    map(i -> p.outcomes[i], tuple(idxs...))
 end
 
 """
@@ -347,7 +353,7 @@ function allprobabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
             break
         end
     end
-    return Probabilities(allprobs, (x1 = ospace,))
+    return Probabilities(allprobs, (ospace, ))
 end
 function allprobabilities(o::OutcomeSpace, x)
     return allprobabilities(RelativeAmount(), o, x)

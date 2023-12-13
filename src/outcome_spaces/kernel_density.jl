@@ -58,7 +58,7 @@ function probabilities(est::NaiveKernel, x::AbstractStateSpaceSet)
     idxs = neighbor_cts(est, x)
     probs = length.(idxs)
     outs = eachindex(x)
-    return Probabilities(probs, (x1 = outs,))
+    return Probabilities(probs, outs)
 end
 
 function neighbor_cts(est::NaiveKernel, x)

@@ -154,7 +154,7 @@ function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
     # avoid having to resize later by just making result containers vectors straight away.
     hs_cs_max = zeros(SVector{2, Float64}, (L-1)*num_max)
 
-    p = Probabilities(zeros(L), true) # can't normalize zeros, so let's pretend this is already normalized
+    p = Probabilities(zeros(L); normed = true) # can't normalize zeros, so let's pretend this is already normalized
     prob_params = linearpermissiverange(0; stop = 1 / L, length = num_max)
 
     j = 1

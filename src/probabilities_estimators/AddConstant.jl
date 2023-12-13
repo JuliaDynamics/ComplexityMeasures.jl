@@ -71,5 +71,5 @@ function probs_and_outs_from_histogram(est::AddConstant, outcomemodel::OutcomeSp
     end
     @assert sum(probs) ≈ 1
 
-    return Probabilities(probs, (x1 = outs,))
+    return Probabilities(probs, outs,)
 end

@@ -31,7 +31,7 @@ function probabilities(est::PowerSpectrum, x)
     f = FFTW.rfft(x)
     probs = Probabilities(abs2.(f))
     outs = FFTW.rfftfreq(length(x))
-    return Probabilities(probs, (x1 = outs,))
+    return Probabilities(probs, outs)
 end
 
 outcome_space(::PowerSpectrum, x) = FFTW.rfftfreq(length(x))

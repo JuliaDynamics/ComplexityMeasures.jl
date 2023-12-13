@@ -1,7 +1,4 @@
-using DimensionalData
 using StateSpaceSets: AbstractStateSpaceSet
-import DimensionalData: dims, refdims, data, name, metadata, layerdims
-using DimensionalData.Dimensions: Dim
 import Base.unique!
 
 export Counts
@@ -29,14 +26,15 @@ export is_counting_based
 #  use pre-normalized relative "frequencies", not counts, to estimate probabilities).
 ###########################################################################################
 """
-    Counts(cts)
+    Counts(counts, outcomes)
 
-`Counts` stores a set of integer counts which is just a simple wrapper around
-`DimArray{<:Integer, N}` from
-[DimensionalData.jl](https://github.com/rafaqz/DimensionalData.jl), where the names
-of the elements being counted are stored in the marginals of the array.
+`Counts` stores an `N`-dimensional array of integer `counts` corresponding to a set of 
+`outcomes`.
 
-If `N ≥ 1`, then this is typically called a "frequency table" or
+If `c isa Counts`, then `c.outcomes[i]` is the outcomes along the `i`-th dimension
+and `c.dimlabels[i]` is the label of the `i`-th dimension.
+
+This is typically called a "frequency table" or 
 ["contingency table"](https://en.wikipedia.org/wiki/Contingency_table).
 
 ## Implements
@@ -46,36 +44,40 @@ If `N ≥ 1`, then this is typically called a "frequency table" or
     one-dimensional, then the counts are returned directly. If the counts are
     higher-dimensional, then a tuple of the outcomes are returned (one for each dimension).
 """
-struct Counts{T <: Integer, N, A <: AbstractDimArray} <: AbstractArray{T, N}
-    cts::A
-    function Counts(x::AbstractArray{T, N},
-        dimlabels::Union{NamedTuple, Tuple, Dim, Nothing} = nothing) where {T <:Integer, N}
-        if !(typeof(x) <: AbstractDimArray)
-            if dimlabels isa NamedTuple || dimlabels isa Dim
-                X = DimArray(x, dimlabels)
-            else
-                if dimlabels isa Nothing
-                    s = size(x)
-                    dims = (Pair(Symbol("x$i"), 1:s[i]) for i = 1:N)
-                    X = DimArray(x, NamedTuple(dims))
-                else # `dimlabels` isa Tuple
-                    dims = (Pair(Symbol("x$i"), dimlabels[i]) for i = 1:N)
-                    X = DimArray(x, NamedTuple(dims))
-                end
-            end
-        else
-            X = x
-        end
-        return new{T, N, typeof(X)}(X)
+struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
+    # The frequency table.
+    cts::AbstractArray{T, N}
+
+    # Outcomes[i] has the same number of elements as `cts` along dimension `i`.
+    outcomes::Tuple{Vararg{T, N} where T <: AbstractVector} where N
+    
+    # A label for each dimension
+    dimlabels::NTuple{N, <:S} 
+
+    function Counts(x::AbstractArray{T, N}, 
+            outcomes::Tuple{Vararg{V, N} where V <: AbstractVector},
+            dimlabels::NTuple{N, S}) where {T, S, N}
+        return new{T, N, S}(x, outcomes, dimlabels)
     end
-    function Counts(x::AbstractDimArray{T, N}) where {T <: Integer, N}
-        return new{T, N, typeof(x)}(x)
+    
+    # If dimlabels are not given, simply label them as symbols (:x1, :x2, ... :xN)
+    function Counts(x::AbstractArray{T, N}, outcomes) where {T <: Integer, N}
+        return Counts(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...))
+    end
+
+    function Counts(x::AbstractVector{Int}, outcomes::AbstractVector, dimlabel::S) where {S}
+        return Counts(x, (outcomes, ), (dimlabel, ))
+    end
+    function Counts(x::AbstractVector{Int}, outcomes::AbstractVector)
+        return Counts(x, (outcomes, ), (:x1, ))
     end
 end
 
-# extend DimensionalData interface:
-for f in (:dims, :refdims, :data, :name, :metadata, :layerdims)
-    @eval $(f)(c::Counts) = $(f)(c.cts)
+# If no outcomes are given, generically name them.
+function Counts(x::AbstractArray{Int, N}) where {N}
+    # One set of outcomes per dimension
+    outs = tuple(([Symbol("outcome$j") for j = 1:size(x)[i]] for i = 1:N)...)
+    return Counts(x, outs)
 end
 
 # extend base Array interface:
@@ -119,8 +121,7 @@ function counts(x)
     outs = unique!(xc)
     # Generically call the first dimension `x1` (convention: additional dimensions
     # are named `x2`, `x3`, etc..., but this is defined in CausalityTools.jl)
-    d = DimArray(cts, (x1 = outs,))
-    return Counts(d)
+    return Counts(cts, (outs, ), (:x1, ))
 end
 unique!(xc::AbstractStateSpaceSet) = unique!(xc.data)
 
@@ -134,19 +135,19 @@ end
 # For 1D, we return the outcomes as-is. For ND, we return
 # a tuple of the outcomes --- one element per dimension.
 # -----------------------------------------------------------------
-outcomes(c::Counts{<:Integer, 1}) = first(c.cts.dims).val.data
+outcomes(c::Counts{<:Integer, 1}) = first(c.outcomes)
 
 # Integer indexing returns the outcomes for that dimension directly.
 function outcomes(c::Counts{<:Integer, N}, i::Int) where N
-    return c.cts.dims[i].val.data
+    return c.outcomes[i]
 end
 
 function outcomes(c::Counts{<:Integer, N}) where N
-    return map(i -> c.cts.dims[i].val.data, tuple(1:N...))
+    return map(i -> c.outcomes[i], tuple(1:N...))
 end
 
 function outcomes(c::Counts{<:Integer, N}, idxs) where N
-    map(i -> c.cts.dims[i].val.data, tuple(idxs...))
+    map(i -> c.outcomes[i], tuple(idxs...))
 end
 
 """
@@ -184,7 +185,7 @@ function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
             allcts[i] = cts[idx]
         end
     end
-    return Counts(allcts, (x1 = ospace,))
+    return Counts(allcts, (ospace,), (:x1, ))
 end
 
 """
