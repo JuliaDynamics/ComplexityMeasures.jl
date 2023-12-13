@@ -73,11 +73,53 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
     end
 end
 
-# If no outcomes are given, generically name them.
+# If no outcomes are given, assign generic `EnumeratedOutcome`s.
 function Counts(x::AbstractArray{Int, N}) where {N}
+    return Counts(x, generate_outcomes(x))
+end
+
+function generate_outcomes(x::AbstractArray{T, N}) where {T, N}
     # One set of outcomes per dimension
-    outs = tuple(([Symbol("outcome$j") for j = 1:size(x)[i]] for i = 1:N)...)
-    return Counts(x, outs)
+    s = size(x)
+    gen = (EnumeratedOutcome(1):EnumeratedOutcome(s[i]) for i = 1:N)
+    return tuple(gen...)
+end
+
+
+# Some custom definitions to enable allocation-free outcome enumeration when 
+# outcomes are not known.
+# ------------------------------------------------------------------------------
+export EnumeratedOutcome
+"""
+    EnumeratedOutcome <: Number
+    EnumeratedOutcome(num::Integer)
+
+A convenience wrapper around around an `Integer` that represents an unspecified but
+enumerated outcome. Used for pretty-printing `Counts` and `Probabilities` instances 
+in the case when outcomes are not specified.
+"""
+struct EnumeratedOutcome{T<:Integer} <: Number
+    num::T
+end
+Base.show(io::IO, o::EnumeratedOutcome) = print(io, "EnumeratedOutcome($(o.num))")
+
+# Some necessary methods for ranges to work.
+EnumeratedOutcome{T}(x::EnumeratedOutcome{T}) where T<:Integer = EnumeratedOutcome(x.num)
+Integer(x::EnumeratedOutcome{T}) where T<:Integer = x.num
+
+import Base: -, +, *, isless, rem, div
+for f in [:(*), (:+), (:-), :rem, :div]
+    @eval begin
+        @eval Base.$(f)(o1::EnumeratedOutcome, o2::EnumeratedOutcome) = EnumeratedOutcome($(f)(o1.num, o2.num))
+        @eval Base.$(f)(o1::EnumeratedOutcome, o2) = EnumeratedOutcome($(f)(o1.num, o2))
+        @eval Base.$(f)(o1, o2::EnumeratedOutcome) = EnumeratedOutcome($(f)(o1, o2.num))
+    end
+end
+
+for f in [:isless]
+    @eval begin
+        @eval Base.$(f)(o1::EnumeratedOutcome, o2::EnumeratedOutcome) = $(f)(o1.num, o2.num)
+    end
 end
 
 # extend base Array interface:

@@ -53,11 +53,9 @@ struct Probabilities{T, N, S} <: AbstractArray{T, N}
     end
 end
 
-# If no outcomes are given, generically name them.
+# If no outcomes are given, assign generic `EnumeratedOutcome`s.
 function Probabilities(x::AbstractArray{T, N}; normed::Bool = false) where {T, N}
-    # One set of outcomes per dimension
-    outs = tuple(([Symbol("outcome$j") for j = 1:size(x)[i]] for i = 1:N)...)
-    return Probabilities(x, outs; normed)
+    return Probabilities(x, generate_outcomes(x); normed)
 end
 
 # Backwards compatibility
