@@ -36,6 +36,7 @@ oz = (collect(1:2), collect(1:2), collect(1:2))
 x = rand(1:50, 5)
 
 # Unnamed dimensions.
+outcomes(Counts(x)) == Outcome(1):1:Outcome(5)
 outcomes(Counts(x, (1:5, ))) == 1:5
 outcomes(Counts(x, (1:5, )), 1) == 1:5 # should be equivalent to not indexing
 
