@@ -152,7 +152,6 @@ end
 ###########################################################################################
 """
     information_maximum(e::InformationMeasure, o::OutcomeSpace, x)
-    information_maximum(e::InformationMeasure, est::ProbabilitiesEstimator, x)
 
 Return the maximum value of the given information measure can have, given input data `x`
 and  the given outcome space (the [`OutcomeSpace`](@ref) may also be specified by a
@@ -166,12 +165,8 @@ without knowledge of input `x`, in which case the function dispatches to
 
 The same as above, but computed directly from the number of total outcomes `L`.
 """
-function information_maximum(e::InformationMeasure, est::ProbEstOrOutcomeSpace, x)
-    L = total_outcomes(est, x)
-    return information_maximum(e, L)
-end
-function information_maximum(e::InformationMeasure, est::ProbEstOrOutcomeSpace)
-    L = total_outcomes(est)
+function information_maximum(e::InformationMeasure, est::OutcomeSpace, args...)
+    L = total_outcomes(est, args...)
     return information_maximum(e, L)
 end
 function information_maximum(e::InformationMeasure, ::Int)
