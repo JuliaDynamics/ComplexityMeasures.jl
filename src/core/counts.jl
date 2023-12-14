@@ -120,7 +120,16 @@ function counts(x)
     d = DimArray(cts, (x1 = outs,))
     return Counts(d)
 end
+# TODO: This is type-piracy that should be moved to StateSpaceSets.jl!
 unique!(xc::AbstractStateSpaceSet) = unique!(vec(xc))
+
+# Argument error method for non-counting spaces
+function counts(o::NoCountOutcomeSpace, x)
+    throw(ArgumentError(
+        "`counts` only works with count-based outcome spaces. "*
+        "You provided $(nameof(typeof(o))) which is not count-based."
+    ))
+end
 
 # -----------------------------------------------------------------
 # Outcomes are simply the labels on the marginal dimensional.

@@ -80,10 +80,8 @@ end
         @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             @test typeof(os[i]) <: ComplexityMeasures.CountBasedOutcomeSpace
             cts, Ω = counts_and_outcomes(os[i], x)
-            @test length(cts) == length(Ω)
-
-            cts = counts(os[i], x)
             @test cts isa Counts
+            @test length(cts) == length(Ω)
         end
     end
 end

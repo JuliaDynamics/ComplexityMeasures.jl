@@ -22,9 +22,9 @@ The outcome space `Ω` for `PowerSpectrum` is the set of frequencies in Fourier 
 should be multiplied with the sampling rate of the signal, which is assumed to be `1`.
 Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-struct PowerSpectrum <: OutcomeSpace end
+struct PowerSpectrum <: NoCountOutcomeSpace end
 
-function probabilities(est::PowerSpectrum, x)
+function probabilities(::PowerSpectrum, x)
     if !(x isa AbstractVector{<:Real})
         throw(ArgumentError("`PowerSpectrum` only works for timeseries input!"))
     end

@@ -24,7 +24,7 @@ prepared a notebook you can [view online](https://github.com/kahaaga/waveletentr
 As such, this estimator only works for timeseries input and
 input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-struct WaveletOverlap{W<:Wavelets.WT.OrthoWaveletClass} <: OutcomeSpace
+struct WaveletOverlap{W<:Wavelets.WT.OrthoWaveletClass} <: NoCountOutcomeSpace
     wl::W
 end
 WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
