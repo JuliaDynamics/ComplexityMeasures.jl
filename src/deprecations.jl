@@ -95,3 +95,22 @@ function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
+
+# These convenience functions provide a trivial level of convenience
+# and therefore we shouldn't burden the API with that many more names.
+for f in (:counts, :allcounts, :probabilities, :allprobabilities)
+    newf = Symbol(f, :_and_outcomes)
+    @eval begin
+        """
+            $($(newf))_and_outcomes(args...)
+
+        Convenience function that is equivalent with
+        ```julia
+        c = $($(f))(args...)
+        return c, outcomes(c)
+        ```
+        """
+        $(newf)(args...) = (x = $(f)(args...); return x, outcomes(x))
+        export $(newf)
+    end
+end

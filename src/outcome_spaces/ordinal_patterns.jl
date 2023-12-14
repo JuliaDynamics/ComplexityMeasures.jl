@@ -13,6 +13,8 @@ Subtypes must implement fields:
     permutation patterns from embedding vectors.
 """
 abstract type OrdinalOutcomeSpace{m} <: CountBasedOutcomeSpace end
+# we use the supertype above but not ordinal pattern outcome spaces
+# are actually counti based, see the explicit `is_counting_based` extensions
 
 ###########################################################################################
 # Types and docstrings

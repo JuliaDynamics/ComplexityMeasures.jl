@@ -12,22 +12,29 @@ const InfoMeasureOrEst = Union{InformationMeasure, DiscreteInfoEstimator}
 const ProbEstOrOutcomeSpace = Union{OutcomeSpace, ProbabilitiesEstimator}
 
 """
-    information([e::DiscreteInfoEstimator,] est::ProbabilitiesEstimator, o::OutcomeSpace, x) → h::Real
+    information(e::DiscreteInfoEstimator, [est::ProbabilitiesEstimator,] o::OutcomeSpace, x) → h::Real
 
 Estimate a discrete information measure from input data `x` using the provided
 [`DiscreteInfoEstimator`](@ref) and [`ProbabilitiesEstimator`](@ref) over the
 given [`OutcomeSpace`](@ref).
 
 As an alternative, you can provide an [`InformationMeasure`](@ref)
-for the first argument (which will default to [`PlugIn`](@ref) estimation) or an
-[`OutcomeSpace`](@ref) for the second argument (which will default to the
-[`RelativeAmount`](@ref) probabilities estimator).
+for the first argument which will default to [`PlugIn`](@ref) estimation) for
+the information estimation. You may also skip the first argument, in which case
+`Shannon()` will be used. You may also skip
+the second argument (`est`) argument, giving only an outcome space, which will default to the
+[`RelativeAmount`](@ref) probabilities estimator.
+Note that some information measure estimators (e.g., [`GeneralizedSchuermann`](@ref))
+operate directly on counts and hence ignore `est`.
 
 
     information([e::DiscreteInfoEstimator,] p::Probabilities) → h::Real
+    information([e::DiscreteInfoEstimator,] c::Counts) → h::Real
 
 Like above, but estimate the information measure from the pre-computed
-[`Probabilities`](@ref) `p`.
+[`Probabilities`](@ref) `p` or [`Counts`](@ref).
+Counts are converted into probabilities using [`RelativeAmount`](@ref),
+unless the estimator `e` uses counts directly.
 
 See also: [`information_maximum`](@ref), [`information_normalized`](@ref)
 for a normalized version.
@@ -74,7 +81,7 @@ o = ValueBinning(RectangularBinning(5))
 # Estimate Shannon entropy estimation using various dedicated estimators
 h_s = information(MillerMadow(Shannon()), RelativeAmount(), o, x)
 h_s = information(HorvitzThompson(Shannon()), Shrinkage(), o, x)
-h_s = information(Schürmann(Shannon()), Shrinkage(), o, x)
+h_s = information(Schuermann(Shannon()), Shrinkage(), o, x)
 
 # Estimate information measures using the generic `Jackknife` estimator
 h_r = information(Jackknife(Renyi()), Shrinkage(), o, x)
@@ -91,6 +98,9 @@ end
 function information(e::DiscreteInfoEstimator, o::OutcomeSpace, x)
     return information(e, RelativeAmount(), o, x)
 end
+function information(e::Union{InformationMeasure, DiscreteInfoEstimator}, c::Counts)
+    return information(e, probabilities(c))
+end
 
 # dispatch for `information(e, ps::Probabilities)`
 # is in the individual information definition or discrete estimator files
@@ -98,29 +108,20 @@ end
 # Convenience
 information(o::OutcomeSpace, x) = information(Shannon(), o, x)
 information(probs::Probabilities) = information(Shannon(), probs)
+information(c::Counts) = information(Shannon(), c)
 
 # from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
 """
-    entropy([disce,] probest, x)
+    entropy(args...)
 
-Compute the discrete entropy of `x` according to the given [`ProbabilitiesEstimator`](@ref)
-or [`OutcomeSpace`](@ref) `probest`.
-The first optional argument can be an entropy definition (see [`InformationMeasure`](@ref))
-or a discrete estimator, see [`DiscreteInfoEstimator`](@ref).
-If not given, `disce` defaults to `Shannon()`.
-
-    entropy(diffe::DifferentialInfoEstimator, x)
-
-Compute the differential entropy of `x` using a [`DifferentialInfoEstimator`](@ref).
-
-`entropy` is nothing more than a wrapper of [`information`](@ref) that will
+`entropy` is nothing more than a call to [`information`](@ref) that will
 simply throw an error if used with an information measure that is not an entropy.
 """
 function entropy(args...)
     e = first(args)
     # Check the condition for throwing an error (if false)
     cond = if e isa ProbEstOrOutcomeSpace
-        # Shannon
+        # Shannon is used as default information measure
         true
     elseif e isa InformationMeasure
         # Any subtype of entropy
@@ -142,27 +143,22 @@ end
 # Normalize API
 ###########################################################################################
 """
-    information_maximum(e::InformationMeasure, o::OutcomeSpace, x)
-    information_maximum(e::InformationMeasure, est::ProbabilitiesEstimator, x)
+    information_maximum(e::InformationMeasure, o::OutcomeSpace [, x])
 
 Return the maximum value of the given information measure can have, given input data `x`
-and  the given outcome space (the [`OutcomeSpace`](@ref) may also be specified by a
+and the given outcome space (the [`OutcomeSpace`](@ref) may also be specified by a
 [`ProbabilitiesEstimator`](@ref)).
 
 Like in [`outcome_space`](@ref), for some outcome spaces, the possible outcomes are known
 without knowledge of input `x`, in which case the function dispatches to
-`information_maximum(e, est)`.
+`information_maximum(e, o)`.
 
     information_maximum(e::InformationMeasure, L::Int)
 
 The same as above, but computed directly from the number of total outcomes `L`.
 """
-function information_maximum(e::InformationMeasure, est::ProbEstOrOutcomeSpace,  x)
-    L = total_outcomes(est, x)
-    return information_maximum(e, L)
-end
-function information_maximum(e::InformationMeasure, est::ProbEstOrOutcomeSpace)
-    L = total_outcomes(est)
+function information_maximum(e::InformationMeasure, est::OutcomeSpace, args...)
+    L = total_outcomes(est, args...)
     return information_maximum(e, L)
 end
 function information_maximum(e::InformationMeasure, ::Int)
@@ -173,17 +169,12 @@ function information_maximum(e::InformationMeasureEstimator, args...)
 end
 
 """
-    information_normalized([e::DiscreteInfoEstimator,] o::OutcomeSpace, x) → h̃
-    information_normalized([e::DiscreteInfoEstimator,] est::ProbabilitiesEstimator, x) → h̃
+    information_normalized([e::DiscreteInfoEstimator,] [est::ProbabilitiesEstimator,] o::OutcomeSpace, x) → h::Real
 
-Estimate `h̃`, a normalized discrete information measure, from input data `x`, using the
-[`DiscreteInfoEstimator`](@ref) `e`. This is just the value of [`information`](@ref)
-divided by the maximum value for `e`, according to
-the given [`OutcomeSpace`](@ref) (which may be specified by `est` if not given directly).
+Estimate the normalized version of the given discrete information measure,
+This is just the value of [`information`](@ref) divided its maximum possible value given `o`.
 
-Instead of a discrete information measure estimator, an [`InformationMeasure`](@ref)
-can be given as first argument, in which case [`PlugIn`](@ref) estimation is used.
- If `e` is not given, it defaults to `Shannon()`.
+The same convenience syntaxes as in [`information`](@ref) can be used here.
 
 Notice that there is no method
 `information_normalized(e::DiscreteInfoEstimator, probs::Probabilities)`,
@@ -196,22 +187,31 @@ For the [`PlugIn`](@ref) estimator, it is guaranteed that `h̃ ∈ [0, 1]`. For 
 estimator, we can't guarantee this, since the estimator might over-correct. You should know
 what you're doing if using anything but [`PlugIn`](@ref) to estimate normalized values.
 """
-function information_normalized(e::InformationMeasure, o::OutcomeSpace, x)
+function information_normalized(e::DiscreteInfoEstimator, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
     # If the maximum information is zero (i.e. only one outcome), then we define
     # normalized information as 0.0.
     infomax = information_maximum(e, o, x)
     if infomax == 0
         return 0.0
     end
-    return information(e, o, x) / infomax
-end
-function information_normalized(o::OutcomeSpace, x)
-    return information_normalized(Shannon(), o, x)
-end
-function information_normalized(est::DiscreteInfoEstimator, o::OutcomeSpace, x)
-    return information_normalized(est.definition, o, x)
+    return information(e, est, o, x) / infomax
 end
 
+function information_normalized(o::OutcomeSpace, x)
+    return information_normalized(Shannon(), RelativeAmount(), o, x)
+end
+function information_normalized(e::InformationMeasure, o::OutcomeSpace, x)
+    return information_normalized(PlugIn(e), RelativeAmount(), o, x)
+end
+function information_normalized(e::InformationMeasure, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    return information_normalized(PlugIn(e), est, o, x)
+end
+function information_normalized(e::DiscreteInfoEstimator, o::OutcomeSpace, x)
+    return information_normalized(e, RelativeAmount(), o, x)
+end
+function information_normalized(e::DiscreteInfoEstimator, c::Counts)
+    return information_normalized(e, probabilities(c))
+end
 
 
 ##########################################################################################

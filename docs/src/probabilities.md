@@ -97,18 +97,15 @@ SpatialDispersion
 ```@docs
 Probabilities
 probabilities
-probabilities_and_outcomes
 probabilities!
 allprobabilities
-allprobabilities_and_outcomes
 ```
 
 ## Counts
 
 ```@docs
 counts
-counts_and_outcomes
-allcounts_and_outcomes
+allcounts
 is_counting_based
 ```
 

@@ -1,6 +1,6 @@
 using Test
 using ComplexityMeasures
-using DimensionalData: DimArray
+using ComplexityMeasures.DimensionalData: DimArray
 
 # ----------------------------------------------------------------
 # API

@@ -1,20 +1,20 @@
-export GeneralizedSchürmann
+export GeneralizedSchuermann
 
 """
-    GeneralizedSchürmann <: DiscreteInfoEstimator
-    GeneralizedSchürmann(measure::Shannon; a::Union{<:Real, Vector{<:Real}} = 1.0)
+    GeneralizedSchuermann <: DiscreteInfoEstimator
+    GeneralizedSchuermann(definition = Shannon(); a = 1.0)
 
-The `GeneralizedSchürmann` estimator is used with [`information`](@ref) to compute the
+The `GeneralizedSchuermann` estimator is used with [`information`](@ref) to compute the
 discrete [`Shannon`](@ref) entropy with the bias-corrected estimator
 given in [Grassberger2022](@citet).
 
 The "generalized" part of the name, as opposed to the [Schurmann2004](@citet) estimator
-([`Schürmann`](@ref)),
+([`Schuermann`](@ref)),
 is due to the possibility of picking difference parameters ``a_i`` for different outcomes.
 If different parameters are assigned to the different outcomes, `a` must be a vector of
 parameters of length `length(outcomes)`, where the outcomes are obtained using
 [`outcomes`](@ref). See [Grassberger2022](@citet) for more information. If `a` is a real
-number, then ``a_i = a \\forall i``, and the estimator reduces to the [`Schürmann`](@ref)
+number, then ``a_i = a \\forall i``, and the estimator reduces to the [`Schuermann`](@ref)
 estimator.
 
 ## Description
@@ -37,22 +37,26 @@ G_n(a) = \\varphi(n) + (-1)^n \\int_0^a \\dfrac{x^{n - 1}}{x + 1} dx,
 G_n = \\varphi(n) + (-1)^n \\int_0^1 \\dfrac{x^{n - 1}}{x + 1} dx.
 ```
 """
-Base.@kwdef struct GeneralizedSchürmann{I <: InformationMeasure, T} <: DiscreteInfoEstimator{I}
+Base.@kwdef struct GeneralizedSchuermann{I <: InformationMeasure, A} <: DiscreteInfoEstimator{I}
     definition::I = Shannon()
     # `a[i]` is the parameter for the i-th outcome, and there must be one
     # parameter per outcome. The user should construct
     # `a[i]` by calling `outcomes` with the desired probabilities estimator (with input
     # data, if necessary), and assign one parameter to each outcome.
-    a::Union{T, Vector{T}} = 1.0
+    a::A = 1.0
 end
-function GeneralizedSchürmann(definition::I; a::A = 1.0) where {I, A}
+function GeneralizedSchuermann(definition::I; a::A = 1.0) where {I, A}
     all(a .> 0) || throw(ArgumentError("All elements of `a` must be strict positive. Got $a."))
-    return GeneralizedSchürmann(; definition, a)
+    return GeneralizedSchuermann(; definition, a)
 end
-function information(hest::GeneralizedSchürmann{<:Shannon}, pest::ProbabilitiesEstimator, o::OutcomeSpace, x)
-    (; definition, a) = hest
 
-    cts = counts(pest, o, x)
+function information(hest::GeneralizedSchuermann{<:Shannon}, pest::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    cts = counts(o, x)
+    return information(hest, cts)
+end
+
+function information(hest::GeneralizedSchuermann{<:Shannon}, cts::Counts)
+    (; definition, a) = hest
     N = sum(cts)
 
     if a isa Real

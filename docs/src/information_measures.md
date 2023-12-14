@@ -44,8 +44,8 @@ ElectronicEntropy
 DiscreteInfoEstimator
 PlugIn
 MillerMadow
-Schürmann
-GeneralizedSchürmann
+Schuermann
+GeneralizedSchuermann
 Jackknife
 HorvitzThompson
 ChaoShen

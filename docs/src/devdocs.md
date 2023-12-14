@@ -23,10 +23,9 @@ If your new outcome space is counting-based, then
 5. Implement dispatch for [`counts`](@ref) for your [`OutcomeSpace`](@ref)
     type. This method should return a [`Counts`](@ref) instance (just a wrapper around a
     `DimArray`). Follow existing implementations for guidelines, and ensure that
-    the outcomes are the dimension labels on the array. You'll then get
-    [`counts_and_outcomes`](@ref) for free.
+    the outcomes are the dimension labels on the array.
 6. Implement dispatch for [`symbolize`](@ref). This will ensure that the outcome space
-    also works automatically with any discrete estimators in CausalityTools.jl.
+    also works automatically with any discrete estimators in the downstream CausalityTools.jl.
 
 If your new outcome space is not counting-based, then
 
@@ -42,9 +41,7 @@ Finally,
 8. Implement dispatch for [`outcome_space`](@ref) and your [`OutcomeSpace`](@ref) type.
     The return value of `outcome_space` must be sorted (as in the default behavior of
     `sort`, in ascending order).
-9. Add your outcome space type to the table list in the documentation page of outcome
-    space. If you made an encoding, also add it to corresponding table in the encodings
-    section.
+9. Add your outcome space type to the table list in the documentation string of [`OutcomeSpace`](@ref). If you made an encoding, also add it to corresponding table in the encodings section.
 
 ### Optional steps
 

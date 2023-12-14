@@ -16,8 +16,8 @@ hests = [
     ChaoShen(h),
     HorvitzThompson(h),
     MillerMadow(h),
-    Schürmann(h),
-    GeneralizedSchürmann(h),
+    Schuermann(h),
+    GeneralizedSchuermann(h),
     Jackknife(h),
 ]
 
