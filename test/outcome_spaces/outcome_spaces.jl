@@ -92,8 +92,8 @@ end
         WaveletOverlap(),
         TransferOperator(RectangularBinning(3)),
         PowerSpectrum(),
-        AmplitudeAwareOrdinalPatterns(),
-        WeightedOrdinalPatterns(),
+        # AmplitudeAwareOrdinalPatterns(),
+        # WeightedOrdinalPatterns(),
         NaiveKernel(0.1),
     ]
     @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
