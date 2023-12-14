@@ -112,26 +112,16 @@ information(c::Counts) = information(Shannon(), c)
 
 # from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
 """
-    entropy([disce,] probest, x)
+    entropy(args...)
 
-Compute the discrete entropy of `x` according to the given [`ProbabilitiesEstimator`](@ref)
-or [`OutcomeSpace`](@ref) `probest`.
-The first optional argument can be an entropy definition (see [`InformationMeasure`](@ref))
-or a discrete estimator, see [`DiscreteInfoEstimator`](@ref).
-If not given, `disce` defaults to `Shannon()`.
-
-    entropy(diffe::DifferentialInfoEstimator, x)
-
-Compute the differential entropy of `x` using a [`DifferentialInfoEstimator`](@ref).
-
-`entropy` is nothing more than a wrapper of [`information`](@ref) that will
+`entropy` is nothing more than a call to [`information`](@ref) that will
 simply throw an error if used with an information measure that is not an entropy.
 """
 function entropy(args...)
     e = first(args)
     # Check the condition for throwing an error (if false)
     cond = if e isa ProbEstOrOutcomeSpace
-        # Shannon
+        # Shannon is used as default information measure
         true
     elseif e isa InformationMeasure
         # Any subtype of entropy
