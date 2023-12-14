@@ -77,9 +77,6 @@ end
 function Counts(x::AbstractArray{Int, N}) where {N}
     return Counts(x, generate_outcomes(x))
 end
-function counts(x::AbstractArray{Int, N}) where {N}
-    return Counts(x, generate_outcomes(x))
-end
 
 function generate_outcomes(x::AbstractArray{T, N}) where {T, N}
     # One set of outcomes per dimension
