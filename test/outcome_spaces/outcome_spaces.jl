@@ -61,7 +61,7 @@ end
             Dispersion(),
             ValueBinning(RectangularBinning(3)),
         ]
-        @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+        @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             @test typeof(os[i]) <: ComplexityMeasures.CountBasedOutcomeSpace
             cts, Ω = counts_and_outcomes(os[i], x)
             @test length(cts) == length(Ω)
@@ -77,7 +77,7 @@ end
             SpatialDispersion([0 1; 1 0], x),
             SpatialOrdinalPatterns([0 1; 1 0], x),
         ]
-        @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+        @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             @test typeof(os[i]) <: ComplexityMeasures.CountBasedOutcomeSpace
             cts, Ω = counts_and_outcomes(os[i], x)
             @test length(cts) == length(Ω)
@@ -98,7 +98,7 @@ end
         WeightedOrdinalPatterns(),
         NaiveKernel(0.1),
     ]
-    @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+    @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
         @test !ComplexityMeasures.is_counting_based(os[i])
         @test_throws ArgumentError counts_and_outcomes(os[i], x)
     end

@@ -1,10 +1,9 @@
+using ComplexityMeasures
 using Random
 using Test
 rng = MersenneTwister(1234)
 
-# The BayesianRegularization estimator is only defined for counting-based `ProbabilitiesEstimators`.
-
-@testset "AddConstant: Counting-based outcome space" begin
+@testset "AddConstant" begin
     x = rand(rng, 1:10.0, 100)
 
     os = [
@@ -14,7 +13,8 @@ rng = MersenneTwister(1234)
         CosineSimilarityBinning(),
         ValueBinning(RectangularBinning(3)),
     ]
-    @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+
+    @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
         est = AddConstant()
         outcomemodel = os[i]
 
@@ -39,16 +39,16 @@ rng = MersenneTwister(1234)
         SpatialDispersion([0 1; 1 0], x, c = 2),
         SpatialOrdinalPatterns([0 1; 1 0], x),
     ]
-    @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+    @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
         est = AddConstant()
         outcomemodel = os[i]
-        ps, Ωobs = probabilities(est, outcomemodel, x)
+        ps = probabilities(est, outcomemodel, x)
         Ωobs = outcomes(ps)
         @test ps isa Probabilities
         @test outcomes(est, outcomemodel, x) == Ωobs
         @test probabilities(est, outcomemodel, x) == ps
 
-        ps, Ωall = allprobabilities(est, outcomemodel, x)
+        ps = allprobabilities(est, outcomemodel, x)
         Ωall = outcomes(ps)
         @test ps isa Probabilities
         @test sort(Ωall) == sort(outcome_space(est, outcomemodel, x))

@@ -77,7 +77,7 @@ end
         WeightedOrdinalPatterns(),
         NaiveKernel(0.1),
     ]
-    @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+    @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
         est = RelativeAmount()
         o = os[i]
         ps, Ωobs = probabilities_and_outcomes(o, x)

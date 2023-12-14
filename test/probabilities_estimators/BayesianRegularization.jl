@@ -15,7 +15,7 @@ rng = MersenneTwister(1234)
             CosineSimilarityBinning(),
             ValueBinning(RectangularBinning(3)),
         ]
-        @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+        @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             est = BayesianRegularization()
             outcomemodel = os[i]
 
@@ -40,7 +40,7 @@ rng = MersenneTwister(1234)
             SpatialDispersion([0 1; 1 0], x, c = 2),
             SpatialOrdinalPatterns([0 1; 1 0], x),
         ]
-        @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+        @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             est = BayesianRegularization()
             o = os[i]
             ps, Ωobs = probabilities(est, o, x)
