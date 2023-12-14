@@ -51,9 +51,12 @@ function GeneralizedSchürmann(definition::I; a::A = 1.0) where {I, A}
 end
 
 function information(hest::GeneralizedSchürmann{<:Shannon}, pest::ProbabilitiesEstimator, o::OutcomeSpace, x)
-    (; definition, a) = hest
-
     cts = counts(o, x)
+    return information(hest, cts)
+end
+
+function information(hest::GeneralizedSchürmann{<:Shannon}, cts::Counts)
+    (; definition, a) = hest
     N = sum(cts)
 
     if a isa Real

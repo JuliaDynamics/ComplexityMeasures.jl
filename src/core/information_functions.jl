@@ -12,22 +12,28 @@ const InfoMeasureOrEst = Union{InformationMeasure, DiscreteInfoEstimator}
 const ProbEstOrOutcomeSpace = Union{OutcomeSpace, ProbabilitiesEstimator}
 
 """
-    information([e::DiscreteInfoEstimator,] est::ProbabilitiesEstimator, o::OutcomeSpace, x) → h::Real
+    information(e::DiscreteInfoEstimator, [est::ProbabilitiesEstimator,] o::OutcomeSpace, x) → h::Real
 
 Estimate a discrete information measure from input data `x` using the provided
 [`DiscreteInfoEstimator`](@ref) and [`ProbabilitiesEstimator`](@ref) over the
 given [`OutcomeSpace`](@ref).
 
 As an alternative, you can provide an [`InformationMeasure`](@ref)
-for the first argument (which will default to [`PlugIn`](@ref) estimation) or an
-[`OutcomeSpace`](@ref) for the second argument (which will default to the
-[`RelativeAmount`](@ref) probabilities estimator).
+for the first argument which will default to [`PlugIn`](@ref) estimation) for
+the information estimation. You may also skip
+the `est` argument, giving only an outcome space, which will default to the
+[`RelativeAmount`](@ref) probabilities estimator.
+Note that some information measure estimators (e.g., [`GeneralizedSchürmann`](@ref))
+operate directly on counts and hence ignore `est`.
 
 
     information([e::DiscreteInfoEstimator,] p::Probabilities) → h::Real
+    information([e::DiscreteInfoEstimator,] c::Counts) → h::Real
 
 Like above, but estimate the information measure from the pre-computed
-[`Probabilities`](@ref) `p`.
+[`Probabilities`](@ref) `p` or [`Counts`](@ref).
+Counts are converted into probabilities using [`RelativeAmount`](@ref),
+unless the estimator `e` uses counts directly.
 
 See also: [`information_maximum`](@ref), [`information_normalized`](@ref)
 for a normalized version.
@@ -90,6 +96,9 @@ function information(e::InformationMeasure, est::ProbabilitiesEstimator, o::Outc
 end
 function information(e::DiscreteInfoEstimator, o::OutcomeSpace, x)
     return information(e, RelativeAmount(), o, x)
+end
+function information(e::DiscreteInfoEstimator, c::Counts)
+    return information(e, probabilities(c))
 end
 
 # dispatch for `information(e, ps::Probabilities)`
@@ -157,7 +166,7 @@ without knowledge of input `x`, in which case the function dispatches to
 
 The same as above, but computed directly from the number of total outcomes `L`.
 """
-function information_maximum(e::InformationMeasure, est::ProbEstOrOutcomeSpace,  x)
+function information_maximum(e::InformationMeasure, est::ProbEstOrOutcomeSpace, x)
     L = total_outcomes(est, x)
     return information_maximum(e, L)
 end
