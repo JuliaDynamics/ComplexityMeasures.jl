@@ -177,17 +177,12 @@ function information_maximum(e::InformationMeasureEstimator, args...)
 end
 
 """
-    information_normalized([e::DiscreteInfoEstimator,] o::OutcomeSpace, x) → h̃
-    information_normalized([e::DiscreteInfoEstimator,] est::ProbabilitiesEstimator, x) → h̃
+    information_normalized(e::DiscreteInfoEstimator, [est::ProbabilitiesEstimator,] o::OutcomeSpace, x) → h::Real
 
-Estimate `h̃`, a normalized discrete information measure, from input data `x`, using the
-[`DiscreteInfoEstimator`](@ref) `e`. This is just the value of [`information`](@ref)
-divided by the maximum value for `e`, according to
-the given [`OutcomeSpace`](@ref) (which may be specified by `est` if not given directly).
+Estimate the normalized version of the given discrete information measure,
+This is just the value of [`information`](@ref) divided its maximum possible value given `o`.
 
-Instead of a discrete information measure estimator, an [`InformationMeasure`](@ref)
-can be given as first argument, in which case [`PlugIn`](@ref) estimation is used.
- If `e` is not given, it defaults to `Shannon()`.
+The same convenience syntaxes as in [`information`](@ref) can be used here.
 
 Notice that there is no method
 `information_normalized(e::DiscreteInfoEstimator, probs::Probabilities)`,
@@ -200,22 +195,28 @@ For the [`PlugIn`](@ref) estimator, it is guaranteed that `h̃ ∈ [0, 1]`. For 
 estimator, we can't guarantee this, since the estimator might over-correct. You should know
 what you're doing if using anything but [`PlugIn`](@ref) to estimate normalized values.
 """
-function information_normalized(e::InformationMeasure, o::OutcomeSpace, x)
+function information_normalized(e::DiscreteInfoEstimator, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
     # If the maximum information is zero (i.e. only one outcome), then we define
     # normalized information as 0.0.
     infomax = information_maximum(e, o, x)
     if infomax == 0
         return 0.0
     end
-    return information(e, o, x) / infomax
-end
-function information_normalized(o::OutcomeSpace, x)
-    return information_normalized(Shannon(), o, x)
-end
-function information_normalized(est::DiscreteInfoEstimator, o::OutcomeSpace, x)
-    return information_normalized(est.definition, o, x)
+    return information(e, est, o, x) / infomax
 end
 
+function information_normalized(e::InformationMeasure, o::OutcomeSpace, x)
+    return information_normalized(PlugIn(e), RelativeAmount(), o, x)
+end
+function information_normalized(e::InformationMeasure, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    return information_normalized(PlugIn(e), est, o, x)
+end
+function information_normalized(e::DiscreteInfoEstimator, o::OutcomeSpace, x)
+    return information_normalized(e, RelativeAmount(), o, x)
+end
+function information_normalized(e::DiscreteInfoEstimator, c::Counts)
+    return information_normalized(e, probabilities(c))
+end
 
 
 ##########################################################################################
