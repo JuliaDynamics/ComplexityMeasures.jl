@@ -259,7 +259,7 @@ end
         o::OutcomeSpace, x) → (probs::Probabilities, Ω)
 
 Like [`probabilities`](@ref), but also return the outcomes `Ω` explicitly. `Ω[i]` is the
-outcome corresponding to the probabilities `probs[i]`.
+outcome corresponding to the probability `probs[i]`.
 
 The element type of `Ω` depends on the estimator. `Ω` is a subset of the
 [`outcome_space`](@ref) of `o`.
