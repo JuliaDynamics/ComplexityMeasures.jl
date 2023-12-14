@@ -1,10 +1,11 @@
+using ComplexityMeasures
 using Random
 using Test
 rng = MersenneTwister(1234)
 
-# The BayesianRegularization estimator is only defined for counting-based `ProbabilitiesEstimators`.
+# The BayesianRegularization estimator is only defined for counting-based outcome spaces.
 
-@testset "BayesianRegularization: Counting-based outcome space" begin
+@testset "BayesianRegularization" begin
     @testset "1D estimators" begin
         x = rand(rng, 1:10., 100)
 
@@ -19,13 +20,13 @@ rng = MersenneTwister(1234)
             est = BayesianRegularization()
             outcomemodel = os[i]
 
-            ps, Ωobs = probabilities(est, outcomemodel, x)
+            ps = probabilities(est, outcomemodel, x)
             Ωobs = outcomes(ps)
             @test ps isa Probabilities
             @test probabilities(est, outcomemodel, x) == ps
             @test outcomes(est, outcomemodel, x) == Ωobs
 
-            ps, Ωall = allprobabilities(est, outcomemodel, x)
+            ps = allprobabilities(est, outcomemodel, x)
             Ωall = outcomes(ps)
             @test ps isa Probabilities
             @test sort(Ωall) == outcome_space(est, outcomemodel, x)
@@ -43,13 +44,13 @@ rng = MersenneTwister(1234)
         @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             est = BayesianRegularization()
             o = os[i]
-            ps, Ωobs = probabilities(est, o, x)
+            ps = probabilities(est, o, x)
             Ωobs = outcomes(ps)
             @test ps isa Probabilities
             @test outcomes(est, o, x) == Ωobs
             @test probabilities(est, o, x) == ps
 
-            ps, Ωall = allprobabilities(est, o, x)
+            ps = allprobabilities(est, o, x)
             Ωall = outcomes(ps)
             @test ps isa Probabilities
             @test sort(Ωall) == sort(outcome_space(est, o, x))
