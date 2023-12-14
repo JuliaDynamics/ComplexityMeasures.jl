@@ -159,10 +159,12 @@ abstract type ProbabilitiesEstimator end
 ###########################################################################################
 """
 
-    probabilities([est::ProbabilitiesEstimator], cts::Counts) → p::Probabilities
+    probabilities([est::ProbabilitiesEstimator], counts::Counts) → p::Probabilities
 
-Estimate probabilities from `cts` using the given [`ProbabilitiesEstimator`](@ref) `est`
-(if no estimator is provided, [`RelativeAmount`](@ref) is used).
+Estimate probabilities from the pre-computed `counts` using the given 
+[`ProbabilitiesEstimator`](@ref) `est`. 
+
+If no estimator is provided, then [`RelativeAmount`](@ref) is used.
 
     probabilities([est::ProbabilitiesEstimator], o::OutcomeSpace, x::Array_or_SSSet) → p::Probabilities
 
@@ -251,6 +253,10 @@ end
 
 function probabilities(x)
     return probabilities(RelativeAmount(), UniqueElements(), x)
+end
+
+function probabilities_and_outcomes(x)
+    return probabilities_and_outcomes(RelativeAmount(), UniqueElements(), x)
 end
 
 
