@@ -1,27 +1,27 @@
-export Schürmann
+export Schuermann
 
 using SpecialFunctions: digamma
 using QuadGK
 
 """
-    Schürmann <: DiscreteInfoEstimator
-    Schürmann(definition::Shannon; a = 1.0)
+    Schuermann <: DiscreteInfoEstimator
+    Schuermann(definition::Shannon; a = 1.0)
 
-The `Schürmann` estimator is used with [`information`](@ref) to compute the
+The `Schuermann` estimator is used with [`information`](@ref) to compute the
 discrete [`Shannon`](@ref) entropy with the bias-corrected estimator
 given in [Schurmann2004](@citet).
 
-See detailed description for [`GeneralizedSchürmann`](@ref) for details.
+See detailed description for [`GeneralizedSchuermann`](@ref) for details.
 """
-Base.@kwdef struct Schürmann{I <: InformationMeasure, A} <: DiscreteInfoEstimator{I}
+Base.@kwdef struct Schuermann{I <: InformationMeasure, A} <: DiscreteInfoEstimator{I}
     definition::I = Shannon()
     a::A = 1.0
 end
-function Schürmann(definition::I; a::A = 1.0) where {I, A}
+function Schuermann(definition::I; a::A = 1.0) where {I, A}
     a > 0 || throw(ArgumentError("a must be strict positive. Got $a."))
-    return Schürmann(; definition, a)
+    return Schuermann(; definition, a)
 end
-function information(hest::Schürmann{<:Shannon}, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+function information(hest::Schuermann{<:Shannon}, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
     (; definition, a) = hest
 
     # We should be using `N = length(x)`, but since some probabilities estimators
@@ -32,7 +32,7 @@ function information(hest::Schürmann{<:Shannon}, est::ProbabilitiesEstimator, o
 
     h = digamma(N) - 1/N * sum(nᵢ * Sₙ(a, nᵢ) for nᵢ in cts)
 
-    # The Schürmann estimate of `h` is based on the natural logarithm, so we must convert
+    # The Schuermann estimate of `h` is based on the natural logarithm, so we must convert
     # to the desired base.
     return convert_logunit(h, MathConstants.e, definition.base)
 end
@@ -44,7 +44,7 @@ function Sₙ(a, n)
     # Integrate `f_schurmann` from `lb` to `ub`. We only need the value of the integral
     # (not the error), so index first element returned from `quadgk`
     lb = 0.0
-    ub = 1/a - 1 # Assumes a > 0, which is handled in the constructor to `Schürmann`.
+    ub = 1/a - 1 # Assumes a > 0, which is handled in the constructor to `Schuermann`.
     if lb == ub
         return digamma(n)
     end

@@ -23,7 +23,7 @@ for the first argument which will default to [`PlugIn`](@ref) estimation) for
 the information estimation. You may also skip
 the `est` argument, giving only an outcome space, which will default to the
 [`RelativeAmount`](@ref) probabilities estimator.
-Note that some information measure estimators (e.g., [`GeneralizedSchürmann`](@ref))
+Note that some information measure estimators (e.g., [`GeneralizedSchuermann`](@ref))
 operate directly on counts and hence ignore `est`.
 
 
@@ -80,7 +80,7 @@ o = ValueBinning(RectangularBinning(5))
 # Estimate Shannon entropy estimation using various dedicated estimators
 h_s = information(MillerMadow(Shannon()), RelativeAmount(), o, x)
 h_s = information(HorvitzThompson(Shannon()), Shrinkage(), o, x)
-h_s = information(Schürmann(Shannon()), Shrinkage(), o, x)
+h_s = information(Schuermann(Shannon()), Shrinkage(), o, x)
 
 # Estimate information measures using the generic `Jackknife` estimator
 h_r = information(Jackknife(Renyi()), Shrinkage(), o, x)
