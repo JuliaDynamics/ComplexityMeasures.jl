@@ -22,7 +22,7 @@ The outcome space `Ω` for `PowerSpectrum` is the set of frequencies in Fourier 
 should be multiplied with the sampling rate of the signal, which is assumed to be `1`.
 Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-struct PowerSpectrum <: NoCountOutcomeSpace end
+struct PowerSpectrum <: OutcomeSpace end
 
 function probabilities(::PowerSpectrum, x)
     if !(x isa AbstractVector{<:Real})

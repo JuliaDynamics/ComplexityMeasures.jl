@@ -92,12 +92,12 @@ end
         WaveletOverlap(),
         TransferOperator(RectangularBinning(3)),
         PowerSpectrum(),
-        # AmplitudeAwareOrdinalPatterns(),
-        # WeightedOrdinalPatterns(),
+        AmplitudeAwareOrdinalPatterns(),
+        WeightedOrdinalPatterns(),
         NaiveKernel(0.1),
     ]
     @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
         @test !ComplexityMeasures.is_counting_based(os[i])
-        @test_throws ArgumentError counts_and_outcomes(os[i], x)
+        @test_throws "`counts`" counts_and_outcomes(os[i], x)
     end
 end

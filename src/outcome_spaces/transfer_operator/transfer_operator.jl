@@ -86,7 +86,7 @@ below some threshold.
 
 See also: [`RectangularBinning`](@ref), [`invariantmeasure`](@ref).
 """
-struct TransferOperator{R<:AbstractBinning} <: NoCountOutcomeSpace
+struct TransferOperator{R<:AbstractBinning} <: OutcomeSpace
     binning::R
 end
 TransferOperator(ϵ::Union{Real,Vector}) = TransferOperator(RectangularBinning(ϵ))

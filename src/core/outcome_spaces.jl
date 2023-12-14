@@ -103,8 +103,6 @@ abstract type OutcomeSpace end
 
 # Use this subtype instead for outcome spaces that support counting
 abstract type CountBasedOutcomeSpace <: OutcomeSpace end
-# And this subtype for spaces that do not support counting
-abstract type NoCountOutcomeSpace <: OutcomeSpace end
 
 ###########################################################################################
 # Outcome space

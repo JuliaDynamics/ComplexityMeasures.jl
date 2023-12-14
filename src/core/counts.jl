@@ -123,12 +123,16 @@ end
 # TODO: This is type-piracy that should be moved to StateSpaceSets.jl!
 unique!(xc::AbstractStateSpaceSet) = unique!(vec(xc))
 
-# Argument error method for non-counting spaces
-function counts(o::NoCountOutcomeSpace, x)
-    throw(ArgumentError(
-        "`counts` only works with count-based outcome spaces. "*
-        "You provided $(nameof(typeof(o))) which is not count-based."
-    ))
+# Generic fallback with informative error
+function counts(o::OutcomeSpace, x)
+    if !is_counting_based(o)
+        throw(ArgumentError(
+            "`counts` only works with counting based outcome spaces. "*
+            "You provided $(nameof(typeof(o))) which is not one."
+        ))
+    else
+        error("`counts` not yet implemented for outcome space $(nameof(typeof(o)))")
+    end
 end
 
 # -----------------------------------------------------------------

@@ -35,7 +35,7 @@ Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 The reason to not return the data points themselves is because duplicate data points may
 not get assigned same probabilities (due to having different neighbors).
 """
-struct NaiveKernel{KM, M <: Metric} <: NoCountOutcomeSpace
+struct NaiveKernel{KM, M <: Metric} <: OutcomeSpace
     ϵ::Float64
     method::KM
     w::Int
