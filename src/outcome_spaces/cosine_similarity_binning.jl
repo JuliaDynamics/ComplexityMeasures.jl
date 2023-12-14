@@ -62,6 +62,21 @@ function counts(est::CosineSimilarityBinning, x::AbstractVector{T}) where T <: R
     return counts(rbc, ds)::Counts
 end
 
+
+function counts_and_outcomes(est::CosineSimilarityBinning, x::AbstractVector{T}) where T <: Real
+    # embed and then calculate cosine similary for each consecutive pair of delay vectors
+    τs = 0:est.τ:(est.m - 1)*est.τ
+    Y = genembed(x, τs)
+    ds = zeros(Float64, length(Y) - 1)
+    @inbounds for i in 1:(length(Y)-1)
+        ds[i] = cosine_similarity(Y[i], Y[i+1])
+    end
+    # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval
+    rbc = encoding_for_diversity(est.nbins)
+    cts, outs = counts_and_outcomes(rbc, ds)
+    return cts, outcomes(cts)
+end
+
 outcome_space(est::CosineSimilarityBinning) = outcome_space(encoding_for_diversity(est.nbins))
 total_outcomes(est::CosineSimilarityBinning) = est.nbins
 

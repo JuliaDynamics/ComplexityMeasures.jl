@@ -23,10 +23,10 @@ counts(::UniqueElements, x) = counts(x)
 function counts_and_outcomes(::UniqueElements, x)
     z = copy(x)
     cts = fasthist!(z)
-    # notice that `z` is now sorted within `frequencies!` so we can skip sorting
-    outcomes = unique!(z)
-
-    return Counts(cts, outcomes), outcomes
+    # notice that `z` is now sorted within `fasthist!` so we can skip sorting
+    outs = unique!(z)
+    cts = Counts(cts, outs)
+    return cts, outcomes(cts)
 end
 
 outcome_space(::UniqueElements, x) = sort!(unique(x))

@@ -50,23 +50,29 @@ function NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
     return NaiveKernel(ϵ, method, w, metric)
 end
 
-function probabilities(est::NaiveKernel, x::AbstractVector{<:Real})
-    return probabilities(est, StateSpaceSet(x))
+function probabilities(o::NaiveKernel, x::AbstractVector{<:Real})
+    return probabilities(o, StateSpaceSet(x))
 end
 
-function probabilities(est::NaiveKernel, x::AbstractStateSpaceSet)
-    idxs = neighbor_cts(est, x)
+function probabilities(o::NaiveKernel, x::AbstractStateSpaceSet)
+    idxs = neighbor_cts(o, x)
     probs = length.(idxs)
     outs = eachindex(x)
     return Probabilities(probs, outs)
 end
 
-function neighbor_cts(est::NaiveKernel, x)
-    theiler = Theiler(est.w)
-    ss = searchstructure(est.method, vec(x), est.metric)
+function probabilities_and_outcomes(o::NaiveKernel, x)
+    # outcomes are free, so we can just call `probabilities` here.
+    probs = probabilities(o, x)
+    return probs, outcomes(probs)
+end
+
+function neighbor_cts(o::NaiveKernel, x)
+    theiler = Theiler(o.w)
+    ss = searchstructure(o.method, vec(x), o.metric)
 
     # idxs[i] := idxs of neighbors to point x[i]
-    idxs = bulkisearch(ss, vec(x), WithinRange(est.ϵ), theiler)
+    idxs = bulkisearch(ss, vec(x), WithinRange(o.ϵ), theiler)
     return idxs
 end
 

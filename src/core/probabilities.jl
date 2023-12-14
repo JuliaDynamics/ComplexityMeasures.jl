@@ -300,11 +300,12 @@ function probabilities! end
 ###########################################################################################
 # All probabilities
 ###########################################################################################
-# This method is overriden by non-counting-based `OutcomeSpace`s. For counting-based
-# `OutcomeSpace`s, we just utilize `counts_and_outcomes` to get the histogram, then
-# normalize it when converting to `Probabilities`.
+# This method is overriden by non-counting-based `OutcomeSpace`s and for outcome spaces
+# where explicitly creating the outcomes is expensive.
 function probabilities_and_outcomes(o::OutcomeSpace, x)
-    return probabilities_and_outcomes(RelativeAmount(), o, x)
+    cts, outs = counts_and_outcomes(o, x)
+    probs = Probabilities(cts, outs)
+    return probs, outcomes(probs)
 end
 
 """
@@ -322,8 +323,14 @@ not true for [`probabilities`](@ref) even with the same `est`, due to the skippi
 of 0 entries, but it is true for [`allprobabilities`](@ref).
 """
 function allprobabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
-    probs = probabilities(est, o, x)
-    outs = outcomes(probs) # the observed outcomes
+    # the observed outcomes and their probabilities
+    probs, os = probabilities_and_outcomes(est, o, x)
+    # todo os is a tuple.
+    if os isa AbstractRange
+        outs = collect(os)
+    else
+        outs = os
+    end
     ospace = vec(outcome_space(o, x)) # all possible outcomes
     # We first utilize that the outcome space is sorted and sort probabilities
     # accordingly (just in case we have an estimator that is not sorted)

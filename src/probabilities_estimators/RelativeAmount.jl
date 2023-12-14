@@ -47,3 +47,13 @@ function probabilities(est::RelativeAmount, outcomemodel::OutcomeSpace, x)
         return probabilities(outcomemodel, x)
     end
 end
+
+function probabilities_and_outcomes(est::RelativeAmount, outcomemodel::OutcomeSpace, x)
+    if is_counting_based(outcomemodel)
+        cts, outs = counts_and_outcomes(outcomemodel, x)
+        probs = Probabilities(cts, outs)
+        return probs, outcomes(probs)
+    else
+        return probabilities_and_outcomes(outcomemodel, x)
+    end
+end

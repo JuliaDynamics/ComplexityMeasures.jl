@@ -471,6 +471,12 @@ end
 function probabilities(est::TransferOperator, x::Array_or_SSSet)
     to = transferoperator(StateSpaceSet(x), est.binning; 
         warn_precise = est.warn_precise)
+    return Probabilities(invariantmeasure(to; rng = est.rng).ρ)
+end
+
+function probabilities_and_outcomes(est::TransferOperator, x::Array_or_SSSet)
+    to = transferoperator(StateSpaceSet(x), est.binning; 
+        warn_precise = est.warn_precise)
     probs = invariantmeasure(to; rng = est.rng).ρ
 
     # Note: bins are *not* sorted. They occur in the order of first appearance, according
@@ -479,7 +485,8 @@ function probabilities(est::TransferOperator, x::Array_or_SSSet)
     bins = to.bins
     unique!(bins)
     outs = decode.(Ref(to.encoding), bins) # coordinates of the visited bins
-    return Probabilities(probs, outs)
+    probs = Probabilities(probs, outs)
+    return probs, outcomes(probs)
 end
 
 outcome_space(est::TransferOperator, x) = outcome_space(est.binning, x)

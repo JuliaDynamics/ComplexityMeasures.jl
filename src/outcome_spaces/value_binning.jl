@@ -70,6 +70,20 @@ function counts(est::ValueBinning, x)
     return counts(RectangularBinEncoding(est.binning, x), x)
 end
 
+function counts_and_outcomes(est::ValueBinning, x)
+    return counts_and_outcomes(RectangularBinEncoding(est.binning, x), x)
+end
+
+function probabilities(est::ValueBinning, x)
+    return Probabilities(counts(RectangularBinEncoding(est.binning, x), x))
+end
+
+function probabilities_and_outcomes(est::ValueBinning, x)
+    cts, outs = counts_and_outcomes(RectangularBinEncoding(est.binning, x), x)
+    probs = Probabilities(cts, outs)
+    return probs, outcomes(probs)
+end
+
 function outcome_space(est::ValueBinning, x)
     return outcome_space(RectangularBinEncoding(est.binning, x))
 end

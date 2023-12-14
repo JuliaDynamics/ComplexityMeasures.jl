@@ -81,7 +81,8 @@ end
 function generate_outcomes(x::AbstractArray{T, N}) where {T, N}
     # One set of outcomes per dimension
     s = size(x)
-    gen = (EnumeratedOutcome(1):EnumeratedOutcome(s[i]) for i = 1:N)
+    #gen = (EnumeratedOutcome(1):EnumeratedOutcome(s[i]) for i = 1:N)
+    gen = (1:s[i] for i = 1:N)
     return tuple(gen...)
 end
 
@@ -107,16 +108,17 @@ Base.show(io::IO, o::EnumeratedOutcome) = print(io, "EnumeratedOutcome($(o.num))
 EnumeratedOutcome{T}(x::EnumeratedOutcome{T}) where T<:Integer = EnumeratedOutcome(x.num)
 Integer(x::EnumeratedOutcome{T}) where T<:Integer = x.num
 
-import Base: -, +, *, isless, rem, div
-for f in [:(*), (:+), (:-), :rem, :div]
+import Base: -, +, *, rem, div
+for f in [:(*), :(+), :(-), :rem, :div]
     @eval begin
         @eval Base.$(f)(o1::EnumeratedOutcome, o2::EnumeratedOutcome) = EnumeratedOutcome($(f)(o1.num, o2.num))
-        @eval Base.$(f)(o1::EnumeratedOutcome, o2) = EnumeratedOutcome($(f)(o1.num, o2))
-        @eval Base.$(f)(o1, o2::EnumeratedOutcome) = EnumeratedOutcome($(f)(o1, o2.num))
+        @eval Base.$(f)(o1::EnumeratedOutcome, o2::Integer) = EnumeratedOutcome($(f)(o1.num, o2))
+        @eval Base.$(f)(o1::Integer, o2::EnumeratedOutcome) = EnumeratedOutcome($(f)(o1, o2.num))
     end
 end
 
-for f in [:isless]
+import Base: <, >, <=, >=, ==, isless
+for f in [:(<), :(>), :(<=), :(>=), :(==), :isless]
     @eval begin
         @eval Base.$(f)(o1::EnumeratedOutcome, o2::EnumeratedOutcome) = $(f)(o1.num, o2.num)
     end
