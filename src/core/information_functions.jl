@@ -20,8 +20,9 @@ given [`OutcomeSpace`](@ref).
 
 As an alternative, you can provide an [`InformationMeasure`](@ref)
 for the first argument which will default to [`PlugIn`](@ref) estimation) for
-the information estimation. You may also skip
-the `est` argument, giving only an outcome space, which will default to the
+the information estimation. You may also skip the first argument, in which case
+`Shannon()` will be used. You may also skip
+the second argument (`est`) argument, giving only an outcome space, which will default to the
 [`RelativeAmount`](@ref) probabilities estimator.
 Note that some information measure estimators (e.g., [`GeneralizedSchuermann`](@ref))
 operate directly on counts and hence ignore `est`.
@@ -97,7 +98,7 @@ end
 function information(e::DiscreteInfoEstimator, o::OutcomeSpace, x)
     return information(e, RelativeAmount(), o, x)
 end
-function information(e::DiscreteInfoEstimator, c::Counts)
+function information(e::Union{InformationMeasure, DiscreteInfoEstimator}, c::Counts)
     return information(e, probabilities(c))
 end
 
@@ -107,6 +108,7 @@ end
 # Convenience
 information(o::OutcomeSpace, x) = information(Shannon(), o, x)
 information(probs::Probabilities) = information(Shannon(), probs)
+information(c::Counts) = information(Shannon(), c)
 
 # from before https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/239
 """
@@ -177,7 +179,7 @@ function information_maximum(e::InformationMeasureEstimator, args...)
 end
 
 """
-    information_normalized(e::DiscreteInfoEstimator, [est::ProbabilitiesEstimator,] o::OutcomeSpace, x) → h::Real
+    information_normalized([e::DiscreteInfoEstimator,] [est::ProbabilitiesEstimator,] o::OutcomeSpace, x) → h::Real
 
 Estimate the normalized version of the given discrete information measure,
 This is just the value of [`information`](@ref) divided its maximum possible value given `o`.
@@ -205,6 +207,9 @@ function information_normalized(e::DiscreteInfoEstimator, est::ProbabilitiesEsti
     return information(e, est, o, x) / infomax
 end
 
+function information_normalized(o::OutcomeSpace, x)
+    return information_normalized(Shannon(), RelativeAmount(), o, x)
+end
 function information_normalized(e::InformationMeasure, o::OutcomeSpace, x)
     return information_normalized(PlugIn(e), RelativeAmount(), o, x)
 end
