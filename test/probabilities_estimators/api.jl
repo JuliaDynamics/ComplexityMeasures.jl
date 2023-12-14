@@ -19,7 +19,7 @@ os_count = [
 ]
 
 x = rand(rng, 100)
-@testset "`ProbabilitiesEstimator` with non-count-based : $(typeof(os_count[i]).name.name)" for i in eachindex(os_count)
+@testset "`ProbabilitiesEstimator` with $(typeof(os_count[i]).name.name)" for i in eachindex(os_count)
     o = os_count[i]
     @test probabilities(RelativeAmount(), o, x) isa Probabilities
     @test probabilities(BayesianRegularization(), o, x) isa Probabilities
@@ -38,7 +38,7 @@ os_noncount = [
     NaiveKernel(0.1)
 ]
 
-@testset "`ProbabilitiesEstimator` constructors: $(typeof(os_noncount[i]).name.name)" for i in eachindex(os_noncount)
+@testset "`ProbabilitiesEstimator` with $(typeof(os_noncount[i]).name.name)" for i in eachindex(os_noncount)
     o = os_noncount[i]
     # RelativeAmount is the catch-all estimator that also works for pseudo counts
     @test probabilities(RelativeAmount(), o, x) isa Probabilities

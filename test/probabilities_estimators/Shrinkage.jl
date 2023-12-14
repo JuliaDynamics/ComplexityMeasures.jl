@@ -1,3 +1,4 @@
+using ComplexityMeasures
 using Random
 using Test
 rng = MersenneTwister(1234)
@@ -12,20 +13,9 @@ rng = MersenneTwister(1234)
             CosineSimilarityBinning(),
             ValueBinning(RectangularBinning(3)),
         ]
-        @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+        @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             est = Shrinkage()
             outcomemodel = os[i]
-
-            cts, Ωobs = allcounts_and_outcomes(est, outcomemodel, x)
-            @test sort(Ωobs) == sort(outcome_space(est, outcomemodel, x))
-            @test length(cts) == total_outcomes(est, outcomemodel, x)
-            @test allcounts(est, outcomemodel, x) == cts
-
-            cts, Ωobs = counts_and_outcomes(est, outcomemodel, x)
-            @test cts isa Counts
-            @test length(cts) <= total_outcomes(est, outcomemodel, x)
-            @test length(Ωobs) <= total_outcomes(est, outcomemodel, x)
-            @test counts(est, outcomemodel, x) == cts
 
             ps, Ωobs = probabilities_and_outcomes(est,outcomemodel, x)
             @test ps isa Probabilities
@@ -46,7 +36,7 @@ rng = MersenneTwister(1234)
             SpatialDispersion([0 1; 1 0], x, c = 2),
             SpatialOrdinalPatterns([0 1; 1 0], x),
         ]
-        @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+        @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             est = Shrinkage()
             outcomemodel = os[i]
             ps, Ωobs = probabilities_and_outcomes(est, outcomemodel, x)

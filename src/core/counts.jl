@@ -3,8 +3,6 @@ import Base.unique!
 
 export Counts
 export counts
-export counts_and_outcomes
-export allcounts_and_outcomes
 export allcounts
 export is_counting_based
 
@@ -100,10 +98,10 @@ Discretize/encode `x` into a finite set of outcomes `Ω` specified by the provid
 [`OutcomeSpace`](@ref) `o`, then count how often each outcome `Ωᵢ ∈ Ω` (i.e.
 each "discretized value", or "encoded symbol") appears.
 
-Return a [`Counts`](@ref) instance where the marginals are labelled with the outcomes,
+Return a [`Counts`](@ref) instance which is a vector-like containing the counts.
+When displayed, the marginals of the vector are labelled with the outcomes,
 so that it is easy to trace what is being counted. Use [`outcomes`](@ref) on the
-resulting [`Counts`](@ref) to get these explicitly. Alternatively, us
-[`counts_and_outcomes`](@ref) to get both in one operation.
+resulting [`Counts`](@ref) to get these marginals explicitly.
 
 If no [`OutcomeSpace`](@ref) is specified, then [`UniqueElements`](@ref) is used.
 
@@ -128,11 +126,19 @@ function counts(x)
     # are named `x2`, `x3`, etc..., but this is defined in CausalityTools.jl)
     return Counts(cts, (outs, ), (:x1, ))
 end
-unique!(xc::AbstractStateSpaceSet) = unique!(xc.data)
+# TODO: This is type-piracy that should be moved to StateSpaceSets.jl!
+unique!(xc::AbstractStateSpaceSet) = unique!(vec(xc))
 
-function counts_and_outcomes(x)
-    cts::Counts = counts(x)
-    return cts, outcomes(cts)
+# Generic fallback with informative error
+function counts(o::OutcomeSpace, x)
+    if !is_counting_based(o)
+        throw(ArgumentError(
+            "`counts` only works with counting based outcome spaces. "*
+            "You provided $(nameof(typeof(o))) which is not one."
+        ))
+    else
+        error("`counts` not yet implemented for outcome space $(nameof(typeof(o)))")
+    end
 end
 
 # -----------------------------------------------------------------
@@ -156,31 +162,15 @@ function outcomes(c::Counts{<:Integer, N}, idxs) where N
 end
 
 """
-    counts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts, Ω)
-
-Like [`counts`](@ref), but also return the outcomes `Ω` explicitly. `Ω[i]` is the
-outcome corresponding to the count `cts[i]`.
-
-The element type of `Ω` depends on the estimator. `Ω` is a subset of the
-[`outcome_space`](@ref) of `o`.
-"""
-function counts_and_outcomes(o::OutcomeSpace, x)
-    if is_counting_based(o)
-        cts::Counts = counts(o, x)
-        return cts, outcomes(cts)
-    end
-    s = "`counts_and_outcomes` not implemented for outcome space $(typeof(o))."
-    throw(ArgumentError(s))
-end
-
-"""
     allcounts(o::OutcomeSpace, x::Array_or_SSSet) → cts::Counts{<:Integer, 1}
 
 Like [`counts`](@ref), but ensures that *all* outcomes `Ωᵢ ∈ Ω`,
 where `Ω = outcome_space(o, x)`), are included.
+Outcomes that do not occur in the data `x` get 0 count.
 """
 function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
-    cts, outs = counts_and_outcomes(o, x)
+    cts = counts(o, x)
+    outs = outcomes(cts)
     ospace = vec(outcome_space(o, x))
     m = length(ospace)
     allcts = zeros(Int, m)
@@ -191,16 +181,6 @@ function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
         end
     end
     return Counts(allcts, (ospace,), (:x1, ))
-end
-
-"""
-    allcounts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts{<:Integer, 1}, Ω::Vector)
-
-Like [`allcounts`](@ref), but also returns the outcomes `Ω` explicitly.
-"""
-function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
-    cts::Counts = allcounts(o, x)
-    return cts, outcomes(cts)
 end
 
 """

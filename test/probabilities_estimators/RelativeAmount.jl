@@ -1,7 +1,9 @@
+using ComplexityMeasures
 using Random
 using Test
 rng = MersenneTwister(1234)
-@testset "RelativeAmount: Counting-based outcome space" begin
+
+@testset "RelativeAmount" begin
     @testset "1D estimators" begin
         x = rand(rng, 1:10., 100)
 
@@ -12,7 +14,8 @@ rng = MersenneTwister(1234)
             CosineSimilarityBinning(),
             ValueBinning(RectangularBinning(3)),
         ]
-        @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+
+        @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             est = RelativeAmount()
             o = os[i]
 
@@ -46,7 +49,7 @@ rng = MersenneTwister(1234)
             SpatialDispersion([0 1; 1 0], x, c = 2),
             SpatialOrdinalPatterns([0 1; 1 0], x),
         ]
-        @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+        @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
             est = RelativeAmount()
             o = os[i]
             ps, Ωobs = probabilities_and_outcomes(est, o, x)
@@ -74,7 +77,7 @@ end
         WeightedOrdinalPatterns(),
         NaiveKernel(0.1),
     ]
-    @testset "$(typeof(os[i]).name.name)" for i in eachindex(os)
+    @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
         est = RelativeAmount()
         o = os[i]
         ps, Ωobs = probabilities_and_outcomes(o, x)

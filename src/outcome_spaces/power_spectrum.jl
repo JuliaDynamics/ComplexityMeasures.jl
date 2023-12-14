@@ -24,7 +24,7 @@ Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
 struct PowerSpectrum <: OutcomeSpace end
 
-function probabilities(o::PowerSpectrum, x)
+function probabilities(::PowerSpectrum, x)
     if !(x isa AbstractVector{<:Real})
         throw(ArgumentError("`PowerSpectrum` only works for timeseries input!"))
     end

@@ -138,8 +138,8 @@ provide improvements over the naive [`PlugIn`](@ref) estimator.
 
 - [`MillerMadow`](@ref).
 - [`HorvitzThompson`](@ref).
-- [`Schürmann`](@ref).
-- [`GeneralizedSchürmann`](@ref).
+- [`Schuermann`](@ref).
+- [`GeneralizedSchuermann`](@ref).
 - [`ChaoShen`](@ref).
 
 
