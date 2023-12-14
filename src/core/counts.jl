@@ -169,7 +169,7 @@ where `Ω = outcome_space(o, x)`), are included.
 Outcomes that do not occur in the data `x` get 0 count.
 """
 function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
-    cts = counts(o, x)
+    cts, outs = counts_and_outcomes(o, x)
     outs = outcomes(cts)
     ospace = vec(outcome_space(o, x))
     m = length(ospace)
