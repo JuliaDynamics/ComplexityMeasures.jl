@@ -40,3 +40,24 @@ binnings = [
     # Test that gives approximately same entropy as ValueBinning:
     abs(information(TransferOperator(b), D) - information(ValueBinning(b), D) ) < 0.1 # or something like that
 end
+
+# Warn if we're not using precise binnings.
+imprecise_warning = "`binning.precise == false`. You may be getting points outside the binning."
+b = RectangularBinning(5)
+@test_logs (:warn, imprecise_warning) ComplexityMeasures.transferoperator(D, b; warn_precise = true)
+
+# ---------------
+# Reproducibility
+# ---------------
+
+# Resetting rng will lead to identical results.
+p1 = probabilities(TransferOperator(b; rng = MersenneTwister(1234)), D)
+p2 = probabilities(TransferOperator(b; rng = MersenneTwister(1234)), D)
+@test all(p1 .== p2)
+
+# Not resetting rng will lead to non-identical results.
+rng = MersenneTwister(1234)
+p1 = probabilities(TransferOperator(b; rng), D)
+p2 = probabilities(TransferOperator(b; rng), D)
+@test !all(p1 .== p2)
+@test p1[1] ≈ p2[1] # But we should be close
