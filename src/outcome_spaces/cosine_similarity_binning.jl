@@ -34,7 +34,7 @@ and the return configuration is the same as in [`ValueBinning`](@ref) (left bin 
 
 ## Implements
 
-- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
+- [`codify`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
 Base.@kwdef struct CosineSimilarityBinning <: CountBasedOutcomeSpace
     m::Int = 2

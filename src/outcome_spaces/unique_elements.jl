@@ -14,7 +14,7 @@ Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 
 ## Implements
 
-- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
+- [`codify`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
 struct UniqueElements <: CountBasedOutcomeSpace end
 

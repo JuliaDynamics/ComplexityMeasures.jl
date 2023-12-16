@@ -38,7 +38,7 @@ binning, but for [`RectangularBinning`](@ref) input `x` is needed as well.
 
 ## Implements
 
-- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
+- [`codify`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
 struct ValueBinning{B<:AbstractBinning} <: CountBasedOutcomeSpace
     binning::B

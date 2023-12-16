@@ -24,7 +24,7 @@ If your new outcome space is counting-based, then
     type. This method should return a [`Counts`](@ref) instance (just a wrapper around a
     `DimArray`). Follow existing implementations for guidelines, and ensure that
     the outcomes are the dimension labels on the array.
-6. Implement dispatch for [`symbolize`](@ref). This will ensure that the outcome space
+6. Implement dispatch for [`codify`](@ref). This will ensure that the outcome space
     also works automatically with any discrete estimators in the downstream CausalityTools.jl.
 
 If your new outcome space is not counting-based, then

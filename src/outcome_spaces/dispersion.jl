@@ -60,7 +60,7 @@ For a version of this estimator that can be used on high-dimensional arrays, see
 
 ## Implements
 
-- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
+- [`codify`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
 Base.@kwdef struct Dispersion{S <: Encoding} <: CountBasedOutcomeSpace
     encoding::Type{S} = GaussianCDFEncoding # any encoding at accepts keyword `c`

@@ -111,7 +111,7 @@ information(Renyi(q = 2), est, x)
 ```
 
 See also: [`SpatialOrdinalPatterns`](@ref), [`GaussianCDFEncoding`](@ref),
-[`symbolize`](@ref).
+[`codify`](@ref).
 """
 struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialProbEst{D, P}
     stencil::Vector{CartesianIndex{D}}
