@@ -210,7 +210,7 @@ perm_ent_y = entropy(OrdinalPatterns(), y)
 # Just like the previous section discussing the possibility of many different outcome
 # spaces, the same concept applies to entropy. There are many _actually different_
 # entropies. Shannon entropy is not the only one, just the one used most often.
-# Each entropy is a subtype of [`EntropyDefinition`](@ref). Another commonly used entropy
+# Each entropy is a subtype of [`InformationMeasure`](@ref). Another commonly used entropy
 # is the [Renyi](@ref) or generalized entropy. We can use [`Renyi`](@ref) as an additional
 # first argument to the [`entropy`](@ref)function
 

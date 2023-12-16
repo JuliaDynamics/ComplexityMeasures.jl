@@ -10,7 +10,7 @@ Further additions to the library in v3:
 
 - New function `allprobabilities` that is like `probabilities` but also includes 0 entries for possible outcomes that were not present in the data.
 - New _extropy_ definitions that count as information measures (and thus can be given to `information`): `ShannonExtropy`, `RenyiExtropy`, `TsallisExtropy`.
-- `StatisticalComplexity` is now compatible with any normalizable `EntropyDefinition`.
+- `StatisticalComplexity` is now compatible with any normalizable `InformationMeasure` (previously `EntropyDefinition`).
 - `StatisticalComplexity` can now estimate probabilities using any combination of `ProbabilitiesEstimator` and `OutcomeSpace`.
 - Add the 1976 Lempel-Ziv complexity measure (`LempelZiv76`).
 - New entropy definition: identification entropy (`Identification`).
@@ -100,7 +100,7 @@ If we missed code that should be working, let us know by opening an issue.
 - Common generic interface function `entropy`, `entropy_normalized` and `maximum` (maximum entropy) that dispatches on different definitions of entropies (e.g `Renyi()` `Shannon()`, `Tsallis()`) and estimated probabilities.
 - Convenience functions for common entropies, such as permutation entropy and dispersion entropy still exist.
 - New interface `DifferentialEntropyEstimator` that is also used in `entropy`.
-- The `base` of the entropy is now a field of the `EntropyDefinition` type, not the estimator.
+- The `base` of the entropy is now a field of the `InformationMeasure` type, not the estimator.
 - An entirely new section of entropy-like complexity measures, such as the reverse dispersion entropy.
 - Many new estimators, such as `SpatialPermutation` and `PowerSpectrum`.
 - Check the online documentation for a comprehensive overview of the changes.
