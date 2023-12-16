@@ -18,8 +18,8 @@ pages = [
 ]
 
 # For easier debugging when downloading from a specific branch.
-github_user = "kahaaga"
-branch = "documenter_v1"
+github_user = "JuliaDynamics"
+branch = "master"
 download_path = "https://raw.githubusercontent.com/$github_user/doctheme/$branch/"
 
 import Downloads
