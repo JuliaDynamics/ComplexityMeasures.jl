@@ -12,7 +12,7 @@ An estimator for the statistical complexity and entropy, originally by
 [`ProbabilitiesEstimator`](@ref) in combination with any [`OutcomeSpace`](@ref)
 with a priori known `total_outcomes`, any valid distance metric, and any
 normalizable discrete information measure (e.g. entropies like [`Shannon`](@ref),
-[`Renyi`](@ref, or extropies like [`ShannonExtropy`](@ref), the latter of which are not
+[`Renyi`](@ref), or extropies like [`ShannonExtropy`](@ref), the latter of which are not
 treated in Rosso et al.'s papers). Used with [`complexity`](@ref).
 
 ## Keyword arguments
