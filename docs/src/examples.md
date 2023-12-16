@@ -178,7 +178,7 @@ are negatively biased for small sample sizes.
 ### Rényi entropy
 
 Here, we see how the [`LeonenkoProzantoSavani`](@ref) estimator approaches the known
-target [`Rényi`](@ref) entropy of a multivariate normal distribution
+target [`Renyi`](@ref) entropy of a multivariate normal distribution
 for increasing time series length. We'll consider the Rényi entropy with `q = 2`.
 
 ```@example MAIN
