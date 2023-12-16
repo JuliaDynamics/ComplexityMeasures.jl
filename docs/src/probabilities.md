@@ -116,6 +116,7 @@ ProbabilitiesEstimator
 RelativeAmount
 BayesianRegularization
 Shrinkage
+AddConstant
 ```
 
 ## [Encodings/Symbolizations API](@id encodings)
