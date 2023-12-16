@@ -15,7 +15,6 @@ pages = [
     "examples.md",
     "devdocs.md",
     "references.md",
-    "internals.md",
 ]
 
 # For easier debugging when downloading from a specific branch.
