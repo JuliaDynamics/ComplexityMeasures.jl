@@ -71,14 +71,7 @@ probs, outs = probabilities_and_outcomes(o, x)
 
 maximum(probs)
 
-# Or iterate over the contained probabilities values
-s = 0.0
-for p in probs
-    s += p
-end
-s/length(probs) # mean probability
-
-# Et cetera. To obtain the outcomes explicitly as their own vector
+# To obtain the outcomes explicitly as their own vector
 # you can use the [`outcomes`](@ref) function
 outs = outcomes(probs)
 
@@ -94,7 +87,9 @@ outcomes(probabilities(o, x))
 using CairoMakie
 outs = outcomes(probs);
 left_edges = first.(outs) # convert `Vector{SVector}` into `Vector{Real}`
-barplot(left_edges, probs; axis = (ylabel = "probability", ylims = (0, nothing)))
+f = Figure(); ax = Axis(f)
+barplot!(ax, left_edges, probs; ylims = (0, nothing), ylabel = "probability")
+f
 
 # Naturally, there are other outcome spaces one may use, and one can find the list of
 # implemented ones in [`OutcomeSpace`](@ref).
