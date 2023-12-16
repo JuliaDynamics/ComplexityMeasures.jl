@@ -92,7 +92,7 @@ SpatialOrdinalPatterns
 SpatialDispersion
 ```
 
-## Probabilities
+## `Probabilities` and related functions
 
 ```@docs
 Probabilities
