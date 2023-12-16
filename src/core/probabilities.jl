@@ -256,11 +256,15 @@ function probabilities! end
 # This method is overriden by non-counting-based `OutcomeSpace`s and for outcome spaces
 # where explicitly creating the outcomes is expensive.
 function probabilities_and_outcomes(o::OutcomeSpace, x)
+    probs = probabilities(o, x)
+    return probs, outcomes(probs)
+end
+
+function probabilities_and_outcomes(o::CountBasedOutcomeSpace, x)
     cts, outs = counts_and_outcomes(o, x)
     probs = Probabilities(cts, outs)
     return probs, outcomes(probs)
 end
-
 
 # If an outcome space is provided without specifying a probabilities estimator,
 # then naive plug-in estimation is used (the `RelativeAmount` estimator). In the case of

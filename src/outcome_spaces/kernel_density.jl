@@ -61,12 +61,6 @@ function probabilities(o::NaiveKernel, x::AbstractStateSpaceSet)
     return Probabilities(probs, outs)
 end
 
-function probabilities_and_outcomes(o::NaiveKernel, x)
-    # outcomes are free, so we can just call `probabilities` here.
-    probs = probabilities(o, x)
-    return probs, outcomes(probs)
-end
-
 function neighbor_cts(o::NaiveKernel, x)
     theiler = Theiler(o.w)
     ss = searchstructure(o.method, vec(x), o.metric)

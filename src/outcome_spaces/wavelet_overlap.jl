@@ -38,12 +38,6 @@ function probabilities(o::WaveletOverlap, x)
     return Probabilities(relative_freqs, outs)
 end
 
-function probabilities_and_outcomes(o::WaveletOverlap, x)
-    # The outcomes are essentially free, so we don't need another method here.
-    probs = probabilities(o, x)
-    return probs, outcomes(probs)
-end
-
 function outcome_space(::WaveletOverlap, x)
     nscales = Wavelets.WT.maxmodwttransformlevels(x)
     return 1:nscales
