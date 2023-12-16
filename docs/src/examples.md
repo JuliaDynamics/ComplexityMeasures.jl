@@ -595,7 +595,7 @@ ylims!(ax, 0, 1.05)
 axislegend(position = :rb)
 for (i, nl) in enumerate(noise_levels)
     ax_i = Axis(fig[2, i])
-    image!(ax_i, Float32.(noisy_imgs[i]), label = "$nl")
+    image!(ax_i, Matrix(Float32.(noisy_imgs[i])), label = "$nl")
     hidedecorations!(ax_i)  # hides ticks, grid and lables
     hidespines!(ax_i)  # hide the frame
 end
