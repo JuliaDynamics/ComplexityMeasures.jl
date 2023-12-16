@@ -1,4 +1,4 @@
-# [Convenience functions](@ref convenience)
+# [Convenience functions](@id convenience)
 
 We provide a few convenience functions for widely used names for entropy or "entropy-like" quantities. Other arbitrary specialized convenience functions can easily be defined in a couple lines of code.
 
