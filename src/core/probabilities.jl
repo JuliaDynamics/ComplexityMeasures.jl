@@ -334,7 +334,7 @@ specified by `o`, given input data `x`, using [`RelativeAmount`](@ref)
 probabilities estimation.
 
 If `all == true`, then [`allprobabilities`](@ref) is used to compute the probabilities.
-If `all == false`, then [`probabilities`](@ ref) is used to compute the probabilities.
+If `all == false`, then [`probabilities`](@ref) is used to compute the probabilities.
 
 This is syntactically equivalent to `missing_outcomes(RelativeAmount(o), x)`.
 

@@ -26,7 +26,7 @@ and each delay vector has `m` entries, there are `c^m` possible dispersion patte
 This number is used for normalization when computing dispersion entropy.
 
 The returned probabilities are simply the frequencies of the unique dispersion patterns
-present in ``S`` (i.e., the [`CountOccurences`](@ref) of ``S``).
+present in ``S`` (i.e., the [`UniqueElements`](@ref) of ``S``).
 
 ## Outcome space
 
