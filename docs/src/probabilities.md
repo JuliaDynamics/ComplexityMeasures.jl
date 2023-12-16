@@ -1,4 +1,4 @@
-# [Probabilities](@ref)
+# Probabilities
 
 !!! note
     Be sure you have gone through the [Tutorial](@ref) before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
