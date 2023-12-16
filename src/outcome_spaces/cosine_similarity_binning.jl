@@ -51,7 +51,7 @@ const Diversity = CosineSimilarityBinning
 
 function counts(o::CosineSimilarityBinning, x::AbstractVector{T}) where T <: Real
     # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval
-    rbc::RectangularBinEncoding = encoding_for_diversity(est.nbins)
+    rbc::RectangularBinEncoding = encoding_for_diversity(o.nbins)
     return counts(rbc, cosine_similarity_distances(o, x))::Counts
 end
 
@@ -63,7 +63,7 @@ end
 
 function cosine_similarity_distances(o::CosineSimilarityBinning, x::AbstractVector{T}) where T <: Real
     # embed and then calculate cosine similary for each consecutive pair of delay vectors
-    τs = 0:est.τ:(est.m - 1)*est.τ
+    τs = 0:o.τ:(o.m - 1)*o.τ
     Y = genembed(x, τs)
     ds = zeros(Float64, length(Y) - 1)
     @inbounds for i in 1:(length(Y)-1)
@@ -72,11 +72,11 @@ function cosine_similarity_distances(o::CosineSimilarityBinning, x::AbstractVect
     return ds
 end
 
-outcome_space(est::CosineSimilarityBinning) = outcome_space(encoding_for_diversity(est.nbins))
-total_outcomes(est::CosineSimilarityBinning) = est.nbins
+outcome_space(o::CosineSimilarityBinning) = outcome_space(encoding_for_diversity(o.nbins))
+total_outcomes(o::CosineSimilarityBinning) = o.nbins
 
-function encoded_space_cardinality(est::CosineSimilarityBinning, x::AbstractVector{<:Real})
-    n_pts_embedded = length(x) - (est.m - 1)*est.τ
+function encoded_space_cardinality(o::CosineSimilarityBinning, x::AbstractVector{<:Real})
+    n_pts_embedded = length(x) - (o.m - 1)*o.τ
     # Since we consider cosine similarities for consecutive pairs of embedding points,
     # the last point isn't considered for the histogram.
     return n_pts_embedded - 1
