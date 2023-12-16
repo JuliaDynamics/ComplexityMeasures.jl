@@ -34,12 +34,12 @@ undersampling.
 
 !!! note "Encoding"
     [`Dispersion`](@ref)'s linear mapping from CDFs to integers is based on equidistant
-    partitioning of the interval `[0, 1]`. This is slightly different from Zhou et
-    al. (2023)[Zhou2023](@ref), which uses the linear mapping ``s_i := \\text{round}(y + 0.5)``.
+    partitioning of the interval `[0, 1]`. This is slightly different from
+    [Zhou2023](@citet), which uses the linear mapping ``s_i := \\text{round}(y + 0.5)``.
 
 ## Usage
 
-In Zhou et al. (2023)[Zhou2023](@ref), [`MissingDispersionPatterns`](@ref) is used to detect nonlinearity
+In [Zhou2023](@citet), [`MissingDispersionPatterns`](@ref) is used to detect nonlinearity
 in time series by comparing the ``N_{MDP}`` for a time series `x` to ``N_{MDP}`` values for
 an ensemble of surrogates of `x`. If ``N_{MDP} > q_{MDP}^{WIAAFT}``, where
 ``q_{MDP}^{WIAAFT}`` is some `q`-th quantile of the surrogate ensemble, then it is
