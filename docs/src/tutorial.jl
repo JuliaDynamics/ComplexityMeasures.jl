@@ -60,7 +60,7 @@ o isa OutcomeSpace
 # Such outcome spaces may be given to [`probabilities`](@ref) to estimate the corresponding
 # probabilities, which are returned as a dedicated [`Probabilities`](@ref) type like so:
 
-probs = probabilities_and_outcomes(o, x)
+probs, outs = probabilities_and_outcomes(o, x)
 
 # In this example the probabilities are the (normalized) heights of each bin of the
 # histogram. The bins, which are the _elements_ of the outcome space, are shown in the
@@ -92,6 +92,7 @@ outcomes(probabilities(o, x))
 # the outcomes are the left edges of each bin. This allows us to straightforwardly
 # visualize the results.
 using CairoMakie
+outs = outcomes(probs);
 left_edges = first.(outs) # convert `Vector{SVector}` into `Vector{Real}`
 barplot(left_edges, probs; axis = (ylabel = "probability", ylims = (0, nothing)))
 
