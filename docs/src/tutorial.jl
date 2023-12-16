@@ -92,7 +92,7 @@ outcomes(probabilities(o, x))
 # the outcomes are the left edges of each bin. This allows us to straightforwardly
 # visualize the results.
 using CairoMakie
-left_edges = first.(outs) # covert `Vector{SVector}` into `Vector{Real}`
+left_edges = first.(outs) # convert `Vector{SVector}` into `Vector{Real}`
 barplot(left_edges, probs; axis = (ylabel = "probability", ylims = (0, nothing)))
 
 # Naturally, there are other outcome spaces one may use, and one can find the list of
