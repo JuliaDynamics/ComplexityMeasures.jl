@@ -159,7 +159,7 @@ Estimate a probability distribution over the set of possible outcomes `Ω`
 defined by the [`OutcomeSpace`](@ref) `o`, given input data `x`.
 
 The input data is typically an `Array` or a `StateSpaceSet` (or `SSSet` for short); see
-[Input data for ComplexityMeasures.jl](@ref). Configuration options are always given as
+[Input data for ComplexityMeasures.jl](@ref input_data). Configuration options are always given as
 arguments to the chosen outcome space.
 
 The returned probabilities `p` are a [`Probabilities`](@ref) (`Vector`-like), where each
