@@ -211,7 +211,7 @@ perm_ent_y = entropy(OrdinalPatterns(), y)
 # spaces, the same concept applies to entropy. There are many _actually different_
 # entropies. Shannon entropy is not the only one, just the one used most often.
 # Each entropy is a subtype of [`InformationMeasure`](@ref). Another commonly used entropy
-# is the [Renyi](@ref) or generalized entropy. We can use [`Renyi`](@ref) as an additional
+# is the [`Renyi`](@ref) or generalized entropy. We can use [`Renyi`](@ref) as an additional
 # first argument to the [`entropy`](@ref)function
 
 perm_ent_y_q2 = entropy(Renyi(;q = 2.0), OrdinalPatterns(), y)
