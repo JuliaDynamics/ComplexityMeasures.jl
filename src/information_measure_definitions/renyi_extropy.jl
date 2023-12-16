@@ -8,7 +8,7 @@ The Rényi extropy [Liu2023](@cite).
 
 ## Description
 
-`RenyiExtropy` is used with [`extropy`](@ref) to compute
+`RenyiExtropy` is used with [`information`](@ref) to compute
 
 ```math
 J_R(P) = \\dfrac{-(n - 1) \\log{(n - 1)} + (n - 1) \\log{ \\left( \\sum_{i=1}^N {(1 - p[i])}^q \\right)} }{q - 1}
