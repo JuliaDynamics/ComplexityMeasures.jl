@@ -15,12 +15,15 @@ pages = [
     "examples.md",
     "devdocs.md",
     "references.md",
+    "internals.md",
 ]
 
+# For easier debugging when downloading from a specific branch.
+branch = "documenter_v1"
 
 import Downloads
 Downloads.download(
-    "https://raw.githubusercontent.com/JuliaDynamics/doctheme/master/build_docs_with_style.jl",
+    "https://raw.githubusercontent.com/kahaaga/doctheme/$branch/build_docs_with_style.jl",
     joinpath(@__DIR__, "build_docs_with_style.jl")
 )
 include("build_docs_with_style.jl")
