@@ -50,7 +50,7 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
     outcomes::Tuple{Vararg{T, N} where T <: AbstractVector} where N
     
     # A label for each dimension
-    dimlabels::NTuple{N, <:S} 
+    dimlabels::NTuple{N, S} 
 
     function Counts(x::AbstractArray{T, N}, 
             outcomes::Tuple{Vararg{V, N} where V <: AbstractVector},

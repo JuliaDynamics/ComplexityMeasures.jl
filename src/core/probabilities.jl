@@ -24,7 +24,7 @@ struct Probabilities{T, N, S} <: AbstractArray{T, N}
     outcomes::Tuple{Vararg{V, N} where V <: AbstractVector} where N
     
     # A label for each dimension
-    dimlabels::NTuple{N, <:S} 
+    dimlabels::NTuple{N, S} 
 
     function Probabilities(x::AbstractArray{T, N}, 
             outcomes::Tuple{Vararg{V, N} where V},
