@@ -37,12 +37,12 @@ and `c.dimlabels[i]` is the label of the `i`-th dimension.
 Both labels and outcomes are assigned automatically if not given.
 `c` itself can be manipulated and iterated over like its stored array.
 """
-struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
+struct Counts{T <: Integer, N, O <: Tuple, S} <: AbstractArray{T, N}
     # The frequency table.
     cts::AbstractArray{T, N}
 
     # Outcomes[i] has the same number of elements as `cts` along dimension `i`.
-    outcomes::Tuple{Vararg{T, N} where T <: AbstractVector} where N
+    outcomes::O
 
     # A label for each dimension
     dimlabels::NTuple{N, S}

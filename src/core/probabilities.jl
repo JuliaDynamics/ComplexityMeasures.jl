@@ -18,14 +18,15 @@ that describe the axes of the array. In most cases the array is a standard vecto
 If `p isa Counts`, then `p.outcomes[i]` is the outcomes along the `i`-th dimension,
 each being an abstract vector whose order is the same one corresponding to `p`,
 and `p.dimlabels[i]` is the label of the `i`-th dimension.
+Both labels and outcomes are assigned automatically if not given.
 `p` itself can be manipulated and iterated over like its stored array.
 """
-struct Probabilities{T, N, S} <: AbstractArray{T, N}
+struct Probabilities{T, N, O<:Tuple, S} <: AbstractArray{T, N}
     # The frequency table.
     p::AbstractArray{T, N}
 
     # Outcomes[i] has the same number of elements as `cts` along dimension `i`.
-    outcomes::Tuple{Vararg{V, N} where V <: AbstractVector} where N
+    outcomes::O
 
     # A label for each dimension
     dimlabels::NTuple{N, S}
@@ -47,7 +48,7 @@ struct Probabilities{T, N, S} <: AbstractArray{T, N}
             end
         end
 
-        return new{eltype(p), N, S}(p, outcomes, dimlabels)
+        return new{eltype(p), N, typeof(outcomes), S}(p, outcomes, dimlabels)
     end
 
 end
