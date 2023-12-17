@@ -22,11 +22,11 @@ struct Probabilities{T, N, S} <: AbstractArray{T, N}
 
     # Outcomes[i] has the same number of elements as `cts` along dimension `i`.
     outcomes::Tuple{Vararg{V, N} where V <: AbstractVector} where N
-    
-    # A label for each dimension
-    dimlabels::NTuple{N, S} 
 
-    function Probabilities(x::AbstractArray{T, N}, 
+    # A label for each dimension
+    dimlabels::NTuple{N, S}
+
+    function Probabilities(x::AbstractArray{T, N},
             outcomes::Tuple{Vararg{V, N} where V},
             dimlabels::NTuple{N, S};
             normed::Bool = false) where {T, N, S}
@@ -42,15 +42,16 @@ struct Probabilities{T, N, S} <: AbstractArray{T, N}
                 p = x
             end
         end
-        
+
         return new{eltype(p), N, S}(p, outcomes, dimlabels)
     end
 
-    function Probabilities(x::AbstractArray{T, N}, outcomes::Tuple; normed::Bool = false) where {T, N}
-        return Probabilities(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...); normed)
-    end
 end
 
+# If no names are give for the dimension assign generic ones
+function Probabilities(x::AbstractArray{T, N}, outcomes::Tuple; normed::Bool = false) where {T, N}
+    return Probabilities(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...); normed)
+end
 # If no outcomes are given, assign generic `EnumeratedOutcome`s.
 function Probabilities(x::AbstractArray{T, N}; normed::Bool = false) where {T, N}
     return Probabilities(x, generate_outcomes(x); normed)
@@ -148,8 +149,8 @@ abstract type ProbabilitiesEstimator end
 
     probabilities([est::ProbabilitiesEstimator], counts::Counts) → p::Probabilities
 
-Estimate probabilities from the pre-computed `counts` using the given 
-[`ProbabilitiesEstimator`](@ref) `est`. 
+Estimate probabilities from the pre-computed `counts` using the given
+[`ProbabilitiesEstimator`](@ref) `est`.
 
 If no estimator is provided, then [`RelativeAmount`](@ref) is used.
 
