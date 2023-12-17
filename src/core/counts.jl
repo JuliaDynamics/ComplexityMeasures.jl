@@ -26,13 +26,13 @@ export is_counting_based
 """
     Counts(counts, outcomes)
 
-`Counts` stores an `N`-dimensional array of integer `counts` corresponding to a set of 
+`Counts` stores an `N`-dimensional array of integer `counts` corresponding to a set of
 `outcomes`.
 
 If `c isa Counts`, then `c.outcomes[i]` is the outcomes along the `i`-th dimension
 and `c.dimlabels[i]` is the label of the `i`-th dimension.
 
-This is typically called a "frequency table" or 
+This is typically called a "frequency table" or
 ["contingency table"](https://en.wikipedia.org/wiki/Contingency_table).
 
 ## Implements
@@ -48,16 +48,16 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
 
     # Outcomes[i] has the same number of elements as `cts` along dimension `i`.
     outcomes::Tuple{Vararg{T, N} where T <: AbstractVector} where N
-    
-    # A label for each dimension
-    dimlabels::NTuple{N, S} 
 
-    function Counts(x::AbstractArray{T, N}, 
+    # A label for each dimension
+    dimlabels::NTuple{N, S}
+
+    function Counts(x::AbstractArray{T, N},
             outcomes::Tuple{Vararg{V, N} where V <: AbstractVector},
             dimlabels::NTuple{N, S}) where {T, S, N}
         return new{T, N, S}(x, outcomes, dimlabels)
     end
-    
+
     # If dimlabels are not given, simply label them as symbols (:x1, :x2, ... :xN)
     function Counts(x::AbstractArray{T, N}, outcomes) where {T <: Integer, N}
         return Counts(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...))
@@ -92,7 +92,7 @@ Base.IteratorSize(::Counts) = Base.HasLength()
 
 # We strictly deal with single inputs here. For multi-inputs, see CausalityTools.jl
 """
-    counts([o::OutcomeSpace,] x) → cts::Counts
+    counts(o::OutcomeSpace, x) → cts::Counts
 
 Discretize/encode `x` into a finite set of outcomes `Ω` specified by the provided
 [`OutcomeSpace`](@ref) `o`, then count how often each outcome `Ωᵢ ∈ Ω` (i.e.
@@ -103,7 +103,10 @@ When displayed, the marginals of the vector are labelled with the outcomes,
 so that it is easy to trace what is being counted. Use [`outcomes`](@ref) on the
 resulting [`Counts`](@ref) to get these marginals explicitly.
 
-If no [`OutcomeSpace`](@ref) is specified, then [`UniqueElements`](@ref) is used.
+    counts(x) → cts::Counts
+
+If no [`OutcomeSpace`](@ref) is specified, then [`UniqueElements`](@ref) is used
+as the outcome space.
 
 ## Description
 
