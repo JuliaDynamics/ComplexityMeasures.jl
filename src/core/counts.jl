@@ -56,8 +56,7 @@ end
 function Counts(x::AbstractArray{T, N}, outcomes) where {T <: Integer, N}
     return Counts(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...))
 end
-
-function Counts(x::AbstractVector{Int}, outcomes::AbstractVector, dimlabel::S) where {S}
+function Counts(x::AbstractVector{Int}, outcomes::AbstractVector, dimlabel::Union{Symbol, AbstractString})
     return Counts(x, (outcomes, ), (dimlabel, ))
 end
 function Counts(x::AbstractVector{Int}, outcomes::AbstractVector)
