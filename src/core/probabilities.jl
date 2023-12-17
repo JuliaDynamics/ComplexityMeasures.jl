@@ -8,13 +8,17 @@ export missing_outcomes
 # Types
 ###########################################################################################
 """
-    Probabilities <: DimArray
-    Probabilities(x) → p
+    Probabilities <: Array{N, <: AbstractFloat}
+    Counts(counts [, outcomes [, outnames]]) → p
 
-`Probabilities` is a simple wrapper around `x::DimArray{<:Real, N}` that ensures its
-values sum to 1, so that `p` can be interpreted as `N`-dimensional probability mass
-function. In most use cases, `p` will be a vector. `p` behaves exactly like
-its contained data `x` with respect to indexing and iteration.
+`Probabilities` stores an `N`-dimensional array of probabilities, while ensuring that
+the array sums to 1 (normalized probability mass). The probabilities correspond to outcomes
+that describe the axes of the array. In most cases the array is a standard vector.
+
+If `p isa Counts`, then `p.outcomes[i]` is the outcomes along the `i`-th dimension,
+each being an abstract vector whose order is the same one corresponding to `p`,
+and `p.dimlabels[i]` is the label of the `i`-th dimension.
+`p` itself can be manipulated and iterated over like its stored array.
 """
 struct Probabilities{T, N, S} <: AbstractArray{T, N}
     # The frequency table.

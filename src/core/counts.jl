@@ -24,7 +24,8 @@ export is_counting_based
 #  use pre-normalized relative "frequencies", not counts, to estimate probabilities).
 ###########################################################################################
 """
-    Counts(counts, outcomes)
+    Counts <: Array{N, <: Integer}
+    Counts(counts [, outcomes [, outnames]]) → c
 
 `Counts` stores an `N`-dimensional array of integer `counts` corresponding to a set of
 `outcomes`. This is typically called a "frequency table" or
@@ -33,14 +34,8 @@ export is_counting_based
 If `c isa Counts`, then `c.outcomes[i]` is the outcomes along the `i`-th dimension,
 each being an abstract vector whose order is the same one corresponding to `c`,
 and `c.dimlabels[i]` is the label of the `i`-th dimension.
+Both labels and outcomes are assigned automatically if not given.
 `c` itself can be manipulated and iterated over like its stored array.
-
-## Implements
-
-- [`counts`](@ref). Estimate a `Counts` instance from data.
-- [`outcomes`](@ref). Return the outcomes corresponding to the counts. If `c::Counts` is
-    one-dimensional, then the counts are returned directly. If the counts are
-    higher-dimensional, then a tuple of the outcomes are returned (one for each dimension).
 """
 struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
     # The frequency table.
