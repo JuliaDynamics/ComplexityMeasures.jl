@@ -51,24 +51,17 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
 
     # A label for each dimension
     dimlabels::NTuple{N, S}
+end
+# If dimlabels are not given, simply label them as symbols (:x1, :x2, ... :xN)
+function Counts(x::AbstractArray{T, N}, outcomes) where {T <: Integer, N}
+    return Counts(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...))
+end
 
-    function Counts(x::AbstractArray{T, N},
-            outcomes::Tuple{Vararg{V, N} where V <: AbstractVector},
-            dimlabels::NTuple{N, S}) where {T, S, N}
-        return new{T, N, S}(x, outcomes, dimlabels)
-    end
-
-    # If dimlabels are not given, simply label them as symbols (:x1, :x2, ... :xN)
-    function Counts(x::AbstractArray{T, N}, outcomes) where {T <: Integer, N}
-        return Counts(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...))
-    end
-
-    function Counts(x::AbstractVector{Int}, outcomes::AbstractVector, dimlabel::S) where {S}
-        return Counts(x, (outcomes, ), (dimlabel, ))
-    end
-    function Counts(x::AbstractVector{Int}, outcomes::AbstractVector)
-        return Counts(x, (outcomes, ), (:x1, ))
-    end
+function Counts(x::AbstractVector{Int}, outcomes::AbstractVector, dimlabel::S) where {S}
+    return Counts(x, (outcomes, ), (dimlabel, ))
+end
+function Counts(x::AbstractVector{Int}, outcomes::AbstractVector)
+    return Counts(x, (outcomes, ), (:x1, ))
 end
 
 # If no outcomes are given, assign generic `Outcome`s.
