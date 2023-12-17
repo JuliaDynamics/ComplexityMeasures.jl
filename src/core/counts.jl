@@ -27,13 +27,13 @@ export is_counting_based
     Counts(counts, outcomes)
 
 `Counts` stores an `N`-dimensional array of integer `counts` corresponding to a set of
-`outcomes`.
-
-If `c isa Counts`, then `c.outcomes[i]` is the outcomes along the `i`-th dimension
-and `c.dimlabels[i]` is the label of the `i`-th dimension.
-
-This is typically called a "frequency table" or
+`outcomes`. This is typically called a "frequency table" or
 ["contingency table"](https://en.wikipedia.org/wiki/Contingency_table).
+
+If `c isa Counts`, then `c.outcomes[i]` is the outcomes along the `i`-th dimension,
+each being an abstract vector whose order is the same one corresponding to `c`,
+and `c.dimlabels[i]` is the label of the `i`-th dimension.
+`c` itself can be manipulated and iterated over like its stored array.
 
 ## Implements
 
