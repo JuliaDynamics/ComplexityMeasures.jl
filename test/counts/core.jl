@@ -21,7 +21,7 @@ oz = (collect(1:2), collect(1:2), collect(1:2))
 @test Counts(y, oy) isa Counts{T, 2} where {T}
 @test Counts(z, oz) isa Counts{T, 3} where {T}
 
-# Unnamed labels.
+# Unnamed labels (should work for different outcome types)
 @test Counts(x, (1:5, )) isa Counts{T, 1} where {T}
 @test Counts(y, (1:2 |> collect, ['a', 'b'])) isa Counts{T, 2} where {T}
 @test Counts(z, (1:2, ['a', 'b'], 7:8)) isa Counts{T, 3} where {T}

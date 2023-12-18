@@ -98,6 +98,6 @@ end
     ]
     @testset "$(nameof(typeof(os[i])))" for i in eachindex(os)
         @test !ComplexityMeasures.is_counting_based(os[i])
-        @test_throws "`counts`" counts_and_outcomes(os[i], x)
+        @test_throws "`counts_and_outcomes`" counts_and_outcomes(os[i], x)
     end
 end

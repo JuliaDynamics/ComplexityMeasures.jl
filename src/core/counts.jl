@@ -119,6 +119,12 @@ end
 # TODO: This is type-piracy that should be moved to StateSpaceSets.jl!
 unique!(xc::AbstractStateSpaceSet) = unique!(vec(xc))
 
+# `CountBasedOutcomeSpace`s must implement `counts_and_outcomes`, so we use the 
+# following generic fallback.
+function counts(o::CountBasedOutcomeSpace, x)
+    return first(counts_and_outcomes(o, x))
+end
+
 # Generic fallback with informative error
 function counts(o::OutcomeSpace, x)
     if !is_counting_based(o)

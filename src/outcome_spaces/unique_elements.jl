@@ -29,6 +29,9 @@ function counts_and_outcomes(::UniqueElements, x)
     return cts, outcomes(cts)
 end
 
+# Convenience.
+probabilities(x) = probabilities(UniqueElements(), x)
+
 outcome_space(::UniqueElements, x) = sort!(unique(x))
 
 function codify(o::UniqueElements, x)
