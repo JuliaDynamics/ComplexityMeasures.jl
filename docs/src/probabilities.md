@@ -107,9 +107,10 @@ allprobabilities
 
 ```@docs
 Counts
+counts_and_outcomes
 counts
-allcounts
 allcounts_and_outcomes
+allcounts
 is_counting_based
 ```
 
