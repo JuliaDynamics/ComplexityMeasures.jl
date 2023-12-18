@@ -26,6 +26,7 @@ oz = (collect(1:2), collect(1:2), collect(1:2))
 @test Counts(y, (1:2 |> collect, ['a', 'b'])) isa Counts{T, 2} where {T}
 @test Counts(z, (1:2, ['a', 'b'], 7:8)) isa Counts{T, 3} where {T}
 
+
 # ================================================================
 # Outcomes
 # ================================================================
@@ -36,9 +37,10 @@ oz = (collect(1:2), collect(1:2), collect(1:2))
 x = rand(1:50, 5)
 
 # Unnamed dimensions.
-outcomes(Counts(x)) == Outcome(1):1:Outcome(5)
-outcomes(Counts(x, (1:5, ))) == 1:5
-outcomes(Counts(x, (1:5, )), 1) == 1:5 # should be equivalent to not indexing
+@test outcomes(Counts(x)) == Outcome(1):1:Outcome(5)
+@test outcomes(Counts(x, (1:5, ))) == 1:5
+@test outcomes(Counts(x, (1:5, )), 1) == 1:5 # should be equivalent to not indexing
+
 # The number of counts and outcomes must match.
 @test_throws ArgumentError Counts(rand(1:3, 10), (1:9,))
 
@@ -48,10 +50,10 @@ outcomes(Counts(x, (1:5, )), 1) == 1:5 # should be equivalent to not indexing
 y = rand(1:50, 2, 2)
 
 # Unnamed dimensions.
-outcomes(Counts(y, (1:2, ['a', 'b'],))) == (1:2, ['a', 'b'])
-outcomes(Counts(y, (1:2, ['a', 'b'],)), 1:2) == (1:2, ['a', 'b'])
-outcomes(Counts(y, (1:2, ['a', 'b'],)), 1) == 1:2
-outcomes(Counts(y, (1:2, ['a', 'b'],)), 2) == ['a', 'b']
+@test outcomes(Counts(y, (1:2, ['a', 'b'],))) == (1:2, ['a', 'b'])
+@test outcomes(Counts(y, (1:2, ['a', 'b'],)), 1:2) == (1:2, ['a', 'b'])
+@test outcomes(Counts(y, (1:2, ['a', 'b'],)), 1) == 1:2
+@test outcomes(Counts(y, (1:2, ['a', 'b'],)), 2) == ['a', 'b']
 
 # -----------------------------------------------------------------------------------------
 # 3D data.
