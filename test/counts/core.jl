@@ -39,6 +39,8 @@ x = rand(1:50, 5)
 outcomes(Counts(x)) == Outcome(1):1:Outcome(5)
 outcomes(Counts(x, (1:5, ))) == 1:5
 outcomes(Counts(x, (1:5, )), 1) == 1:5 # should be equivalent to not indexing
+# The number of counts and outcomes must match.
+@test_throws ArgumentError Counts(rand(1:3, 10), (1:9,))
 
 # -----------------------------------------------------------------------------------------
 # 2D data.

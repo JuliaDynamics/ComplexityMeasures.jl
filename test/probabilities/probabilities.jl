@@ -11,6 +11,9 @@ outs = collect(1:10)
 @test Probabilities(rand(rng, 10), (outs,)) isa Probabilities
 @test Probabilities(rand(rng, 10), (outs,), (:x1, )) isa Probabilities
 
+# The number of probabilities and outcomes must match.
+@test_throws ArgumentError Probabilities(rand(1:3, 10), (1:9,))
+
 # Enough data that all outcomes should be covered
 x = rand(rng, 10000)
 outcomemodel = OrdinalPatterns(m = 3)

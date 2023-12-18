@@ -46,7 +46,23 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
 
     # A label for each dimension
     dimlabels::NTuple{N, S}
+
+    function Counts(cts::AbstractArray{T, N}, 
+            outcomes::Tuple{Vararg{<:AbstractVector, N}}, 
+            dimlabels::NTuple{N, S}) where {T, N, S}
+        s = size(cts)
+        for dim = 1:N
+            L = length(outcomes[dim])
+            if L != s[dim]
+                msg = "The number of outcomes for dimension $dim must match the number " *
+                    "of counts for dimension $dim. Got $L outcomes but $(s[dim]) counts."
+                throw(ArgumentError(msg))
+            end
+        end
+        new{T, N, S}(cts, outcomes, dimlabels)
+    end
 end
+
 # If dimlabels are not given, simply label them as symbols (:x1, :x2, ... :xN)
 function Counts(x::AbstractArray{T, N}, outcomes) where {T <: Integer, N}
     return Counts(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...))

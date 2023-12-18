@@ -48,6 +48,16 @@ struct Probabilities{T, N, S} <: AbstractArray{T, N}
             end
         end
 
+        s = size(p)
+        for dim = 1:N
+            L = length(outcomes[dim])
+            if L != s[dim]
+                msg = "The number of outcomes for dimension $dim must match the number " *
+                    "of probabilities for dimension $dim. Got $L outcomes but $(s[dim]) probabilities."
+                throw(ArgumentError(msg))
+            end
+        end
+
         return new{eltype(p), N, S}(p, outcomes, dimlabels)
     end
 
