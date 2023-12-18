@@ -13,7 +13,7 @@ z = rand(1:50, 2, 2, 3)
 # the outcomes
 ox = (collect(1:5),)
 oy = (collect(1:2), collect(1:2),)
-oz = (collect(1:2), collect(1:2), collect(1:2))
+oz = (collect(1:2), collect(1:2), collect(1:3))
 
 # No labels provided: (`i`-th axis labels default to 1:size(x)[i] for i = 1:N, where `x`
 # is the input array).
