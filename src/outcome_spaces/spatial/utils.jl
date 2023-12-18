@@ -59,14 +59,14 @@ end
 
 # This source code is a modification of the code of Agents.jl that finds neighbors
 # in grid-like spaces. It's the code of `nearby_positions` in `grid_general.jl`.
-function pixels_in_stencil(est::SpatialProbEst{D,false}, pixel) where {D}
+function pixels_in_stencil(est::SpatialOutcomeSpace{D,false}, pixel) where {D}
     @inbounds for i in eachindex(est.stencil)
         est.viewer[i] = est.stencil[i] + pixel
     end
     return est.viewer
 end
 
-function pixels_in_stencil(est::SpatialProbEst{D,true}, pixel) where {D}
+function pixels_in_stencil(est::SpatialOutcomeSpace{D,true}, pixel) where {D}
     @inbounds for i in eachindex(est.stencil)
         # It's annoying that we have to change to tuple and then to CartesianIndex
         # because iteration over cartesian indices is not allowed. But oh well.

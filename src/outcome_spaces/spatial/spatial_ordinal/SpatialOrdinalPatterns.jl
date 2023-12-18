@@ -65,7 +65,7 @@ Stencils are passed in one of the following three ways:
     in the previous examples, use here `stencil = ((2, 2), (1, 1))`.
     When passing a stencil using `extent` and `lag`, `m = prod(extent)`.
 """
-struct SpatialOrdinalPatterns{D,P,V,M,F} <: SpatialProbEst{D, P}
+struct SpatialOrdinalPatterns{D,P,V,M,F} <: SpatialOutcomeSpace{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}

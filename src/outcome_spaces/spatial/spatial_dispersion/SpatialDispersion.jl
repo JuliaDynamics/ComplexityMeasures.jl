@@ -113,7 +113,7 @@ information(Renyi(q = 2), est, x)
 See also: [`SpatialOrdinalPatterns`](@ref), [`GaussianCDFEncoding`](@ref),
 [`codify`](@ref).
 """
-struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialProbEst{D, P}
+struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialOutcomeSpace{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
