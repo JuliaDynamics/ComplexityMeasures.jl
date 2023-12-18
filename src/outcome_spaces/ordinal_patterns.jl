@@ -97,7 +97,7 @@ struct OrdinalPatterns{M,F} <: OrdinalOutcomeSpace{M}
     τ::Int
 end
 
-# Generic outcomes.
+# Explicitly implement `counts`, because decoding outcomes is expensive.
 function counts(est::OrdinalPatterns{m}, x) where m
     cts, πs = counts_and_symbols(est, x)
     outs = Outcome(1):1:Outcome(length(cts))

@@ -50,15 +50,16 @@ function NaiveKernel(ϵ::Real; method = KDTree, w = 0, metric = Euclidean())
     return NaiveKernel(ϵ, method, w, metric)
 end
 
-function probabilities(o::NaiveKernel, x::AbstractVector{<:Real})
-    return probabilities(o, StateSpaceSet(x))
+function probabilities_and_outcomes(o::NaiveKernel, x::AbstractVector{<:Real})
+    return probabilities_and_outcomes(o, StateSpaceSet(x))
 end
 
-function probabilities(o::NaiveKernel, x::AbstractStateSpaceSet)
+function probabilities_and_outcomes(o::NaiveKernel, x::AbstractStateSpaceSet)
     idxs = neighbor_cts(o, x)
     probs = length.(idxs)
     outs = eachindex(x)
-    return Probabilities(probs, outs)
+    p = Probabilities(probs, outs)
+    return p, outcomes(p)
 end
 
 function neighbor_cts(o::NaiveKernel, x)

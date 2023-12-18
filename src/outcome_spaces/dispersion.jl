@@ -70,8 +70,7 @@ Base.@kwdef struct Dispersion{S <: Encoding} <: CountBasedOutcomeSpace
     check_unique::Bool = false
 end
 
-
-function counts(o::Dispersion, x::AbstractVector{<:Real})
+function counts_and_outcomes(o::Dispersion, x::AbstractVector{<:Real})
     N = length(x)
     symbols = codify(o, x)
     # We must use genembed, not embed, to make sure the zero lag is included
@@ -80,7 +79,8 @@ function counts(o::Dispersion, x::AbstractVector{<:Real})
     dispersion_patterns = genembed(symbols, τs, ones(m)).data
     cts = fasthist!(dispersion_patterns) # This sorts `dispersion_patterns`
     outs = unique!(dispersion_patterns) # Therefore, outcomes are the sorted patterns.
-    return Counts(cts, outs)
+    c = Counts(cts, (outs, ))
+    return c, outcomes(c)
 end
 
 function outcome_space(est::Dispersion)

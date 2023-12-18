@@ -66,6 +66,8 @@ outcomes(est::ValueBinning, x) = last(counts_and_outcomes(est, x))
 # the underlying encoding and the `fasthist`/`fasthist!` functions.
 # See the `encoding_implementations/rectangular_binning.jl` file for more.
 # --------------------------------------------------------------------------------
+# Explicitly override `counts` here, because it is more efficient to not 
+# decode the outcomes.
 function counts(est::ValueBinning, x)
     return counts(RectangularBinEncoding(est.binning, x), x)
 end
@@ -74,6 +76,8 @@ function counts_and_outcomes(est::ValueBinning, x)
     return counts_and_outcomes(RectangularBinEncoding(est.binning, x), x)
 end
 
+# Explicitly override `probabilities` here, because it is more efficient to not 
+# decode the outcomes.
 function probabilities(est::ValueBinning, x)
     return Probabilities(counts(RectangularBinEncoding(est.binning, x), x))
 end
