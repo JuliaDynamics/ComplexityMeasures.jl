@@ -21,12 +21,12 @@ and `p.dimlabels[i]` is the label of the `i`-th dimension.
 Both labels and outcomes are assigned automatically if not given.
 `p` itself can be manipulated and iterated over like its stored array.
 """
-struct Probabilities{T, N, O<:Tuple, S} <: AbstractArray{T, N}
+struct Probabilities{T, N, S} <: AbstractArray{T, N}
     # The frequency table.
     p::AbstractArray{T, N}
 
     # Outcomes[i] has the same number of elements as `cts` along dimension `i`.
-    outcomes::O
+    outcomes::Tuple{Vararg{<:AbstractVector, N}}
 
     # A label for each dimension
     dimlabels::NTuple{N, S}
@@ -48,7 +48,7 @@ struct Probabilities{T, N, O<:Tuple, S} <: AbstractArray{T, N}
             end
         end
 
-        return new{eltype(p), N, typeof(outcomes), S}(p, outcomes, dimlabels)
+        return new{eltype(p), N, S}(p, outcomes, dimlabels)
     end
 
 end
@@ -229,15 +229,7 @@ ps = probabilities(RelativeAmount(), WaveletOverlap(), x) # works
 ps = probabilities(BayesianRegularization(), WaveletOverlap(), x) # errors
 ```
 """
-function probabilities(o::OutcomeSpace, x)
-    probabilities(RelativeAmount(), o, x)
-end
-# The above method is overriden for non-count based outcome spaces. For count-based
-# outcome space, `counts(o::OutcomeSpace, x)` must be defined.
-
-function probabilities(x)
-    return probabilities(RelativeAmount(), UniqueElements(), x)
-end
+function probabilities end
 
 # Functions related to outcomes are propagated
 for f in (:outcomes, :outcome_space, :total_outcomes)
@@ -261,9 +253,8 @@ function probabilities! end
 ###########################################################################################
 # This method is overriden by non-counting-based `OutcomeSpace`s and for outcome spaces
 # where explicitly creating the outcomes is expensive.
-function probabilities_and_outcomes(o::OutcomeSpace, x)
-    probs = probabilities(o, x)
-    return probs, outcomes(probs)
+function probabilities(o::OutcomeSpace, x)
+    return first(probabilities_and_outcomes(o, x))
 end
 
 function probabilities_and_outcomes(o::CountBasedOutcomeSpace, x)
