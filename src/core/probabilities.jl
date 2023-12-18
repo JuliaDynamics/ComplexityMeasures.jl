@@ -162,25 +162,26 @@ abstract type ProbabilitiesEstimator end
 ###########################################################################################
 """
 
-    probabilities([est::ProbabilitiesEstimator], counts::Counts) → p::Probabilities
+    probabilities_and_outcomes([est::ProbabilitiesEstimator], counts::Counts) → (p::Probabilities, Ω)
 
 Estimate probabilities from the pre-computed `counts` using the given
 [`ProbabilitiesEstimator`](@ref) `est`.
 
 If no estimator is provided, then [`RelativeAmount`](@ref) is used.
 
-    probabilities([est::ProbabilitiesEstimator], o::OutcomeSpace, x::Array_or_SSSet) → p::Probabilities
+    probabilities_and_outcomes([est::ProbabilitiesEstimator], o::OutcomeSpace, 
+        x::Array_or_SSSet) → (p::Probabilities, Ω)
 
 Estimate a probability distribution over the set of possible outcomes `Ω`
 defined by the [`OutcomeSpace`](@ref) `o`, given input data `x`.
 
 The input data is typically an `Array` or a `StateSpaceSet` (or `SSSet` for short); see
-[Input data for ComplexityMeasures.jl](@ref input_data). Configuration options are always given as
-arguments to the chosen outcome space.
+[Input data for ComplexityMeasures.jl](@ref input_data). Configuration options are always
+given as arguments to the chosen outcome space.
 
-The returned probabilities `p` are a [`Probabilities`](@ref) (`Vector`-like), where each
-element `p[i]` is the probability of the outcome `ω[i]`. The outcomes are displayed
-to the left of the probabilities as marginals when `p` is displayed.
+Returns a tuple where the first element are the probabilities `p`, which is a 
+[`Probabilities`](@ref) (`Vector`-like) instance.  The second element of the 
+tuple are the outcomes `Ω`, such that `p[i]` is the probability of the outcome `Ω[i]`.
 Use [`outcomes`](@ref) on `p` to obtain the outcomes explicitly.
 
 If `est` is not given, it defaults to the [`RelativeAmount`](@ref) estimator.
@@ -239,8 +240,26 @@ ps = probabilities(RelativeAmount(), WaveletOverlap(), x) # works
 ps = probabilities(BayesianRegularization(), WaveletOverlap(), x) # errors
 ```
 """
-function probabilities end
+function probabilities_and_outcomes end
 
+"""
+    probabilities([est::ProbabilitiesEstimator], o::OutcomeSpace, 
+        x::Array_or_SSSet) → (p::Probabilities, Ω)
+
+Like [`probabilities_and_outcomes`](@ref), but returns the [`Probabilities`](@ref) `p`
+directly. 
+
+For some [`OutcomeSpace`](@ref), generic outcomes may be used. This is done in order to
+save the step of decoding the internal representation of the outcome space. Use 
+[`probabilities_and_outcomes`](@ref) to ensure you're getting outcomes that are decoded
+according to the [`OutcomeSpace`](@ref) `o`.
+
+    probabilities([est::ProbabilitiesEstimator], counts::Counts) → (p::Probabilities, Ω)
+
+The same as above, but estimate the probability directly from a set of [`Counts`](@ref)
+instead of estimating the counts first from raw data.
+"""
+function probabilities end
 # Functions related to outcomes are propagated
 for f in (:outcomes, :outcome_space, :total_outcomes)
     @eval function $(f)(::ProbabilitiesEstimator, o::OutcomeSpace, x)
