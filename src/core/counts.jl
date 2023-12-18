@@ -2,7 +2,7 @@ using StateSpaceSets: AbstractStateSpaceSet
 import Base.unique!
 
 export Counts
-export counts
+export counts, counts_and_outcomes
 export allcounts
 export is_counting_based
 
@@ -94,6 +94,16 @@ end
 Base.IteratorSize(::Counts) = Base.HasLength()
 
 # We strictly deal with single inputs here. For multi-inputs, see CausalityTools.jl
+function counts_and_outcomes(x)
+    xc = copy(x)
+    cts = fasthist!(xc) # sorts `xc` in-place
+    outs = unique!(xc)
+    # Generically call the first dimension `x1` (convention: additional dimensions
+    # are named `x2`, `x3`, etc..., but this is defined in CausalityTools.jl)
+    c = Counts(cts, (outs, ), (:x1, ))
+    return c, outcomes(c)
+end
+
 """
     counts(o::OutcomeSpace, x) → cts::Counts
 
@@ -109,15 +119,8 @@ to ensure you're getting outcomes that are decoded according to the [`OutcomeSpa
 If no [`OutcomeSpace`](@ref) is specified, then [`UniqueElements`](@ref) is used
 as the outcome space.
 """
-function counts_and_outcomes(x)
-    xc = copy(x)
-    cts = fasthist!(xc) # sorts `xc` in-place
-    outs = unique!(xc)
-    # Generically call the first dimension `x1` (convention: additional dimensions
-    # are named `x2`, `x3`, etc..., but this is defined in CausalityTools.jl)
-    c = Counts(cts, (outs, ), (:x1, ))
-    return c, outcomes(c)
-end
+function counts end 
+
 function counts(x)
     return first(counts_and_outcomes(x))
 end
