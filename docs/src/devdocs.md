@@ -35,7 +35,7 @@ If your new outcome space is not counting-based, then
     [`OutcomeSpace`](@ref) type. If the outcomes do not come for free, then instead you
     can extend [`probabilities`](@ref) and then explicitly add another method for
     [`probabilities_and_outcomes`](@ref) that calls [`probabilities`](@ref) first and
-    then decodes the outcomes. Follow existing implementations for guidelines.
+    then decodes the outcomes.
     Follow existing implementations for guidelines (see for example source code for
     [`NaiveKernel`](@ref)).
 
