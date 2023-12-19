@@ -13,7 +13,7 @@ with logarithms to the `base` specified in `definition`.
 
 Assume we have samples ``\\{\\bf{x}_1, \\bf{x}_2, \\ldots, \\bf{x}_N \\}`` from a
 continuous random variable ``X \\in \\mathbb{R}^d`` with support ``\\mathcal{X}`` and
-density function``f : \\mathbb{R}^d \\to \\mathbb{R}``. `Zhu` estimates the [Shannon](@ref)
+density function``f : \\mathbb{R}^d \\to \\mathbb{R}``. `Zhu` estimates the [`Shannon`](@ref)
 differential entropy
 
 ```math

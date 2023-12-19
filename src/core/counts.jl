@@ -1,11 +1,8 @@
-using DimensionalData
 using StateSpaceSets: AbstractStateSpaceSet
-import DimensionalData: dims, refdims, data, name, metadata, layerdims
-using DimensionalData.Dimensions: Dim
 import Base.unique!
 
 export Counts
-export counts
+export counts, counts_and_outcomes
 export allcounts
 export is_counting_based
 
@@ -27,53 +24,66 @@ export is_counting_based
 #  use pre-normalized relative "frequencies", not counts, to estimate probabilities).
 ###########################################################################################
 """
-    Counts(cts)
+    Counts <: Array{N, <: Integer}
+    Counts(counts [, outcomes [, outnames]]) → c
 
-`Counts` stores a set of integer counts which is just a simple wrapper around
-`DimArray{<:Integer, N}` from
-[DimensionalData.jl](https://github.com/rafaqz/DimensionalData.jl), where the names
-of the elements being counted are stored in the marginals of the array.
-
-If `N ≥ 1`, then this is typically called a "frequency table" or
+`Counts` stores an `N`-dimensional array of integer `counts` corresponding to a set of
+`outcomes`. This is typically called a "frequency table" or
 ["contingency table"](https://en.wikipedia.org/wiki/Contingency_table).
 
-## Implements
-
-- [`counts`](@ref). Estimate a `Counts` instance from data.
-- [`outcomes`](@ref). Return the outcomes corresponding to the counts. If `c::Counts` is
-    one-dimensional, then the counts are returned directly. If the counts are
-    higher-dimensional, then a tuple of the outcomes are returned (one for each dimension).
+If `c isa Counts`, then `c.outcomes[i]` is the outcomes along the `i`-th dimension,
+each being an abstract vector whose order is the same one corresponding to `c`,
+and `c.dimlabels[i]` is the label of the `i`-th dimension.
+Both labels and outcomes are assigned automatically if not given.
+`c` itself can be manipulated and iterated over like its stored array.
 """
-struct Counts{T <: Integer, N, A <: AbstractDimArray} <: AbstractArray{T, N}
-    cts::A
-    function Counts(x::AbstractArray{T, N},
-        dimlabels::Union{NamedTuple, Tuple, Dim, Nothing} = nothing) where {T <:Integer, N}
-        if !(typeof(x) <: AbstractDimArray)
-            if dimlabels isa NamedTuple || dimlabels isa Dim
-                X = DimArray(x, dimlabels)
-            else
-                if dimlabels isa Nothing
-                    s = size(x)
-                    dims = (Pair(Symbol("x$i"), 1:s[i]) for i = 1:N)
-                    X = DimArray(x, NamedTuple(dims))
-                else # `dimlabels` isa Tuple
-                    dims = (Pair(Symbol("x$i"), dimlabels[i]) for i = 1:N)
-                    X = DimArray(x, NamedTuple(dims))
-                end
+struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
+    # The frequency table.
+    cts::AbstractArray{T, N}
+
+    # outcomes[i] has the same number of elements as `cts` along dimension `i`.
+    outcomes::Tuple{Vararg{<:AbstractVector, N}}
+
+    # A label for each dimension
+    dimlabels::NTuple{N, S}
+
+    function Counts(cts::AbstractArray{T, N},
+            outcomes::Tuple{Vararg{<:AbstractVector, N}},
+            dimlabels::NTuple{N, S}) where {T, N, S}
+        s = size(cts)
+        for dim = 1:N
+            L = length(outcomes[dim])
+            if L != s[dim]
+                msg = "The number of outcomes for dimension $dim must match the number " *
+                    "of counts for dimension $dim. Got $L outcomes but $(s[dim]) counts."
+                throw(ArgumentError(msg))
             end
-        else
-            X = x
         end
-        return new{T, N, typeof(X)}(X)
-    end
-    function Counts(x::AbstractDimArray{T, N}) where {T <: Integer, N}
-        return new{T, N, typeof(x)}(x)
+        new{T, N, S}(cts, outcomes, dimlabels)
     end
 end
 
-# extend DimensionalData interface:
-for f in (:dims, :refdims, :data, :name, :metadata, :layerdims)
-    @eval $(f)(c::Counts) = $(f)(c.cts)
+# If dimlabels are not given, simply label them as symbols (:x1, :x2, ... :xN)
+function Counts(x::AbstractArray{T, N}, outcomes) where {T <: Integer, N}
+    return Counts(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...))
+end
+function Counts(x::AbstractVector{Int}, outcomes::AbstractVector, dimlabel::Union{Symbol, AbstractString})
+    return Counts(x, (outcomes, ), (dimlabel, ))
+end
+function Counts(x::AbstractVector{Int}, outcomes::AbstractVector)
+    return Counts(x, (outcomes, ), (:x1, ))
+end
+
+# If no outcomes are given, assign generic `Outcome`s.
+function Counts(x::AbstractArray{Int, N}) where {N}
+    return Counts(x, generate_outcomes(x))
+end
+
+function generate_outcomes(x::AbstractArray{T, N}) where {T, N}
+    # One set of outcomes per dimension
+    s = size(x)
+    gen = (Outcome(1):1:Outcome(s[i]) for i = 1:N)
+    return tuple(gen...)
 end
 
 # extend base Array interface:
@@ -84,19 +94,61 @@ end
 Base.IteratorSize(::Counts) = Base.HasLength()
 
 # We strictly deal with single inputs here. For multi-inputs, see CausalityTools.jl
+function counts_and_outcomes(x)
+    xc = copy(x)
+    cts = fasthist!(xc) # sorts `xc` in-place
+    outs = unique!(xc)
+    # Generically call the first dimension `x1` (convention: additional dimensions
+    # are named `x2`, `x3`, etc..., but this is defined in CausalityTools.jl)
+    c = Counts(cts, (outs, ), (:x1, ))
+    return c, outcomes(c)
+end
+
 """
-    counts([o::OutcomeSpace,] x) → cts::Counts
+    counts(o::OutcomeSpace, x) → cts::Counts
+
+Compute the same counts as in the [`counts_and_outcomes`](@ref) function,
+with two differences:
+
+1. Do not explicitly return the outcomes.
+2. If the outcomes are not estimated for free while estimating the counts,
+   a special integer type is used to enumerate the outcomes, to avoid the computational
+   cost of estimating the outcomes.
+"""
+function counts end
+
+function counts(x)
+    return first(counts_and_outcomes(x))
+end
+# TODO: This is type-piracy that should be moved to StateSpaceSets.jl!
+unique!(xc::AbstractStateSpaceSet) = unique!(vec(xc))
+
+# `CountBasedOutcomeSpace`s must implement `counts_and_outcomes`, so we use the
+# following generic fallback.
+function counts(o::CountBasedOutcomeSpace, x)
+    return first(counts_and_outcomes(o, x))
+end
+
+# Generic fallback with informative error
+"""
+    counts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts, Ω)
 
 Discretize/encode `x` into a finite set of outcomes `Ω` specified by the provided
-[`OutcomeSpace`](@ref) `o`, then count how often each outcome `Ωᵢ ∈ Ω` (i.e.
+[`OutcomeSpace`](@ref) `o`, and then count how often each outcome `Ωᵢ ∈ Ω` (i.e.
 each "discretized value", or "encoded symbol") appears.
 
-Return a [`Counts`](@ref) instance which is a vector-like containing the counts.
-When displayed, the marginals of the vector are labelled with the outcomes,
-so that it is easy to trace what is being counted. Use [`outcomes`](@ref) on the
-resulting [`Counts`](@ref) to get these marginals explicitly.
+Return a tuple where the first element is a [`Counts`](@ref) instance, which is
+vector-like and contains the counts, and where the second element `Ω` are the outcomes
+corresponding to the counts, such that `cts[i]` is the count for the outcome `Ω[i]`.
 
-If no [`OutcomeSpace`](@ref) is specified, then [`UniqueElements`](@ref) is used.
+The outcomes are actually included in `cts`, and you can use the [`outcomes`](@ref)
+function on the `cts` to get them. `counts_and_outcomes` returns both for
+backwards compatibility.
+
+    counts_and_outcomes(x) → cts::Counts
+
+If no [`OutcomeSpace`](@ref) is specified, then [`UniqueElements`](@ref) is used
+as the outcome space.
 
 ## Description
 
@@ -109,50 +161,39 @@ Thus, we can assign to each outcome ``\\omega_i`` a count ``f(\\omega_i)``, such
 `counts` returns the counts ``f(\\omega_i)_{obs}``
 and outcomes only for the *observed* outcomes ``\\omega_i^{obs}`` (those outcomes
 that actually appear in the input data). If you need the counts for
-*unobserved* outcomes as well, use [`allcounts`](@ref)/[`allcounts_and_outcomes`](@ref).
+*unobserved* outcomes as well, use [`allcounts_and_outcomes`](@ref).
 """
-function counts(x)
-    xc = copy(x)
-    cts = fasthist!(xc) # sorts `xc` in-place
-    outs = unique!(xc)
-    # Generically call the first dimension `x1` (convention: additional dimensions
-    # are named `x2`, `x3`, etc..., but this is defined in CausalityTools.jl)
-    d = DimArray(cts, (x1 = outs,))
-    return Counts(d)
-end
-# TODO: This is type-piracy that should be moved to StateSpaceSets.jl!
-unique!(xc::AbstractStateSpaceSet) = unique!(vec(xc))
-
-# Generic fallback with informative error
-function counts(o::OutcomeSpace, x)
+function counts_and_outcomes(o::OutcomeSpace, x)
     if !is_counting_based(o)
         throw(ArgumentError(
-            "`counts` only works with counting based outcome spaces. "*
+            "`counts_and_outcomes` only works with counting based outcome spaces. "*
             "You provided $(nameof(typeof(o))) which is not one."
         ))
     else
-        error("`counts` not yet implemented for outcome space $(nameof(typeof(o)))")
+        error("`counts_and_outcomes` not yet implemented for outcome space $(nameof(typeof(o)))")
     end
 end
+
+
 
 # -----------------------------------------------------------------
 # Outcomes are simply the labels on the marginal dimensional.
 # For 1D, we return the outcomes as-is. For ND, we return
 # a tuple of the outcomes --- one element per dimension.
 # -----------------------------------------------------------------
-outcomes(c::Counts{<:Integer, 1}) = first(c.cts.dims).val.data
+outcomes(c::Counts{<:Integer, 1}) = first(c.outcomes)
 
 # Integer indexing returns the outcomes for that dimension directly.
 function outcomes(c::Counts{<:Integer, N}, i::Int) where N
-    return c.cts.dims[i].val.data
+    return c.outcomes[i]
 end
 
 function outcomes(c::Counts{<:Integer, N}) where N
-    return map(i -> c.cts.dims[i].val.data, tuple(1:N...))
+    return map(i -> c.outcomes[i], tuple(1:N...))
 end
 
 function outcomes(c::Counts{<:Integer, N}, idxs) where N
-    map(i -> c.cts.dims[i].val.data, tuple(idxs...))
+    map(i -> c.outcomes[i], tuple(idxs...))
 end
 
 """
@@ -163,7 +204,7 @@ where `Ω = outcome_space(o, x)`), are included.
 Outcomes that do not occur in the data `x` get 0 count.
 """
 function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
-    cts = counts(o, x)
+    cts, outs = counts_and_outcomes(o, x)
     outs = outcomes(cts)
     ospace = vec(outcome_space(o, x))
     m = length(ospace)
@@ -174,7 +215,7 @@ function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
             allcts[i] = cts[idx]
         end
     end
-    return Counts(allcts, (x1 = ospace,))
+    return Counts(allcts, (ospace,), (:x1, ))
 end
 
 """

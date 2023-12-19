@@ -1,4 +1,4 @@
-# [Probabilities](@ref)
+# Probabilities
 
 !!! note
     Be sure you have gone through the [Tutorial](@ref) before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
@@ -92,11 +92,13 @@ SpatialOrdinalPatterns
 SpatialDispersion
 ```
 
-## Probabilities
+## `Probabilities` and related functions
 
 ```@docs
 Probabilities
 probabilities
+probabilities_and_outcomes
+allprobabilities_and_outcomes
 probabilities!
 allprobabilities
 ```
@@ -104,7 +106,10 @@ allprobabilities
 ## Counts
 
 ```@docs
+Counts
+counts_and_outcomes
 counts
+allcounts_and_outcomes
 allcounts
 is_counting_based
 ```
@@ -116,13 +121,15 @@ ProbabilitiesEstimator
 RelativeAmount
 BayesianRegularization
 Shrinkage
+AddConstant
 ```
 
 ## [Encodings/Symbolizations API](@id encodings)
 
 Count-based [`OutcomeSpace`](@ref)s first "encode" input data into an intermediate representation indexed by the positive integers.
 This intermediate representation is called an "encoding".
-Alternative name for "encoding" in the literature is "symbolize".
+Alternative names for "encoding" in the literature is "symbolize" or "codify", and 
+in this package we use the latter.
 
 The encodings API is defined by:
 

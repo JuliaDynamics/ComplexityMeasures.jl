@@ -65,7 +65,7 @@ Stencils are passed in one of the following three ways:
     in the previous examples, use here `stencil = ((2, 2), (1, 1))`.
     When passing a stencil using `extent` and `lag`, `m = prod(extent)`.
 """
-struct SpatialOrdinalPatterns{D,P,V,M,F} <: SpatialProbEst{D, P}
+struct SpatialOrdinalPatterns{D,P,V,M,F} <: SpatialOutcomeSpace{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
@@ -89,24 +89,25 @@ function encoded_space_cardinality(est::SpatialOrdinalPatterns, x::AbstractArray
     return length(s)
 end
 
-function counts(est::SpatialOrdinalPatterns, x)
+function counts_and_outcomes(est::SpatialOrdinalPatterns, x)
     s = zeros(Int, length(est.valid))
-    counts!(s, est, x)
+    return counts_and_outcomes!(s, est, x)
 end
 
-function counts!(s, est::SpatialOrdinalPatterns, x)
+function counts_and_outcomes!(s, est::SpatialOrdinalPatterns, x)
     encodings_from_permutations!(s, est, x)
     observed_outcomes = decode.(Ref(est.encoding), s)
     outs = sort!(unique(observed_outcomes))
     z = copy(s)
     cts = fasthist!(z)
-    return Counts(cts, (outs,))
+    c = Counts(cts, (outs, ))
+    return c, outcomes(c)
 end
 
-# Don't use generic dispatch, because we need to use `counts`!.
+# Don't use generic dispatch, because we need to use `counts_and_outcomes`!.
 function probabilities!(est::SpatialOrdinalPatterns, x, s)
     s = zeros(Int, length(est.valid))
-    return Probabilities(counts!(s, est, x))
+    return Probabilities(first(counts_and_outcomes!(s, est, x)))
 end
 
 # Pretty printing

@@ -296,7 +296,13 @@ end
 function counts(encoding::RectangularBinEncoding, x)
     cts, bins = fasthist(encoding, x) # bins are integers here
     unique!(bins) # `bins` is already sorted from `frequencies!`
+    return Counts(cts)
+end
+
+function counts_and_outcomes(encoding::RectangularBinEncoding, x)
+    cts, bins = fasthist(encoding, x) # bins are integers here
+    unique!(bins) # `bins` is already sorted from `frequencies!`
     # Here we transform the cartesian coordinate based bins into data unit bins:
     outcomes = map(b -> decode(encoding, b), bins)
-    return Counts(cts, (outcomes,))
+    return Counts(cts, outcomes), outcomes
 end

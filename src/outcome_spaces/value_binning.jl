@@ -38,7 +38,7 @@ binning, but for [`RectangularBinning`](@ref) input `x` is needed as well.
 
 ## Implements
 
-- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
+- [`codify`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
 struct ValueBinning{B<:AbstractBinning} <: CountBasedOutcomeSpace
     binning::B
@@ -66,8 +66,26 @@ outcomes(est::ValueBinning, x) = last(counts_and_outcomes(est, x))
 # the underlying encoding and the `fasthist`/`fasthist!` functions.
 # See the `encoding_implementations/rectangular_binning.jl` file for more.
 # --------------------------------------------------------------------------------
+# Explicitly override `counts` here, because it is more efficient to not 
+# decode the outcomes.
 function counts(est::ValueBinning, x)
     return counts(RectangularBinEncoding(est.binning, x), x)
+end
+
+function counts_and_outcomes(est::ValueBinning, x)
+    return counts_and_outcomes(RectangularBinEncoding(est.binning, x), x)
+end
+
+# Explicitly override `probabilities` here, because it is more efficient to not 
+# decode the outcomes.
+function probabilities(est::ValueBinning, x)
+    return Probabilities(counts(RectangularBinEncoding(est.binning, x), x))
+end
+
+function probabilities_and_outcomes(est::ValueBinning, x)
+    cts, outs = counts_and_outcomes(RectangularBinEncoding(est.binning, x), x)
+    probs = Probabilities(cts, outs)
+    return probs, outcomes(probs)
 end
 
 function outcome_space(est::ValueBinning, x)

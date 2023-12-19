@@ -57,7 +57,7 @@ If `x` is a `Vector`, then a `Vector{<:Integer}` is returned. If `x` is a
 
 The reason this function exists is that we don't always want to [`encode`](@ref) the
 entire input `x` at once. Sometimes, it is desirable to first apply some transformation to
-`x` first, then apply [`encoding`](@ref)s in a point-wise manner in the transformed space.
+`x` first, then apply [`Encoding`](@ref)s in a point-wise manner in the transformed space.
 (the [`OutcomeSpace`](@ref) dictates this transformation). This is useful for encoding
 timeseries data.
 

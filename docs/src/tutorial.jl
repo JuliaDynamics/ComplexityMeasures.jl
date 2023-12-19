@@ -60,7 +60,7 @@ o isa OutcomeSpace
 # Such outcome spaces may be given to [`probabilities`](@ref) to estimate the corresponding
 # probabilities, which are returned as a dedicated [`Probabilities`](@ref) type like so:
 
-probs = probabilities(o, x)
+probs, outs = probabilities_and_outcomes(o, x)
 
 # In this example the probabilities are the (normalized) heights of each bin of the
 # histogram. The bins, which are the _elements_ of the outcome space, are shown in the
@@ -71,23 +71,25 @@ probs = probabilities(o, x)
 
 maximum(probs)
 
-# Or iterate over the contained probabilities values
-s = 0.0
-for p in probs
-    s += p
-end
-s/length(probs) # mean probability
-
-# Et cetera. To obtain the outcomes explicitly as their own vector
+# To obtain the outcomes explicitly as their own vector
 # you can use the [`outcomes`](@ref) function
 outs = outcomes(probs)
+
+# Notice that if you use [`probabilities`](@ref) instead of 
+# [`probabilities_and_outcomes`](@ref), then outcomes are enumerated generically.
+# This avoids computing outcomes explicitly, and can save some computation time 
+# in cases where you don't need the outcomes.
+outcomes(probabilities(o, x))
 
 # For the `ValueBinning` example that we use,
 # the outcomes are the left edges of each bin. This allows us to straightforwardly
 # visualize the results.
 using CairoMakie
-left_edges = first.(outs) # covert `Vector{SVector}` into `Vector{Real}`
-barplot(left_edges, probs; axis = (ylabel = "probability", ylims = (0, nothing)))
+outs = outcomes(probs);
+left_edges = first.(outs) # convert `Vector{SVector}` into `Vector{Real}`
+f = Figure(); ax = Axis(f)
+barplot!(ax, left_edges, probs; ylims = (0, nothing), ylabel = "probability")
+f
 
 # Naturally, there are other outcome spaces one may use, and one can find the list of
 # implemented ones in [`OutcomeSpace`](@ref).
@@ -203,8 +205,8 @@ perm_ent_y = entropy(OrdinalPatterns(), y)
 # Just like the previous section discussing the possibility of many different outcome
 # spaces, the same concept applies to entropy. There are many _actually different_
 # entropies. Shannon entropy is not the only one, just the one used most often.
-# Each entropy is a subtype of [`EntropyDefinition`](@ref). Another commonly used entropy
-# is the [Renyi](@ref) or generalized entropy. We can use [`Renyi`](@ref) as an additional
+# Each entropy is a subtype of [`InformationMeasure`](@ref). Another commonly used entropy
+# is the [`Renyi`](@ref) or generalized entropy. We can use [`Renyi`](@ref) as an additional
 # first argument to the [`entropy`](@ref)function
 
 perm_ent_y_q2 = entropy(Renyi(;q = 2.0), OrdinalPatterns(), y)

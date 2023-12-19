@@ -20,28 +20,33 @@ All PRs contributing new functionality must be well tested and well documented. 
 
 If your new outcome space is counting-based, then
 
-5. Implement dispatch for [`counts`](@ref) for your [`OutcomeSpace`](@ref)
-    type. This method should return a [`Counts`](@ref) instance (just a wrapper around a
-    `DimArray`). Follow existing implementations for guidelines, and ensure that
-    the outcomes are the dimension labels on the array.
-6. Implement dispatch for [`symbolize`](@ref). This will ensure that the outcome space
+5. Implement dispatch for [`counts_and_outcomes`](@ref) for your [`OutcomeSpace`](@ref)
+    type. If the outcomes do not come for free, then instead you can extend
+    [`counts`](@ref) and then explicitly add another method for
+    [`counts_and_outcomes`](@ref) that calls [`counts`](@ref) first and then decodes
+    the outcomes. Follow existing implementations for guidelines (see for example source
+    code for [`Dispersion`](@ref)).
+6. Implement dispatch for [`codify`](@ref). This will ensure that the outcome space
     also works automatically with any discrete estimators in the downstream CausalityTools.jl.
 
 If your new outcome space is not counting-based, then
 
-6. Implement dispatch for [`probabilities`](@ref) for your
-    [`OutcomeSpace`](@ref) type. This method should return a [`Probabilities`](@ref)
-    instance (also just a wrapper around `DimArray` with the constraint that the
-    entries of the array must sum to 1). Follow existing implementations for guidelines, and ensure that the outcomes are the dimension labels on the probabilities array. You'll
-    then get the methods [`probabilities_and_outcomes`](@ref) and [`outcomes`](@ref) for
-    free.
+6. Implement dispatch for [`probabilities_and_outcomes`](@ref) for your
+    [`OutcomeSpace`](@ref) type. If the outcomes do not come for free, then instead you
+    can extend [`probabilities`](@ref) and then explicitly add another method for
+    [`probabilities_and_outcomes`](@ref) that calls [`probabilities`](@ref) first and
+    then decodes the outcomes.
+    Follow existing implementations for guidelines (see for example source code for
+    [`NaiveKernel`](@ref)).
 
 Finally,
 
 8. Implement dispatch for [`outcome_space`](@ref) and your [`OutcomeSpace`](@ref) type.
     The return value of `outcome_space` must be sorted (as in the default behavior of
     `sort`, in ascending order).
-9. Add your outcome space type to the table list in the documentation string of [`OutcomeSpace`](@ref). If you made an encoding, also add it to corresponding table in the encodings section.
+9. Add your outcome space type to the table list in the documentation string of
+    [`OutcomeSpace`](@ref). If you made an encoding, also add it to corresponding table
+    in the encodings section.
 
 ### Optional steps
 

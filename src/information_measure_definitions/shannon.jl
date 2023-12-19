@@ -4,7 +4,7 @@ export Shannon
     Shannon <: InformationMeasure
     Shannon(; base = 2)
 
-The Shannon[Shannon1948](@cite) entropy, used with [`information`](@ref) to compute:
+The Shannon [Shannon1948](@cite) entropy, used with [`information`](@ref) to compute:
 
 ```math
 H(p) = - \\sum_i p[i] \\log(p[i])

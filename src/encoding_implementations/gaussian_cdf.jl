@@ -49,7 +49,7 @@ If `GaussianCDFEncoding` is used with a vector `χ`, then each element of `χ` i
 encoded separately, resulting in a `length(χ)` sequence of integers which may be
 treated as a `CartesianIndex`. The encoded symbol `s ∈ [1, 2, …, c]` is then just the
 linear index corresponding to this cartesian index (similar to how
-[CombinationEncoding](@ref) works).
+[`CombinationEncoding`](@ref) works).
 
 When [`decode`](@ref)d, the integer symbol `s` is converted back into its `CartesianIndex`
 representation,  which is just a sequence of integers that refer to subdivisions

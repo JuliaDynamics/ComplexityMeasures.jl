@@ -19,6 +19,7 @@ function fasthist!(x)
     sizehint!(hist, L)
     # Fill the histogram by counting consecutive equal values:
     sort!(x; alg = QuickSort)
+
     prev_val, count = x[1], 0
     for val in x
         if val == prev_val
@@ -35,7 +36,9 @@ function fasthist!(x)
     return hist
 end
 
+# Used for the ordinal pattern outcome spaces where there are no weights.
 fasthist!(x, ::Nothing) = fasthist!(x)
+
 
 """
     fasthist!(x, weights) → c::Vector{Real}

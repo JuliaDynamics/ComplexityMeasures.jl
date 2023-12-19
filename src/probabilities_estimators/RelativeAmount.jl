@@ -31,8 +31,8 @@ Hence, this estimator is called `RelativeAmount`.
 ```julia
 using ComplexityMeasures
 x = cumsum(randn(100))
-ps = probabilities(SymbolicPermutation(m = 3), x) # RelativeAmount is the default estimator
-ps_mle = probabilities(RelativeAmount(SymbolicPermutation(m = 3)), x) # equivalent
+ps = probabilities(SymbolicPermutation(m = 3), x) # `RelativeAmount` is the default estimator
+ps_mle = probabilities(RelativeAmount(), SymbolicPermutation(m = 3), x) # equivalent
 ps == ps_mle # true
 ```
 
@@ -45,5 +45,15 @@ function probabilities(est::RelativeAmount, outcomemodel::OutcomeSpace, x)
         return Probabilities(counts(outcomemodel, x))
     else
         return probabilities(outcomemodel, x)
+    end
+end
+
+function probabilities_and_outcomes(est::RelativeAmount, outcomemodel::OutcomeSpace, x)
+    if is_counting_based(outcomemodel)
+        cts, outs = counts_and_outcomes(outcomemodel, x)
+        probs = Probabilities(cts, outs)
+        return probs, outcomes(probs)
+    else
+        return probabilities_and_outcomes(outcomemodel, x)
     end
 end

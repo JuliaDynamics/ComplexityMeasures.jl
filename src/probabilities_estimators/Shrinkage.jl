@@ -93,7 +93,7 @@ function probs_and_outs_from_histogram(est::Shrinkage, outcomemodel::OutcomeSpac
         probs[idx] = θₖ_shrink(probs_observed[k], λ, tₖ)
     end
     @assert sum(probs) ≈ 1.0
-    return Probabilities(probs, (x1 = Ω_observed,))
+    return Probabilities(probs, Ω_observed,)
 end
 
 function get_λ(est, n, probs_observed, t, m)

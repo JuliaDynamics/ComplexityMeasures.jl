@@ -14,15 +14,25 @@ Hence, input `x` is needed for a well-defined [`outcome_space`](@ref).
 
 ## Implements
 
-- [`symbolize`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
+- [`codify`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
 struct UniqueElements <: CountBasedOutcomeSpace end
 
 is_counting_based(o::UniqueElements) = true
 counts(::UniqueElements, x) = counts(x)
+function counts_and_outcomes(::UniqueElements, x)
+    z = copy(x)
+    cts = fasthist!(z)
+    # notice that `z` is now sorted within `fasthist!` so we can skip sorting
+    outs = unique!(z)
+    cts = Counts(cts, (outs, ))
+    return cts, outcomes(cts)
+end
+
+# Convenience.
+probabilities(x) = probabilities(UniqueElements(), x)
 
 outcome_space(::UniqueElements, x) = sort!(unique(x))
-probabilities(::UniqueElements, x) = probabilities(x)
 
 function codify(o::UniqueElements, x)
     encoding = UniqueElementsEncoding(x)

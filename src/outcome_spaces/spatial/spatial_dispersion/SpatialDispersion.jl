@@ -111,9 +111,9 @@ information(Renyi(q = 2), est, x)
 ```
 
 See also: [`SpatialOrdinalPatterns`](@ref), [`GaussianCDFEncoding`](@ref),
-[`symbolize`](@ref).
+[`codify`](@ref).
 """
-struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialProbEst{D, P}
+struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialOutcomeSpace{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
@@ -154,14 +154,15 @@ function Base.show(io::IO, est::SpatialDispersion{D,P,V,S}) where {D,P,V,S}
     print(io, """\nBoundaries: $(P ? "Periodic" : "Non-periodic")""")
 end
 
-function counts(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
+function counts_and_outcomes(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
     symbols = symbol_distribution(est, x)
 
     # We don't care about the fact that `frequencies!` sorts in-place here, because we
     # only need the unique values of `symbols` for the outcomes.
     cts = fasthist!(symbols) # fasthist!(x) mutates x --- `symbols` gets sorted here
-    outcomes = unique!(symbols)
-    return Counts(cts, (outcomes,))
+    outs = unique!(symbols)
+    c = Counts(cts, (outs, ))
+    return c, outcomes(c)
 end
 
 function symbol_distribution(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}

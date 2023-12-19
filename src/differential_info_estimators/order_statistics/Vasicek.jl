@@ -17,7 +17,7 @@ on [order statistics](https://en.wikipedia.org/wiki/Order_statistic), of which
 Assume we have samples ``\\bar{X} = \\{x_1, x_2, \\ldots, x_N \\}`` from a
 continuous random variable ``X \\in \\mathbb{R}`` with support ``\\mathcal{X}`` and
 density function``f : \\mathbb{R} \\to \\mathbb{R}``. `Vasicek` estimates the
-[Shannon](@ref) differential entropy
+[`Shannon`](@ref) differential entropy
 
 ```math
 H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))].

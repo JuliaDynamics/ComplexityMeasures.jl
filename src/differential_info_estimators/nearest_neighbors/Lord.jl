@@ -39,7 +39,7 @@ when searching for neighbours).
 Assume we have samples ``\\bar{X} = \\{\\bf{x}_1, \\bf{x}_2, \\ldots, \\bf{x}_N \\}`` from a
 continuous random variable ``X \\in \\mathbb{R}^d`` with support ``\\mathcal{X}`` and
 density function ``f : \\mathbb{R}^d \\to \\mathbb{R}``. `Lord` estimates the
-[Shannon](@ref) differential entropy
+[`Shannon`](@ref) differential entropy
 
 ```math
 H(X) = \\int_{\\mathcal{X}} f(x) \\log f(x) dx = \\mathbb{E}[-\\log(f(X))],

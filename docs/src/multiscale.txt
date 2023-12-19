@@ -1,5 +1,6 @@
 # Multiscale
 
+<!--
 ## Multiscale API
 
 The multiscale API is defined by the functions
@@ -32,3 +33,4 @@ combination.
 | Refined composite multiscale dispersion entropy  | `multiscale(Composite(), Dispersion(), est, x, normalized = true)` | Azami et al. (2017)[Azami2017](@cite) |
 | Multiscale sample entropy (first moment)              | `multiscale(Regular(f = mean), SampleEntropy(), x)` | Costa et al. (2002)[Costa2002](@cite) |
 | Generalized multiscale sample entropy (second moment) | `multiscale(Regular(f = std), SampleEntropy(),  x)` | Costa et al. (2015)[Costa2015](@cite) |
+-->

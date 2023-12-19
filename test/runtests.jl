@@ -8,7 +8,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("counts/counts.jl")
     testfile("probabilities/probabilities.jl")
 
-    # Outcome spaces
+    # # Outcome spaces
     testfile("outcome_spaces/outcome_spaces.jl")
     testfile("outcome_spaces/implementations/unique_elements.jl")
     testfile("outcome_spaces/implementations/value_binning.jl")
@@ -21,16 +21,16 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("outcome_spaces/implementations/spatial/spatial_ordinal_patterns.jl")
     testfile("outcome_spaces/implementations/spatial/spatial_dispersion.jl")
 
-    # probabilities
+    # # probabilities
     testfile("probabilities_estimators/probabilities_estimators.jl")
 
     include("infomeasures/infomeasures.jl")
     include("complexity/complexity.jl")
 
-    # When multiscale is exported, this should be turned on
-    # include("multiscale/multiscale.jl")
+    #When multiscale is exported, this should be turned on
+    #include("multiscale/multiscale.jl")
 
-    # Various
+    #Various
     testfile("encodings/encodings.jl")
     testfile("convenience.jl")
     testfile("deprecations.jl")

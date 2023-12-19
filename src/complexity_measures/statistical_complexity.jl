@@ -12,7 +12,7 @@ An estimator for the statistical complexity and entropy, originally by
 [`ProbabilitiesEstimator`](@ref) in combination with any [`OutcomeSpace`](@ref)
 with a priori known `total_outcomes`, any valid distance metric, and any
 normalizable discrete information measure (e.g. entropies like [`Shannon`](@ref),
-[`Renyi`](@ref, or extropies like [`ShannonExtropy`](@ref), the latter of which are not
+[`Renyi`](@ref), or extropies like [`ShannonExtropy`](@ref), the latter of which are not
 treated in Rosso et al.'s papers). Used with [`complexity`](@ref).
 
 ## Keyword arguments
@@ -135,8 +135,8 @@ and `num_min` different values of the normalized information measure of choice (
 the minimum complexity curve).
 
 This function can also be used to compute the maximum "complexity-extropy curve" if
-`c.entr` is an [`InformationMeasure`](@ref), which is the equivalent of the
-complexity-entropy curves, but using [`extropy`](@ref) instead of [`information`](@ref).
+`c.entr` is e.g. [`ShannonExtropy`](@ref), which is the equivalent of the
+complexity-entropy curves, but using extropy instead of [`information`](@ref).
 
 ## Description
 
@@ -154,7 +154,7 @@ function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
     # avoid having to resize later by just making result containers vectors straight away.
     hs_cs_max = zeros(SVector{2, Float64}, (L-1)*num_max)
 
-    p = Probabilities(zeros(L), true) # can't normalize zeros, so let's pretend this is already normalized
+    p = Probabilities(zeros(L); normed = true) # can't normalize zeros, so let's pretend this is already normalized
     prob_params = linearpermissiverange(0; stop = 1 / L, length = num_max)
 
     j = 1
