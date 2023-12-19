@@ -41,14 +41,14 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
     # The frequency table.
     cts::AbstractArray{T, N}
 
-    # Outcomes[i] has the same number of elements as `cts` along dimension `i`.
+    # outcomes[i] has the same number of elements as `cts` along dimension `i`.
     outcomes::Tuple{Vararg{<:AbstractVector, N}}
 
     # A label for each dimension
     dimlabels::NTuple{N, S}
 
-    function Counts(cts::AbstractArray{T, N}, 
-            outcomes::Tuple{Vararg{<:AbstractVector, N}}, 
+    function Counts(cts::AbstractArray{T, N},
+            outcomes::Tuple{Vararg{<:AbstractVector, N}},
             dimlabels::NTuple{N, S}) where {T, N, S}
         s = size(cts)
         for dim = 1:N
@@ -87,7 +87,7 @@ function generate_outcomes(x::AbstractArray{T, N}) where {T, N}
 end
 
 # extend base Array interface:
-for f in (:length, :size, :eachindex, :eltype, :parent, 
+for f in (:length, :size, :eachindex, :eltype, :parent,
     :lastindex, :firstindex, :vec, :getindex, :iterate)
     @eval Base.$(f)(c::Counts, args...) = $(f)(c.cts, args...)
 end
@@ -107,19 +107,15 @@ end
 """
     counts(o::OutcomeSpace, x) → cts::Counts
 
-Like [`counts_and_outcomes`](@ref), but returns only the [`Counts`](@ref).
+Compute the same counts as in the [`counts_and_outcomes`](@ref) function,
+with two differences:
 
-May return generic outcomes for some [`OutcomeSpace`](@ref) to save the step of decoding
-the internal representation of the outcome space. Use [`counts_and_outcomes`](@ref)
-to ensure you're getting outcomes that are decoded according to the [`OutcomeSpace`](@ref)
-`o`.
-
-    counts(x) → cts::Counts
-
-If no [`OutcomeSpace`](@ref) is specified, then [`UniqueElements`](@ref) is used
-as the outcome space.
+1. Do not explicitly return the outcomes.
+2. If the outcomes are not estimated for free while estimating the counts,
+   a special integer type is used to enumerate the outcomes, to avoid the computational
+   cost of estimating the outcomes.
 """
-function counts end 
+function counts end
 
 function counts(x)
     return first(counts_and_outcomes(x))
@@ -127,7 +123,7 @@ end
 # TODO: This is type-piracy that should be moved to StateSpaceSets.jl!
 unique!(xc::AbstractStateSpaceSet) = unique!(vec(xc))
 
-# `CountBasedOutcomeSpace`s must implement `counts_and_outcomes`, so we use the 
+# `CountBasedOutcomeSpace`s must implement `counts_and_outcomes`, so we use the
 # following generic fallback.
 function counts(o::CountBasedOutcomeSpace, x)
     return first(counts_and_outcomes(o, x))
@@ -135,16 +131,19 @@ end
 
 # Generic fallback with informative error
 """
-    counts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts, Ω) 
+    counts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts, Ω)
 
 Discretize/encode `x` into a finite set of outcomes `Ω` specified by the provided
-[`OutcomeSpace`](@ref) `o`, then count how often each outcome `Ωᵢ ∈ Ω` (i.e.
+[`OutcomeSpace`](@ref) `o`, and then count how often each outcome `Ωᵢ ∈ Ω` (i.e.
 each "discretized value", or "encoded symbol") appears.
 
-Returns a tuple where the first element is a [`Counts`](@ref) instance, which is 
-vector-like and contains the counts, and where the second element `Ω` are the outcomes 
+Return a tuple where the first element is a [`Counts`](@ref) instance, which is
+vector-like and contains the counts, and where the second element `Ω` are the outcomes
 corresponding to the counts, such that `cts[i]` is the count for the outcome `Ω[i]`.
-You can also use the [`outcomes`](@ref) function on the `cts` to get these outcomes.
+
+The outcomes are actually included in `cts`, and you can use the [`outcomes`](@ref)
+function on the `cts` to get them. `counts_and_outcomes` returns both for
+backwards compatibility.
 
     counts_and_outcomes(x) → cts::Counts
 
@@ -162,7 +161,7 @@ Thus, we can assign to each outcome ``\\omega_i`` a count ``f(\\omega_i)``, such
 `counts` returns the counts ``f(\\omega_i)_{obs}``
 and outcomes only for the *observed* outcomes ``\\omega_i^{obs}`` (those outcomes
 that actually appear in the input data). If you need the counts for
-*unobserved* outcomes as well, use [`allcounts`](@ref)/[`allcounts_and_outcomes`](@ref).
+*unobserved* outcomes as well, use [`allcounts_and_outcomes`](@ref).
 """
 function counts_and_outcomes(o::OutcomeSpace, x)
     if !is_counting_based(o)

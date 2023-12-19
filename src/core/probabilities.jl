@@ -9,23 +9,23 @@ export missing_outcomes
 ###########################################################################################
 """
     Probabilities <: Array{N, <: AbstractFloat}
-    Counts(counts [, outcomes [, outnames]]) → p
+    Probabilities(counts/probs [, outcomes [, outnames]]) → p
 
 `Probabilities` stores an `N`-dimensional array of probabilities, while ensuring that
 the array sums to 1 (normalized probability mass). The probabilities correspond to outcomes
 that describe the axes of the array. In most cases the array is a standard vector.
 
-If `p isa Counts`, then `p.outcomes[i]` is the outcomes along the `i`-th dimension,
+If `p isa Probabilities`, then `p.outcomes[i]` is the outcomes along the `i`-th dimension,
 each being an abstract vector whose order is the same one corresponding to `p`,
 and `p.dimlabels[i]` is the label of the `i`-th dimension.
 Both labels and outcomes are assigned automatically if not given.
 `p` itself can be manipulated and iterated over like its stored array.
 """
 struct Probabilities{T, N, S} <: AbstractArray{T, N}
-    # The frequency table.
+    # The probabilities table.
     p::AbstractArray{T, N}
 
-    # Outcomes[i] has the same number of elements as `cts` along dimension `i`.
+    # outcomes[i] has the same number of elements as `cts` along dimension `i`.
     outcomes::Tuple{Vararg{<:AbstractVector, N}}
 
     # A label for each dimension
@@ -161,30 +161,34 @@ abstract type ProbabilitiesEstimator end
 # probabilities and combo function
 ###########################################################################################
 """
-
-    probabilities_and_outcomes([est::ProbabilitiesEstimator], counts::Counts) → (p::Probabilities, Ω)
-
-Estimate probabilities from the pre-computed `counts` using the given
-[`ProbabilitiesEstimator`](@ref) `est`.
-
-If no estimator is provided, then [`RelativeAmount`](@ref) is used.
-
-    probabilities_and_outcomes([est::ProbabilitiesEstimator], o::OutcomeSpace, 
-        x::Array_or_SSSet) → (p::Probabilities, Ω)
+    probabilities_and_outcomes(
+        [est::ProbabilitiesEstimator], o::OutcomeSpace, x::Array_or_SSSet
+    ) → (p::Probabilities, Ω)
 
 Estimate a probability distribution over the set of possible outcomes `Ω`
 defined by the [`OutcomeSpace`](@ref) `o`, given input data `x`.
+Probabilities are estimated according to the given probabilities estimator `est`,
+which defaults to [`RelativeAmount`](@ref).
 
 The input data is typically an `Array` or a `StateSpaceSet` (or `SSSet` for short); see
 [Input data for ComplexityMeasures.jl](@ref input_data). Configuration options are always
-given as arguments to the chosen outcome space.
+given as arguments to the chosen outcome space and probabilities estimator.
 
-Returns a tuple where the first element are the probabilities `p`, which is a 
-[`Probabilities`](@ref) (`Vector`-like) instance.  The second element of the 
-tuple are the outcomes `Ω`, such that `p[i]` is the probability of the outcome `Ω[i]`.
-Use [`outcomes`](@ref) on `p` to obtain the outcomes explicitly.
+Return a tuple where the first element is a [`Probabilities`](@ref) instance, which is
+vector-like and contains the probabilities, and where the second element `Ω` are the outcomes
+corresponding to the probabilities, such that `p[i]` is the probability for the outcome `Ω[i]`.
 
-If `est` is not given, it defaults to the [`RelativeAmount`](@ref) estimator.
+The outcomes are actually included in `p`, and you can use the [`outcomes`](@ref)
+function on the `p` to get them. `probabilities_and_outcomes` returns both for
+backwards compatibility.
+
+
+    probabilities_and_outcomes(
+        [est::ProbabilitiesEstimator], counts::Counts
+    ) → (p::Probabilities, Ω)
+
+Estimate probabilities from the pre-computed `counts` using the given
+[`ProbabilitiesEstimator`](@ref) `est`.
 
 ## Description
 
@@ -196,7 +200,8 @@ Probabilities are computed by:
     discretized data points), or a pseudo-count (some pre-normalized probability such
     that `sum(Ωᵢ for Ωᵢ in Ω) == 1`).
 
-For outcome spaces that result in pseudo counts, these pseudo counts are simply treated
+For outcome spaces that result in pseudo counts, such as [`PowerSpectrum`](@ref),
+these pseudo counts are simply treated
 as probabilities and returned directly (that is, `est` is ignored). For counting-based
 outcome spaces (see [`OutcomeSpace`](@ref) docstring), probabilities
 are estimated from the counts using some [`ProbabilitiesEstimator`](@ref) (first signature).
@@ -208,56 +213,33 @@ contain `0`s as entries or not depends on the outcome space.
 E.g., in [`ValueBinning`](@ref) `0`s are skipped, while in
 [`PowerSpectrum`](@ref) `0` are not skipped, because we get them for free.
 
-Use [`allprobabilities`](@ref) to guarantee that
+Use [`allprobabilities_and_outcomes`](@ref) to guarantee that
 zero probabilities are also returned (may be slower).
-
-## Examples
-
-```julia
-x = randn(500)
-ps = probabilities(OrdinalPatterns(m = 3), x)
-ps = probabilities(ValueBinning(RectangularBinning(5)), x)
-ps = probabilities(WaveletOverlap(), x)
-```
-
-The outcome space is here given as the first argument to `est`.
-
-## Examples
-
-```julia
-x = randn(500)
-
-# Syntactically equivalent to `probabilities(OrdinalPatterns(m = 3), x)`
-ps = probabilities(RelativeAmount, OrdinalPatterns(m = 3), x)
-
-# Some more sophisticated ways of estimating probabilities:
-ps = probabilities(BayesianRegularization(), OrdinalPatterns{3}(), x)
-ps = probabilities(Shrinkage(), ValueBinning(RectangularBinning(5)), x)
-
-# Only the `RelativeAmount` estimator works with non-counting based outcome spaces,
-# like for example `WaveletOverlap`.
-ps = probabilities(RelativeAmount(), WaveletOverlap(), x) # works
-ps = probabilities(BayesianRegularization(), WaveletOverlap(), x) # errors
-```
 """
 function probabilities_and_outcomes end
 
 """
-    probabilities([est::ProbabilitiesEstimator], o::OutcomeSpace, 
-        x::Array_or_SSSet) → (p::Probabilities, Ω)
+    probabilities(
+        [est::ProbabilitiesEstimator], o::OutcomeSpace, x::Array_or_SSSet
+    ) → (p::Probabilities, Ω)
 
 Like [`probabilities_and_outcomes`](@ref), but returns the [`Probabilities`](@ref) `p`
-directly. 
+directly.
 
-For some [`OutcomeSpace`](@ref), generic outcomes may be used. This is done in order to
-save the step of decoding the internal representation of the outcome space. Use 
-[`probabilities_and_outcomes`](@ref) to ensure you're getting outcomes that are decoded
-according to the [`OutcomeSpace`](@ref) `o`.
+Compute the same probabilities as in the [`probabilities_and_outcomes`](@ref) function,
+with two differences:
 
-    probabilities([est::ProbabilitiesEstimator], counts::Counts) → (p::Probabilities, Ω)
+1. Do not explicitly return the outcomes.
+2. If the outcomes are not estimated for free while estimating the counts,
+   a special integer type is used to enumerate the outcomes, to avoid the computational
+   cost of estimating the outcomes.
 
-The same as above, but estimate the probability directly from a set of [`Counts`](@ref)
-instead of estimating the counts first from raw data.
+
+```julia
+probabilities([est::ProbabilitiesEstimator], counts::Counts) → (p::Probabilities, Ω)
+```
+
+The same as above, but estimate the probability directly from a set of [`Counts`](@ref).
 """
 function probabilities end
 # Functions related to outcomes are propagated
