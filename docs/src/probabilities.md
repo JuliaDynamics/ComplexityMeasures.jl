@@ -4,7 +4,8 @@
     Be sure you have gone through the [Tutorial](@ref) before going through the API here to have a good idea of the terminology used in ComplexityMeasures.jl.
 
 ComplexityMeasures.jl implements an interface for probabilities that exactly follows the mathematically rigorous formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space).
-Probability spaces are formalized by an [`OutcomeSpace`](@ref) $\Omega$, and the functions [`counts`](@ref) and [`probabilities`](@ref) as well as derivative functions such as [`allprobabilities_and_outcomes`](@ref).
+Probability spaces are formalized by an [`OutcomeSpace`](@ref) $\Omega$.
+Probabilities are extracted from data then by referencing an outcome space in the functions [`counts`](@ref) and [`probabilities`](@ref).
 The mathematical formulation of probabilities spaces is further enhanced by [`ProbabilitiesEstimator`](@ref) and its subtypes, which may correct theoretically known biases when estimating probabilities from finite data.
 
 In reality, probabilities can be either discrete ([mass functions](https://en.wikipedia.org/wiki/Probability_mass_function)) or continuous ([density functions](https://en.wikipedia.org/wiki/Probability_density_function)).
@@ -128,7 +129,7 @@ AddConstant
 
 Count-based [`OutcomeSpace`](@ref)s first "encode" input data into an intermediate representation indexed by the positive integers.
 This intermediate representation is called an "encoding".
-Alternative names for "encoding" in the literature is "symbolize" or "codify", and 
+Alternative names for "encoding" in the literature is "symbolize" or "codify", and
 in this package we use the latter.
 
 The encodings API is defined by:

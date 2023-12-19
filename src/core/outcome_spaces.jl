@@ -145,6 +145,7 @@ Equivalent to `probabilities_and_outcomes(o, x)[2]`, but for some estimators
 it may be explicitly extended for better performance.
 """
 function outcomes(o::OutcomeSpace, x)
+    # Notice here that we don't need the probabilities so we can optimize
     if is_counting_based(o)
         return last(counts_and_outcomes(o, x))
     else
