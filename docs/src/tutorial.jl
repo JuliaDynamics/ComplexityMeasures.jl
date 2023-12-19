@@ -2,9 +2,12 @@
 
 # The goal of this tutorial is threefold:
 
-# 1. To convey the _terminology_ used by ComplexityMeasures.jl: key terms, what they mean, and how they are used within the codebase.
+# 1. To convey the _terminology_ used by ComplexityMeasures.jl: key terms, what they mean,
+#    and how they are used within the codebase.
 # 2. To provide a _rough overview_ of the overall features provided by ComplexityMeasures.jl.
-# 3. To introduce the _main API functions_ of ComplexityMeasures.jl in a single, self-contained document: how these functions connect to key terms, what are their main inputs and outputs, and how they are used in realistic scientific scripting.
+# 3. To introduce the _main API functions_ of ComplexityMeasures.jl in a single,
+#    self-contained document: how these functions connect to key terms, what are their main
+#    inputs and outputs, and how they are used in realistic scientific scripting.
 
 # !!! note
 #     The documentation and exposition of ComplexityMeasures.jl is inspired by chapter 5 of
@@ -57,29 +60,44 @@ x = randn(10_000)
 o = ValueBinning(ε)
 o isa OutcomeSpace
 
-# Such outcome spaces may be given to [`probabilities`](@ref) to estimate the corresponding
-# probabilities, which are returned as a dedicated [`Probabilities`](@ref) type like so:
+# Such outcome spaces may be given to [`probabilities_and_outcomes`](@ref) to estimate the
+# probabilities and corresponding outcomes from input data:
 
 probs, outs = probabilities_and_outcomes(o, x)
+probs
 
 # In this example the probabilities are the (normalized) heights of each bin of the
 # histogram. The bins, which are the _elements_ of the outcome space, are shown in the
-# margin, left of the probabilities. This convenience printing syntax is useful for visual
+# margin, left of the probabilities. They are also returned explicitly
+
+outs
+
+# This convenience printing syntax with outcomes and probabilities is useful for visual
 # inspection of the probabilities data. However, don't let it worry you.
-# The `Probabilities` can be used identically to a standard Julia numerical `Vector`.
+# Probabilities are returned as a special [`Probabilities`](@ref) type that behaves
+# identically to a standard Julia numerical `Vector`.
 # You can obtain the maximum probability
 
 maximum(probs)
 
-# To obtain the outcomes explicitly as their own vector
-# you can use the [`outcomes`](@ref) function
-outs = outcomes(probs)
+# or iterate over the probabilities
 
-# Notice that if you use [`probabilities`](@ref) instead of 
+function total(probs)
+    t = 0.0
+    for p in probs
+        t += p
+    end
+    return t
+end
+
+total(probs)
+
+# Notice that if you use [`probabilities`](@ref) instead of
 # [`probabilities_and_outcomes`](@ref), then outcomes are enumerated generically.
-# This avoids computing outcomes explicitly, and can save some computation time 
+# This avoids computing outcomes explicitly, and can save some computation time
 # in cases where you don't need the outcomes.
-outcomes(probabilities(o, x))
+
+probs2 = probabilities(o, x)
 
 # For the `ValueBinning` example that we use,
 # the outcomes are the left edges of each bin. This allows us to straightforwardly
@@ -113,6 +131,7 @@ o = OrdinalPatterns(m = 3)
 probsy = probabilities(o, y)
 
 # Comparing these probabilities with those for the purely random timeseries `x`,
+
 probsx = probabilities(o, x)
 
 # you will notice that the probabilities computing from `x` has six outcomes, while
@@ -120,8 +139,8 @@ probsx = probabilities(o, x)
 
 # The reason that there are less outcomes in the `y` is because one outcome was never
 # encountered in the `y` data. This is a common theme in ComplexityMeasures.jl: outcomes
-# that are not in the data are skipped. This can save huge amounts of memory for outcome
-# spaces with very large numbers of outcomes.
+# that are not in the data are skipped. This can save memory for outcome
+# spaces with large numbers of outcomes.
 # To explicitly obtain all outcomes, by assigning 0 probability to not encountered outcomes,
 # use [`allprobabilities`](@ref) or [`allprobabilities_and_outcomes`](@ref).
 # For [`OrdinalPatterns`](@ref) the outcome space does not depend on input data and is
