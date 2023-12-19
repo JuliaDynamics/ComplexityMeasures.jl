@@ -104,10 +104,8 @@ probs2 = probabilities(o, x)
 # visualize the results.
 using CairoMakie
 outs = outcomes(probs);
-left_edges = first.(outs) # convert `Vector{SVector}` into `Vector{Real}`
-f = Figure(); ax = Axis(f)
-barplot!(ax, left_edges, probs; ylims = (0, nothing), ylabel = "probability")
-f
+left_edges = only.(outs) # convert `Vector{SVector}` into `Vector{Real}`
+barplot(left_edges, probs; axis = (ylabel = "probability",))
 
 # Naturally, there are other outcome spaces one may use, and one can find the list of
 # implemented ones in [`OutcomeSpace`](@ref).
@@ -127,7 +125,7 @@ summary(y)
 # We can then estimate the probabilities corresponding to the ordinal patterns of a
 # certain length (here we use `m = 3`).
 
-o = OrdinalPatterns(m = 3)
+o = OrdinalPatterns{3}()
 probsy = probabilities(o, y)
 
 # Comparing these probabilities with those for the purely random timeseries `x`,
@@ -165,7 +163,7 @@ total_outcomes(o)
 # So far we have been estimating probabilities by counting the amount of times each
 # possible outcome was encountered in the data, then normalizing. This is called "maximum
 # likelihood estimation" of probabilities. To get the counts themselves, use the
-# [`counts`](@ref) functions.
+# [`counts`](@ref) or [`counts_and_outcomes`](@ref) function.
 
 countsy = counts(o, y)
 
@@ -208,9 +206,12 @@ perm_ent_y = entropy(OrdinalPatterns(), y)
 (perm_ent_x, perm_ent_y)
 
 # As expected, the permutation entropy of the `x` signal is higher, because the signal is
-# "more random".
+# "more random". Moreover, since we have estimated the probabilities already, we could
+# have passed these to the entropy function directly instead of recomputing them as above
 
-# We crucially realize here that many quantities in the nonlinear dynamics literature that
+perm_ent_y_2 = entropy(probsy)
+
+# We crucially realize here that many quantities in the NLTS literature that
 # are named as entropies, such as "permutation entropy", are _not really new entropies_.
 # They are the good old Shannon entropy ([`Shannon`](@ref)), but calculated with _new
 # outcome spaces_ that smartly quantify some dynamic property in the data.
