@@ -222,14 +222,14 @@ perm_ent_y_2 = entropy(probsy)
 
 # ## Beyond Shannon: more entropies
 
-# Just like the previous section discussing the possibility of many different outcome
-# spaces, the same concept applies to entropy. There are many _actually different_
+# Just like there are different outcome
+# spaces, the same concept applies to entropy. There are many _fundamentally different_
 # entropies. Shannon entropy is not the only one, just the one used most often.
 # Each entropy is a subtype of [`InformationMeasure`](@ref). Another commonly used entropy
 # is the [`Renyi`](@ref) or generalized entropy. We can use [`Renyi`](@ref) as an additional
-# first argument to the [`entropy`](@ref)function
+# first argument to the [`entropy`](@ref) function to estimate the generalized entropy:
 
-perm_ent_y_q2 = entropy(Renyi(;q = 2.0), OrdinalPatterns(), y)
+perm_ent_y_q2 = entropy(Renyi(q = 2.0), OrdinalPatterns(), y)
 (perm_ent_y_q2, perm_ent_y)
 
 # In fact, when we called `entropy(OrdinalPatterns(), y)`, this dispatched to the default
@@ -239,18 +239,20 @@ perm_ent_y_q2 = entropy(Renyi(;q = 2.0), OrdinalPatterns(), y)
 
 # The estimation of an entropy truly parallelizes the estimation of probabilities: in the
 # latter, we could decide an outcome space _and_ an _estimator_ to estimate probabilities.
-# The same happes for entropy: we can decide an entropy definition and an _estimator_ of
+# The same happens for entropy: we can decide an entropy definition and an _estimator_ of
 # how to estimate the entropy. For example, instead of the default [`PlugIn`](@ref)
 # estimator that we used above implicitly, we could use the [`Jackknife`](@ref) estimator.
 
 ospace = OrdinalPatterns()
-entdef = Renyi(;q = 2.0)
+entdef = Renyi(q = 2.0)
 entest = Jackknife(entdef)
 perm_ent_y_q2_jack = entropy(entest, ospace, y)
 
 (perm_ent_y_q2, perm_ent_y_q2_jack)
 
-# It is up to the researcher to read the documentation of the plethora of estimators
+# Entropy estimators always reference an entropy definition, even if they only apply
+# to one type of entropy (typically the Shannon one).
+# From here, it is up to the researcher to read the documentation of the plethora of estimators
 # implemented and decide what is most suitable for their data at hand. They all can be
 # found in [`DiscreteInfoEstimator`](@ref).
 
@@ -270,14 +272,14 @@ perm_ext_y = information(extdef, ospace, y)
 
 perm_ext_y_jack = information(Jackknife(extdef), ospace, y)
 
-# In truth, when we called `entropy(e, o, y)` it dispatched automatically to
+# In truth, when we called `entropy(e, o, y)` it actually calls
 # `information(e, o, y)`, as all "information measures" are part of the same function
-# interface.
+# interface. And entropy is an information measure.
 
 # ## Beyond discrete: differential or continuous
 
-# Discrete entropies (or in general, information measures) are functions of probability
-# mass functions. It is also possible to compute entropies of probability density functions.
+# Discrete information measures are functions of probability
+# mass functions. It is also possible to compute information measures of probability density functions.
 # In ComplexityMeasures.jl, this is done by calling [`entropy`](@ref) (or the more general
 # [`information`](@ref)) with a differential information estimator, a subtype of
 # [`DifferentialInfoEstimator`](@ref). These estimators are given directly to
