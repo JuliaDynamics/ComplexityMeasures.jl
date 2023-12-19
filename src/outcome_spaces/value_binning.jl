@@ -1,4 +1,4 @@
-export ValueBinning, ValueHistogram, VisitationFrequency
+export ValueBinning
 # Binnings are defined in the encoding folder!
 
 """
@@ -45,19 +45,6 @@ struct ValueBinning{B<:AbstractBinning} <: CountBasedOutcomeSpace
 end
 ValueBinning(ϵ::Union{Real,Vector}) = ValueBinning(RectangularBinning(ϵ))
 
-"""
-    VisitationFrequency
-
-An alias for [`ValueBinning`](@ref).
-"""
-const VisitationFrequency = ValueBinning
-
-"""
-    ValueHistogram
-
-An alias for [`ValueBinning`](@ref).
-"""
-const ValueHistogram = ValueBinning
 
 # --------------------------------------------------------------------------------
 # The source code of `ValueBinning` operates as rather simple calls to

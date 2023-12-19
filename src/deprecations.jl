@@ -18,6 +18,22 @@ end
 @deprecate DiscreteEntropyEstimator DiscreteInfoEstimator
 @deprecate MLEntropy PlugIn
 
+"""
+    VisitationFrequency
+
+An alias for [`ValueBinning`](@ref).
+"""
+const VisitationFrequency = ValueBinning
+
+"""
+    ValueHistogram
+
+An alias for [`ValueBinning`](@ref).
+"""
+const ValueHistogram = ValueBinning
+
+export ValueHistogram, VisitationFrequency
+
 @deprecate CountOccurrences UniqueElements
 
 # From before 2.0:
