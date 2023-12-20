@@ -42,13 +42,13 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
     cts::AbstractArray{T, N}
 
     # outcomes[i] has the same number of elements as `cts` along dimension `i`.
-    outcomes::Tuple{Vararg{<:AbstractVector, N}}
+    outcomes::Tuple{Vararg{AbstractVector, N}}
 
     # A label for each dimension
     dimlabels::NTuple{N, S}
 
     function Counts(cts::AbstractArray{T, N},
-            outcomes::Tuple{Vararg{<:AbstractVector, N}},
+            outcomes::Tuple{Vararg{AbstractVector, N}},
             dimlabels::NTuple{N, S}) where {T, N, S}
         s = size(cts)
         for dim = 1:N
