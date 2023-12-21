@@ -1,7 +1,6 @@
 # The contents of this file is modified from DimensionalData.jl, but modified a bit, 
 # to reduce the amount of unnecessary printing. We simply want to display the outcomes
 # in the marginals for both `Counts` and `Probabilities`.
-
 import Base.print_array
 
 const CountsOrProbs{T, N} = Union{Counts{T, N}, Probabilities{T, N}}
