@@ -61,6 +61,7 @@ o isa OutcomeSpace
 # probabilities, which are returned as a dedicated [`Probabilities`](@ref) type like so:
 
 probs, outs = probabilities_and_outcomes(o, x)
+probs
 
 # In this example the probabilities are the (normalized) heights of each bin of the
 # histogram. The bins, which are the _elements_ of the outcome space, are shown in the
