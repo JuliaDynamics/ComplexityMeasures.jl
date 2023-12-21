@@ -63,7 +63,7 @@ o isa OutcomeSpace
 # Such outcome spaces may be given to [`probabilities_and_outcomes`](@ref) to estimate the
 # probabilities and corresponding outcomes from input data:
 
-probs, outs = probabilities_and_outcomes(o, x)
+probs, outs = probabilities_and_outcomes(o, x);
 probs
 
 # In this example the probabilities are the (normalized) heights of each bin of the

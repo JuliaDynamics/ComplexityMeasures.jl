@@ -68,3 +68,50 @@ outs_unnamed = tuple(collect(o for o in outs)...) # outcomes doesn't care about 
 @test outcomes(Counts(z, outs), 1:3) == outs_unnamed
 @test outcomes(Counts(z, outs), 1:2) == outs_unnamed[1:2]
 
+# -----------------------------------------------------------------------------------------
+# Pretty printing
+# -----------------------------------------------------------------------------------------
+strip_spaces = !(x -> x == ' ')
+
+# 1D
+out_capture = repr(MIME("text/plain"), Counts([1, 2, 3]))
+s = split(out_capture, '\n')
+@test contains(first(s), "Counts{Int64,1} over 3 outcomes")
+@test contains(s[2], "Outcome(1)")
+@test contains(last(s), "Outcome(3)")
+
+# 2D
+c = Counts(rand(1:30, 2, 3), (['a', 'e'], 2:2:6,))
+out_capture = repr(MIME("text/plain"), c)
+s = split(out_capture, '\n')
+@test contains(first(s), "2×3 Counts{Int64,2}")
+l1 = filter(strip_spaces, s[2])
+l2 = filter(strip_spaces, s[3])
+l3 = filter(strip_spaces, s[4])
+@test all(contains(l1, "246"))
+@test l2[1:3] == "'a'"
+@test l3[1:3] == "'e'"
+
+# 3D
+c = Counts(rand(1:30, 2, 3, 3), (['a', 'e'], 2:2:6, [(1, 2), (2, 1), (3, 1)]))
+out_capture = repr(MIME("text/plain"), c)
+s = split(out_capture, '\n')
+
+@test contains(first(s), "2×3×3 Counts{Int64,3}")
+l1 = filter(strip_spaces, s[3])
+l2 = filter(strip_spaces, s[4])
+l3 = filter(strip_spaces, s[5])
+l4 = last(s)
+
+@test all(contains(l1, "246"))
+@test l2[1:3] == "'a'"
+@test l3[1:3] == "'e'"
+@test contains(l4, "[and 2 more slices...]")
+
+# 4D (and higher)
+c = Counts(rand(1:30, 2, 3, 3, 2), (['a', 'e'], 2:2:6, [(1, 2), (2, 1), (3, 1)], ["q", "q2"]))
+out_capture = repr(MIME("text/plain"), c)
+s = split(out_capture, '\n')
+@test contains(s[1], "2×3×3×2 Counts")
+@test contains(s[2], "[:, :, 1, 1]")
+@test contains(last(s), "[and 5 more slices...]")
