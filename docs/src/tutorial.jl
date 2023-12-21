@@ -80,7 +80,7 @@ outs = outcomes(probs)
 # [`probabilities_and_outcomes`](@ref), then outcomes are enumerated generically.
 # This avoids computing outcomes explicitly, and can save some computation time 
 # in cases where you don't need the outcomes.
-outcomes(probabilities(o, x))
+probabilities(o, x)
 
 # For the `ValueBinning` example that we use,
 # the outcomes are the left edges of each bin. This allows us to straightforwardly
