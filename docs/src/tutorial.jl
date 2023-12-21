@@ -201,15 +201,15 @@ probsy_bayes .- probsy
 # Shannon entropy of the probabilities `probsy` we computed above based on ordinal patterns.
 # To compute it, we use the [`entropy`](@ref) function.
 
-perm_ent_x = entropy(OrdinalPatterns(), x)
-perm_ent_y = entropy(OrdinalPatterns(), y)
+perm_ent_x = entropy(Shannon(), OrdinalPatterns(), x)
+perm_ent_y = entropy(Shannon(), OrdinalPatterns(), y)
 (perm_ent_x, perm_ent_y)
 
 # As expected, the permutation entropy of the `x` signal is higher, because the signal is
 # "more random". Moreover, since we have estimated the probabilities already, we could
 # have passed these to the entropy function directly instead of recomputing them as above
 
-perm_ent_y_2 = entropy(probsy)
+perm_ent_y_2 = entropy(Shannon(), probsy)
 
 # We crucially realize here that many quantities in the NLTS literature that
 # are named as entropies, such as "permutation entropy", are _not really new entropies_.
