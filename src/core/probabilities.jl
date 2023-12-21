@@ -281,8 +281,8 @@ end
 # Each `ProbabilitiesEstimator` subtype must extend this method explicitly.
 
 """
-    allprobabilities_and_outcomes(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p
-    allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet) → p
+    allprobabilities_and_outcomes(est::ProbabilitiesEstimator, x::Array_or_SSSet) → (p::Probabilities, outs)
+    allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet) → (p::Probabilities, outs)
 
 The same as [`probabilities_and_outcomes`](@ref), but ensures that outcomes with `0`
 probability are explicitly added in the returned vector. This means that `p[i]` is the
@@ -341,6 +341,14 @@ function allprobabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
     p, outs = allprobabilities_and_outcomes(est, o, x)
     return p
 end
+
+"""
+    allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p::Probabilities
+    allprobabilities(o::OutcomeSpace, x::Array_or_SSSet) → p::Probabilities
+
+Like [`allprobabilities_and_outcomes`](@ref), but returns only the probabilities.
+"""
+function allprobabilities end
 allprobabilities(o::OutcomeSpace, x) = allprobabilities(RelativeAmount(), o, x)
 
 """
