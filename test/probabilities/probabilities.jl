@@ -33,3 +33,13 @@ p_decoded, outs = probabilities_and_outcomes(est, outcomemodel, x)
 # Error messages.
 struct MyEstimator <: ProbabilitiesEstimator end
 @test_throws MethodError probabilities(MyEstimator(), x)
+
+# ----------------------------------------------------------------
+# Pretty printing
+# ----------------------------------------------------------------
+p = Probabilities(rand(3))
+out_capture = repr(MIME("text/plain"), p)
+s = split(out_capture, '\n')
+@test contains(first(s), "Probabilities{Float64,1} over 3 outcomes")
+@test contains(s[2], "Outcome(1)")
+@test contains(last(s), "Outcome(3)")
