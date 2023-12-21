@@ -3,7 +3,7 @@ import Base.unique!
 
 export Counts
 export counts, counts_and_outcomes
-export allcounts
+export allcounts, allcounts_and_outcomes
 export is_counting_based
 
 ###########################################################################################
@@ -215,6 +215,13 @@ function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
     c = Counts(allcts, (ospace,), (:x1, ))
     return c, outcomes(c)
 end
+
+"""
+    allcounts(o::OutcomeSpace, x::Array_or_SSSet) → cts::Counts
+
+Like [`allcounts_and_outcomes`](@ref), but returns only the [`Counts`](@ref).
+"""
+allcounts(o::OutcomeSpace, x) = first(allcounts_and_outcomes(o, x))
 
 """
     is_counting_based(o::OutcomeSpace)
