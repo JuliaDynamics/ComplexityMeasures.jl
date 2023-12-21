@@ -43,19 +43,21 @@ struct AddConstant{A} <: ProbabilitiesEstimator
     end
 end
 
-function probabilities(est::AddConstant, outcomemodel::OutcomeSpace, x)
+function probabilities_and_outcomes(est::AddConstant, outcomemodel::OutcomeSpace, x)
     verify_counting_based(outcomemodel, "AddConstant")
 
     cts, outs = counts_and_outcomes(outcomemodel, x)
-    return probs_and_outs_from_histogram(est, outcomemodel, cts, outs, x)
+    p = probs_and_outs_from_histogram(est, outcomemodel, cts, outs, x)
+    return p, outcomes(p)
 end
 
 # Assigns non-zero probability to unobserved outcomes.
-function allprobabilities(est::AddConstant, outcomemodel::OutcomeSpace, x)
+function allprobabilities_and_outcomes(est::AddConstant, outcomemodel::OutcomeSpace, x)
     verify_counting_based(outcomemodel, "AddConstant")
 
     cts, outs = allcounts_and_outcomes(outcomemodel, x)
-    return probs_and_outs_from_histogram(est, outcomemodel, cts, outs, x)
+    p = probs_and_outs_from_histogram(est, outcomemodel, cts, outs, x)
+    return p, outcomes(p)
 end
 
 # Only defined for 1D pmfs.

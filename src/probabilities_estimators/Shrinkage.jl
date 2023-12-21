@@ -61,12 +61,12 @@ struct Shrinkage{T <: Union{Nothing, Real, Vector{<:Real}}, L <: Union{Nothing, 
     end
 end
 
-function probabilities(est::Shrinkage, outcomemodel::OutcomeSpace, x)
+function probabilities_and_outcomes(est::Shrinkage, outcomemodel::OutcomeSpace, x)
     probs, Ω = probabilities_and_outcomes(RelativeAmount(), outcomemodel, x)
     return probs_and_outs_from_histogram(est, outcomemodel, probs, Ω, x)
 end
 
-function allprobabilities(est::Shrinkage, outcomemodel::OutcomeSpace, x)
+function allprobabilities_and_outcomes(est::Shrinkage, outcomemodel::OutcomeSpace, x)
     probs_all, Ω_all = allprobabilities_and_outcomes(outcomemodel, x)
     return probs_and_outs_from_histogram(est, outcomemodel, probs_all, Ω_all, x)
 end
@@ -93,7 +93,8 @@ function probs_and_outs_from_histogram(est::Shrinkage, outcomemodel::OutcomeSpac
         probs[idx] = θₖ_shrink(probs_observed[k], λ, tₖ)
     end
     @assert sum(probs) ≈ 1.0
-    return Probabilities(probs, Ω_observed,)
+    p = Probabilities(probs, Ω_observed,)
+    return p, outcomes(p)
 end
 
 function get_λ(est, n, probs_observed, t, m)

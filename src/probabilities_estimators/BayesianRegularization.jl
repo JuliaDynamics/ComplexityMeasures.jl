@@ -74,11 +74,11 @@ struct BayesianRegularization{A} <: ProbabilitiesEstimator
     end
 end
 
-# We need to implement `probabilities_and_outcomes` and `allprobabilities` separately,
+# We need to implement `probabilities_and_outcomes` and `allprobabilities_and_outcomes` separately,
 # because the number of elements in the outcome space determines the factor `A`, since
 # A = sum(aₖ). Explicitly modelling the entire outcome space, instead of considering
 # only the observed outcomes, will therefore affect the estimated probabilities.
-function probabilities(est::BayesianRegularization, outcomemodel::OutcomeSpace, x)
+function probabilities_and_outcomes(est::BayesianRegularization, outcomemodel::OutcomeSpace, x)
     verify_counting_based(outcomemodel, "BayesianRegularization")
 
     a = est.a
@@ -103,10 +103,11 @@ function probabilities(est::BayesianRegularization, outcomemodel::OutcomeSpace, 
         aₖ = get_aₖ_bayes(a, i)
         probs[i] = θ̂bayes(yᵢ, aₖ, n, A)
     end
-    return Probabilities(probs, observed_outcomes)
+    p = Probabilities(probs, observed_outcomes)
+    return p, outcomes(p)
 end
 
-function allprobabilities(est::BayesianRegularization, outcomemodel::OutcomeSpace, x)
+function allprobabilities_and_outcomes(est::BayesianRegularization, outcomemodel::OutcomeSpace, x)
     verify_counting_based(outcomemodel, "BayesianRegularization")
 
     a = est.a
@@ -133,8 +134,8 @@ function allprobabilities(est::BayesianRegularization, outcomemodel::OutcomeSpac
         aₖ = get_aₖ_bayes(a, i)
         probs[idx] = θ̂bayes(yᵢ, aₖ, n, A)
     end
-
-    return Probabilities(probs, Ω)
+    p = Probabilities(probs, Ω)
+    return p, outcomes(p)
 end
 
 get_aₖ_bayes(a, i) = a isa Real ? a : a[i]

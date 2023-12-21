@@ -174,8 +174,6 @@ function counts_and_outcomes(o::OutcomeSpace, x)
     end
 end
 
-
-
 # -----------------------------------------------------------------
 # Outcomes are simply the labels on the marginal dimensional.
 # For 1D, we return the outcomes as-is. For ND, we return
@@ -197,13 +195,17 @@ function outcomes(c::Counts{<:Integer, N}, idxs) where N
 end
 
 """
-    allcounts(o::OutcomeSpace, x::Array_or_SSSet) → cts::Counts{<:Integer, 1}
+    allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet) → cts::Counts{<:Integer, 1}
 
-Like [`counts`](@ref), but ensures that *all* outcomes `Ωᵢ ∈ Ω`,
+Like [`counts_and_outcomes`](@ref), but ensures that *all* outcomes `Ωᵢ ∈ Ω`,
 where `Ω = outcome_space(o, x)`), are included.
-Outcomes that do not occur in the data `x` get 0 count.
+
+Outcomes that do not occur in the data `x` get a 0 count.
+
+If you don't need the decoded outcomes, it may be more efficient to use 
+[`allcounts`](@ref) instead.
 """
-function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
+function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
     cts, outs = counts_and_outcomes(o, x)
     outs = outcomes(cts)
     ospace = vec(outcome_space(o, x))
@@ -215,7 +217,8 @@ function allcounts(o::OutcomeSpace, x::Array_or_SSSet)
             allcts[i] = cts[idx]
         end
     end
-    return Counts(allcts, (ospace,), (:x1, ))
+    c = Counts(allcts, (ospace,), (:x1, ))
+    return c, outcomes(c)
 end
 
 """
