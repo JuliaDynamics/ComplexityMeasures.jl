@@ -133,9 +133,9 @@ end
 """
     counts_and_outcomes(o::OutcomeSpace, x) → (cts::Counts, Ω)
 
-Discretize/encode `x` into a finite set of outcomes `Ω` specified by the provided
-[`OutcomeSpace`](@ref) `o`, and then count how often each outcome `Ωᵢ ∈ Ω` (i.e.
-each "discretized value", or "encoded symbol") appears.
+Discretize/encode `x` (which must be sortable) into a finite set of outcomes `Ω`
+specified by the provided [`OutcomeSpace`](@ref) `o`, and then count how often each
+outcome `Ωᵢ ∈ Ω` (i.e. each "discretized value", or "encoded symbol") appears.
 
 Return a tuple where the first element is a [`Counts`](@ref) instance, which is
 vector-like and contains the counts, and where the second element `Ω` are the outcomes
