@@ -42,13 +42,13 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
     cts::AbstractArray{T, N}
 
     # outcomes[i] has the same number of elements as `cts` along dimension `i`.
-    outcomes::Tuple{Vararg{<:AbstractVector, N}}
+    outcomes::Tuple{Vararg{AbstractVector, N}}
 
     # A label for each dimension
     dimlabels::NTuple{N, S}
 
     function Counts(cts::AbstractArray{T, N},
-            outcomes::Tuple{Vararg{<:AbstractVector, N}},
+            outcomes::Tuple{Vararg{AbstractVector, N}},
             dimlabels::NTuple{N, S}) where {T, N, S}
         s = size(cts)
         for dim = 1:N
@@ -179,17 +179,12 @@ end
 # For 1D, we return the outcomes as-is. For ND, we return
 # a tuple of the outcomes --- one element per dimension.
 # -----------------------------------------------------------------
+outcomes(c::Counts) = c.outcomes
 outcomes(c::Counts{<:Integer, 1}) = first(c.outcomes)
-
 # Integer indexing returns the outcomes for that dimension directly.
 function outcomes(c::Counts{<:Integer, N}, i::Int) where N
     return c.outcomes[i]
 end
-
-function outcomes(c::Counts{<:Integer, N}) where N
-    return map(i -> c.outcomes[i], tuple(1:N...))
-end
-
 function outcomes(c::Counts{<:Integer, N}, idxs) where N
     map(i -> c.outcomes[i], tuple(idxs...))
 end
