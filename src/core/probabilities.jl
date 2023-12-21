@@ -26,7 +26,7 @@ struct Probabilities{T, N, S} <: AbstractArray{T, N}
     p::AbstractArray{T, N}
 
     # outcomes[i] has the same number of elements as `cts` along dimension `i`.
-    outcomes::Tuple{Vararg{<:AbstractVector, N}}
+    outcomes::Tuple{Vararg{AbstractVector, N}}
 
     # A label for each dimension
     dimlabels::NTuple{N, S}
@@ -102,24 +102,18 @@ Base.sort(p::Probabilities) = sort(p.p)
 Base.IteratorSize(::Probabilities) = Base.HasLength()
 # Special extension due to the rules of the API
 @inline Base.sum(::Probabilities{T}) where T = one(T)
+
 # -----------------------------------------------------------------
 # Outcomes are simply the labels on the marginal dimensional.
 # For 1D, we return the outcomes as-is. For ND, we return
 # a tuple of the outcomes --- one element per dimension.
 # -----------------------------------------------------------------
-function outcomes(p::Probabilities{T, 1}) where T
-    return first(p.outcomes)
-end
-
+outcomes(p::Probabilities) = p.outcomes
+outcomes(p::Probabilities{T, 1}) where T = first(p.outcomes)
 # Integer indexing returns the outcomes for that dimension directly.
 function outcomes(p::Probabilities{T, N}, i::Int) where {T, N}
     return p.outcomes[i]
 end
-
-function outcomes(p::Probabilities{T, N}) where {T, N}
-    return map(i -> p.outcomes[i], tuple(1:N...))
-end
-
 function outcomes(p::Probabilities{T, N}, idxs) where {T, N}
     map(i -> p.outcomes[i], tuple(idxs...))
 end
