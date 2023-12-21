@@ -102,3 +102,11 @@ l4 = last(s)
 @test l2[1:3] == "'a'"
 @test l3[1:3] == "'e'"
 @test contains(l4, "[and 2 more slices...]")
+
+# 4D (and higher)
+c = Counts(rand(1:30, 2, 3, 3, 2), (['a', 'e'], 2:2:6, [(1, 2), (2, 1), (3, 1)], ["q", "q2"]))
+out_capture = repr(MIME("text/plain"), c)
+s = split(out_capture, '\n')
+@test contains(s[1], "2×3×3×2 Counts")
+@test contains(s[2], "[:, :, 1, 1]")
+@test contains(last(s), "[and 5 more slices...]")

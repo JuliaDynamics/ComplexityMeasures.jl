@@ -63,6 +63,22 @@ function print_array(io::IO, x::CountsOrProbs{T, 3}) where T
     nremaining > 0 && printstyled(io, "\n[and $nremaining more slices...]"; color=:light_black)
 end
 
+function print_array(io::IO, x::CountsOrProbs{T, N}) where {T, N}
+    # We only view a 2D slice of the array.
+    o = ntuple(xᵢ -> firstindex(x, xᵢ + 2), N-2)
+    slice = get_data(x)[:, :, o...]
+    onestring = join(o, ", ")
+    nremaining = size(x, 3) - 1
+    println(io, "[:, :, $(onestring)]")
+
+    # Print compact representations.
+    ctx = IOContext(io, :compact=>true, :limit=>true, :typeinfo=>T)
+    print_array_with_margins(ctx, slice, outcomes(x, (1, 2)))
+    nremaining = prod(size(x, d) for d=3:N) - 1
+    nremaining > 0 && printstyled(io, "\n[and $nremaining more slices...]"; color=:light_black)
+end
+
+
 function get_data(x::CountsOrProbs)
     if x isa Counts
         return x.cts
