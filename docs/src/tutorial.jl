@@ -61,6 +61,7 @@ o isa OutcomeSpace
 # probabilities, which are returned as a dedicated [`Probabilities`](@ref) type like so:
 
 probs, outs = probabilities_and_outcomes(o, x)
+probs
 
 # In this example the probabilities are the (normalized) heights of each bin of the
 # histogram. The bins, which are the _elements_ of the outcome space, are shown in the
@@ -79,7 +80,7 @@ outs = outcomes(probs)
 # [`probabilities_and_outcomes`](@ref), then outcomes are enumerated generically.
 # This avoids computing outcomes explicitly, and can save some computation time 
 # in cases where you don't need the outcomes.
-outcomes(probabilities(o, x))
+probabilities(o, x)
 
 # For the `ValueBinning` example that we use,
 # the outcomes are the left edges of each bin. This allows us to straightforwardly
