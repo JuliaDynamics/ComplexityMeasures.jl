@@ -35,7 +35,8 @@ There are many common choices of priors, some of which are listed in
 - `a == 1` (BayesianRegularization-Laplace uniform prior)
 
 `a` can also be chosen as a vector of real numbers. Then, if used with
-[`allprobabilities`](@ref), it is required that `length(a) == total_outcomes(o, x)`,
+[`allprobabilities_and_outcomes`](@ref), it is required that 
+`length(a) == total_outcomes(o, x)`,
 where `x` is the input data and `o` is the [`OutcomeSpace`](@ref).
 If used with [`probabilities`](@ref), then `length(a)` must match the number of
 *observed* outcomes (you can check this using [`probabilities_and_outcomes`](@ref)).
@@ -46,14 +47,15 @@ and the errors depend both on the choice of `a` and on the sampling scenario
 ## Assumptions
 
 The `BayesianRegularization` estimator assumes a fixed and known `m`. Thus, using it with
-[`probabilities`](@ref) and [`allprobabilities`](@ref) will yield different results,
+[`probabilities_and_outcomes`](@ref) and [`allprobabilities_and_outcomes`](@ref) will 
+yield different results,
 depending on whether all outcomes are observed in the input data or not.
-For [`probabilities`](@ref), `m` is the number of *observed* outcomes.
-For [`allprobabilities`](@ref), `m = total_outcomes(o, x)`, where `o` is the
+For [`probabilities_and_outcomes`](@ref), `m` is the number of *observed* outcomes.
+For [`allprobabilities_and_outcomes`](@ref), `m = total_outcomes(o, x)`, where `o` is the
 [`OutcomeSpace`](@ref) and `x` is the input data.
 
 !!! note
-    If used with [`allprobabilities`](@ref)/[`allprobabilities_and_outcomes`](@ref), then
+    If used with [`allprobabilities_and_outcomes`](@ref), then
     outcomes which have not been observed may be assigned non-zero probabilities.
     This might affect your results if using e.g. [`missing_outcomes`](@ref).
 

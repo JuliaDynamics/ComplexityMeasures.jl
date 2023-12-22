@@ -113,11 +113,13 @@ function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F
 end
 
 # For 3.0
+export allprobabilities
 function allprobabilities(args...)
     @warn "`allprobabilities` is deprecated. Use `allprobabilities_and_outcomes` instead."
     return first(allprobabilities_and_outcomes(args...))
 end
 
+export allcounts
 function allcounts(args...)
     @warn "`allcounts` is deprecated. Use `allcounts_and_outcomes` instead."
     return first(allcounts_and_outcomes(args...))

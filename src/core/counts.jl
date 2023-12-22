@@ -3,7 +3,7 @@ import Base.unique!
 
 export Counts
 export counts, counts_and_outcomes
-export allcounts, allcounts_and_outcomes
+export allcounts_and_outcomes
 export is_counting_based
 
 ###########################################################################################
@@ -196,9 +196,6 @@ Like [`counts_and_outcomes`](@ref), but ensures that *all* outcomes `Ωᵢ ∈ �
 where `Ω = outcome_space(o, x)`), are included.
 
 Outcomes that do not occur in the data `x` get a 0 count.
-
-If you don't need the decoded outcomes, it may be more efficient to use 
-[`allcounts`](@ref) instead.
 """
 function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
     cts, outs = counts_and_outcomes(o, x)

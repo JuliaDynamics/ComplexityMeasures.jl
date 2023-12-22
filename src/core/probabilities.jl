@@ -2,7 +2,6 @@
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
 export probabilities_and_outcomes
-export allprobabilities
 export allprobabilities_and_outcomes
 export missing_outcomes
 
@@ -131,7 +130,8 @@ space with known cardinality. Therefore, `ProbabilitiesEstimator` accept an
 [`OutcomeSpace`](@ref) as the first
 argument, which specifies the set of possible outcomes.
 
-Probabilities estimators are used with [`probabilities`](@ref) and [`allprobabilities`](@ref).
+Probabilities estimators are used with [`probabilities`](@ref) and
+[`allprobabilities_and_outcomes`](@ref).
 
 ## Implementations
 
@@ -292,7 +292,7 @@ This function is useful in cases where one wants to compare the probability mass
 of two different input data `x, y` under the same estimator. E.g., to compute the
 KL-divergence of the two PMFs assumes that the obey the same indexing. This is
 not true for [`probabilities`](@ref) even with the same `est`, due to the skipping
-of 0 entries, but it is true for [`allprobabilities`](@ref).
+of 0 entries, but it is true for [`allprobabilities_and_outcomes`](@ref).
 """
 function allprobabilities_and_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
     # the observed outcomes and their probabilities
@@ -349,7 +349,7 @@ Count the number of missing (i.e., zero-probability) outcomes
 specified by `o`, given input data `x`, using [`RelativeAmount`](@ref)
 probabilities estimation.
 
-If `all == true`, then [`allprobabilities`](@ref) is used to compute the probabilities.
+If `all == true`, then [`allprobabilities_and_outcomes`](@ref) is used to compute the probabilities.
 If `all == false`, then [`probabilities`](@ref) is used to compute the probabilities.
 
 This is syntactically equivalent to `missing_outcomes(RelativeAmount(o), x)`.
