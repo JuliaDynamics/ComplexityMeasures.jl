@@ -1,5 +1,7 @@
 using ComplexityMeasures
 using Test
+using Random
+rng = Xoshiro(1234)
 
 @testset "Common literature names" begin
     x = randn(1000)
@@ -15,4 +17,9 @@ end
 @testset "probabilities(x)" begin
     x = [1, 1, 2, 2, 3, 3]
     @test probabilities(x) == probabilities(UniqueElements(), x) == [1/3, 1/3, 1/3]
+end
+
+@testset "entropy convenience function" begin
+    p = Probabilities(rand(rng, 100))
+    @test entropy(p) == information(Shannon(), p)
 end

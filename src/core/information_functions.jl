@@ -129,6 +129,9 @@ function entropy(args...)
     elseif e isa InformationMeasureEstimator
         # Estimator is for any subtype of entropy
         e.definition isa Entropy
+    elseif e isa Probabilities
+        # Default to Shannon entropy if no information measure is given
+        return information(Shannon(), args...)
     else
         false
     end
