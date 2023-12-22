@@ -2,7 +2,7 @@ export RelativeAmount
 
 """
     RelativeAmount <: ProbabilitiesEstimator
-    RelativeAmount(o::OutcomeSpace)
+    RelativeAmount()
 
 The `RelativeAmount` estimator is used with [`probabilities`](@ref) and related functions to estimate
 probabilities over the given [`OutcomeSpace`](@ref) using maximum likelihood estimation
@@ -31,8 +31,8 @@ Hence, this estimator is called `RelativeAmount`.
 ```julia
 using ComplexityMeasures
 x = cumsum(randn(100))
-ps = probabilities(SymbolicPermutation(m = 3), x) # `RelativeAmount` is the default estimator
-ps_mle = probabilities(RelativeAmount(), SymbolicPermutation(m = 3), x) # equivalent
+ps = probabilities(OrdinalPatterns{3}(), x) # `RelativeAmount` is the default estimator
+ps_mle = probabilities(RelativeAmount(), OrdinalPatterns{3}(), x) # equivalent
 ps == ps_mle # true
 ```
 

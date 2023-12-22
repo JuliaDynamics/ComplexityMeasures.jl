@@ -1,6 +1,5 @@
 export Shrinkage
 
-# TODO: make sure we act correctly for `probabilities` and `allprobabilities`.
 """
     Shrinkage{<:OutcomeSpace} <: ProbabilitiesEstimator
     Shrinkage(; t = nothing, λ = nothing)
@@ -32,14 +31,15 @@ to [Hausser2009](@citet). Hence, you should probably not pick
 ## Assumptions
 
 The `Shrinkage` estimator assumes a fixed and known number of outcomes `m`. Thus, using
-it with [`probabilities`](@ref) and [`allprobabilities`](@ref) will yield different results,
+it with [`probabilities_and_outcomes`](@ref)) and 
+[`allprobabilities_and_outcomes`](@ref) will yield different results,
 depending on whether all outcomes are observed in the input data or not.
-For [`probabilities`](@ref), `m` is the number of *observed* outcomes.
-For [`allprobabilities`](@ref), `m = total_outcomes(o, x)`, where `o` is the
+For [`probabilities_and_outcomes`](@ref), `m` is the number of *observed* outcomes.
+For [`allprobabilities_and_outcomes`](@ref), `m = total_outcomes(o, x)`, where `o` is the
 [`OutcomeSpace`](@ref) and `x` is the input data.
 
 !!! note
-    If used with [`allprobabilities`](@ref), then
+    If used with [`allprobabilities_and_outcomes`](@ref), then
     outcomes which have not been observed may be assigned non-zero probabilities.
     This might affect your results if using e.g. [`missing_outcomes`](@ref).
 
@@ -48,7 +48,7 @@ For [`allprobabilities`](@ref), `m = total_outcomes(o, x)`, where `o` is the
 ```julia
 using ComplexityMeasures
 x = cumsum(randn(100))
-ps_shrink = probabilities(Shrinkage(OrdinalPatterns(m = 3)), x)
+ps_shrink = probabilities(Shrinkage(), OrdinalPatterns{3}(), x)
 ```
 
 See also: [`RelativeAmount`](@ref), [`BayesianRegularization`](@ref).
@@ -61,12 +61,12 @@ struct Shrinkage{T <: Union{Nothing, Real, Vector{<:Real}}, L <: Union{Nothing, 
     end
 end
 
-function probabilities(est::Shrinkage, outcomemodel::OutcomeSpace, x)
+function probabilities_and_outcomes(est::Shrinkage, outcomemodel::OutcomeSpace, x)
     probs, Ω = probabilities_and_outcomes(RelativeAmount(), outcomemodel, x)
     return probs_and_outs_from_histogram(est, outcomemodel, probs, Ω, x)
 end
 
-function allprobabilities(est::Shrinkage, outcomemodel::OutcomeSpace, x)
+function allprobabilities_and_outcomes(est::Shrinkage, outcomemodel::OutcomeSpace, x)
     probs_all, Ω_all = allprobabilities_and_outcomes(outcomemodel, x)
     return probs_and_outs_from_histogram(est, outcomemodel, probs_all, Ω_all, x)
 end
@@ -93,7 +93,8 @@ function probs_and_outs_from_histogram(est::Shrinkage, outcomemodel::OutcomeSpac
         probs[idx] = θₖ_shrink(probs_observed[k], λ, tₖ)
     end
     @assert sum(probs) ≈ 1.0
-    return Probabilities(probs, Ω_observed,)
+    p = Probabilities(probs, Ω_observed,)
+    return p, outcomes(p)
 end
 
 function get_λ(est, n, probs_observed, t, m)

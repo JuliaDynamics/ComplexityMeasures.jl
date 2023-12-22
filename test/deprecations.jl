@@ -1,7 +1,9 @@
 using ComplexityMeasures, Test
+using Random
+rng = Xoshiro(1234)
 
 @testset "2.0 deprecations" begin
-    x = randn(1000)
+    x = randn(rng, 1000)
 
     # Convenience
     @test permentropy(x) == entropy_permutation(x; base=MathConstants.e)
@@ -11,7 +13,7 @@ using ComplexityMeasures, Test
     # Generalized entropies
     @test genentropy(x, 0.1) == information(Shannon(MathConstants.e), ValueBinning(0.1), x)
     msg = "`genentropy(probs::Probabilities; q, base)` deprecated.\nUse instead: `information(Renyi(q, base), probs)`.\n"
-    @test_logs (:warn, msg) genentropy(Probabilities(rand(3)))
+    @test_logs (:warn, msg) genentropy(Probabilities(rand(rng, 3)))
 
     msg = "`genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is deprecated.\nUse instead: `information(Renyi(q, base), est, x)`.\n"
     @test_logs (:warn, msg) genentropy(x, ValueBinning(0.1))
@@ -20,7 +22,7 @@ using ComplexityMeasures, Test
     msg = "`probabilities(x, est::OutcomeSpace)`\nis deprecated, use `probabilities(est::OutcomeSpace, x) instead`.\n"
     @test_logs (:warn, msg) probabilities(x, ValueBinning(0.1))
 
-    x = StateSpaceSet(rand(100, 3))
+    x = StateSpaceSet(rand(rng, 100, 3))
     @test genentropy(x, 4) == information(Shannon(MathConstants.e), ValueBinning(4), x)
 end
 
@@ -31,8 +33,8 @@ end
 end
 
 
-@testset "2.9 deprecations" begin
-    x = StateSpaceSet(rand(100, 3))
+@testset "3.0 deprecations" begin
+    x = StateSpaceSet(rand(rng, 100, 3))
 
     @test entropy_maximum(Shannon(MathConstants.e), ValueBinning(4), x) ==
         information_maximum(Shannon(MathConstants.e), ValueBinning(4), x)
@@ -50,4 +52,18 @@ end
         @test entropy(a, x) == entropy(b, x)
     end
 
+    # `allcounts` and `allprobabilities` are redundant, because they always need to 
+    # compute all outcomes anyway.
+    x = rand(rng, 1:20, 19)
+    o = UniqueElements()
+
+    sc = "`allcounts` is deprecated. Use `allcounts_and_outcomes` instead."
+    @test_logs (:warn, sc) allcounts(o, x)
+    @test allcounts(o, x) == first(allcounts_and_outcomes(o, x))
+
+    est = AddConstant()
+    sp = "`allprobabilities` is deprecated. Use `allprobabilities_and_outcomes` instead."
+    @test_logs (:warn, sp) allprobabilities(o, x)
+    @test allprobabilities(o, x) == first(allprobabilities_and_outcomes(o, x))
+    @test allprobabilities(est, o, x) == first(allprobabilities_and_outcomes(est, o, x))
 end

@@ -101,7 +101,6 @@ probabilities
 probabilities_and_outcomes
 allprobabilities_and_outcomes
 probabilities!
-allprobabilities
 ```
 
 ## Counts
@@ -111,7 +110,6 @@ Counts
 counts_and_outcomes
 counts
 allcounts_and_outcomes
-allcounts
 is_counting_based
 ```
 

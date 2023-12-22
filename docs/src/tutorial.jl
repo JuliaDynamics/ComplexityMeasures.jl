@@ -140,9 +140,10 @@ probsx = probabilities(o, x)
 # that are not in the data are skipped. This can save memory for outcome
 # spaces with large numbers of outcomes.
 # To explicitly obtain all outcomes, by assigning 0 probability to not encountered outcomes,
-# use [`allprobabilities`](@ref) or [`allprobabilities_and_outcomes`](@ref).
+# use [`allprobabilities_and_outcomes`](@ref).
 # For [`OrdinalPatterns`](@ref) the outcome space does not depend on input data and is
-# always the same. Hence, the corresponding outcomes matching to [`allprobabilities`](@ref),
+# always the same. Hence, the corresponding outcomes matching to 
+# [`allprobabilities_and_outcomes`](@ref),
 # coincide for `x` and `y`, and also coincide with the output of the function
 # [`outcome_space`](@ref):
 

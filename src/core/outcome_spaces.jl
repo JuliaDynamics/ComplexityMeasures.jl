@@ -46,12 +46,13 @@ In the column "input data" it is assumed that the `eltype` of the input is `<: R
 
 Outcome spaces are used as input to
 
-- [`probabilities`](@ref)/[`allprobabilities`](@ref) for computing probability
-    mass functions.
+- [`probabilities`](@ref)/[`allprobabilities_and_outcomes`](@ref) for computing
+    probability mass functions.
 - [`outcome_space`](@ref), which returns the elements of the outcome space.
 - [`total_outcomes`](@ref), which returns the cardinality of the outcome space.
-- [`counts`](@ref)/[`allcounts`](@ref), for obtaining raw counts instead
-    of probabilities (only for counting-compatible outcome spaces).
+- [`counts`](@ref)/[`counts_and_outcomes`](@ref)/[`allcounts_and_outcomes`](@ref), for 
+    obtaining raw counts instead of probabilities (only for counting-compatible outcome
+    spaces).
 
 ## Counting-compatible vs. non-counting compatible outcome spaces
 
