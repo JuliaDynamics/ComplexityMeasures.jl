@@ -92,6 +92,9 @@ j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(),  x)
 function information(e::InformationMeasure, o::OutcomeSpace, x)
     return information(PlugIn(e), RelativeAmount(), o, x)
 end
+function information(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    return information(PlugIn(Shannon()), est, o, x)
+end
 function information(e::InformationMeasure, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
     return information(PlugIn(e), est, o, x)
 end
