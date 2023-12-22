@@ -2,7 +2,7 @@ export RelativeAmount
 
 """
     RelativeAmount <: ProbabilitiesEstimator
-    RelativeAmount(o::OutcomeSpace)
+    RelativeAmount()
 
 The `RelativeAmount` estimator is used with [`probabilities`](@ref) and related functions to estimate
 probabilities over the given [`OutcomeSpace`](@ref) using maximum likelihood estimation
