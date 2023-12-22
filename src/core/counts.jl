@@ -217,13 +217,6 @@ function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
 end
 
 """
-    allcounts(o::OutcomeSpace, x::Array_or_SSSet) → cts::Counts
-
-Like [`allcounts_and_outcomes`](@ref), but returns only the [`Counts`](@ref).
-"""
-allcounts(o::OutcomeSpace, x) = first(allcounts_and_outcomes(o, x))
-
-"""
     is_counting_based(o::OutcomeSpace)
 
 Return `true` if the [`OutcomeSpace`](@ref) `o` is counting-based, and `false` otherwise.

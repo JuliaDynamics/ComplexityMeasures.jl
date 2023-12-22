@@ -343,15 +343,6 @@ function allprobabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
 end
 
 """
-    allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p::Probabilities
-    allprobabilities(o::OutcomeSpace, x::Array_or_SSSet) → p::Probabilities
-
-Like [`allprobabilities_and_outcomes`](@ref), but returns only the probabilities.
-"""
-function allprobabilities end
-allprobabilities(o::OutcomeSpace, x) = allprobabilities(RelativeAmount(), o, x)
-
-"""
     missing_outcomes(o::OutcomeSpace, x; all = true) → n_missing::Int
 
 Count the number of missing (i.e., zero-probability) outcomes
