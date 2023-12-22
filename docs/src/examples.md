@@ -30,7 +30,7 @@ fig
 
 In this example we show how simple it is to compute the [KL-divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence) (or any other distance function for probability distributions) using ComplexityMeasures.jl. For simplicity, we will compute the KL-divergence between the [`ValueBinning`](@ref)s of two timeseries.
 
-Note that it is **crucial** to use [`allprobabilities`](@ref) instead of [`probabilities`](@ref).
+Note that it is **crucial** to use [`allprobabilities_and_outcomes`](@ref) instead of [`probabilities_and_outcomes`](@ref).
 
 ```@example MAIN
 using ComplexityMeasures
@@ -42,8 +42,8 @@ y = @. sin(t + cos(2t))
 
 r = -1:0.1:1
 est = ValueBinning(FixedRectangularBinning(r))
-px = allprobabilities(est, x)
-py = allprobabilities(est, y)
+px, outsx = allprobabilities_and_outcomes(est, x)
+py, outsy = allprobabilities_and_outcomes(est, y)
 
 # Visualize
 using CairoMakie

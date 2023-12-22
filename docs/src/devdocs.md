@@ -67,9 +67,8 @@ leads to performance benefits.
 3. Implement dispatch for [`probabilities`](@ref) for your
     [`ProbabilitiesEstimator`](@ref) type. You'll then get
     [`probabilities_and_outcomes`](@ref) for free.
-4. Implement dispatch for [`allprobabilities`](@ref) for your
-    [`ProbabilitiesEstimator`](@ref) type. You'll then get
-    [`allprobabilities_and_outcomes`](@ref) for free.
+4. Implement dispatch for [`allprobabilities_and_outcomes`](@ref) for your
+    [`ProbabilitiesEstimator`](@ref) type. 
 5. Add your new [`ProbabilitiesEstimator`](@ref) type to the list of probabilities
     estimators in the probabilities estimators documentation section.
 
