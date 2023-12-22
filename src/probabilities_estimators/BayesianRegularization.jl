@@ -64,7 +64,7 @@ For [`allprobabilities_and_outcomes`](@ref), `m = total_outcomes(o, x)`, where `
 ```julia
 using ComplexityMeasures
 x = cumsum(randn(100))
-ps_bayes = probabilities(BayesianRegularization(a = 0.5), OrdinalPatterns(m = 3), x)
+ps_bayes = probabilities(BayesianRegularization(a = 0.5), OrdinalPatterns{3}(), x)
 ```
 
 See also: [`RelativeAmount`](@ref), [`Shrinkage`](@ref).
