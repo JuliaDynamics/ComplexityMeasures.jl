@@ -32,7 +32,7 @@ There are many common choices of priors, some of which are listed in
 
 - `a == 0`, which is equivalent to the [`RelativeAmount`](@ref) estimator.
 - `a == 0.5` (Jeffrey's prior)
-- `a == 1` (BayesianRegularization-Laplace uniform prior)
+- `a == 1` (Bayes-Laplace uniform prior)
 
 `a` can also be chosen as a vector of real numbers. Then, if used with
 [`allprobabilities_and_outcomes`](@ref), it is required that 
