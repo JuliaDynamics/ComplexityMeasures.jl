@@ -68,9 +68,7 @@ probs
 
 # In this example the probabilities are the (normalized) heights of each bin of the
 # histogram. The bins, which are the _elements_ of the outcome space, are shown in the
-# margin, left of the probabilities. They are also returned explicitly
-
-outs
+# margin, left of the probabilities. They are also returned explicitly as `outs` above.
 
 # This convenience printing syntax with outcomes and probabilities is useful for visual
 # inspection of the probabilities data. However, don't let it worry you.
@@ -142,7 +140,7 @@ probsx = probabilities(o, x)
 # To explicitly obtain all outcomes, by assigning 0 probability to not encountered outcomes,
 # use [`allprobabilities_and_outcomes`](@ref).
 # For [`OrdinalPatterns`](@ref) the outcome space does not depend on input data and is
-# always the same. Hence, the corresponding outcomes matching to 
+# always the same. Hence, the corresponding outcomes matching to
 # [`allprobabilities_and_outcomes`](@ref),
 # coincide for `x` and `y`, and also coincide with the output of the function
 # [`outcome_space`](@ref):
