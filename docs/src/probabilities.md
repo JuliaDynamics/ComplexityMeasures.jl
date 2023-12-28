@@ -127,7 +127,7 @@ AddConstant
 
 Count-based [`OutcomeSpace`](@ref)s first "encode" input data into an intermediate representation indexed by the positive integers.
 This intermediate representation is called an "encoding".
-Alternative names for "encoding" in the literature is "symbolize" or "codify", and
+Alternative names for "encode" in the literature is "symbolize" or "codify", and
 in this package we use the latter.
 
 The encodings API is defined by:
