@@ -10,13 +10,13 @@
 
 A Julia package that provides:
 
-- a rigorous framework for extracting probabilities from data, based on the mathematical formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space)
-- several (12+) outcome spaces, i.e., ways to discretize data into probabilities
-- several estimators for estimating probabilities given an outcome space, which correct theoretically known estimation biases
-- several definitions of information measures, such as various flavours of entropies (Shannon, Tsallis, Curado...), extropies, and probability-based complexity measures, that are used in the context of nonlinear dynamics, nonlinear timeseries analysis, and complex systems
-- several discrete and continuous (differential) estimators for entropies, which correct theoretically known estimation biases
-- estimators for other complexity measures that are not estimated based on probability functions
-- an extendable interface and well thought out API accompanied by dedicated developer documentation pages. These makes it trivial to define new outcome spaces, or new estimators for probabilities, information measures, or complexity measures and integrate them with everything else in the software
+- A rigorous framework for extracting probabilities from data, based on the mathematical formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space).
+- Several (12+) outcome spaces, i.e., ways to discretize data into probabilities.
+- Several estimators for estimating probabilities given an outcome space, which correct theoretically known estimation biases.
+- Several definitions of information measures, such as various flavours of entropies (Shannon, Tsallis, Curado...), extropies, and probability-based complexity measures, that are used in the context of nonlinear dynamics, nonlinear timeseries analysis, and complex systems.
+- Several discrete and continuous (differential) estimators for entropies, which correct theoretically known estimation biases.
+- Estimators for other complexity measures that are not estimated based on probability functions.
+- An extendable interface and well thought out API accompanied by dedicated developer documentation pages. These makes it trivial to define new outcome spaces, or new estimators for probabilities, information measures, or complexity measures and integrate them with everything else in the software.
 
 ComplexityMeasures.jl can be used as a standalone package, or as part of other projects in the JuliaDynamics organization, such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/) or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 
