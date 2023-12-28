@@ -16,7 +16,7 @@ A Julia package that provides:
 - several definitions of information measures, such as various flavours of entropies (Shannon, Tsallis, Curado...), extropies, and probability-based complexity measures, that are used in the context of nonlinear dynamics, nonlinear timeseries analysis, and complex systems
 - several discrete and continuous (differential) estimators for entropies, which correct theoretically known estimation biases
 - estimators for other complexity measures that are not estimated based on probability functions
-- an extendable interface and well thought out API accompanying by dedicated developer documentation pages. These makes it trivial to define new outcome spaces, or new estimators for probabilities, information measures, or complexity measures and integrate them with everything else in the software
+- an extendable interface and well thought out API accompanied by dedicated developer documentation pages. These makes it trivial to define new outcome spaces, or new estimators for probabilities, information measures, or complexity measures and integrate them with everything else in the software
 
 ComplexityMeasures.jl can be used as a standalone package, or as part of other projects in the JuliaDynamics organization, such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/) or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 
