@@ -86,7 +86,7 @@ h_s = information(Schuermann(Shannon()), Shrinkage(), o, x)
 # Estimate information measures using the generic `Jackknife` estimator
 h_r = information(Jackknife(Renyi()), Shrinkage(), o, x)
 j_t = information(Jackknife(TsallisExtropy()), BayesianRegularization(), o, x)
-j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(),  x)
+j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(), o, x)
 ```
 """
 function information(e::InformationMeasure, o::OutcomeSpace, x)
