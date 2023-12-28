@@ -97,6 +97,9 @@ total(probs)
 
 probs2 = probabilities(o, x)
 
+# Of course, if the outcomes are obtained
+# for free while estimating the probabilities, they would be included in the return value.
+
 # For the `ValueBinning` example that we use,
 # the outcomes are the left edges of each bin. This allows us to straightforwardly
 # visualize the results.
