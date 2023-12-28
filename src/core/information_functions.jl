@@ -86,11 +86,14 @@ h_s = information(Schuermann(Shannon()), Shrinkage(), o, x)
 # Estimate information measures using the generic `Jackknife` estimator
 h_r = information(Jackknife(Renyi()), Shrinkage(), o, x)
 j_t = information(Jackknife(TsallisExtropy()), BayesianRegularization(), o, x)
-j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(),  x)
+j_r = information(Jackknife(RenyiExtropy()), RelativeAmount(), o, x)
 ```
 """
 function information(e::InformationMeasure, o::OutcomeSpace, x)
     return information(PlugIn(e), RelativeAmount(), o, x)
+end
+function information(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    return information(PlugIn(Shannon()), est, o, x)
 end
 function information(e::InformationMeasure, est::ProbabilitiesEstimator, o::OutcomeSpace, x)
     return information(PlugIn(e), est, o, x)
@@ -129,6 +132,9 @@ function entropy(args...)
     elseif e isa InformationMeasureEstimator
         # Estimator is for any subtype of entropy
         e.definition isa Entropy
+    elseif e isa Probabilities
+        # Default to Shannon entropy if no information measure is given
+        return information(Shannon(), args...)
     else
         false
     end

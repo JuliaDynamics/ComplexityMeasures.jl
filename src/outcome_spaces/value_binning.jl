@@ -1,4 +1,4 @@
-export ValueBinning, ValueHistogram, VisitationFrequency
+export ValueBinning
 # Binnings are defined in the encoding folder!
 
 """
@@ -45,28 +45,13 @@ struct ValueBinning{B<:AbstractBinning} <: CountBasedOutcomeSpace
 end
 ValueBinning(ϵ::Union{Real,Vector}) = ValueBinning(RectangularBinning(ϵ))
 
-"""
-    VisitationFrequency
-
-An alias for [`ValueBinning`](@ref).
-"""
-const VisitationFrequency = ValueBinning
-
-"""
-    ValueHistogram
-
-An alias for [`ValueBinning`](@ref).
-"""
-const ValueHistogram = ValueBinning
-
-outcomes(est::ValueBinning, x) = last(counts_and_outcomes(est, x))
 
 # --------------------------------------------------------------------------------
 # The source code of `ValueBinning` operates as rather simple calls to
 # the underlying encoding and the `fasthist`/`fasthist!` functions.
 # See the `encoding_implementations/rectangular_binning.jl` file for more.
 # --------------------------------------------------------------------------------
-# Explicitly override `counts` here, because it is more efficient to not 
+# Explicitly override `counts` here, because it is more efficient to not
 # decode the outcomes.
 function counts(est::ValueBinning, x)
     return counts(RectangularBinEncoding(est.binning, x), x)
@@ -76,7 +61,7 @@ function counts_and_outcomes(est::ValueBinning, x)
     return counts_and_outcomes(RectangularBinEncoding(est.binning, x), x)
 end
 
-# Explicitly override `probabilities` here, because it is more efficient to not 
+# Explicitly override `probabilities` here, because it is more efficient to not
 # decode the outcomes.
 function probabilities(est::ValueBinning, x)
     return Probabilities(counts(RectangularBinEncoding(est.binning, x), x))

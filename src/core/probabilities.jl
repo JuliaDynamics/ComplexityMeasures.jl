@@ -1,7 +1,8 @@
 
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
-export allprobabilities
+export probabilities_and_outcomes
+export allprobabilities_and_outcomes
 export missing_outcomes
 
 ###########################################################################################
@@ -129,7 +130,8 @@ space with known cardinality. Therefore, `ProbabilitiesEstimator` accept an
 [`OutcomeSpace`](@ref) as the first
 argument, which specifies the set of possible outcomes.
 
-Probabilities estimators are used with [`probabilities`](@ref) and [`allprobabilities`](@ref).
+Probabilities estimators are used with [`probabilities`](@ref) and
+[`allprobabilities_and_outcomes`](@ref).
 
 ## Implementations
 
@@ -229,9 +231,7 @@ with two differences:
    cost of estimating the outcomes.
 
 
-```julia
-probabilities([est::ProbabilitiesEstimator], counts::Counts) → (p::Probabilities, Ω)
-```
+    probabilities([est::ProbabilitiesEstimator], counts::Counts) → (p::Probabilities, Ω)
 
 The same as above, but estimate the probability directly from a set of [`Counts`](@ref).
 """
@@ -268,6 +268,11 @@ function probabilities_and_outcomes(o::CountBasedOutcomeSpace, x)
     return probs, outcomes(probs)
 end
 
+function probabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    p, outs = probabilities_and_outcomes(est, o, x)
+    return p
+end
+
 # If an outcome space is provided without specifying a probabilities estimator,
 # then naive plug-in estimation is used (the `RelativeAmount` estimator). In the case of
 # counting-based `OutcomeSpace`s, we explicitly count occurrences of each
@@ -276,20 +281,20 @@ end
 # Each `ProbabilitiesEstimator` subtype must extend this method explicitly.
 
 """
-    allprobabilities(est::ProbabilitiesEstimator, x::Array_or_SSSet) → p
-    allprobabilities(o::OutcomeSpace, x::Array_or_SSSet) → p
+    allprobabilities_and_outcomes(est::ProbabilitiesEstimator, x::Array_or_SSSet) → (p::Probabilities, outs)
+    allprobabilities_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet) → (p::Probabilities, outs)
 
-The same as [`probabilities`](@ref), but ensures that outcomes with `0` probability
-are explicitly added in the returned vector. This means that `p[i]` is the probability
-of `ospace[i]`, with `ospace = `[`outcome_space`](@ref)`(est, x)`.
+The same as [`probabilities_and_outcomes`](@ref), but ensures that outcomes with `0`
+probability are explicitly added in the returned vector. This means that `p[i]` is the
+probability of `ospace[i]`, with `ospace = `[`outcome_space`](@ref)`(est, x)`.
 
 This function is useful in cases where one wants to compare the probability mass functions
 of two different input data `x, y` under the same estimator. E.g., to compute the
 KL-divergence of the two PMFs assumes that the obey the same indexing. This is
 not true for [`probabilities`](@ref) even with the same `est`, due to the skipping
-of 0 entries, but it is true for [`allprobabilities`](@ref).
+of 0 entries, but it is true for [`allprobabilities_and_outcomes`](@ref).
 """
-function allprobabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+function allprobabilities_and_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
     # the observed outcomes and their probabilities
     probs, os = probabilities_and_outcomes(est, o, x)
     # todo os is a tuple.
@@ -325,12 +330,17 @@ function allprobabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
             break
         end
     end
-    return Probabilities(allprobs, (ospace, ))
+    p = Probabilities(allprobs, (ospace, ))
+    return p, outcomes(p)
 end
-function allprobabilities(o::OutcomeSpace, x)
-    return allprobabilities(RelativeAmount(), o, x)
+function allprobabilities_and_outcomes(o::OutcomeSpace, x)
+    return allprobabilities_and_outcomes(RelativeAmount(), o, x)
 end
 
+function allprobabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    p, outs = allprobabilities_and_outcomes(est, o, x)
+    return p
+end
 
 """
     missing_outcomes(o::OutcomeSpace, x; all = true) → n_missing::Int
@@ -339,7 +349,7 @@ Count the number of missing (i.e., zero-probability) outcomes
 specified by `o`, given input data `x`, using [`RelativeAmount`](@ref)
 probabilities estimation.
 
-If `all == true`, then [`allprobabilities`](@ref) is used to compute the probabilities.
+If `all == true`, then [`allprobabilities_and_outcomes`](@ref) is used to compute the probabilities.
 If `all == false`, then [`probabilities`](@ref) is used to compute the probabilities.
 
 This is syntactically equivalent to `missing_outcomes(RelativeAmount(o), x)`.

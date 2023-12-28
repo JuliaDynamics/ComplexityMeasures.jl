@@ -31,6 +31,13 @@ Further additions to the library in v3:
     `FixedRectangularBinning` with `precise == false` will now trigger a warning.
     This was previously causing random bugs because some bins were encoded as `-1`,
     indicating that the point is outside the binning - even if it wasn't.
+- `WaveletOverlap` now computes probabilities (relative energies) over the correct number
+    of transform levels. Previously, the *scaling *coefficients for the max transform
+    level were incorrectly included, as an extra set of coefficients in addition to the
+    (correctly included) wavelet coefficients. This caused a lot of energy to be
+    concentrated at low frequencies, even for high-frequency signals. Thus the
+    corresponding `Probabilities` had an extra element which in many cases dominated the
+    rest of the distribution.
 
 ### Renaming
 

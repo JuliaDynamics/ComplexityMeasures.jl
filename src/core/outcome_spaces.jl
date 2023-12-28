@@ -46,12 +46,13 @@ In the column "input data" it is assumed that the `eltype` of the input is `<: R
 
 Outcome spaces are used as input to
 
-- [`probabilities`](@ref)/[`allprobabilities`](@ref) for computing probability
-    mass functions.
+- [`probabilities`](@ref)/[`allprobabilities_and_outcomes`](@ref) for computing
+    probability mass functions.
 - [`outcome_space`](@ref), which returns the elements of the outcome space.
 - [`total_outcomes`](@ref), which returns the cardinality of the outcome space.
-- [`counts`](@ref)/[`allcounts`](@ref), for obtaining raw counts instead
-    of probabilities (only for counting-compatible outcome spaces).
+- [`counts`](@ref)/[`counts_and_outcomes`](@ref)/[`allcounts_and_outcomes`](@ref), for 
+    obtaining raw counts instead of probabilities (only for counting-compatible outcome
+    spaces).
 
 ## Counting-compatible vs. non-counting compatible outcome spaces
 
@@ -139,12 +140,13 @@ total_outcomes(o::OutcomeSpace) = length(outcome_space(o))
 """
     outcomes(o::OutcomeSpace, x)
 
-Return all (unique) outcomes that appears in the (encoded) input data `x`,
+Return all (unique) outcomes that appear in the (encoded) input data `x`,
 according to the given [`OutcomeSpace`](@ref).
 Equivalent to `probabilities_and_outcomes(o, x)[2]`, but for some estimators
 it may be explicitly extended for better performance.
 """
 function outcomes(o::OutcomeSpace, x)
+    # Notice here that we don't need the probabilities so we can optimize
     if is_counting_based(o)
         return last(counts_and_outcomes(o, x))
     else

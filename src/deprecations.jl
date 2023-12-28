@@ -18,6 +18,22 @@ end
 @deprecate DiscreteEntropyEstimator DiscreteInfoEstimator
 @deprecate MLEntropy PlugIn
 
+"""
+    VisitationFrequency
+
+An alias for [`ValueBinning`](@ref).
+"""
+const VisitationFrequency = ValueBinning
+
+"""
+    ValueHistogram
+
+An alias for [`ValueBinning`](@ref).
+"""
+const ValueHistogram = ValueBinning
+
+export ValueHistogram, VisitationFrequency
+
 @deprecate CountOccurrences UniqueElements
 
 # From before 2.0:
@@ -96,21 +112,15 @@ function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F
     return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
 
-# These convenience functions provide a trivial level of convenience
-# and therefore we shouldn't burden the API with that many more names.
-for f in (:counts, :allcounts, :probabilities, :allprobabilities)
-    newf = Symbol(f, :_and_outcomes)
-    @eval begin
-        """
-            $($(newf))_and_outcomes(args...)
+# For 3.0
+export allprobabilities
+function allprobabilities(args...)
+    @warn "`allprobabilities` is deprecated. Use `allprobabilities_and_outcomes` instead."
+    return first(allprobabilities_and_outcomes(args...))
+end
 
-        Convenience function that is equivalent with
-        ```julia
-        c = $($(f))(args...)
-        return c, outcomes(c)
-        ```
-        """
-        $(newf)(args...) = (x = $(f)(args...); return x, outcomes(x))
-        export $(newf)
-    end
+export allcounts
+function allcounts(args...)
+    @warn "`allcounts` is deprecated. Use `allcounts_and_outcomes` instead."
+    return first(allcounts_and_outcomes(args...))
 end

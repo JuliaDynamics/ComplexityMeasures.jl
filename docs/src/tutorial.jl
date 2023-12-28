@@ -2,9 +2,12 @@
 
 # The goal of this tutorial is threefold:
 
-# 1. To convey the _terminology_ used by ComplexityMeasures.jl: key terms, what they mean, and how they are used within the codebase.
+# 1. To convey the _terminology_ used by ComplexityMeasures.jl: key terms, what they mean,
+#    and how they are used within the codebase.
 # 2. To provide a _rough overview_ of the overall features provided by ComplexityMeasures.jl.
-# 3. To introduce the _main API functions_ of ComplexityMeasures.jl in a single, self-contained document: how these functions connect to key terms, what are their main inputs and outputs, and how they are used in realistic scientific scripting.
+# 3. To introduce the _main API functions_ of ComplexityMeasures.jl in a single,
+#    self-contained document: how these functions connect to key terms, what are their main
+#    inputs and outputs, and how they are used in realistic scientific scripting.
 
 # !!! note
 #     The documentation and exposition of ComplexityMeasures.jl is inspired by chapter 5 of
@@ -57,40 +60,53 @@ x = randn(10_000)
 o = ValueBinning(ε)
 o isa OutcomeSpace
 
-# Such outcome spaces may be given to [`probabilities`](@ref) to estimate the corresponding
-# probabilities, which are returned as a dedicated [`Probabilities`](@ref) type like so:
+# Such outcome spaces may be given to [`probabilities_and_outcomes`](@ref) to estimate the
+# probabilities and corresponding outcomes from input data:
 
-probs, outs = probabilities_and_outcomes(o, x)
+probs, outs = probabilities_and_outcomes(o, x);
 probs
 
 # In this example the probabilities are the (normalized) heights of each bin of the
 # histogram. The bins, which are the _elements_ of the outcome space, are shown in the
-# margin, left of the probabilities. This convenience printing syntax is useful for visual
+# margin, left of the probabilities. They are also returned explicitly as `outs` above.
+
+# This convenience printing syntax with outcomes and probabilities is useful for visual
 # inspection of the probabilities data. However, don't let it worry you.
-# The `Probabilities` can be used identically to a standard Julia numerical `Vector`.
+# Probabilities are returned as a special [`Probabilities`](@ref) type that behaves
+# identically to a standard Julia numerical `Vector`.
 # You can obtain the maximum probability
 
 maximum(probs)
 
-# To obtain the outcomes explicitly as their own vector
-# you can use the [`outcomes`](@ref) function
-outs = outcomes(probs)
+# or iterate over the probabilities
 
-# Notice that if you use [`probabilities`](@ref) instead of 
+function total(probs)
+    t = 0.0
+    for p in probs
+        t += p
+    end
+    return t
+end
+
+total(probs)
+
+# Notice that if you use [`probabilities`](@ref) instead of
 # [`probabilities_and_outcomes`](@ref), then outcomes are enumerated generically.
-# This avoids computing outcomes explicitly, and can save some computation time 
+# This avoids computing outcomes explicitly, and can save some computation time
 # in cases where you don't need the outcomes.
-probabilities(o, x)
+
+probs2 = probabilities(o, x)
+
+# Of course, if the outcomes are obtained
+# for free while estimating the probabilities, they would be included in the return value.
 
 # For the `ValueBinning` example that we use,
 # the outcomes are the left edges of each bin. This allows us to straightforwardly
 # visualize the results.
 using CairoMakie
 outs = outcomes(probs);
-left_edges = first.(outs) # convert `Vector{SVector}` into `Vector{Real}`
-f = Figure(); ax = Axis(f)
-barplot!(ax, left_edges, probs; ylims = (0, nothing), ylabel = "probability")
-f
+left_edges = only.(outs) # convert `Vector{SVector}` into `Vector{Real}`
+barplot(left_edges, probs; axis = (ylabel = "probability",))
 
 # Naturally, there are other outcome spaces one may use, and one can find the list of
 # implemented ones in [`OutcomeSpace`](@ref).
@@ -110,10 +126,11 @@ summary(y)
 # We can then estimate the probabilities corresponding to the ordinal patterns of a
 # certain length (here we use `m = 3`).
 
-o = OrdinalPatterns(m = 3)
+o = OrdinalPatterns{3}()
 probsy = probabilities(o, y)
 
 # Comparing these probabilities with those for the purely random timeseries `x`,
+
 probsx = probabilities(o, x)
 
 # you will notice that the probabilities computing from `x` has six outcomes, while
@@ -121,12 +138,13 @@ probsx = probabilities(o, x)
 
 # The reason that there are less outcomes in the `y` is because one outcome was never
 # encountered in the `y` data. This is a common theme in ComplexityMeasures.jl: outcomes
-# that are not in the data are skipped. This can save huge amounts of memory for outcome
-# spaces with very large numbers of outcomes.
+# that are not in the data are skipped. This can save memory for outcome
+# spaces with large numbers of outcomes.
 # To explicitly obtain all outcomes, by assigning 0 probability to not encountered outcomes,
-# use [`allprobabilities`](@ref) or [`allprobabilities_and_outcomes`](@ref).
+# use [`allprobabilities_and_outcomes`](@ref).
 # For [`OrdinalPatterns`](@ref) the outcome space does not depend on input data and is
-# always the same. Hence, the corresponding outcomes matching to [`allprobabilities`](@ref),
+# always the same. Hence, the corresponding outcomes matching to
+# [`allprobabilities_and_outcomes`](@ref),
 # coincide for `x` and `y`, and also coincide with the output of the function
 # [`outcome_space`](@ref):
 
@@ -147,7 +165,7 @@ total_outcomes(o)
 # So far we have been estimating probabilities by counting the amount of times each
 # possible outcome was encountered in the data, then normalizing. This is called "maximum
 # likelihood estimation" of probabilities. To get the counts themselves, use the
-# [`counts`](@ref) functions.
+# [`counts`](@ref) or [`counts_and_outcomes`](@ref) function.
 
 countsy = counts(o, y)
 
@@ -190,9 +208,12 @@ perm_ent_y = entropy(OrdinalPatterns(), y)
 (perm_ent_x, perm_ent_y)
 
 # As expected, the permutation entropy of the `x` signal is higher, because the signal is
-# "more random".
+# "more random". Moreover, since we have estimated the probabilities already, we could
+# have passed these to the entropy function directly instead of recomputing them as above
 
-# We crucially realize here that many quantities in the nonlinear dynamics literature that
+perm_ent_y_2 = entropy(probsy)
+
+# We crucially realize here that many quantities in the NLTS literature that
 # are named as entropies, such as "permutation entropy", are _not really new entropies_.
 # They are the good old Shannon entropy ([`Shannon`](@ref)), but calculated with _new
 # outcome spaces_ that smartly quantify some dynamic property in the data.
@@ -203,14 +224,14 @@ perm_ent_y = entropy(OrdinalPatterns(), y)
 
 # ## Beyond Shannon: more entropies
 
-# Just like the previous section discussing the possibility of many different outcome
-# spaces, the same concept applies to entropy. There are many _actually different_
+# Just like there are different outcome
+# spaces, the same concept applies to entropy. There are many _fundamentally different_
 # entropies. Shannon entropy is not the only one, just the one used most often.
 # Each entropy is a subtype of [`InformationMeasure`](@ref). Another commonly used entropy
 # is the [`Renyi`](@ref) or generalized entropy. We can use [`Renyi`](@ref) as an additional
-# first argument to the [`entropy`](@ref)function
+# first argument to the [`entropy`](@ref) function to estimate the generalized entropy:
 
-perm_ent_y_q2 = entropy(Renyi(;q = 2.0), OrdinalPatterns(), y)
+perm_ent_y_q2 = entropy(Renyi(q = 2.0), OrdinalPatterns(), y)
 (perm_ent_y_q2, perm_ent_y)
 
 # In fact, when we called `entropy(OrdinalPatterns(), y)`, this dispatched to the default
@@ -220,18 +241,20 @@ perm_ent_y_q2 = entropy(Renyi(;q = 2.0), OrdinalPatterns(), y)
 
 # The estimation of an entropy truly parallelizes the estimation of probabilities: in the
 # latter, we could decide an outcome space _and_ an _estimator_ to estimate probabilities.
-# The same happes for entropy: we can decide an entropy definition and an _estimator_ of
+# The same happens for entropy: we can decide an entropy definition and an _estimator_ of
 # how to estimate the entropy. For example, instead of the default [`PlugIn`](@ref)
 # estimator that we used above implicitly, we could use the [`Jackknife`](@ref) estimator.
 
 ospace = OrdinalPatterns()
-entdef = Renyi(;q = 2.0)
+entdef = Renyi(q = 2.0)
 entest = Jackknife(entdef)
 perm_ent_y_q2_jack = entropy(entest, ospace, y)
 
 (perm_ent_y_q2, perm_ent_y_q2_jack)
 
-# It is up to the researcher to read the documentation of the plethora of estimators
+# Entropy estimators always reference an entropy definition, even if they only apply
+# to one type of entropy (typically the Shannon one).
+# From here, it is up to the researcher to read the documentation of the plethora of estimators
 # implemented and decide what is most suitable for their data at hand. They all can be
 # found in [`DiscreteInfoEstimator`](@ref).
 
@@ -251,14 +274,14 @@ perm_ext_y = information(extdef, ospace, y)
 
 perm_ext_y_jack = information(Jackknife(extdef), ospace, y)
 
-# In truth, when we called `entropy(e, o, y)` it dispatched automatically to
+# In truth, when we called `entropy(e, o, y)` it actually calls
 # `information(e, o, y)`, as all "information measures" are part of the same function
-# interface.
+# interface. And entropy is an information measure.
 
 # ## Beyond discrete: differential or continuous
 
-# Discrete entropies (or in general, information measures) are functions of probability
-# mass functions. It is also possible to compute entropies of probability density functions.
+# Discrete information measures are functions of probability
+# mass functions. It is also possible to compute information measures of probability density functions.
 # In ComplexityMeasures.jl, this is done by calling [`entropy`](@ref) (or the more general
 # [`information`](@ref)) with a differential information estimator, a subtype of
 # [`DifferentialInfoEstimator`](@ref). These estimators are given directly to
