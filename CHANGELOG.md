@@ -64,6 +64,26 @@ concepts/changes.
     encoding is deprecated. It is given as a type parameter now, e.g.,
     `OrdinalPatterns{m}(...)` instead of `OrdinalPatterns(m = ..., ...)`.
 
+### Bug fixes 
+
+- `outcome_space` for `Dispersion` now correctly returns the all possible **sorted**
+    outcomes (as promised by the `outcome_space` docstring).
+- `decode` with `GaussianCDFEncoding` now correctly returns only the left-sides of the
+    `[0, 1]` subintervals, and always returns the decoded symbol as a `Vector{SVector}`
+    (consistent with `RectangularBinEncoding`), regardless of whether the input is a scalar
+    or a vector.
+- Using the `TransferOperator` outcome space with a `RectangularBinning` or
+    `FixedRectangularBinning` with `precise == false` will now trigger a warning.
+    This was previously causing random bugs because some bins were encoded as `-1`,
+    indicating that the point is outside the binning - even if it wasn't.
+- `WaveletOverlap` now computes probabilities (relative energies) over the correct number
+    of transform levels. Previously, the *scaling *coefficients for the max transform
+    level were incorrectly included, as an extra set of coefficients in addition to the
+    (correctly included) wavelet coefficients. This caused a lot of energy to be
+    concentrated at low frequencies, even for high-frequency signals. Thus the
+    corresponding `Probabilities` had an extra element which in many cases dominated the
+    rest of the distribution.
+
 ## 2.7.1
 
 - Fix bug in calculation of statistical complexity
