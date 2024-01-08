@@ -255,6 +255,8 @@ end
 function codify(est::OrdinalOutcomeSpace{m}, x) where m
     if x isa AbstractVector
         dataset = embed(x, m, est.τ)
+    elseif x isa AbstractStateSpaceSet{1}
+        throw(ArgumentError("Convert your univariate time series to a subtype of `AbstractVector` to codify with ordinal patterns! A `StateSpaceSet` input is assumed to be already embedded in D = m >= 2 dimensional space."))
     else
         dataset = x
     end
@@ -266,10 +268,6 @@ function codify(est::OrdinalOutcomeSpace{m}, x) where m
         πs[i] = encode(est.encoding, χ)
     end
     return πs
-end
-
-function codify(est::OrdinalOutcomeSpace{m}, x::StateSpaceSet{1}) where m
-  throw(ArgumentError("Convert your univariate time series to a subtype of `AbstractVector` to codify with ordinal patterns! A `StateSpaceSet` input is assumed to be already embedded in D = m >= 2 dimensional space. "))
 end
 
 # Special treatment for counting-based
