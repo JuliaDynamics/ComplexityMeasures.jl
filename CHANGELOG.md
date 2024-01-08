@@ -4,22 +4,50 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 
 ## 3
 
-Despite the change of a major version, this release does not contain strictly breaking changes. Instead, deprecations have been put in place everywhere. Nevertheless, ComplexityMeasures.jl has undergone major overhauling of the internal design and additionally a large number of exported names have been renamed.
+ComplexityMeasures.jl has undergone major overhaul of the internal design.
+Additionally, a large number of exported names have been renamed. Despite the major
+version change, this release does not contain strictly breaking changes. Instead,
+deprecations have been put in place everywhere. 
 
-The main renames and re-thinking of the library design are: we renamed the concept of "entropy" to "information measure", and `entropy` has been renamed to `information`. Similarly, we now have `DiscreteInfoEstimator` and `DifferentialInfoEstimator`. We consider as "information measures" anything that is a functional of probability mass/density functions.
+The main renames and re-thinking of the library design are:
+
+- We have renamed the concept of "entropy" to "information measure", and `entropy` has
+    been renamed to  `information`. We consider as "information measures" anything that is
+    a functional of probability mass/density functions, and these are estimated using
+    `DiscreteInfoEstimator`s or `DifferentialInfoEstimator`s.
+-  We realized that types like `ValueBinning`, `OrdinalPatterns` and `Dispersion` don't 
+    actually represent probabilities estimators, but *outcome spaces*. To convery this
+    fact, from 3.0, these types are subtypes of `OutcomeSpace`.
+- Subtypes of `ProbabilitiesEstimator`s now represent distinct ways of estimating
+    probabilities from counts or pseudo-counts over some `OutcomeSpace`.
+    `RelativeAmount` is the simplest (and default) probabilities estimator.
+    `BayesianRegularization`, `Shrinkage` and `AddConstant` are some more complex
+    probabilities estimators.
+
+The online documentation now comes with a tutorial that nicely summarizes these new
+concepts/changes.
 
 ### New library features
 
-- New function `allprobabilities` that is like `probabilities` but also includes 0 entries for possible outcomes that were not present in the data.
-- New _extropy_ definitions that count as information measures (and thus can be given to `information`): `ShannonExtropy`, `RenyiExtropy`, `TsallisExtropy`.
-- `StatisticalComplexity` is now compatible with any normalizable `InformationMeasure` (previously `EntropyDefinition`).
-- `StatisticalComplexity` can now estimate probabilities using any combination of `ProbabilitiesEstimator` and `OutcomeSpace`.
+- New dedicated counting interface for mapping observations into outcome counts. See
+    the `counts_and_outcomes` function and `Counts` struct.
+- New function `allprobabilities` that is like `probabilities` but also includes 0
+    entries for possible outcomes that were not present in the data.
+- New _extropy_ definitions that count as information measures (and thus can be given to
+    `information`): `ShannonExtropy`, `RenyiExtropy`, `TsallisExtropy`.
+- `StatisticalComplexity` is now compatible with any normalizable `InformationMeasure` 
+    (previously `EntropyDefinition`).
+- `StatisticalComplexity` can now estimate probabilities using any combination of
+    `ProbabilitiesEstimator` and `OutcomeSpace`.
 - Add the 1976 Lempel-Ziv complexity measure (`LempelZiv76`).
 - New entropy definition: identification entropy (`Identification`).
 - Minor documentation fixes.
 - `GaussianCDFEncoding` now can be used with vector-valued inputs.
 - New `LeonenkoProzantoSavani` differential entropy estimator. Works with `Shannon`,
     `Renyi` and `Tsallis` entropies.
+- New encodings available: `RelativeMeanEncoding`, `RelativeFirstDifferenceEncoding`,
+    `UniqueElementsEncoding` and `CombinationEncoding` (the latter combines multiple
+    encodings).
 
 ### Renaming (deprecated)
 
@@ -30,7 +58,9 @@ The main renames and re-thinking of the library design are: we renamed the conce
 
 ### Other deprecations
 
-- Passing `m` as a positional or keyword argument to ordinal pattern outcome space or encoding is deprecated. It is given as a type parameter now, e.g., `OrdinalPatterns{m}(...)` instead of `OrdinalPatterns(m = ..., ...)`.
+- Passing `m` as a positional or keyword argument to ordinal pattern outcome space or
+    encoding is deprecated. It is given as a type parameter now, e.g.,
+    `OrdinalPatterns{m}(...)` instead of `OrdinalPatterns(m = ..., ...)`.
 
 ## 2.7.1
 
