@@ -92,4 +92,5 @@ end
     # Codification of vector inputs (time series)
     x = rand(30)
     @test codify(S(), x) isa Vector{Int}
+    @test_throws ArgumentError codify(S(),StateSpaceSet(x))
 end
