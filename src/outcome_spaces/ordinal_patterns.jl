@@ -256,7 +256,10 @@ function codify(est::OrdinalOutcomeSpace{m}, x) where m
     if x isa AbstractVector
         dataset = embed(x, m, est.τ)
     elseif x isa AbstractStateSpaceSet && dimension(x) == 1
-        throw(ArgumentError("Convert your univariate time series to a subtype of `AbstractVector` to codify with ordinal patterns! A `StateSpaceSet` input is assumed to be already embedded in D = m >= 2 dimensional space."))
+        err = "Convert your univariate time series to a subtype of `AbstractVector` to " * 
+        "codify with ordinal patterns! A `StateSpaceSet` input is assumed to be " * 
+        "already  embedded in D = m >= 2 dimensional space."
+        throw(ArgumentError(err))
     else
         dataset = x
     end
