@@ -2,11 +2,13 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
-## 3 (to be released)
+## 3
 
-This release does not contain strictly breaking changes, because deprecations have been put in place everywhere. The major change that facilitated v2 -> v3 is the large renaming overhaul that we performed: we renamed the concept of "entropy" to "information measure", and `entropy` has been renamed to `information`. Similarly, we now have `DiscreteInfoEstimator` and `DifferentialInfoEstimator`. We consider as "information measures" anything that is a functional of probability mass/density functions.
+Despite the change of a major version, this release does not contain strictly breaking changes. Instead, deprecations have been put in place everywhere. Nevertheless, ComplexityMeasures.jl has undergone major overhauling of the internal design and additionally a large number of exported names have been renamed.
 
-Further additions to the library in v3:
+The main renames and re-thinking of the library design are: we renamed the concept of "entropy" to "information measure", and `entropy` has been renamed to `information`. Similarly, we now have `DiscreteInfoEstimator` and `DifferentialInfoEstimator`. We consider as "information measures" anything that is a functional of probability mass/density functions.
+
+### New library features
 
 - New function `allprobabilities` that is like `probabilities` but also includes 0 entries for possible outcomes that were not present in the data.
 - New _extropy_ definitions that count as information measures (and thus can be given to `information`): `ShannonExtropy`, `RenyiExtropy`, `TsallisExtropy`.
@@ -19,34 +21,14 @@ Further additions to the library in v3:
 - New `LeonenkoProzantoSavani` differential entropy estimator. Works with `Shannon`,
     `Renyi` and `Tsallis` entropies.
 
-### Bug fixes
-
-- `outcome_space` for `Dispersion` now correctly returns the all possible **sorted** outcomes
-    (as promised by the `outcome_space` docstring).
-- `decode` with `GaussianCDFEncoding` now correctly returns only the left-sides of the
-    `[0, 1]` subintervals, and always returns the decoded symbol as a `Vector{SVector}`
-    (consistent with `RectangularBinEncoding`), regardless of whether the input is a scalar
-    or a vector.
-- Using the `TransferOperator` outcome space with a `RectangularBinning` or
-    `FixedRectangularBinning` with `precise == false` will now trigger a warning.
-    This was previously causing random bugs because some bins were encoded as `-1`,
-    indicating that the point is outside the binning - even if it wasn't.
-- `WaveletOverlap` now computes probabilities (relative energies) over the correct number
-    of transform levels. Previously, the *scaling *coefficients for the max transform
-    level were incorrectly included, as an extra set of coefficients in addition to the
-    (correctly included) wavelet coefficients. This caused a lot of energy to be
-    concentrated at low frequencies, even for high-frequency signals. Thus the
-    corresponding `Probabilities` had an extra element which in many cases dominated the
-    rest of the distribution.
-
-### Renaming
+### Renaming (deprecated)
 
 - `SymbolicPermutation` is now `OrdinalPatterns`.
 - `SymbolicWeightedPermutation` is now `WeightedOrdinalPatterns`.
 - `SymbolicAmplitudeAwarePermutation` is now `AmplitudeAwareOrdinalPatterns`.
 - `SpatialSymbolicPermutation` is now `SpatialOrdinalPatterns`.
 
-### Deprecations
+### Other deprecations
 
 - Passing `m` as a positional or keyword argument to ordinal pattern outcome space or encoding is deprecated. It is given as a type parameter now, e.g., `OrdinalPatterns{m}(...)` instead of `OrdinalPatterns(m = ..., ...)`.
 
