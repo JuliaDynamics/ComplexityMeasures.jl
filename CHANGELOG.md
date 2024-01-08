@@ -48,6 +48,8 @@ concepts/changes.
 - New encodings available: `RelativeMeanEncoding`, `RelativeFirstDifferenceEncoding`,
     `UniqueElementsEncoding` and `CombinationEncoding` (the latter combines multiple
     encodings).
+- New `codify` function that encodes sequences of observations (vectors or state space
+    sets) into discrete symbol sequences.
 
 ### Renaming (deprecated)
 
