@@ -12,8 +12,8 @@ The software has been massively improved and its core principles were
 redesigned to be extendable, accessible, and more closely based
 on the rigorous mathematics of probabilities and entropies.
 
-For more details of this new release, please see our announcement
-post on discourse ()
+For more details of this new release, please see our [announcement
+post on discourse](https://discourse.julialang.org/t/complexitymeasures-jl-v3-a-mathematically-rigorous-software-for-probability-entropy-and-complexity/108562)
 or the central [Tutorial](@ref) of the v3 documentation.
 
 In this v3 many concepts were renamed, but there is no formally
