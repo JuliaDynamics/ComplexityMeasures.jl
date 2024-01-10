@@ -15,7 +15,7 @@ rng = Xoshiro(1234)
     msg = "`genentropy(probs::Probabilities; q, base)` deprecated.\nUse instead: `information(Renyi(q, base), probs)`.\n"
     @test_logs (:warn, msg) genentropy(Probabilities(rand(rng, 3)))
 
-    msg = "`genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is deprecated.\nUse instead: `information(Renyi(q, base), est, x)`.\n"
+    msg = "`genentropy(x::Array_or_SSSet, o::OutcomeSpace; q, base)` is deprecated.\nUse instead: `information(Renyi(q, base), est, x)`.\n"
     @test_logs (:warn, msg) genentropy(x, ValueBinning(0.1))
 
     @test probabilities(x, 0.1) == probabilities(ValueBinning(0.1), x)
