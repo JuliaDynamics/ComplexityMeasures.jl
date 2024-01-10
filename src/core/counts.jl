@@ -87,10 +87,13 @@ function generate_outcomes(x::AbstractArray{T, N}) where {T, N}
 end
 
 # extend base Array interface:
-for f in (:length, :size, :eachindex, :eltype, :parent,
+for f in (:length, :size, :eltype, :parent,
     :lastindex, :firstindex, :vec, :getindex, :iterate)
     @eval Base.$(f)(c::Counts, args...) = $(f)(c.cts, args...)
 end
+# One-argument definitions to avoid type ambiguities with Base:
+Base.eachindex(c::Counts) = eachindex(c.cts)
+
 Base.IteratorSize(::Counts) = Base.HasLength()
 
 # We strictly deal with single inputs here. For multi-inputs, see CausalityTools.jl
