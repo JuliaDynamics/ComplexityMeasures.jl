@@ -83,15 +83,7 @@ end
 
 function genentropy(x::Array_or_SSSet, o::OutcomeSpace; q = 1.0, base = MathConstants.e)
     @warn """
-    `genentropy(x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is deprecated.
-    Use instead: `information(Renyi(q, base), est, x)`.
-    """
-    return information(Renyi(q, base), RelativeAmount(), o, x)
-end
-
-function genentropy(q::Real, x::Array_or_SSSet, o::OutcomeSpace; base = MathConstants.e)
-    @warn """
-    `genentropy(q::Real, x::Array_or_SSSet, est::ProbabilitiesEstimator; q, base)` is deprecated.
+    `genentropy(x::Array_or_SSSet, o::OutcomeSpace; q, base)` is deprecated.
     Use instead: `information(Renyi(q, base), est, x)`.
     """
     return information(Renyi(q, base), RelativeAmount(), o, x)
