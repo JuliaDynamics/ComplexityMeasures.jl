@@ -233,7 +233,7 @@ hs_mean, hs_stdev = mean.(hs), std.(hs)
 fig = Figure()
 ax = Axis(fig[1, 1]; ylabel = "h (bits)")
 lines!(ax, Ns, hs_mean; color = Cycled(1), label = "LeonenkoProzantoSavani")
-band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev, 
+band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev,
     alpha = 0.5, color = (Main.COLORS[1], 0.5))
 hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
 axislegend()
@@ -295,7 +295,7 @@ hs_mean, hs_stdev = mean.(hs), std.(hs)
 fig = Figure()
 ax = Axis(fig[1, 1]; ylabel = "h (bits)")
 lines!(ax, Ns, hs_mean; color = Cycled(1), label = "LeonenkoProzantoSavani")
-band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev, 
+band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev,
     alpha = 0.5, color = (Main.COLORS[1], 0.5))
 hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
 axislegend()
@@ -517,8 +517,8 @@ for N in (N1, N2)
     local z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
 
     for q in (x, y, z)
-        h = information(PowerSpectrum(), q)
-        n = information_normalized(PowerSpectrum(), q)
+        local h = information(PowerSpectrum(), q)
+        local n = information_normalized(PowerSpectrum(), q)
         println("entropy: $(h), normalized: $(n).")
     end
 end
