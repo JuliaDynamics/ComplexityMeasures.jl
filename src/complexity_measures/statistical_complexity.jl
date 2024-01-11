@@ -5,7 +5,7 @@ export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
 
 """
     StatisticalComplexity <: ComplexityEstimator
-    StatisticalComplexity([x]; kwargs...)
+    StatisticalComplexity(; kwargs...)
 
 An estimator for the statistical complexity and entropy, originally by
 [Rosso2007](@cite) and generalized by [Rosso2013](@citet).
