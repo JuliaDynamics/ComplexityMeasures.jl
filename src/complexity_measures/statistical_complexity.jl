@@ -44,16 +44,17 @@ C_q[P] = \\mathcal{H}_q\\cdot \\mathcal{Q}_q[P],
 ```
 
 where ``Q_q`` is a "disequilibrium" obtained from a distance-measure and
-`H_q` a disorder measure.
+``H_q`` a disorder measure.
 In the original paper[Rosso2007](@cite), this complexity measure was defined
-via an ordinal pattern-based probability distribution, using [`Shannon`](@ref) entropy
-as the information measure, and the Jensen-Shannon divergence as a distance measure.
+via an ordinal pattern-based probability distribution (see [`OrdinalPatterns`](@ref)), 
+using [`Shannon`](@ref) entropy as the information measure, and the Jensen-Shannon 
+divergence as a distance measure.
 
-Our implementation is a further generalization of the
-complexity measure developed in [Rosso2013](@citet).
-Here, ``H_q``` can be the (q-order) Shannon-, Renyi or Tsallis
-entropy and ``Q_q`` based either on the Euclidean, Wooters, Kullback,
-q-Kullback, Jensen or q-Jensen distance as
+Our implementation is a further generalization of the complexity measure developed in 
+[Rosso2013](@citet). We let ``H_q``be any normalizable [`InformationMeasure`](@ref), e.g. 
+[`Shannon`](@ref), [`Renyi`](@ref) or [`Tsallis`](@ref) entropy, and we let
+ ``Q_q`` be either on the Euclidean, Wooters, Kullback, q-Kullback, Jensen or q-Jensen 
+ distance as
 
 ```math
 Q_q[P] = Q_q^0\\cdot D[P, P_e],
