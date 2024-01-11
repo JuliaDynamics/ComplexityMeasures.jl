@@ -212,7 +212,6 @@ function OrdinalPatterns{m}(τ = 1, lt = isless_rand; kwargs...) where {m}
         ", so provide `lt` as a positional argument instead. "  * 
         "In this call, the given keyword `lt` is used instead of the positional `lt`."
         @warn msg
-        @show kwargs
         lt = kwargs[:lt]
     end
 
@@ -249,9 +248,15 @@ end
 
 function AmplitudeAwareOrdinalPatterns{m}(τ = 1, A = 0.5, lt = isless_rand; 
         kwargs...) where {m}
+    # because the order of the arguments is different from the other ordinal outcome spaces
+    if A isa Function
+        msg = "Second argument to `AmplitudeAwareOrdinalPatterns` must be a function. " *
+        "Got a $(typeof(A)).";
+        throw(ArgumentError(msg))
+    end
     
     if haskey(kwargs, :τ)
-        msg = "Keyword argument `τ` to `WeightedOrdinalPatterns` is deprecated. " *
+        msg = "Keyword argument `τ` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
         "The signature is now " * 
         "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
         ", so provide `τ` as a positional argument instead. "  * 
