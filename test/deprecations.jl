@@ -66,4 +66,33 @@ end
     @test_logs (:warn, sp) allprobabilities(o, x)
     @test allprobabilities(o, x) == first(allprobabilities_and_outcomes(o, x))
     @test allprobabilities(est, o, x) == first(allprobabilities_and_outcomes(est, o, x))
+
+    @testset "Statistical complexity" begin 
+        # Keyword `entr`
+        # --------------------------------------------------------------------------------
+        msg = "Keyword argument `entr` is deprecated. Use `hest` instead. " * 
+        "Since you used `entr`, any value you gave `hest` will be overridden."
+        @test_logs (:warn, msg) StatisticalComplexity(entr = Shannon())
+
+        # Check that the statement above is true.
+        s = StatisticalComplexity(entr = Shannon(), hest = Renyi())
+        @test s.hest.definition == Shannon()
+        
+        # Keyword `est`
+        # --------------------------------------------------------------------------------
+        msg = "Keyword argument `est` is deprecated. " * 
+        "Use `o` to specify the outcome space instead. " *
+        "Since you used `est`, any value you gave `pest` will be overridden. " * 
+        "Note: the probabilities estimator `pest` must be provided separately ";
+        @test_logs (:warn, msg) StatisticalComplexity(est = OrdinalPatterns{3}())
+        
+        # Check that the statement above is true.
+        o = OrdinalPatterns{3}()
+        s = StatisticalComplexity(est = o)
+
+        # Hashes are not identical, so test specifics here.
+        @test s.o isa OrdinalPatterns
+        @test typeof(s.o.encoding).parameters[1] == 3
+    end
 end
+# 
