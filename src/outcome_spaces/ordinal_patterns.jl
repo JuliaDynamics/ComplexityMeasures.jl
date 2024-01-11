@@ -195,7 +195,7 @@ end
 is_counting_based(o::AmplitudeAwareOrdinalPatterns) = false
 
 # Initializations (also handles deprecations)
-function OrdinalPatterns{m}(τ::Int = 1, lt::F = isless_rand; kwargs...) where {m, F}
+function OrdinalPatterns{m}(τ::I = 1, lt::F = isless_rand; kwargs...) where {m, F, I}
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `OrdinalPatterns` is deprecated. " *
         "The signature is now " * 
@@ -216,7 +216,7 @@ function OrdinalPatterns{m}(τ::Int = 1, lt::F = isless_rand; kwargs...) where {
     end
 
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return OrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
+    return OrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
 
 function WeightedOrdinalPatterns{m}(τ::I = 1, lt::F = isless_rand) where {m, F, I}

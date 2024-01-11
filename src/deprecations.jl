@@ -99,17 +99,17 @@ function OrdinalPatternEncoding(m::Int, lt::F = isless_rand) where {F}
     return OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
 end
 # Initializations
-function OrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function OrdinalPatterns(; τ::I = 1, m::Int = 3, lt::F=isless_rand) where {F, I}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return OrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
+    return OrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function WeightedOrdinalPatterns(; τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function WeightedOrdinalPatterns(; τ::I = 1, m::Int = 3, lt::F=isless_rand) where {F, I}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return WeightedOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
+    return WeightedOrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function AmplitudeAwareOrdinalPatterns(; A = 0.5, τ::Int = 1, m::Int = 3, lt::F=isless_rand) where {F}
+function AmplitudeAwareOrdinalPatterns(; A::T = 0.5, τ::I = 1, m::Int = 3, lt::F=isless_rand) where {F, I, T}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
+    return AmplitudeAwareOrdinalPatterns{m, F, I, T}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
 
 # For 3.0
