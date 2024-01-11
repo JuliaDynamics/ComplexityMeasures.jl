@@ -92,9 +92,9 @@ x = StateSpaceSet(rand(N, m)) # some input dataset
 p = probabilities!(πs_ts, est, x)
 ```
 """
-struct OrdinalPatterns{M,F} <: OrdinalOutcomeSpace{M}
+struct OrdinalPatterns{M, F, I <: Integer} <: OrdinalOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M,F}
-    τ::Int
+    τ::I
 end
 
 # Explicitly implement `counts`, because decoding outcomes is expensive.
@@ -155,9 +155,9 @@ of the same pattern.
     correctly for each vector of the input dataset (which may be a delay-embedded
     timeseries).
 """
-struct WeightedOrdinalPatterns{M,F} <: OrdinalOutcomeSpace{M}
-    encoding::OrdinalPatternEncoding{M,F}
-    τ::Int
+struct WeightedOrdinalPatterns{M, F, I <: Integer} <: OrdinalOutcomeSpace{M}
+    encoding::OrdinalPatternEncoding{M, F}
+    τ::I
 end
 
 is_counting_based(o::WeightedOrdinalPatterns) = false
@@ -186,26 +186,94 @@ elements of
 ``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector
 elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is used.
 """
-struct AmplitudeAwareOrdinalPatterns{M,F} <: OrdinalOutcomeSpace{M}
-    encoding::OrdinalPatternEncoding{M,F}
-    τ::Int
-    A::Float64
+struct AmplitudeAwareOrdinalPatterns{M, F, I<:Integer, T<:Real} <: OrdinalOutcomeSpace{M}
+    encoding::OrdinalPatternEncoding{M, F}
+    τ::I
+    A::T
 end
 
 is_counting_based(o::AmplitudeAwareOrdinalPatterns) = false
 
-# Initializations
-function OrdinalPatterns{m}(τ::Int = 1, lt::F=isless_rand) where {m, F}
+# Initializations (also handles deprecations)
+function OrdinalPatterns{m}(τ::Int = 1, lt::F = isless_rand; kwargs...) where {m, F}
+    if haskey(kwargs, :τ)
+        msg = "Keyword argument `τ` to `OrdinalPatterns` is deprecated. " *
+        "The signature is now " * 
+        "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" * 
+        ", so provide `τ` as a positional argument instead. " * 
+        "In this call, the given keyword `τ` is used instead of the positional `τ`."
+        @warn msg
+        τ = kwargs[:τ]
+    end
+    if haskey(kwargs, :lt)
+        msg = "Keyword argument `lt` to `OrdinalPatterns` is deprecated. " *
+        "The signature is now " * 
+        "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" * 
+        ", so provide `lt` as a positional argument instead. "  * 
+        "In this call, the given keyword `lt` is used instead of the positional `lt`."
+        @warn msg
+        lt = kwargs[:lt]
+    end
+
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return OrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=isless_rand) where {m, F}
+
+function WeightedOrdinalPatterns{m}(τ::I = 1, lt::F = isless_rand) where {m, F, I}
+    if haskey(kwargs, :τ)
+        msg = "Keyword argument `τ` to `WeightedOrdinalPatterns` is deprecated. " *
+        "The signature is now " * 
+        "`WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=ComplexityMeasures.isless_rand)`" * 
+        ", so provide `τ` as a positional argument instead. "  * 
+        "In this call, the given keyword `τ` is used instead of the positional `τ`."
+        @warn msg
+        τ = kwargs[:τ]
+    end
+    if haskey(kwargs, :lt)
+        msg = "Keyword argument `lt` to `WeightedOrdinalPatterns` is deprecated. " *
+        "The signature is now " * 
+        "`WeightedOrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" * 
+        ", so provide `lt` as a positional argument instead. "  * 
+        "In this call, the given keyword `lt` is used instead of the positional `lt`."
+        @warn msg
+        lt = kwargs[:lt]
+    end
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return WeightedOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ)
+    return WeightedOrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand) where {m, F}
+
+function AmplitudeAwareOrdinalPatterns{m}(τ::I = 1, A::T = 0.5, 
+        lt::F = isless_rand) where {m, F, I, T}
+    if haskey(kwargs, :τ)
+        msg = "Keyword argument `τ` to `WeightedOrdinalPatterns` is deprecated. " *
+        "The signature is now " * 
+        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
+        ", so provide `τ` as a positional argument instead. "  * 
+        "In this call, the given keyword `τ` is used instead of the positional `τ`."
+        @warn msg
+        τ = kwargs[:τ]
+    end
+    if haskey(kwargs, :lt)
+        msg = "Keyword argument `lt` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
+        "The signature is now " * 
+        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
+        ", so provide `lt` as a positional argument instead. "  * 
+        "In this call, the given keyword `lt` is used instead of the positional `lt`."
+        @warn msg
+        lt = kwargs[:lt]
+    end
+    if haskey(kwargs, :A)
+        msg = "Keyword argument `A` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
+        "The signature is now " * 
+        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
+        ", so provide `A` as a positional argument instead. "  * 
+        "In this call, the given keyword `A` is used instead of the positional `A`."
+        @warn msg
+        A = kwargs[:A]
+    end
+
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return AmplitudeAwareOrdinalPatterns{m, F}(OrdinalPatternEncoding{m}(lt), τ, A)
+    return AmplitudeAwareOrdinalPatterns{m, F, I, T}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
 
 ###########################################################################################
