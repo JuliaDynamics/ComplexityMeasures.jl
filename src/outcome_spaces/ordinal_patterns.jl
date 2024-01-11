@@ -195,7 +195,7 @@ end
 is_counting_based(o::AmplitudeAwareOrdinalPatterns) = false
 
 # Initializations (also handles deprecations)
-function OrdinalPatterns{m}(τ::I = 1, lt::F = isless_rand; kwargs...) where {m, F, I}
+function OrdinalPatterns{m}(τ = 1, lt = isless_rand; kwargs...) where {m}
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `OrdinalPatterns` is deprecated. " *
         "The signature is now " * 
@@ -212,14 +212,16 @@ function OrdinalPatterns{m}(τ::I = 1, lt::F = isless_rand; kwargs...) where {m,
         ", so provide `lt` as a positional argument instead. "  * 
         "In this call, the given keyword `lt` is used instead of the positional `lt`."
         @warn msg
+        @show kwargs
         lt = kwargs[:lt]
     end
 
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
+    F, I = typeof(lt), typeof(τ)
     return OrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
 
-function WeightedOrdinalPatterns{m}(τ::I = 1, lt::F = isless_rand) where {m, F, I}
+function WeightedOrdinalPatterns{m}(τ = 1, lt = isless_rand; kwargs...) where {m}
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `WeightedOrdinalPatterns` is deprecated. " *
         "The signature is now " * 
@@ -238,12 +240,16 @@ function WeightedOrdinalPatterns{m}(τ::I = 1, lt::F = isless_rand) where {m, F,
         @warn msg
         lt = kwargs[:lt]
     end
+
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
+    F, I = typeof(lt), typeof(τ)
+
     return WeightedOrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
 
-function AmplitudeAwareOrdinalPatterns{m}(τ::I = 1, A::T = 0.5, 
-        lt::F = isless_rand) where {m, F, I, T}
+function AmplitudeAwareOrdinalPatterns{m}(τ = 1, A = 0.5, lt = isless_rand; 
+        kwargs...) where {m}
+    
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `WeightedOrdinalPatterns` is deprecated. " *
         "The signature is now " * 
@@ -273,7 +279,9 @@ function AmplitudeAwareOrdinalPatterns{m}(τ::I = 1, A::T = 0.5,
     end
 
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
-    return AmplitudeAwareOrdinalPatterns{m, F, I, T}(OrdinalPatternEncoding{m}(lt), τ, A)
+    encoding = OrdinalPatternEncoding{m}(lt)
+    F, I, T = typeof(lt), typeof(τ), typeof(A)
+    return AmplitudeAwareOrdinalPatterns{m, F, I, T}(encoding, τ, A)
 end
 
 ###########################################################################################
