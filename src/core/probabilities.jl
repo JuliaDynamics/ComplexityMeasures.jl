@@ -92,11 +92,13 @@ function Probabilities(x::AbstractVector, outcomes::AbstractVector, label; norme
 end
 
 # extend base Array interface:
-for f in (:length, :size, :eachindex, :eltype, :parent,
+for f in (:length, :size, :eltype, :parent,
     :lastindex, :firstindex, :vec, :getindex, :iterate)
-    @eval Base.$(f)(d::Probabilities{T, N}, args...) where {T, N} = $(f)(d.p, args...)
+    @eval Base.$(f)(d::Probabilities, args...)= $(f)(d.p, args...)
 end
 
+# One-argument definitions to avoid type ambiguities with Base:
+Base.eachindex(p::Probabilities) = eachindex(p.p)
 # Other useful methods:
 Base.sort(p::Probabilities) = sort(p.p)
 

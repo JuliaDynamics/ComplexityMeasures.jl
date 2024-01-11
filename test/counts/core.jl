@@ -26,6 +26,22 @@ oz = (collect(1:2), collect(1:2), collect(1:3))
 @test Counts(y, (1:2 |> collect, ['a', 'b'])) isa Counts{T, 2} where {T}
 @test Counts(z, (1:2, ['a', 'b'], 7:9)) isa Counts{T, 3} where {T}
 
+# ----------------------------------------------------------------
+# Base extensions 
+# ----------------------------------------------------------------
+c = Counts(x, ox)
+# extend base Array interface:
+@test length(c) == length(c.cts)
+@test size(c) == size(c.cts)
+@test eachindex(c) == eachindex(c.cts)
+@test eltype(c) == eltype(c.cts)
+@test parent(c) == parent(c.cts)
+@test firstindex(c) == firstindex(c.cts)
+@test lastindex(c) == lastindex(c.cts)
+@test vec(c) == vec(c.cts)
+@test getindex(c, 2) == getindex(c.cts, 2)
+@test iterate(c) == iterate(c.cts)
+@test sort(c) == sort(c.cts)
 
 # ================================================================
 # Outcomes

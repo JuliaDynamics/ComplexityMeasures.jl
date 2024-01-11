@@ -11,6 +11,23 @@ outs = collect(1:10)
 @test Probabilities(rand(rng, 10), (outs,)) isa Probabilities
 @test Probabilities(rand(rng, 10), (outs,), (:x1, )) isa Probabilities
 
+# ----------------------------------------------------------------
+# Base extensions 
+# ----------------------------------------------------------------
+p =  Probabilities(rand(rng, 10), outs)
+# extend base Array interface:
+@test length(p) == length(p.p)
+@test size(p) == size(p.p)
+@test eachindex(p) == eachindex(p.p)
+@test eltype(p) == eltype(p.p)
+@test parent(p) == parent(p.p)
+@test firstindex(p) == firstindex(p.p)
+@test lastindex(p) == lastindex(p.p)
+@test vec(p) == vec(p.p)
+@test getindex(c, 2) == getindex(c.cts, 2)
+@test iterate(p) == iterate(p.p)
+@test sort(p) == sort(p.p)
+
 # The number of probabilities and outcomes must match.
 @test_throws ArgumentError Probabilities(rand(1:3, 10), (1:9,))
 
