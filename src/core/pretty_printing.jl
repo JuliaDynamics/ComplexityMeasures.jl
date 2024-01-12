@@ -1,5 +1,3 @@
-
-
 """
     relevant_fieldnames(x::T) → names::Vector{Symbol}
 
@@ -15,16 +13,24 @@ Individual types can override this method if special printing is desired.
 relevant_fieldnames(x) = fieldnames(typeof(x))
 
 """
-    typecolor(x) → color::Symbol
+    type_printcolor(x) → color::Symbol
 
 The color in which to print the type name for type `typeof(x)`.
 
 Can be used to distinguish different types, so that nested printing looks better (e.g.
 `Encoding`s inside `OutcomeSpace`s).
 """
-typecolor(x) = :normal
+type_printcolor(x) = :normal
 
-export PrintComponent
+"""
+    type_field_printcolor(x) → color::Symbol
+
+The color in which to print the field names for a type of type `typeof(x)`.
+
+Used in combination with [`type_printcolor`](@ref) to make nested printing look better.
+"""
+type_field_printcolor(x) = :grey # fallback
+
 """
     PrintComponent
     PrintComponent(s; color::Union{Symbol,Int} = :normal,
@@ -54,111 +60,90 @@ Base.show(io::IO, x::PrintComponent) = printstyled(io, x.s;
     color = x.color, bold = x.bold, underline = x.underline, blink = x.blink,
     hidden = x.hidden, reverse = x.reverse)
 
-# Stores a vector of `PrintComponent` which give instructions on how to print 
-# an entire type (not just a field). The reason for having this type is so that 
-# we can print nested formatted types using `PrintComponents`
+function Base.show(io::IO, x::Vector{<:PrintComponent}) 
+    for component in x
+        show(io, component)
+    end
+end
+
+# The entire purpose for this type is so that we can print nested formatted types.
 struct EntireComponent
     s::Vector{PrintComponent}
 end
 
+Base.show(io::IO, x::EntireComponent) = show(io, x.s)
 
-struct PrintComponents{T <: Union{PrintComponent, EntireComponent}}
+const FANCY_PRINTABLE = Union{PrintComponent, EntireComponent}
+
+struct PrintComponents{T}
     x::Vector{T}
 end
-
-
 function Base.show(io::IO, x::PrintComponents) 
     for component in x.x
         show(component)
     end
 end
 
-# Modify here if more of our types should be considered.
-our_types = [Encoding, OutcomeSpace]
+# Modify here if more of our abstract types should be considered.
+our_abstract_types = [Encoding, OutcomeSpace, ProbabilitiesEstimator, InformationMeasure]
 
-function single_print_component!(v, name, fieldval)
-    push!(v, PrintComponent("$name"; bold=true, color=:blue))
+type_printcolor(x::Type{<:Encoding}) = :red
+type_printcolor(x::Type{<:OutcomeSpace}) = :blue
+type_printcolor(x::Type{<:ProbabilitiesEstimator}) = :green
+type_printcolor(x::Type{<:InformationMeasure}) = :magenta
+
+type_field_printcolor(x::Type{<:Encoding}) = :red
+type_field_printcolor(x::Type{<:OutcomeSpace}) = :light_blue
+type_field_printcolor(x::Type{<:ProbabilitiesEstimator}) = :light_green
+type_field_printcolor(x::Type{<:InformationMeasure}) = :light_magenta
+
+function single_print_component!(v, name, fieldval, x; fieldcol = :grey)
+    # Field names are colored as a weaker variant of the parent type color.
+    push!(v, PrintComponent("$name"; bold=true, color=fieldcol))
+
+    # Use standard formatting for the rest.
     push!(v, PrintComponent(" = "; bold=true, color=:normal))
-    if any(typeof(fieldval) <: T for T in our_types)
-        push!(v, printcomponents(fieldval))
+    if any(typeof(fieldval) <: T for T in our_abstract_types)
+        custom_fieldcolor = type_field_printcolor(typeof(fieldval))
+        push!(v, EntireComponent(printcomponents(fieldval; custom_fieldcolor)))
     else
-        push!(v, PrintComponent("$fieldval"; bold=true, color=:normal))
+        if any(typeof(x) <: T for T in our_abstract_types)
+            custom_fieldcolor = type_field_printcolor(typeof(fieldval))
+        else
+            custom_fieldcolor = :grey
+        end
+        push!(v, PrintComponent("$fieldval"; bold=false, color=:normal))
     end
 end
 
+# TODO: extra explicity type paremters for certain types, e.g. {m} for OrdinalPatterns.
 
-# TODO: extras for certain types, e.g. {m} for OrdinalPatterns.
 export printcomponents
-function printcomponents(x)
-    v = []
+function printcomponents(x; custom_fieldcolor = :grey)
+    v = Vector{FANCY_PRINTABLE}(undef, 0)
     T = typeof(x)
     N = T.name.name
     names = relevant_fieldnames(x)
-    push!(v, PrintComponent("$N("))
+    push!(v, PrintComponent("$N("; color = type_printcolor(T), bold = true))
+
     for (i, name) in enumerate(names)
-        single_print_component!(v, name, getfield(x, name))
+        single_print_component!(v, name, getfield(x, name), x; 
+            fieldcol = custom_fieldcolor)
         if i < length(names)
-            push!(v, PrintComponent(", "; bold=true, color=:normal))
+            push!(v, PrintComponent(", "; color=:normal))
         end
     end
-    push!(v, PrintComponent(")"))
+    push!(v, PrintComponent(")"; color = type_printcolor(T), bold = true))
+
+    # Don't convert to PrintComponents yet, because that will lead to a nested mess.
+    # We convert inside the extension to `Base.show` instead (see below).
     return v
 end
 
-for S in Symbol.(our_types)
-    @eval function Base.show(io::IO, x::$S)
-        show(io, printcomponents(x))
+for S in our_abstract_types
+    @eval function Base.show(io::IO, ::MIME"text/plain", x::$S)
+        p = PrintComponents(printcomponents(x))
+        show(io, p)
     end
 end
 
-
-# for S in Symbol.(our_types)
-#     @eval function print_subcomponent(io::IO, x::$S)
-#         show(io, printcomponents(x))
-#         # T = typeof(x)
-#         # N = T.name.name
-#         # names = relevant_fieldnames(x)
-#         # print(io, "$N(")
-
-#         # for (i, name) in enumerate(names)
-#         #     printstyled(io, "$name"; bold=true, color=:blue)
-#         #     printstyled(io, " = "; bold=true, color=:normal)
-#         #     printstyled(io, "$(getfield(x, name))"; bold=true, color=:normal)
-#         #     if i < length(names)
-#         #         printstyled(io, ", "; bold=true, color=:normal)
-#         #     end
-#         # end
-#         # print(io, ")")
-#     end
-# end
-
-# # # 
-# our_types = [Encoding, OutcomeSpace]
-# for S in Symbol.(our_types)
-#     @eval function Base.show(io::IO, x::$S)
-#         T = typeof(x)
-#         N = T.name.name
-#         names = relevant_fieldnames(x)
-#         fieldvals = (getfield(x, name) for name in names)
-
-#         print(io, "$N(")
-#         for (i, name) in enumerate(names)
-#             printstyled(io, "$name"; bold=true, color=:blue)
-#             printstyled(io, " = "; bold=true, color=:normal)
-#             field = getfield(x, name)
-#             #@show typeof(field)
-
-#             # We pretty print our own types, but leave other types to default printing.
-#             if typeof(field) in our_types
-#                 show(printcomponents(field))
-#             else
-#                 printstyled(io, "$(getfield(x, name))"; bold=true, color=:normal)
-#             end
-
-#             if i < length(names)
-#                 printstyled(io, ", "; bold=true, color=:normal)
-#             end
-#         end
-#         print(io, ")")
-#     end
-# end
