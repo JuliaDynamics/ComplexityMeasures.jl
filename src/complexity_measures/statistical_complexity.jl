@@ -21,7 +21,7 @@ Used with [`complexity`](@ref).
 
 - `o::OutcomeSpace = OrdinalPatterns{3}()`. The [`OutcomeSpace`](@ref), which controls how 
     the input data are discretized.
-- `pest::ProbabilitiesEstimator = RelativeAmount(OrdinalPatterns())`: The
+- `pest::ProbabilitiesEstimator = RelativeAmount()`: The
     [`ProbabilitiesEstimator`](@ref) used to estimate probabilities over the discretized
     input data.
 - `hest = Renyi()`: An [`InformationMeasure`](@ref) of choice. Any information
