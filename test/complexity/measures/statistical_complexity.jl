@@ -3,18 +3,22 @@ using Test
 using Random
 rng = MersenneTwister(1234)
 
+
 @testset "Statistical Complexity" begin
+    
 
     m, τ = 6, 1
     x = randn(rng, 10000)
     c = StatisticalComplexity(
         dist=JSDivergence(),
-        est=OrdinalPatterns(; m, τ),
-        entr=Renyi()
+        pest=RelativeAmount(),
+        o=OrdinalPatterns(; m, τ),
+        hest=Renyi()
     )
     # complexity of white noise should be very close to zero
     compl = complexity(c, x)
     @test 0 < compl < 0.02
+
     # complexity of monotonically ascending signal should be exactly zero
     compl = complexity(c, collect(1:100))
     @test compl == 0.0
@@ -24,9 +28,11 @@ rng = MersenneTwister(1234)
     # which should also be close to zeros
     c = StatisticalComplexity(
         dist=JSDivergence(),
-        est=OrdinalPatterns(; m, τ),
-        entr=Tsallis()
+        pest=RelativeAmount(),
+        o=OrdinalPatterns(; m, τ),
+        hest=PlugIn(Tsallis())
     )
+
     # complexity of white noise should be very close to zero
     compl = complexity(c, x)
     @test 0 < compl < 0.02
@@ -35,7 +41,7 @@ rng = MersenneTwister(1234)
 
     # check that error is thrown if we try to call complexity(c, p) with "incomplete" probs vectors
     # we must have empty bins here because total_outcomes = fatorial(6) ≫ 10
-    p = probabilities(OrdinalPatterns(; m, τ), randn(10))
+    p = probabilities(OrdinalPatterns{m}(τ), randn(10))
     @test_throws ArgumentError complexity(c, p)
 
     # test the wrapper
@@ -78,7 +84,7 @@ rng = MersenneTwister(1234)
     max_complexity = [x[2] for x in max_curve][max_entr_ind]
     @test min_complexity < compl <= max_complexity
 
-    # also test that we get an error if we try a ProbabilitiesEstimator
+    # also test that we get an error if we try an `OutcomeSpace`
     # where the outcome space is not defined a priori
     c = StatisticalComplexity(
         dist=JSDivergence(),
@@ -105,3 +111,4 @@ end
     compl = complexity(c, collect(1:100))
     @test compl == 0.0
 end
+
