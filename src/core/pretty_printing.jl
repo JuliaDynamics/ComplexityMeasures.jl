@@ -85,17 +85,26 @@ function Base.show(io::IO, x::PrintComponents)
 end
 
 # Modify here if more of our abstract types should be considered.
-our_abstract_types = [Encoding, OutcomeSpace, ProbabilitiesEstimator, InformationMeasure]
+our_abstract_types = [Encoding, 
+    OutcomeSpace, 
+    ProbabilitiesEstimator, 
+    InformationMeasure,
+    DiscreteInfoEstimator,
+    DifferentialInfoEstimator,
+    ComplexityEstimator
+]
 
 type_printcolor(x::Type{<:Encoding}) = :red
 type_printcolor(x::Type{<:OutcomeSpace}) = :blue
 type_printcolor(x::Type{<:ProbabilitiesEstimator}) = :green
 type_printcolor(x::Type{<:InformationMeasure}) = :magenta
+type_printcolor(x::Type{<:ComplexityEstimator}) = :magenta
 
 type_field_printcolor(x::Type{<:Encoding}) = :red
 type_field_printcolor(x::Type{<:OutcomeSpace}) = :light_blue
 type_field_printcolor(x::Type{<:ProbabilitiesEstimator}) = :light_green
 type_field_printcolor(x::Type{<:InformationMeasure}) = :light_magenta
+type_field_printcolor(x::Type{<:ComplexityEstimator}) = :light_magenta
 
 function single_print_component!(v, name, fieldval, x; fieldcol = :grey)
     # Field names are colored as a weaker variant of the parent type color.
