@@ -5,118 +5,168 @@ export StatisticalComplexity, entropy_complexity, entropy_complexity_curves
 
 """
     StatisticalComplexity <: ComplexityEstimator
-    StatisticalComplexity([x]; kwargs...)
+    StatisticalComplexity(; kwargs...)
 
 An estimator for the statistical complexity and entropy, originally by
-[Rosso2007](@cite), but here generalized see [Rosso2013](@citet) to work with any
-[`ProbabilitiesEstimator`](@ref) in combination with any [`OutcomeSpace`](@ref)
-with a priori known `total_outcomes`, any valid distance metric, and any
-normalizable discrete information measure (e.g. entropies like [`Shannon`](@ref),
-[`Renyi`](@ref), or extropies like [`ShannonExtropy`](@ref), the latter of which are not
-treated in Rosso et al.'s papers). Used with [`complexity`](@ref).
+[Rosso2007](@cite) and generalized by [Rosso2013](@citet).
+
+Our implementation extends the generalization to any valid distance metric, 
+any [`OutcomeSpace`](@ref) with a priori known [`total_outcomes`](@ref), 
+any [`ProbabilitiesEstimator`](@ref), and any normalizable discrete 
+[`InformationMeasure`](@ref).
+
+Used with [`complexity`](@ref).
 
 ## Keyword arguments
 
-- `est::ProbabilitiesEstimator = RelativeAmount(OrdinalPatterns())`: The
-    [`ProbabilitiesEstimator`](@ref) used to estimate probabilities from the input data.
-    An [`OutcomeSpace`](@ref) must be given as the first argument to the estimator to
-    control how discretization within pixel windows is performed.
+- `o::OutcomeSpace = OrdinalPatterns{3}()`. The [`OutcomeSpace`](@ref), which controls how 
+    the input data are discretized.
+- `pest::ProbabilitiesEstimator = RelativeAmount()`: The
+    [`ProbabilitiesEstimator`](@ref) used to estimate probabilities over the discretized
+    input data.
+- `hest = Renyi()`: An [`InformationMeasure`](@ref) of choice. Any information
+    measure that defines [`information_maximum`](@ref) is valid here. The measure will
+    be estimated using the [`PlugIn`](@ref) estimator. For example, you can use
+    `hest = Renyi()`. Typically, for the information measure, an entropy such as 
+    [`Shannon`](@ref) or [`Renyi`](@ref) is used. However, other measures can be used too,
+    for example extropies like  [`ShannonExtropy`](@ref) (which were not treated in
+    [Rosso2013](@citet)). 
 - `dist<:SemiMetric = JSDivergence()`: The distance measure (from Distances.jl) to use for
     estimating the distance between the estimated probability distribution and a uniform
     distribution with the same maximal number of outcomes.
-- `entr::InformationMeasure = Renyi()`: An
-    [`InformationMeasure`](@ref) of choice. Any
-    information measure that defines `information_maximum` is valid here. Typically,
-    an entropy is used, e.g. [`Shannon`](@ref) or [`Renyi`](@ref) is used.
 
 ## Description
 
 Statistical complexity is defined as
+
 ```math
 C_q[P] = \\mathcal{H}_q\\cdot \\mathcal{Q}_q[P],
 ```
+
 where ``Q_q`` is a "disequilibrium" obtained from a distance-measure and
-`H_q` a disorder measure.
+``H_q`` a disorder measure.
 In the original paper[Rosso2007](@cite), this complexity measure was defined
-via an ordinal pattern-based probability distribution, the Shannon entropy
-and the Jensen-Shannon divergence as a distance measure.
-This implementation allows for a generalization of the
-complexity measure as developed in [Rosso2013](@citet).
-Here, ``H_q``` can be the (q-order) Shannon-, Renyi or Tsallis
-entropy and ``Q_q`` based either on the Euclidean, Wooters, Kullback,
-q-Kullback, Jensen or q-Jensen distance as
+via an ordinal pattern-based probability distribution (see [`OrdinalPatterns`](@ref)), 
+using [`Shannon`](@ref) entropy as the information measure, and the Jensen-Shannon 
+divergence as a distance measure.
+
+Our implementation is a further generalization of the complexity measure developed in 
+[Rosso2013](@citet). We let ``H_q``be any normalizable [`InformationMeasure`](@ref), e.g. 
+[`Shannon`](@ref), [`Renyi`](@ref) or [`Tsallis`](@ref) entropy, and we let
+ ``Q_q`` be either on the Euclidean, Wooters, Kullback, q-Kullback, Jensen or q-Jensen 
+ distance as
+
 ```math
 Q_q[P] = Q_q^0\\cdot D[P, P_e],
 ```
+
 where ``D[P, P_e]`` is the distance between the obtained distribution ``P``
 and a uniform distribution with the same maximum number of bins, measured by
 the distance measure `dist`.
 
 ## Usage
 
-The statistical complexity is exclusively used in combination with the related information
-measure (typically an entropy).
-`complexity(c::StatisticalComplexity, x)` returns only the statistical complexity.
+The statistical complexity is exclusively used in combination with the chosen information
+measure (typically an entropy). The estimated value of the information measure can be
+accessed as a `Ref` value of the struct as
 
-The entropy (or other information measure) can be accessed as a `Ref` value of the struct as
 ```julia
 x = randn(100)
 c = StatisticalComplexity()
 compl = complexity(c, x)
 entr = c.entr_val[]
 ```
-To obtain both the entropy (or other information measure) and the statistical complexity
-together as a `Tuple`, use the wrapper [`entropy_complexity`](@ref).
+
+`complexity(c::StatisticalComplexity, x)` returns only the statistical complexity.
+To obtain both the value of the entropy (or other information measure) and the
+statistical complexity together as a `Tuple`, use the wrapper [`entropy_complexity`](@ref).
+
+See also: [`entropy_complexity_curves`](@ref).
 """
-Base.@kwdef struct StatisticalComplexity{E, D, H} <: ComplexityEstimator
-    dist::D = JSDivergence()
-    est::E = RelativeAmount(OrdinalPatterns())
-    entr::H = Renyi()
-    entr_val::Base.RefValue{Float64} = Ref(0.0)
+struct StatisticalComplexity{D, 
+        H <: DiscreteInfoEstimator{<:InformationMeasure},
+        E <: ProbabilitiesEstimator, 
+        O <: OutcomeSpace} <: ComplexityEstimator
+    dist::D 
+    hest::H
+    pest::E
+    o::O
+    entr_val::Base.RefValue{T} where T
 end
 
+function StatisticalComplexity(; 
+        dist::D = JSDivergence(), 
+        hest::H = PlugIn(Renyi()), 
+        pest::E = RelativeAmount(), 
+        o::O = OrdinalPatterns{3}(), 
+        entr_val = Ref(0.0), kwargs...) where {D, H, E, O}
+    if hest isa InformationMeasure
+        hest = PlugIn(hest)
+    end
+    @assert hest isa DiscreteInfoEstimator
+    # Deprecations. Since type dispatch doesn't operate on keywords, we need to put 
+    # the deprecations inside the default constructor. For deprecations to work, 
+    # 
+    if haskey(kwargs, :entr)
+        msg = "Keyword argument `entr` is deprecated. Use `hest` instead. " * 
+         "Since you used `entr`, any value you gave `hest` will be overridden."
+        @warn msg
+        hest = PlugIn(kwargs[:entr])
+    end
+
+    if haskey(kwargs, :est)
+        msg = "Keyword argument `est` is deprecated. " * 
+            "Use `o` to specify the outcome space instead. " *
+            "Since you used `est`, any value you gave `pest` will be overridden. " * 
+            "Note: the probabilities estimator `pest` must be provided separately ";
+        @warn msg
+        o = kwargs[:est]
+    end
+
+    return StatisticalComplexity(dist, hest, pest, o, entr_val)
+end
+
+
+
 function complexity(c::StatisticalComplexity, x)
-    (; est) = c
-
-    p = allprobabilities(est, x)
-
+    p = allprobabilities(c.pest, c.o, x)
     return complexity(c, p)
 end
 
 """
-    entropy_complexity(c::StatisticalComplexity, x)
+    entropy_complexity(c::StatisticalComplexity, x) → (h, compl)
 
-Return both the entropy and the corresponding [`StatisticalComplexity`](@ref).
+Return a information measure `h` and the corresponding
+[`StatisticalComplexity`](@ref) value `compl`.
+
 Useful when wanting to plot data on the "entropy-complexity plane".
 See also [`entropy_complexity_curves`](@ref).
 """
 function entropy_complexity(c::StatisticalComplexity, x)
     compl = complexity(c, x)
-   return (c.entr_val[], compl)
+    return (c.entr_val[], compl)
 end
 
 function complexity(c::StatisticalComplexity, p::Probabilities)
-    (; dist, est, entr) = c
-
-    L = total_outcomes(est)
+    L = total_outcomes(c.o)
     if length(p) != L
         throw(ArgumentError(
             "`p` must contain the probabilities for every outcome in Ω, but contains only $(length(p))
             out of $L outcomes.
             If you are trying to call `complexity(::StatisticalComplexity, p::Probabilities)`,
-            you must set `p = allprobabilities(est, x)`."
+            you must set `p = allprobabilities(probest, outcomespace, x)`."
             ))
     end
-    H_q = information(entr, p) / information_maximum(entr, est)
+    H_q = information(c.hest, p) / information_maximum(c.hest, c.o)
 
     # calculate distance between calculated distribution and uniform one
-    D_q = evaluate(dist, vec(p), fill(1.0/L, L))
+    D_q = evaluate(c.dist, vec(p), fill(1.0/L, L))
 
     # generate distribution with just one filled bin
     deterministic = zeros(L)
     deterministic[1] = 1
 
-    D_max = evaluate(dist, deterministic, fill(1.0/L, L))
+    D_max = evaluate(c.dist, deterministic, fill(1.0/L, L))
     C_q = D_q / D_max * H_q
     c.entr_val[] = H_q
 
@@ -126,31 +176,33 @@ end
 linearpermissiverange(start; stop, length) = length==1 ? [start] : collect(range(start, stop=stop, length=length))
 
 """
-    entropy_complexity_curves(c::StatisticalComplexity; num_max=1, num_min=1000) -> (min_entropy_complexity, max_entropy_complexity)
+    entropy_complexity_curves(c::StatisticalComplexity; 
+        num_max=1, num_min=1000) -> (min_entropy_complexity, max_entropy_complexity)
 
 Calculate the maximum complexity-entropy curve for the statistical complexity according to
-[Rosso2007](@citet) for `num_max * total_outcomes(c.est)` different values of the normalized
+[Rosso2007](@citet) for `num_max * total_outcomes(c.o)` different values of the normalized
 information measure of choice (in case of the maximum complexity curves)
 and `num_min` different values of the normalized information measure of choice (in case of
 the minimum complexity curve).
 
 This function can also be used to compute the maximum "complexity-extropy curve" if
-`c.entr` is e.g. [`ShannonExtropy`](@ref), which is the equivalent of the
-complexity-entropy curves, but using extropy instead of [`information`](@ref).
+`c.hest` is e.g. [`ShannonExtropy`](@ref), which is the equivalent of the
+complexity-entropy curves, but using extropy instead of entropy. 
 
 ## Description
 
 The way the statistical complexity is designed, there is a minimum and maximum possible
-complexity for data with a given permutation entropy.
-The calculation time of the maximum complexity curve grows as `O(total_outcomes(c.est)^2)`,
+complexity for data with a given value of an information measure.
+The calculation time of the maximum complexity curve grows as `O(total_outcomes(c.o)^2)`,
 and thus takes very long for high numbers of outcomes.
 This function is inspired by S. Sippels implementation in statcomp [Sippel2016](@cite).
 
-This function will work with any `ProbabilitiesEstimator` where [`total_outcomes`](@ref) is known a priori.
+This function will work with any `ProbabilitiesEstimator` where [`total_outcomes`](@ref)
+is known a priori.
 """
 function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, num_min::Int=1000)
 
-    L = total_outcomes(c.est)
+    L = total_outcomes(c.o)
     # avoid having to resize later by just making result containers vectors straight away.
     hs_cs_max = zeros(SVector{2, Float64}, (L-1)*num_max)
 
