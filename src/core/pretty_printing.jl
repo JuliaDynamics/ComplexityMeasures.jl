@@ -39,14 +39,6 @@ Returns an iterable of symbols incidating fields to hide for instances of type `
 hidefields(x) = Symbol[]
 
 """
-    oneline_printing(::Type{T}) → o::Bool
-
-Should instances of type `T` be printed on one line (`true`) or on multiple lines
-(`false`)?
-"""
-oneline_printing(::Type{T}) where T = true
-
-"""
     PrintComponent
     PrintComponent(s; color::Union{Symbol,Int} = :normal,
         bold::Bool = false, underline::Bool = false, blink::Bool = false,
@@ -98,7 +90,7 @@ struct PrintComponents{T}
 end
 function Base.show(io::IO, x::PrintComponents) 
     for component in x.x
-        show(component)
+        show(io, component)
     end
 end
 
@@ -131,10 +123,12 @@ function single_print_component!(v, name, fieldval, x; fieldcol = :grey)
     push!(v, PrintComponent("$name"; bold=false, color=fieldcol))
 
     # Use standard formatting for the rest.
-    push!(v, PrintComponent(" = "; bold=false, color=fieldcol))
+    push!(v, PrintComponent(" = "; bold=false, color = :default))
     if any(typeof(fieldval) <: T for T in our_abstract_types)
-        custom_fieldcolor = type_field_printcolor(typeof(fieldval))
-        comps = printcomponents(fieldval; custom_fieldcolor)
+        # If we want more aggressive coloring, switch to this:
+        #custom_fieldcolor = type_field_printcolor(typeof(fieldval))
+        #comps = printcomponents(fieldval; custom_fieldcolor)
+        comps = printcomponents(fieldval)
         push!(v, EntireComponent(comps))
     else
         if any(typeof(x) <: T for T in our_abstract_types)
@@ -148,32 +142,31 @@ end
 
 # TODO: extra explicity type paremters for certain types, e.g. {m} for OrdinalPatterns.
 
-const tabSpace = "  "
+const tabSpace = " "
 
 const FANCY_PRINTABLE = Union{PrintComponent, EntireComponent}
-function printcomponents(x; custom_fieldcolor = :grey)
+function printcomponents(x; custom_fieldcolor = :default, compact = true)
     v = Vector{FANCY_PRINTABLE}(undef, 0)
     T = typeof(x)
     N = T.name.name
-    names = relevant_fieldnames(x)
     push!(v, PrintComponent("$N("; color = type_printcolor(T), bold = true))
-    if !(oneline_printing(T))
+    if !compact
         push!(v, PrintComponent("\n$tabSpace"; hidden=false))
     end
-    shownames = [name for name in names if !(name in hidefields(T))]
-
+    shownames = [name for name in relevant_fieldnames(x) if !(name in hidefields(T))]
+    
     for (i, name) in enumerate(shownames)
         single_print_component!(v, name, getfield(x, name), x; 
             fieldcol = custom_fieldcolor)
         if i < length(shownames)
-            if oneline_printing(T)
+            if compact
                 push!(v, PrintComponent(", "; color=:normal))
             else
                 push!(v, PrintComponent("\n$tabSpace"; color=:normal))
             end
         end
     end
-    if !(oneline_printing(T))
+    if !compact
         push!(v, PrintComponent("\n"; hidden=false))
     end
     push!(v, PrintComponent(")"; color = type_printcolor(T), bold = true))
@@ -185,8 +178,21 @@ function printcomponents(x; custom_fieldcolor = :grey)
 end
 
 for S in our_abstract_types
+    # For standalone printing of the type.
     @eval function Base.show(io::IO, ::MIME"text/plain", x::$S)
-        p = PrintComponents(printcomponents(x))
+        T = typeof(x)
+        shownames = [name for name in relevant_fieldnames(x) if !(name in hidefields(T))]
+        if length(shownames) <= 1
+            compact = true
+        else
+            compact = false
+        end
+        p = PrintComponents(printcomponents(x, compact = compact))
+        show(io, p)
+    end
+    # For compact printing (inside vectors, tuples etc)
+    @eval function Base.show(io::IO, x::$S)
+        p = PrintComponents(printcomponents(x, compact = true))
         show(io, p)
     end
 end

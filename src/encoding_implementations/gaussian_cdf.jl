@@ -104,6 +104,11 @@ struct GaussianCDFEncoding{m, T, L <: LinearIndices, C <: CartesianIndices, R} <
     end
 end
 
+# ----------------------------------------------------------------
+# Pretty printing (see /core/pretty_printing.jl).
+# ----------------------------------------------------------------
+hidefields(::Type{<:GaussianCDFEncoding}) = [:linear_indices, :cartesian_indices, :binencoder]
+
 # Backwards compatibility (previously, only scalars were encodable)
 GaussianCDFEncoding(; kwargs...) = GaussianCDFEncoding{1}(; kwargs...)
 

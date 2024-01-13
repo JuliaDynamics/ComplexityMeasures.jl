@@ -97,9 +97,7 @@ end
 # ----------------------------------------------------------------
 # Pretty printing (see /core/pretty_printing.jl).
 # ----------------------------------------------------------------
-oneline_printing(::Type{<:StatisticalComplexity}) = false
 hidefields(::Type{<:StatisticalComplexity}) = [:entr_val]
-
 
 function StatisticalComplexity(; 
         dist::D = JSDivergence(), 

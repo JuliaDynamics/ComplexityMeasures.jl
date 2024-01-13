@@ -62,6 +62,11 @@ Base.@kwdef struct RelativeFirstDifferenceEncoding{R} <: Encoding
     end
 end
 
+# ----------------------------------------------------------------
+# Pretty printing (see /core/pretty_printing.jl).
+# ----------------------------------------------------------------
+hidefields(::Type{<:RelativeFirstDifferenceEncoding}) = [:binencoder]
+
 function RelativeFirstDifferenceEncoding(minval::Real, maxval::Real; n = 2)
     binencoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, n + 1))
     return RelativeFirstDifferenceEncoding(n, minval, maxval, binencoder)
