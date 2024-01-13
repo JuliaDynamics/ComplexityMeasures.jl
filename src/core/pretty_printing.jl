@@ -149,9 +149,11 @@ function printcomponents(x; custom_fieldcolor = :default, compact = true)
     v = Vector{FANCY_PRINTABLE}(undef, 0)
     T = typeof(x)
     N = T.name.name
-    push!(v, PrintComponent("$N("; color = type_printcolor(T), bold = true))
+    push!(v, PrintComponent("$N"; color = type_printcolor(T), bold = true))
     if !compact
-        push!(v, PrintComponent("\n$tabSpace"; hidden=false))
+        push!(v, PrintComponent(" with fields\n$tabSpace"))
+    else
+        push!(v, PrintComponent("("; hidden=false))
     end
     shownames = [name for name in relevant_fieldnames(x) if !(name in hidefields(T))]
     
@@ -169,8 +171,9 @@ function printcomponents(x; custom_fieldcolor = :default, compact = true)
     if !compact
         push!(v, PrintComponent("\n"; hidden=false))
     end
-    push!(v, PrintComponent(")"; color = type_printcolor(T), bold = true))
-    
+    if compact
+        push!(v, PrintComponent(")"; color = type_printcolor(T), bold = true))
+    end
 
     # Don't convert to PrintComponents yet, because that will lead to a nested mess.
     # We convert inside the extension to `Base.show` instead (see below).
@@ -187,7 +190,7 @@ for S in our_abstract_types
         else
             compact = false
         end
-        p = PrintComponents(printcomponents(x, compact = compact))
+        p = PrintComponents(printcomponents(x; compact))
         show(io, p)
     end
     # For compact printing (inside vectors, tuples etc)
