@@ -112,3 +112,18 @@ end
     @test compl == 0.0
 end
 
+
+# ----------------------------------------------------------------
+# Pretty printing
+# ----------------------------------------------------------------
+r = repr(StatisticalComplexity())
+
+fns = fieldnames(StatisticalComplexity)
+hidden_fields = ComplexityMeasures.hidefields(StatisticalComplexity)
+displayed_fields = setdiff(fns, hidden_fields)
+for fn in displayed_fields
+    @test occursin("$fn = ", r)
+end
+for fn in hidden_fields
+    @test !occursin("entr_val = ", r)
+end

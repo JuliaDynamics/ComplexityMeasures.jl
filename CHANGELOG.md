@@ -2,7 +2,12 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
-## 3
+## 3.1
+
+- Pretty printing for `Encoding`s, `OutcomeSpace`s, `ProbabilitiesEstimator`s,
+    `InformationMeasure`s, `InformationMeasureEstimator`s and `ComplexityEstimator`s.
+
+## 3.0
 
 ComplexityMeasures.jl has undergone major overhaul of the internal design.
 Additionally, a large number of exported names have been renamed. Despite the major

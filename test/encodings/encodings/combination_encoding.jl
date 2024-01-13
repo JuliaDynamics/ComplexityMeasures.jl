@@ -43,3 +43,16 @@ s_c = encode(comboencoding, x)
 
 @test decode(comboencoding, s_c)[1][1] ≈ 0.0 # left bin edge of first subinterval is zero
 @test decode(comboencoding, s_c)[2] == [2, 3, 1] # idxs that would sort `x`
+
+# ----------------------------------------------------------------
+# Pretty printing
+# ----------------------------------------------------------------
+encodings = (
+    RelativeFirstDifferenceEncoding(0, 1; n = 2),
+    RelativeMeanEncoding(0, 1; n = 5),
+    OrdinalPatternEncoding(3) # x is a three-element vector
+    )
+c = CombinationEncoding(encodings)
+@test occursin("encodings = ", repr(c))
+@test !occursin("linear_indices = ", repr(c))
+@test !occursin("cartesian_indices = ", repr(c))

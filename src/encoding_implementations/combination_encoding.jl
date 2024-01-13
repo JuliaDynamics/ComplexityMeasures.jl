@@ -67,6 +67,12 @@ struct CombinationEncoding{N, L, C} <: Encoding
         new{N, L, C}(encodings, l, c)
     end
 end
+
+# ----------------------------------------------------------------
+# Pretty printing (see /core/pretty_printing.jl).
+# ----------------------------------------------------------------
+hidefields(::Type{<:CombinationEncoding}) = [:linear_indices, :cartesian_indices]
+
 CombinationEncoding(encodings) = CombinationEncoding(encodings...)
 function CombinationEncoding(encodings::Vararg{Encoding, N}) where N
     ranges = tuple([1:total_outcomes(e) for e in encodings]...)

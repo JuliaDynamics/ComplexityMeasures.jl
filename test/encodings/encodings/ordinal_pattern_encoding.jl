@@ -57,3 +57,13 @@ end
     y = [1, 2, 1, 2] # only two patterns, none missing
     @test missing_outcomes(OrdinalPatterns(; m, τ), x) == 0
 end
+
+@testset "Pretty printing" begin 
+    o = OrdinalPatterns{3}()
+    @test occursin("OrdinalPatterns{3}", repr(o))
+    @test occursin("encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1", repr(o))
+
+    os = [o, o, o]
+    s = "[OrdinalPatterns{3}(encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1), OrdinalPatterns{3}(encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1), OrdinalPatterns{3}(encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1)]"
+    @test occursin(s, repr(os))
+end

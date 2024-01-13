@@ -7,6 +7,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     # Core
     testfile("counts/counts.jl")
     testfile("probabilities/probabilities.jl")
+    testfile("pretty_printing.jl")
 
     # # Outcome spaces
     testfile("outcome_spaces/outcome_spaces.jl")

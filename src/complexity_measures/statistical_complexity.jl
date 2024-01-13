@@ -94,6 +94,11 @@ struct StatisticalComplexity{D,
     entr_val::Base.RefValue{T} where T
 end
 
+# ----------------------------------------------------------------
+# Pretty printing (see /core/pretty_printing.jl).
+# ----------------------------------------------------------------
+hidefields(::Type{<:StatisticalComplexity}) = [:entr_val]
+
 function StatisticalComplexity(; 
         dist::D = JSDivergence(), 
         hest::H = PlugIn(Renyi()), 

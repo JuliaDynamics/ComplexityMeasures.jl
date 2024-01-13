@@ -26,6 +26,7 @@ include("core/encodings.jl")
 include("core/complexity.jl")
 include("multiscale.jl")
 include("convenience.jl")
+include("core/pretty_printing.jl")
 
 # Library implementations (files include other files)
 include("encoding_implementations/encoding_implementations.jl")
