@@ -32,6 +32,21 @@ Used in combination with [`type_printcolor`](@ref) to make nested printing look 
 type_field_printcolor(x) = :grey # fallback
 
 """
+    hidefields(::Type{T})
+
+Returns an iterable of symbols incidating fields to hide for instances of type `T`.
+"""
+hidefields(x) = Symbol[]
+
+"""
+    oneline_printing(::Type{T}) → o::Bool
+
+Should instances of type `T` be printed on one line (`true`) or on multiple lines
+(`false`)?
+"""
+oneline_printing(::Type{T}) where T = true
+
+"""
     PrintComponent
     PrintComponent(s; color::Union{Symbol,Int} = :normal,
         bold::Bool = false, underline::Bool = false, blink::Bool = false,
@@ -67,13 +82,16 @@ function Base.show(io::IO, x::Vector{<:PrintComponent})
 end
 
 # The entire purpose for this type is so that we can print nested formatted types.
-struct EntireComponent
-    s::Vector{PrintComponent}
+struct EntireComponent{T}
+    s::Vector{T}
 end
 
-Base.show(io::IO, x::EntireComponent) = show(io, x.s)
+function Base.show(io::IO, x::EntireComponent)
+    for component in x.s
+        show(io, component)
+    end
+end
 
-const FANCY_PRINTABLE = Union{PrintComponent, EntireComponent}
 
 struct PrintComponents{T}
     x::Vector{T}
@@ -94,55 +112,72 @@ our_abstract_types = [Encoding,
     ComplexityEstimator
 ]
 
-type_printcolor(x::Type{<:Encoding}) = :red
+type_printcolor(x::Type{<:Encoding}) = :black
 type_printcolor(x::Type{<:OutcomeSpace}) = :blue
-type_printcolor(x::Type{<:ProbabilitiesEstimator}) = :green
-type_printcolor(x::Type{<:InformationMeasure}) = :magenta
-type_printcolor(x::Type{<:ComplexityEstimator}) = :magenta
+type_printcolor(x::Type{<:ProbabilitiesEstimator}) = :light_green
+type_printcolor(x::Type{<:InformationMeasure}) = :yellow
+type_printcolor(x::Type{<:InformationMeasureEstimator}) = :light_magenta
+type_printcolor(x::Type{<:ComplexityEstimator}) = :red
 
-type_field_printcolor(x::Type{<:Encoding}) = :red
+type_field_printcolor(x::Type{<:Encoding}) = :light_black
 type_field_printcolor(x::Type{<:OutcomeSpace}) = :light_blue
 type_field_printcolor(x::Type{<:ProbabilitiesEstimator}) = :light_green
-type_field_printcolor(x::Type{<:InformationMeasure}) = :light_magenta
-type_field_printcolor(x::Type{<:ComplexityEstimator}) = :light_magenta
+type_field_printcolor(x::Type{<:InformationMeasure}) = :light_yellow
+type_field_printcolor(x::Type{<:InformationMeasureEstimator}) = :light_magenta
+type_field_printcolor(x::Type{<:ComplexityEstimator}) = :black
 
 function single_print_component!(v, name, fieldval, x; fieldcol = :grey)
     # Field names are colored as a weaker variant of the parent type color.
-    push!(v, PrintComponent("$name"; bold=true, color=fieldcol))
+    push!(v, PrintComponent("$name"; bold=false, color=fieldcol))
 
     # Use standard formatting for the rest.
-    push!(v, PrintComponent(" = "; bold=true, color=:normal))
+    push!(v, PrintComponent(" = "; bold=false, color=fieldcol))
     if any(typeof(fieldval) <: T for T in our_abstract_types)
         custom_fieldcolor = type_field_printcolor(typeof(fieldval))
-        push!(v, EntireComponent(printcomponents(fieldval; custom_fieldcolor)))
+        comps = printcomponents(fieldval; custom_fieldcolor)
+        push!(v, EntireComponent(comps))
     else
         if any(typeof(x) <: T for T in our_abstract_types)
             custom_fieldcolor = type_field_printcolor(typeof(fieldval))
         else
             custom_fieldcolor = :grey
         end
-        push!(v, PrintComponent("$fieldval"; bold=false, color=:normal))
+        push!(v, PrintComponent("$fieldval"; bold=false, color=fieldcol))
     end
 end
 
 # TODO: extra explicity type paremters for certain types, e.g. {m} for OrdinalPatterns.
 
-export printcomponents
+const tabSpace = "  "
+
+const FANCY_PRINTABLE = Union{PrintComponent, EntireComponent}
 function printcomponents(x; custom_fieldcolor = :grey)
     v = Vector{FANCY_PRINTABLE}(undef, 0)
     T = typeof(x)
     N = T.name.name
     names = relevant_fieldnames(x)
     push!(v, PrintComponent("$N("; color = type_printcolor(T), bold = true))
+    if !(oneline_printing(T))
+        push!(v, PrintComponent("\n$tabSpace"; hidden=false))
+    end
+    shownames = [name for name in names if !(name in hidefields(T))]
 
-    for (i, name) in enumerate(names)
+    for (i, name) in enumerate(shownames)
         single_print_component!(v, name, getfield(x, name), x; 
             fieldcol = custom_fieldcolor)
-        if i < length(names)
-            push!(v, PrintComponent(", "; color=:normal))
+        if i < length(shownames)
+            if oneline_printing(T)
+                push!(v, PrintComponent(", "; color=:normal))
+            else
+                push!(v, PrintComponent("\n$tabSpace"; color=:normal))
+            end
         end
     end
+    if !(oneline_printing(T))
+        push!(v, PrintComponent("\n"; hidden=false))
+    end
     push!(v, PrintComponent(")"; color = type_printcolor(T), bold = true))
+    
 
     # Don't convert to PrintComponents yet, because that will lead to a nested mess.
     # We convert inside the extension to `Base.show` instead (see below).
