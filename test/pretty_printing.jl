@@ -32,3 +32,23 @@ end
 for fn in hidden_fields
     @test !occursin("$fn = ", r)
 end
+
+# A dummy information measure that contains all relevant types we want to test for.
+# This is just to ensure complete test coverage for pretty printing in the case 
+# of nested types.
+struct DummyPrint <: InformationMeasure
+    a
+    b
+    c
+    d
+    e
+    f
+end
+
+m = DummyPrint(PlugIn(), Kraskov(), RelativeMeanEncoding(0, 1), OrdinalPatterns{3}(), 
+    RelativeAmount(), MissingDispersionPatterns())
+dummyestimator = PlugIn(m)
+@test occursin("definition = ", repr(dummyestimator))
+
+
+
