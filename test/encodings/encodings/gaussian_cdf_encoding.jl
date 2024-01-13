@@ -64,3 +64,18 @@ s = encode(encoding, y)
 @test decode(encoding, s) isa AbstractVector{<:SVector}
 
 @test_throws ArgumentError encode(GaussianCDFEncoding{m-1}(; c = 3, μ, σ), y)
+
+# ----------------------------------------------------------------
+# Pretty printing
+# ----------------------------------------------------------------
+T = GaussianCDFEncoding
+r = repr(T(μ = 0.5, σ = 0.1))
+fns = fieldnames(T)
+hidden_fields = ComplexityMeasures.hidefields(T)
+displayed_fields = setdiff(fns, hidden_fields)
+for fn in displayed_fields
+    @test occursin("$fn = ", r)
+end
+for fn in hidden_fields
+    @test !occursin("$fn = ", r)
+end
