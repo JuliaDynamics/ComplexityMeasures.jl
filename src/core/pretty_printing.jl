@@ -140,9 +140,6 @@ function single_print_component!(v, name, fieldval, x; fieldcol = :grey)
     # Use standard formatting for the rest.
     push!(v, PrintComponent(" = "; bold=false, color = :default))
     if any(typeof(fieldval) <: T for T in our_abstract_types)
-        # If we want more aggressive coloring, switch to this:
-        #custom_fieldcolor = type_field_printcolor(typeof(fieldval))
-        #comps = printcomponents(fieldval; custom_fieldcolor)
         comps = printcomponents(fieldval)
         push!(v, EntireComponent(comps))
     else
