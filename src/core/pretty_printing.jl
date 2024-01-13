@@ -1,16 +1,17 @@
+
 """
-    relevant_fieldnames(x::T) → names::Vector{Symbol}
+    const our_abstract_types
 
-Internal method that returns the relevant field names to be printed for type `T`.
-For example, for `Encodings`, the implementation is simply
-
-```julia
-relevant_fieldnames(e::Encoding) = fieldnames(typeof(e))
-```
-
-Individual types can override this method if special printing is desired.
+The types from out package which we want to pretty-print.
 """
-relevant_fieldnames(x) = fieldnames(typeof(x))
+const our_abstract_types = [Encoding, 
+    OutcomeSpace, 
+    ProbabilitiesEstimator, 
+    InformationMeasure,
+    DiscreteInfoEstimator,
+    DifferentialInfoEstimator,
+    ComplexityEstimator
+]
 
 """
     type_printcolor(x) → color::Symbol
@@ -31,12 +32,51 @@ Used in combination with [`type_printcolor`](@ref) to make nested printing look 
 """
 type_field_printcolor(x) = :grey # fallback
 
+type_printcolor(x::Type{<:Encoding}) = :black
+type_printcolor(x::Type{<:OutcomeSpace}) = :blue
+type_printcolor(x::Type{<:ProbabilitiesEstimator}) = :light_green
+type_printcolor(x::Type{<:InformationMeasure}) = :yellow
+type_printcolor(x::Type{<:InformationMeasureEstimator}) = :light_magenta
+type_printcolor(x::Type{<:ComplexityEstimator}) = :red
+
+type_field_printcolor(x::Type{<:Encoding}) = :light_black
+type_field_printcolor(x::Type{<:OutcomeSpace}) = :light_blue
+type_field_printcolor(x::Type{<:ProbabilitiesEstimator}) = :light_green
+type_field_printcolor(x::Type{<:InformationMeasure}) = :light_yellow
+type_field_printcolor(x::Type{<:InformationMeasureEstimator}) = :light_magenta
+type_field_printcolor(x::Type{<:ComplexityEstimator}) = :black
+
+"""
+    relevant_fieldnames(x::T) → names::Vector{Symbol}
+
+Internal method that returns the relevant field names to be printed for type `T`.
+For example, for `Encodings`, the implementation is simply
+
+```julia
+relevant_fieldnames(e::Encoding) = fieldnames(typeof(e))
+```
+
+Individual types can override this method if special printing is desired.
+"""
+relevant_fieldnames(x) = fieldnames(typeof(x))
+
 """
     hidefields(::Type{T})
 
 Returns an iterable of symbols incidating fields to hide for instances of type `T`.
 """
 hidefields(x) = Symbol[]
+
+"""
+    special_typeparameter_info(::Type{T})
+
+Returns a string containing any extra type parameter information to be printed for 
+a given type.
+
+Defaults to nothing, but for types like `OrdinalPatterns`, we'd like to include the 
+display the type parameter m as `OrdinalPatterns{m}(...)`.
+"""
+special_typeparameter_info(::Type{T}) where T = ""
 
 """
     PrintComponent
@@ -77,13 +117,11 @@ end
 struct EntireComponent{T}
     s::Vector{T}
 end
-
 function Base.show(io::IO, x::EntireComponent)
     for component in x.s
         show(io, component)
     end
 end
-
 
 struct PrintComponents{T}
     x::Vector{T}
@@ -94,34 +132,11 @@ function Base.show(io::IO, x::PrintComponents)
     end
 end
 
-# Modify here if more of our abstract types should be considered.
-our_abstract_types = [Encoding, 
-    OutcomeSpace, 
-    ProbabilitiesEstimator, 
-    InformationMeasure,
-    DiscreteInfoEstimator,
-    DifferentialInfoEstimator,
-    ComplexityEstimator
-]
-
-type_printcolor(x::Type{<:Encoding}) = :black
-type_printcolor(x::Type{<:OutcomeSpace}) = :blue
-type_printcolor(x::Type{<:ProbabilitiesEstimator}) = :light_green
-type_printcolor(x::Type{<:InformationMeasure}) = :yellow
-type_printcolor(x::Type{<:InformationMeasureEstimator}) = :light_magenta
-type_printcolor(x::Type{<:ComplexityEstimator}) = :red
-
-type_field_printcolor(x::Type{<:Encoding}) = :light_black
-type_field_printcolor(x::Type{<:OutcomeSpace}) = :light_blue
-type_field_printcolor(x::Type{<:ProbabilitiesEstimator}) = :light_green
-type_field_printcolor(x::Type{<:InformationMeasure}) = :light_yellow
-type_field_printcolor(x::Type{<:InformationMeasureEstimator}) = :light_magenta
-type_field_printcolor(x::Type{<:ComplexityEstimator}) = :black
 
 function single_print_component!(v, name, fieldval, x; fieldcol = :grey)
     # Field names are colored as a weaker variant of the parent type color.
     push!(v, PrintComponent("$name"; bold=false, color=fieldcol))
-
+   
     # Use standard formatting for the rest.
     push!(v, PrintComponent(" = "; bold=false, color = :default))
     if any(typeof(fieldval) <: T for T in our_abstract_types)
@@ -140,22 +155,26 @@ function single_print_component!(v, name, fieldval, x; fieldcol = :grey)
     end
 end
 
-# TODO: extra explicity type paremters for certain types, e.g. {m} for OrdinalPatterns.
-
 const tabSpace = " "
-
 const FANCY_PRINTABLE = Union{PrintComponent, EntireComponent}
 function printcomponents(x; custom_fieldcolor = :default, compact = true)
     v = Vector{FANCY_PRINTABLE}(undef, 0)
     T = typeof(x)
     N = T.name.name
     push!(v, PrintComponent("$N"; color = type_printcolor(T), bold = true))
-    if !compact
-        push!(v, PrintComponent(" with fields\n$tabSpace"))
-    else
-        push!(v, PrintComponent("("; hidden=false))
+    extra_parameterinfo = special_typeparameter_info(T)
+    if !isempty(extra_parameterinfo)
+        push!(v, PrintComponent(extra_parameterinfo; 
+            color = type_printcolor(T), bold = true))
     end
+
     shownames = [name for name in relevant_fieldnames(x) if !(name in hidefields(T))]
+
+    if !compact
+        push!(v, PrintComponent(", with $(length(shownames)) fields:\n$tabSpace"))
+    else
+        push!(v, PrintComponent("("; color = type_printcolor(T), bold = true))
+    end
     
     for (i, name) in enumerate(shownames)
         single_print_component!(v, name, getfield(x, name), x; 

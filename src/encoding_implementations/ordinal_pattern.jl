@@ -49,6 +49,8 @@ struct OrdinalPatternEncoding{M, F} <: Encoding
     perm::MVector{M, Int}
     lt::F
 end
+special_typeparameter_info(::Type{OrdinalPatternEncoding{m}}) where m = "{$m}"
+
 function OrdinalPatternEncoding{m}(lt::F = isless_rand) where {m,F}
     OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
 end
