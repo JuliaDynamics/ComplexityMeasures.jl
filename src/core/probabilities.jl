@@ -17,7 +17,6 @@ export missing_outcomes
 the array sums to 1 (normalized probability mass). In most cases the array is a standard
 vector. `p` itself can be manipulated and iterated over, just like its stored array.
 
-## Outcomes
 
 The probabilities correspond to `outcomes` that describe the axes of the array. 
 If `p isa Probabilities`, then `p.outcomes[i]` is an an abstract vector containing 
