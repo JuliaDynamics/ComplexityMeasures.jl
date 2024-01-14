@@ -9,7 +9,7 @@ export missing_outcomes
 # Types
 ###########################################################################################
 """
-    Probabilities <: Array{N, <: AbstractFloat}
+    Probabilities <: Array{<:AbstractFloat, N}
     Probabilities(counts/probs [, outcomes [, outnames]]) → p
 
 `Probabilities` stores an `N`-dimensional array of probabilities, while ensuring that

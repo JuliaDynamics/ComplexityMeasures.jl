@@ -24,7 +24,7 @@ export is_counting_based
 #  use pre-normalized relative "frequencies", not counts, to estimate probabilities).
 ###########################################################################################
 """
-    Counts <: Array{N, <: Integer}
+    Counts <: Array{<:Integer, N}
     Counts(counts [, outcomes [, outnames]]) → c
 
 `Counts` stores an `N`-dimensional array of integer `counts` corresponding to a set of
