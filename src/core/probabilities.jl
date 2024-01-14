@@ -10,8 +10,8 @@ export missing_outcomes
 ###########################################################################################
 """
     Probabilities <: Array{<:AbstractFloat, N}
-    Probabilities(probs::Array, [, outcomes [, dimlabels]]) → p
-    Probabilities(counts::Counts, [, outcomes [, dimlabels]]) → p
+    Probabilities(probs::Array [, outcomes [, dimlabels]]) → p
+    Probabilities(counts::Counts [, outcomes [, dimlabels]]) → p
 
 `Probabilities` stores an `N`-dimensional array of probabilities, while ensuring that
 the array sums to 1 (normalized probability mass). In most cases the array is a standard
