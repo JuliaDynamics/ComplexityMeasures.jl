@@ -32,9 +32,7 @@ then the labels and outcomes are inherited from the counts.
 ## Examples 
 
 ```julia
-julia> probs = [0.2, 0.2, 0.2, 0.2]; 
-
-julia> Probabilities(probs) # will be normalized to sum to 1
+julia> probs = [0.2, 0.2, 0.2, 0.2]; Probabilities(probs) # will be normalized to sum to 1
  Probabilities{Float64,1} over 4 outcomes
  Outcome(1)  0.25
  Outcome(2)  0.25
@@ -43,9 +41,7 @@ julia> Probabilities(probs) # will be normalized to sum to 1
 ```
 
 ```julia
-julia> c = Counts([12, 16, 12], ["out1", "out2", "out3"]);
-
-julia> Probabilities(c)
+julia> c = Counts([12, 16, 12], ["out1", "out2", "out3"]); Probabilities(c)
  Probabilities{Float64,1} over 3 outcomes
  "out1"  0.3
  "out2"  0.4
