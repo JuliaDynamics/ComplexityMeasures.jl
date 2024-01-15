@@ -6,19 +6,18 @@ export MissingDispersionPatterns
 
 """
     MissingDispersionPatterns <: ComplexityEstimator
-    MissingDispersionPatterns(est = Dispersion()) → mdp
+    MissingDispersionPatterns(o = Dispersion()) → mdp
 
 An estimator for the number of missing dispersion patterns (MDP), a complexity
 measure which can be used to detect nonlinearity in time series [Zhou2023](@cite).
 
-Used with [`complexity`](@ref) or [`complexity_normalized`](@ref), whose implementation
-uses [`missing_outcomes`](@ref).
+Used with [`complexity`](@ref) or [`complexity_normalized`](@ref).
 
 ## Description
 
 When used with [`complexity`](@ref), `complexity(mdp)` is syntactically equivalent
-with just [`missing_outcomes`](@ref)`(est)`. When used with [`complexity_normalized`](@ref),
-we further divide `missing_outcomes(est)/total_outcomes(est)`.
+with just [`missing_outcomes`](@ref)`(o)`. When used with [`complexity_normalized`](@ref),
+the normalization is simply `missing_outcomes(o)/total_outcomes(o)`.
 
 !!! note "Encoding"
     [`Dispersion`](@ref)'s linear mapping from CDFs to integers is based on equidistant
