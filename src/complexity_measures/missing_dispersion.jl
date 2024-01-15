@@ -6,31 +6,18 @@ export MissingDispersionPatterns
 
 """
     MissingDispersionPatterns <: ComplexityEstimator
-    MissingDispersionPatterns(est = Dispersion())
+    MissingDispersionPatterns(o = Dispersion()) → mdp
 
-An estimator for the number of missing dispersion patterns (``N_{MDP}``), a complexity
+An estimator for the number of missing dispersion patterns (MDP), a complexity
 measure which can be used to detect nonlinearity in time series [Zhou2023](@cite).
 
-Used with [`complexity`](@ref) or [`complexity_normalized`](@ref), whose implementation
-uses [`missing_outcomes`](@ref).
+Used with [`complexity`](@ref) or [`complexity_normalized`](@ref).
 
 ## Description
 
-If used with [`complexity`](@ref), ``N_{MDP}`` is computed by first symbolising each
-`xᵢ ∈ x`, then embedding the resulting symbol sequence using the dispersion pattern
-estimator `est`, and computing the quantity
-
-```math
-N_{MDP} = L - N_{ODP},
-```
-
-where `L = total_outcomes(est)` (i.e. the total number of possible dispersion patterns),
-and ``N_{ODP}`` is defined as the number of *occurring* dispersion patterns.
-
-If used with [`complexity_normalized`](@ref), then ``N_{MDP}^N = (L - N_{ODP})/L`` is
-computed. The authors recommend that
-`total_outcomes(est.symbolization)^est.m << length(x) - est.m*est.τ + 1` to avoid
-undersampling.
+When used with [`complexity`](@ref), `complexity(mdp)` is syntactically equivalent
+with just [`missing_outcomes`](@ref)`(o)`. When used with [`complexity_normalized`](@ref),
+the normalization is simply `missing_outcomes(o)/total_outcomes(o)`.
 
 !!! note "Encoding"
     [`Dispersion`](@ref)'s linear mapping from CDFs to integers is based on equidistant
@@ -40,10 +27,11 @@ undersampling.
 ## Usage
 
 In [Zhou2023](@citet), [`MissingDispersionPatterns`](@ref) is used to detect nonlinearity
-in time series by comparing the ``N_{MDP}`` for a time series `x` to ``N_{MDP}`` values for
-an ensemble of surrogates of `x`. If ``N_{MDP} > q_{MDP}^{WIAAFT}``, where
-``q_{MDP}^{WIAAFT}`` is some `q`-th quantile of the surrogate ensemble, then it is
-taken as evidence for nonlinearity.
+in time series by comparing the MDP for a time series `x` to values for
+an ensemble of surrogates of `x`, as per the standard analysis of
+[TimeseriesSurrogates.jl](https://github.com/JuliaDynamics/TimeseriesSurrogates.jl)
+If the MDP value of ``x`` is significantly larger than some high quantile of the surrogate
+distribution, then it is taken as evidence for nonlinearity.
 
 See also: [`Dispersion`](@ref), [`ReverseDispersion`](@ref), [`total_outcomes`](@ref).
 """
@@ -51,10 +39,10 @@ Base.@kwdef struct MissingDispersionPatterns{D} <: ComplexityEstimator
     est::D = Dispersion()
 end
 
-function complexity(c::MissingDispersionPatterns, x::AbstractVector{T}) where T
+function complexity(c::MissingDispersionPatterns, x)
     return missing_outcomes(c.est, x)
 end
 
-function complexity_normalized(c::MissingDispersionPatterns, x::AbstractVector{T}) where T
+function complexity_normalized(c::MissingDispersionPatterns, x)
     return missing_outcomes(c.est, x) / total_outcomes(c.est, x)
 end

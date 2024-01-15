@@ -2,6 +2,11 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 3.2
+
+- `missing_outcomes` only works with count-based outcome spaces, which is what it should be doing based on its conceptual definition. Previous signature has been deprecated.
+- New function `missing_probabilities` that works with probability estimators and does the same as `missing_outcomes`.
+
 ## 3.1
 
 - Pretty printing for `Encoding`s, `OutcomeSpace`s, `ProbabilitiesEstimator`s,
@@ -12,7 +17,7 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 ComplexityMeasures.jl has undergone major overhaul of the internal design.
 Additionally, a large number of exported names have been renamed. Despite the major
 version change, this release does not contain strictly breaking changes. Instead,
-deprecations have been put in place everywhere. 
+deprecations have been put in place everywhere.
 
 The main renames and re-thinking of the library design are:
 
@@ -20,7 +25,7 @@ The main renames and re-thinking of the library design are:
     been renamed to  `information`. We consider as "information measures" anything that is
     a functional of probability mass/density functions, and these are estimated using
     `DiscreteInfoEstimator`s or `DifferentialInfoEstimator`s.
--  We realized that types like `ValueBinning`, `OrdinalPatterns` and `Dispersion` don't 
+-  We realized that types like `ValueBinning`, `OrdinalPatterns` and `Dispersion` don't
     actually represent probabilities estimators, but *outcome spaces*. To convery this
     fact, from 3.0, these types are subtypes of `OutcomeSpace`.
 - Subtypes of `ProbabilitiesEstimator`s now represent distinct ways of estimating
@@ -40,7 +45,7 @@ concepts/changes.
     entries for possible outcomes that were not present in the data.
 - New _extropy_ definitions that count as information measures (and thus can be given to
     `information`): `ShannonExtropy`, `RenyiExtropy`, `TsallisExtropy`.
-- `StatisticalComplexity` is now compatible with any normalizable `InformationMeasure` 
+- `StatisticalComplexity` is now compatible with any normalizable `InformationMeasure`
     (previously `EntropyDefinition`).
 - `StatisticalComplexity` can now estimate probabilities using any combination of
     `ProbabilitiesEstimator` and `OutcomeSpace`.
@@ -69,7 +74,7 @@ concepts/changes.
     encoding is deprecated. It is given as a type parameter now, e.g.,
     `OrdinalPatterns{m}(...)` instead of `OrdinalPatterns(m = ..., ...)`.
 
-### Bug fixes 
+### Bug fixes
 
 - `outcome_space` for `Dispersion` now correctly returns the all possible **sorted**
     outcomes (as promised by the `outcome_space` docstring).
