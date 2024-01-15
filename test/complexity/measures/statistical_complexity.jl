@@ -99,6 +99,7 @@ end
     x = randn(rng, 10000)
 
     # As with regular entropy, for extropy, the edge case of noise should be close to zeros
+    m, τ = 6, 1
     c = StatisticalComplexity(
         dist=JSDivergence(),
         est=OrdinalPatterns(; m, τ),
