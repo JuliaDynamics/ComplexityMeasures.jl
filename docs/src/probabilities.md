@@ -101,6 +101,7 @@ probabilities
 probabilities_and_outcomes
 allprobabilities_and_outcomes
 probabilities!
+missing_probabilities
 ```
 
 ## Counts

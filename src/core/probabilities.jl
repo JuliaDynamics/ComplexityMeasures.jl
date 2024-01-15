@@ -1,9 +1,8 @@
-
 export ProbabilitiesEstimator, Probabilities
 export probabilities, probabilities!
 export probabilities_and_outcomes
 export allprobabilities_and_outcomes
-export missing_outcomes
+export missing_outcomes, missing_probabilities
 
 ###########################################################################################
 # Types
@@ -384,7 +383,6 @@ function missing_outcomes(o::OutcomeSpace, x)
     O = count(!iszero, cts)
     return L - O
 end
-
 
 """
     missing_probabilities([est::ProbabilitiesEstimator], o::OutcomeSpace, x)
