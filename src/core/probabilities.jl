@@ -377,7 +377,12 @@ outcome spaces, use [`missing_probabilities`](@ref) otherwise.
 
 See also: [`MissingDispersionPatterns`](@ref).
 """
-function missing_outcomes(o::OutcomeSpace, x)
+function missing_outcomes(o::OutcomeSpace, x; all = nothing)
+    if !isnothing(all)
+        @warn """
+        Tthe keyword `all` has no meaning is deprecated for `missing_outcomes`.
+        """
+    end
     cts = counts(o, x)
     L = total_outcomes(o, x)
     O = count(!iszero, cts)
@@ -391,7 +396,12 @@ Same as [`missing_outcomes`](@ref), but defines a "missing outcome" as an outcom
 having 0 probability according to `est`.
 """
 missing_probabilities(o::OutcomeSpace, x) = missing_probabilities(RelativeAmount(), o, x)
-function missing_probabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+function missing_probabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x; all = nothing)
+    if !isnothing(all)
+        @warn """
+        Tthe keyword `all` has no meaning is deprecated for `missing_outcomes`.
+        """
+    end
     probs = probabilities(est, o, x)
     L = total_outcomes(o, x)
     O = count(!iszero, probs)

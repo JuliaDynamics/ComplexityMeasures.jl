@@ -124,12 +124,3 @@ function allcounts(args...)
     @warn "`allcounts` is deprecated. Use `allcounts_and_outcomes` instead."
     return first(allcounts_and_outcomes(args...))
 end
-
-function missing_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x; all = true)
-    @warn """
-    `missing_outcomes` cannot be used with a probabilities estimator.
-    Use `missing_probabilities` instead. Furthermore, the keyword `all` has no meaning
-    and is also deprecated.
-    """
-    return missing_probabilities(est, o, x)
-end
