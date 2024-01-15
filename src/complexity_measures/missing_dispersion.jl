@@ -28,7 +28,8 @@ the normalization is simply `missing_outcomes(o)/total_outcomes(o)`.
 
 In [Zhou2023](@citet), [`MissingDispersionPatterns`](@ref) is used to detect nonlinearity
 in time series by comparing the MDP for a time series `x` to values for
-an ensemble of surrogates of `x`, as per the standard analysis of TimeseriesSurrogates.jl.
+an ensemble of surrogates of `x`, as per the standard analysis of
+[TimeseriesSurrogates.jl](https://github.com/JuliaDynamics/TimeseriesSurrogates.jl)
 If the MDP value of ``x`` is significantly larger than some high quantile of the surrogate
 distribution, then it is taken as evidence for nonlinearity.
 
