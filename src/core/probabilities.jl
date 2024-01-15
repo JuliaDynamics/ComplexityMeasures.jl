@@ -18,17 +18,17 @@ the array sums to 1 (normalized probability mass). In most cases the array is a 
 vector. `p` itself can be manipulated and iterated over, just like its stored array.
 
 
-The probabilities correspond to `outcomes` that describe the axes of the array. 
-If `p isa Probabilities`, then `p.outcomes[i]` is an an abstract vector containing 
-the outcomes along the `i`-th dimension. The outcomes have the same ordering as the 
-probabilities, so that `p[i][j]` is the probability for outcome `p.outcomes[i][j]`. 
-The dimensions of the array are named, and can be accessed by `p.dimlabels`, where 
+The probabilities correspond to `outcomes` that describe the axes of the array.
+If `p isa Probabilities`, then `p.outcomes[i]` is an an abstract vector containing
+the outcomes along the `i`-th dimension. The outcomes have the same ordering as the
+probabilities, so that `p[i][j]` is the probability for outcome `p.outcomes[i][j]`.
+The dimensions of the array are named, and can be accessed by `p.dimlabels`, where
 `p.dimlabels[i]` is the label of the `i`-th dimension. Both `outcomes` and `dimlabels`
 are assigned automatically if not given. If the input is a
-set of [`Counts`](@ref), and `outcomes` and `dimlabels` are not given, 
+set of [`Counts`](@ref), and `outcomes` and `dimlabels` are not given,
 then the labels and outcomes are inherited from the counts.
 
-## Examples 
+## Examples
 
 ```julia
 julia> probs = [0.2, 0.2, 0.2, 0.2]; Probabilities(probs) # will be normalized to sum to 1
@@ -370,16 +370,14 @@ function allprobabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
 end
 
 """
-    missing_outcomes(o::OutcomeSpace, x; all = true) → n_missing::Int
+    missing_outcomes(o::OutcomeSpace, x; all = false) → n_missing::Int
 
 Count the number of missing (i.e., zero-probability) outcomes
 specified by `o`, given input data `x`, using [`RelativeAmount`](@ref)
 probabilities estimation.
 
-If `all == true`, then [`allprobabilities_and_outcomes`](@ref) is used to compute the probabilities.
+If `all == true`, then [`allprobabilities`](@ref) is used to compute the probabilities.
 If `all == false`, then [`probabilities`](@ref) is used to compute the probabilities.
-
-This is syntactically equivalent to `missing_outcomes(RelativeAmount(o), x)`.
 
     missing_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x) → n_missing::Int
 
@@ -387,19 +385,9 @@ Like above, but specifying a custom [`ProbabilitiesEstimator`](@ref) too.
 
 See also: [`MissingDispersionPatterns`](@ref).
 """
-function missing_outcomes(o::OutcomeSpace, x; all::Bool = true)
-    if all
-        probs = allprobabilities(o, x)
-        L = length(probs)
-    else
-        probs = probabilities(o, x)
-        L = total_outcomes(o, x)
-    end
-    O = count(!iszero, probs)
-    return L - O
-end
+missing_outcomes(o::OutcomeSpace, x; kw...) = missing_outcomes(RelativeAmount(), o, x; kw...)
 
-function missing_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x; all::Bool = true)
+function missing_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x; all::Bool = false)
     if all
         probs = allprobabilities(est, o, x)
         L = length(probs)

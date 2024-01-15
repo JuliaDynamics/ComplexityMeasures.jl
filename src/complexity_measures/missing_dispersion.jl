@@ -8,7 +8,7 @@ export MissingDispersionPatterns
     MissingDispersionPatterns <: ComplexityEstimator
     MissingDispersionPatterns(est = Dispersion()) → mdp
 
-An estimator for the number of missing dispersion patterns (``N_{MDP}``), a complexity
+An estimator for the number of missing dispersion patterns (MDP), a complexity
 measure which can be used to detect nonlinearity in time series [Zhou2023](@cite).
 
 Used with [`complexity`](@ref) or [`complexity_normalized`](@ref), whose implementation
