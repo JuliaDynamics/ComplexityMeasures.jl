@@ -370,31 +370,32 @@ function allprobabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
 end
 
 """
-    missing_outcomes(o::OutcomeSpace, x; all = false) → n_missing::Int
+    missing_outcomes(o::OutcomeSpace, x; all = false) → n::Int
 
-Count the number of missing (i.e., zero-probability) outcomes
-specified by `o`, given input data `x`, using [`RelativeAmount`](@ref)
-probabilities estimation.
-
-If `all == true`, then [`allprobabilities`](@ref) is used to compute the probabilities.
-If `all == false`, then [`probabilities`](@ref) is used to compute the probabilities.
-
-    missing_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x) → n_missing::Int
-
-Like above, but specifying a custom [`ProbabilitiesEstimator`](@ref) too.
+Count the number of missing outcomes `n` (i.e., not occuring in the data)
+specified by `o`, given input data `x`. This function only works for count-based
+outcome spaces, use [`missing_probabilities`](@ref) otherwise.
 
 See also: [`MissingDispersionPatterns`](@ref).
 """
-missing_outcomes(o::OutcomeSpace, x; kw...) = missing_outcomes(RelativeAmount(), o, x; kw...)
+function missing_outcomes(o::OutcomeSpace, x)
+    cts = counts(o, x)
+    L = total_outcomes(o, x)
+    O = count(!iszero, cts)
+    return L - O
+end
 
-function missing_outcomes(est::ProbabilitiesEstimator, o::OutcomeSpace, x; all::Bool = false)
-    if all
-        probs = allprobabilities(est, o, x)
-        L = length(probs)
-    else
-        probs = probabilities(est, o, x)
-        L = total_outcomes(o, x)
-    end
+
+"""
+    missing_probabilities([est::ProbabilitiesEstimator], o::OutcomeSpace, x)
+
+Same as [`missing_outcomes`](@ref), but defines a "missing outcome" as an outcome
+having 0 probability according to `est`.
+"""
+missing_probabilities(o::OutcomeSpace, x) = missing_probabilities(RelativeAmount(), o, x)
+function missing_probabilities(est::ProbabilitiesEstimator, o::OutcomeSpace, x)
+    probs = probabilities(est, o, x)
+    L = total_outcomes(o, x)
     O = count(!iszero, probs)
     return L - O
 end
