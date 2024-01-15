@@ -1,6 +1,7 @@
 using ComplexityMeasures, Test
 using DelayEmbeddings
 using Distances
+using Random; rng = MersenneTwister(1234)
 
 # ----------------------------------------------------------------
 # Analytical example
@@ -23,3 +24,10 @@ cts, outs = allcounts_and_outcomes(o, y)
 
 cts, outs = counts_and_outcomes(o, y)
 @test outs == [1, 2, 5]
+
+x = rand(rng, 100)
+m = 2
+o = SequentialPairDistances(x; m, n = 5)
+encoded_pts = codify(o, x)
+@test all(1 .<= encoded_pts .<= 5)
+@test length(encoded_pts) == length(x) - (m - 1) - 1

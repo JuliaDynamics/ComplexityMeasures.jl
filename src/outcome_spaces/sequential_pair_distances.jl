@@ -33,6 +33,11 @@ The outcome space `Ω` for `SequentialPairDistances` are the bins onto which the
 pairwise distances are mapped, encoded as the integers `1:n`. If you need the actual
 bin coordinates, these can be recovered with [`decode`](@ref) (see example below).
 
+## Implements
+
+- [`codify`](@ref). Note that the input `x` is ignored when calling `codify`, because
+    the input data is already handled when constructing a `SequentialPairDistances`.
+
 ## Examples
 
 The outcome bins can be retrieved as follows.
@@ -89,8 +94,7 @@ total_outcomes(est::SequentialPairDistances) = est.n
 outcome_space(est::SequentialPairDistances) = collect(1:est.n)
 
 function counts_and_outcomes(o::SequentialPairDistances, x)
-    binned_pts = encode.(Ref(o.encoding.binencoder), o.dists)
-    return counts_and_outcomes(UniqueElements(), binned_pts)
+    return counts_and_outcomes(UniqueElements(), codify(o, x))
 end
 
 # ----------------------------------------------------------------
@@ -109,3 +113,7 @@ function Base.iterate(p::SequentialPairIterator, i::Int=1)
 end
 Base.eltype(::Type{SequentialPairIterator{T}}) where {T} = Tuple{T,T}
 Base.length(p::SequentialPairIterator) = length(p.it) - 1
+
+function codify(o::SequentialPairDistances, x)
+    return encode.(Ref(o.encoding.binencoder), o.dists)
+end
