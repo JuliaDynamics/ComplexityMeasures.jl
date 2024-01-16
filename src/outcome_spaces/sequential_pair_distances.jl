@@ -24,7 +24,7 @@ distances.
 - Computes the distances `ds` between sequential pairs of points according to the given
     `metric`.
 - Divides the interval `[minimum(ds), maximum(ds)]` into `n` equal-size bins by using 
-    [`RectangularBinEncoding`](@ref), them maps the distances onto these bins.
+    [`RectangularBinEncoding`](@ref), then maps the distances onto these bins.
 
 ## Outcome space
 
