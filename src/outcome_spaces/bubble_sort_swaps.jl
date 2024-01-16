@@ -35,8 +35,8 @@ the number of [`total_outcomes`](@ref) is `N + 1`.
 
 With the `BubbleSortSwaps` outcome space, we can easily compute a "bubble entropy"
 inspired by [Manis2017](@cite). Note: this is not actually a new entropy - it is just 
-a new way of discretizing the input data. To reproduce the bubble entropy measure
-from [Manis2017](@cite), see [`BubbleEntropy`](@ref).
+a new way of discretizing the input data. To reproduce the bubble entropy complexity
+measure from [Manis2017](@cite), see [`BubbleEntropy`](@ref).
 
 ## Examples
 
