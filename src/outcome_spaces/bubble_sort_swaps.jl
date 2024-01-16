@@ -56,7 +56,7 @@ function counts_and_outcomes(o::BubbleSortSwaps, x)
 end
 
 function codify(o::BubbleSortSwaps, x)
-    encoding = BubbleSwapEncoding{o.m}()
+    encoding = BubbleSortSwapsEncoding{o.m}()
     x_embedded = embed(x, o.m, o.τ).data
     return encode.(Ref(encoding), x_embedded)
 end
