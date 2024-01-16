@@ -1,6 +1,6 @@
 export PairDistanceEncoding
 
-using Distances: Euclidean
+using Distances: Chebyshev
 
 """
     PairDistanceEncoding <: Encoding
