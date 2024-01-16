@@ -86,6 +86,12 @@ CosineSimilarityBinning
 Diversity
 ```
 
+### Bubble sort swaps
+
+```@docs
+BubbleSortSwaps
+```
+
 ### Spatial outcome spaces
 
 ```@docs
@@ -154,5 +160,6 @@ RectangularBinEncoding
 RelativeMeanEncoding
 RelativeFirstDifferenceEncoding
 UniqueElementsEncoding
+BubbleSortSwapsEncoding
 CombinationEncoding
 ```
