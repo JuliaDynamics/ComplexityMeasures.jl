@@ -43,3 +43,7 @@ z = embed(y, 2, 1)
 # ----------------------------------------------------------------
 s = repr(SequentialPairDistances(x))
 @test !occursin("dists = ", s)
+
+# If input is a state space set, then `τ` is not displayed
+s = repr(SequentialPairDistances(z))
+@test !occursin("τ = ", s)

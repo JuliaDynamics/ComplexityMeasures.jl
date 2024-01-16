@@ -60,27 +60,37 @@ o = SequentialPairDistances(x, n = 3, metric = Chebyshev()) # metric from origin
 h = information(Shannon(base = 2), o, x)
 ```
 """
-struct SequentialPairDistances{I<:Integer, M, T, DM, D, E} <: CountBasedOutcomeSpace
+struct SequentialPairDistances{T, I<:Integer, M, DM, D, E} <: CountBasedOutcomeSpace
+    τ::T # ignored if input is `AbstractStateSpaceSet`
+    m::M 
     n::I
-    m::M
-    τ::T
     metric::DM
     dists::D
     encoding::E
 end
 
-function SequentialPairDistances(x; n = 3, m = 3, τ = 1, metric = Chebyshev())
+function SequentialPairDistances(x::AbstractVector; 
+        n = 3, m = 3, τ = 1, metric = Chebyshev())
     x_embed = embed(x, m, τ)
     dists = [metric(x_embed[i], x_embed[i + 1]) for i in 1:(length(x_embed) - 1)]
     mindist, maxdist = minimum(dists), maximum(dists)
     encoding = PairDistanceEncoding(mindist, maxdist; n, metric)
-    return SequentialPairDistances(n, m, τ, metric, dists, encoding)
+    return SequentialPairDistances(τ, m, n, metric, dists, encoding)
+end
+
+function SequentialPairDistances(x::AbstractStateSpaceSet{m}; 
+        n = 3, metric = Chebyshev()) where m
+    dists = [metric(x[i], x[i + 1]) for i in 1:(length(x) - 1)]
+    mindist, maxdist = minimum(dists), maximum(dists)
+    encoding = PairDistanceEncoding(mindist, maxdist; n, metric)
+    return SequentialPairDistances(nothing, m, n, metric, dists, encoding)
 end
 
 # ----------------------------------------------------------------
 # Pretty printing (see /core/pretty_printing.jl).
 # ----------------------------------------------------------------
 hidefields(::Type{<:SequentialPairDistances}) = [:dists]
+hidefields(::Type{<:SequentialPairDistances{Nothing}}) = [:dists, :τ]
 
 total_outcomes(est::SequentialPairDistances) = est.n
 outcome_space(est::SequentialPairDistances) = collect(1:est.n)
