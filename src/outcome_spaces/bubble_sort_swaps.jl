@@ -60,7 +60,7 @@ end
 # need to swap.
 total_outcomes(o::BubbleSortSwaps{m}, x) where {m} = total_outcomes(o)
 total_outcomes(o::BubbleSortSwaps{m}) where {m} = round(Int, (o.m * (o.m - 1)) / 2) + 1
-outcome_space(o::BubbleSortSwaps{m}) where {m} = collect(0:total_outcomes(o) - 1)
+outcome_space(o::BubbleSortSwaps{m}) where {m} = 0:(total_outcomes(o) - 1)
 
 function counts_and_outcomes(o::BubbleSortSwaps, x)
     observed_outs = codify(o, x)
