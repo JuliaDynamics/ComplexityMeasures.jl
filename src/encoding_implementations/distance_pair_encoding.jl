@@ -6,7 +6,7 @@ using Distances: Euclidean
     PairDistanceEncoding <: Encoding
     PairDistanceEncoding(min_dist, max_dist; n = 2, metric = Chebyshev(), precise = false)
 
-An encoding that [`encode`](@ref)s points pairs on the form 
+An encoding that [`encode`](@ref)s point pairs on the form 
 `Tuple{<:AbstractVector, <:AbstractVector}` by first computing their distance 
 using the given `metric`, then dividing the interval [`min_dist, max_dist]` into 
 `n` equal-size bins, and mapping the computed distance onto one of those bins.
