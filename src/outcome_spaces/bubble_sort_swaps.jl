@@ -42,10 +42,6 @@ from [Manis2017](@cite), see [`BubbleEntropy`](@ref).
 using ComplexityMeasures
 x = rand(100000)
 o = BubbleSortSwaps(; m = 5) # 5-dimensional embedding vectors
-probs, outs = probabilities_and_outcomes(o, x)
-information(Shannon(; base = 2), probs)
-
-# Equivalent, without the extra step of storing the probabilities
 information(Shannon(; base = 2), o, x)
 
 # We can also compute any other "bubble quantity", for example the 
