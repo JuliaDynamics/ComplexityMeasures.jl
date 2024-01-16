@@ -2,6 +2,7 @@ using ComplexityMeasures, Test
 using DelayEmbeddings
 using Distances
 using Random; rng = MersenneTwister(1234)
+using DelayEmbeddings
 
 # ----------------------------------------------------------------
 # Analytical example
@@ -32,6 +33,10 @@ encoded_pts = codify(o, x)
 @test all(1 .<= encoded_pts .<= 5)
 @test length(encoded_pts) == length(x) - (m - 1) - 1
 
+# Initialization with pre-embedded points
+z = embed(y, 2, 1)
+@test SequentialPairDistances(z) isa SequentialPairDistances
+@test SequentialPairDistances(z).m == 2
 
 # ----------------------------------------------------------------
 # Pretty printing

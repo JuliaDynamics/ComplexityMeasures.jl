@@ -2,7 +2,8 @@ export SequentialPairDistances
 
 """
     SequentialPairDistances <: CountBasedOutcomeSpace
-    SequentialPairDistances(x; n = 3, m = 3, τ = 1, metric = Distances.Chebyshev())
+    SequentialPairDistances(x::AbstractVector; n = 3, metric = Chebyshev(), m = 3, τ = 1)
+    SequentialPairDistances(x::AbstractStateSpaceSet; n = 3, metric = Chebyshev())
 
 An outcome space based on the distribution of distances of sequential pairs of points.
 
@@ -13,14 +14,16 @@ We've generalized the method to be used with any [`InformationMeasure`](@ref) an
 
 Input data `x` are needed for initialization, because distances must be pre-computed to
 know the minimum/maximum distances needed for binning the distribution of pairwise
-distances. 
+distances. If the input is an `AbstractVector`, then the vector is embedded before
+computing distances. If the input is an `AbstractStateSpaceSet`, then the embedding step 
+is skipped and distances are computed directly on each state vector `xᵢ ∈ x`.
 
 ## Description
 
 `SequentialPairDistances` does the following: 
 
 - Transforms the input timeseries `x` by first embedding it using embedding dimension
-    `m` and embedding lag `τ`.
+    `m` and embedding lag `τ` (or skip this step if the input is already embedded).
 - Computes the distances `ds` between sequential pairs of points according to the given
     `metric`.
 - Divides the interval `[minimum(ds), maximum(ds)]` into `n` equal-size bins by using 
