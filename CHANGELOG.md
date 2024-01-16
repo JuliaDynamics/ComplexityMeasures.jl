@@ -9,6 +9,7 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
     with `information(Shannon(), SequentialPairDistances(x), x)`. It can of course also 
     be used in combination with any other information measure.
 - Added the `PairDistanceEncoding` encoding.
+- Added the `entropy_distribution` convenience function.
 
 ## 3.2
 
