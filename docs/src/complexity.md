@@ -50,3 +50,9 @@ entropy_complexity_curves
 ```@docs
 LempelZiv76
 ```
+
+## Bubble entropy
+
+```@docs
+BubbleEntropy
+```

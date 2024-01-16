@@ -4,7 +4,7 @@ export BubbleSortSwaps
     BubbleSortSwaps <: CountBasedOutcomeSpace
     BubbleSortSwaps(; m = 3, τ = 1)
 
-The `BubbleSortSwaps` outcome space defined in [Manis2017](@citet)'s 
+The `BubbleSortSwaps` outcome space is based on [Manis2017](@citet)'s 
 paper on "bubble entropy". 
 
 ## Description
@@ -33,8 +33,10 @@ the number of [`total_outcomes`](@ref) is `N + 1`.
 
 ## Examples
 
-With the `BubbleSortSwaps` outcome space, we can easily compute the "bubble entropy"
-[Manis2017](@cite):
+With the `BubbleSortSwaps` outcome space, we can easily compute a "bubble entropy"
+inspired by [Manis2017](@cite). Note: this is not actually a new entropy - it is just 
+a new way of discretizing the input data. To reproduce the bubble entropy measure
+from [Manis2017](@cite), see [`BubbleEntropy`](@ref).
 
 ```julia
 using ComplexityMeasures
