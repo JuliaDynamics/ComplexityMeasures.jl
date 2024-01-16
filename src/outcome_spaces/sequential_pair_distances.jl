@@ -4,8 +4,7 @@ export SequentialPairDistances
     SequentialPairDistances <: CountBasedOutcomeSpace
     SequentialPairDistances(x; n = 3, m = 3, τ = 1, metric = Distances.Chebyshev())
 
-The `SequentialPairDistances` outcome space, which is based on the distribution of 
-distances of sequential pairs of points.
+An outcome space based on the distribution of distances of sequential pairs of points.
 
 This outcome space appears implicitly as part of the "distribution entropy" introduced
 by [Li2015](@citet), which of course can be reproduced here (see example below).
