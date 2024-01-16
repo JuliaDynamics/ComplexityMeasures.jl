@@ -86,6 +86,12 @@ CosineSimilarityBinning
 Diversity
 ```
 
+### Sequential pair distances
+
+```@docs
+SequentialPairDistances
+```
+
 ### Spatial outcome spaces
 
 ```@docs
@@ -154,5 +160,6 @@ RectangularBinEncoding
 RelativeMeanEncoding
 RelativeFirstDifferenceEncoding
 UniqueElementsEncoding
+PairDistanceEncoding
 CombinationEncoding
 ```
