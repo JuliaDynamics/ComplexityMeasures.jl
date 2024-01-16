@@ -12,4 +12,5 @@ entropy_wavelet
 entropy_dispersion
 entropy_approx
 entropy_sample
+entropy_dispersion
 ```

@@ -5,13 +5,12 @@ rng = Xoshiro(1234)
 
 @testset "Common literature names" begin
     x = randn(rng, 1000)
-
+    @test entropy_distribution(x) == information(SequentialPairDistances(x), x)
     @test entropy_permutation(x) == information(OrdinalPatterns(), x)
     @test entropy_wavelet(x) == information(WaveletOverlap(), x)
     @test entropy_dispersion(x) == information(Dispersion(), x)
     @test entropy_sample(x) == complexity_normalized(SampleEntropy(x), x)
     @test entropy_approx(x) == complexity(ApproximateEntropy(x), x)
-
 end
 
 @testset "probabilities(x)" begin
