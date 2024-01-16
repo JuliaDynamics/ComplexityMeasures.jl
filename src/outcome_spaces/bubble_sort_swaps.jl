@@ -33,10 +33,22 @@ the number of [`total_outcomes`](@ref) is `N + 1`.
 
 ## Examples
 
+With the `BubbleSortSwaps` outcome space, we can easily compute the "bubble entropy"
+[Manis2017](@cite):
+
 ```julia
+using ComplexityMeasures
 x = rand(100000)
 o = BubbleSortSwaps(; m = 5) # 5-dimensional embedding vectors
-counts_and_outcomes(o, x)
+probs, outs = probabilities_and_outcomes(o, x)
+information(Shannon(; base = 2), probs)
+
+# Equivalent, without the extra step of storing the probabilities
+information(Shannon(; base = 2), o, x)
+
+# We can also compute any other "bubble quantity", for example the 
+# "Tsallis bubble extropy", with arbitrary probabilities estimators:
+information(TsallisExtropy(), BayesianRegularization(), o, x)
 ```
 """
 Base.@kwdef struct BubbleSortSwaps{M, T} <: CountBasedOutcomeSpace
