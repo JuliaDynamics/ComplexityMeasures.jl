@@ -93,7 +93,7 @@ hidefields(::Type{<:SequentialPairDistances}) = [:dists]
 hidefields(::Type{<:SequentialPairDistances{Nothing}}) = [:dists, :τ]
 
 total_outcomes(est::SequentialPairDistances) = est.n
-outcome_space(est::SequentialPairDistances) = collect(1:est.n)
+outcome_space(est::SequentialPairDistances) = 1:est.n
 
 function counts_and_outcomes(o::SequentialPairDistances, x)
     return counts_and_outcomes(UniqueElements(), codify(o, x))
