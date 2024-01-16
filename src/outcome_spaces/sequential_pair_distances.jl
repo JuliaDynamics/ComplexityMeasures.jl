@@ -48,12 +48,6 @@ o = SequentialPairDistances(x)
 cts, outs = counts_and_outcomes(o, x)
 ```
 
-The outcome bins can be retrieved as follows.
-
-```julia
-decode.(Ref(o.encoding.binencoder), outs)
-```
-
 Computing the "distribution entropy" with `n = 3` bins for the distance histogram:
 
 ```julia
