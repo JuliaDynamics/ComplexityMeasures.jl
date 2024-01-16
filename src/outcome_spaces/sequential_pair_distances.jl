@@ -66,14 +66,12 @@ struct SequentialPairDistances{I<:Integer, M, T, DM, D, E} <: CountBasedOutcomeS
     encoding::E
 end
 
-function SequentialPairDistances(x; n::I = 3, m::M = 3, τ::T = 1, 
-    metric::DM = Chebyshev()) where {I, M, T, DM}
+function SequentialPairDistances(x; n = 3, m = 3, τ = 1, metric = Chebyshev())
     x_embed = embed(x, m, τ)
     dists = [metric(x_embed[i], x_embed[i + 1]) for i in 1:(length(x_embed) - 1)]
     mindist, maxdist = minimum(dists), maximum(dists)
     encoding = PairDistanceEncoding(mindist, maxdist; n, metric)
-    D, E = typeof(dists), typeof(encoding)
-    return new{I, M, T, DM, D, E}(n, m, τ, metric, dists, encoding)
+    return SequentialPairDistances(n, m, τ, metric, dists, encoding)
 end
 
 # ----------------------------------------------------------------
