@@ -64,7 +64,7 @@ end
 hidefields(::Type{<:PairDistanceEncoding}) = [:binencoder]
 
 function encode(d::PairDistanceEncoding, x::Tuple{<:AbstractVector, <:AbstractVector}) 
-    dist = evaluate(d.metric, first(x), last(x))
+    dist = d.metric(first(x), last(x))
     # Encode distance as an integer from the set {1, 2, …, encoding.n}
     return encode(d.binencoder, dist)
 end
