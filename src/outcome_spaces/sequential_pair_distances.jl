@@ -69,7 +69,7 @@ end
 function SequentialPairDistances(x; n::I = 3, m::M = 3, τ::T = 1, 
     metric::DM = Chebyshev()) where {I, M, T, DM}
     x_embed = embed(x, m, τ)
-    dists = [metric(x_embed[i], x_embed[i + 1]) for i in 1:(length(x) - 1)]
+    dists = [metric(x_embed[i], x_embed[i + 1]) for i in 1:(length(x_embed) - 1)]
     mindist, maxdist = minimum(dists), maximum(dists)
     encoding = PairDistanceEncoding(mindist, maxdist; n, metric)
     D, E = typeof(dists), typeof(encoding)
