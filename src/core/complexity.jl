@@ -24,6 +24,7 @@ any subtype of [`ComplexityEstimator`](@ref):
 - [`MissingDispersionPatterns`](@ref).
 - [`ReverseDispersion`](@ref).
 - [`SampleEntropy`](@ref).
+- [`BubbleEntropy`](@ref).
 - [`StatisticalComplexity`](@ref).
 """
 function complexity(c::ComplexityEstimator, x)

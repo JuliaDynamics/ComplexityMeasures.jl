@@ -24,21 +24,23 @@ discretize/encode the data directly.
 
 ## Implementations
 
-| Outcome space                           | Principle                    | Input data                | Counting-compatible |
-| :-------------------------------------- | :--------------------------- | :------------------------ | :------------------ |
-| [`UniqueElements`](@ref)                | Count of unique elements     | `Any`                     | ✔                  |
-| [`ValueBinning`](@ref)                  | Binning (histogram)          | `Vector`, `StateSpaceSet` | ✔                  |
-| [`OrdinalPatterns`](@ref)               | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✔                  |
-| [`SpatialOrdinalPatterns`](@ref)        | Ordinal patterns in space    | `Array`                   | ✔                  |
-| [`Dispersion`](@ref)                    | Dispersion patterns          | `Vector`                  | ✔                  |
-| [`SpatialDispersion`](@ref)             | Dispersion patterns in space | `Array`                   | ✔                  |
-| [`CosineSimilarityBinning`](@ref)                     | Cosine similarity            | `Vector`                  | ✔                  |
-| [`TransferOperator`](@ref)              | Binning (transfer operator)  | `Vector`, `StateSpaceSet` | ✖                  |
-| [`NaiveKernel`](@ref)                   | Kernel density estimation    | `StateSpaceSet`           | ✖                  |
-| [`WeightedOrdinalPatterns`](@ref)       | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
-| [`AmplitudeAwareOrdinalPatterns`](@ref) | Ordinal patterns             | `Vector`, `StateSpaceSet` | ✖                  |
-| [`WaveletOverlap`](@ref)                | Wavelet transform            | `Vector`                  | ✖                  |
-| [`PowerSpectrum`](@ref)                 | Fourier transform            | `Vector`                  | ✖                  |
+| Outcome space                           | Principle                         | Input data                | Counting-compatible |
+| :-------------------------------------- | :-------------------------------- | :------------------------ | :------------------ |
+| [`UniqueElements`](@ref)                | Count of unique elements          | `Any`                     | ✔                  |
+| [`ValueBinning`](@ref)                  | Binning (histogram)               | `Vector`, `StateSpaceSet` | ✔                  |
+| [`OrdinalPatterns`](@ref)               | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✔                  |
+| [`SpatialOrdinalPatterns`](@ref)        | Ordinal patterns in space         | `Array`                   | ✔                  |
+| [`Dispersion`](@ref)                    | Dispersion patterns               | `Vector`                  | ✔                  |
+| [`SpatialDispersion`](@ref)             | Dispersion patterns in space      | `Array`                   | ✔                  |
+| [`CosineSimilarityBinning`](@ref)       | Cosine similarity                 | `Vector`                  | ✔                  |
+| [`BubbleSortSwaps`](@ref)               | Swap counts when sorting          | `Vector`                  | ✔                  |
+| [`SequentialPairDistances`](@ref)       | Sequential state vector distances | `Vector`, `StateSpaceSet` | ✔                  |
+| [`TransferOperator`](@ref)              | Binning (transfer operator)       | `Vector`, `StateSpaceSet` | ✖                  |
+| [`NaiveKernel`](@ref)                   | Kernel density estimation         | `StateSpaceSet`           | ✖                  |
+| [`WeightedOrdinalPatterns`](@ref)       | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✖                  |
+| [`AmplitudeAwareOrdinalPatterns`](@ref) | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✖                  |
+| [`WaveletOverlap`](@ref)                | Wavelet transform                 | `Vector`                  | ✖                  |
+| [`PowerSpectrum`](@ref)                 | Fourier transform                 | `Vector`                  | ✖                  |
 
 In the column "input data" it is assumed that the `eltype` of the input is `<: Real`.
 
