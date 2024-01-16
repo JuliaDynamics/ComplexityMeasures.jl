@@ -31,3 +31,8 @@ o = SequentialPairDistances(x; m, n = 5)
 encoded_pts = codify(o, x)
 @test all(1 .<= encoded_pts .<= 5)
 @test length(encoded_pts) == length(x) - (m - 1) - 1
+
+
+# Pretty printing
+s = repr(SequentialPairDistances(x))
+@test !occursin(s, "dists = ")
