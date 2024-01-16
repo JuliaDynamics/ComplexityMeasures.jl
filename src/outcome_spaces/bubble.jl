@@ -24,7 +24,8 @@ is given below.
 ## Outcome space
 
 The [`outcome_space`](@ref) for `BubbleSortSwaps` are the integers
-`0:N`, where `N = (m * (m - 1)) / 2 + 1` (the worst-case number of swaps).
+`0:N`, where `N = (m * (m - 1)) / 2 + 1` (the worst-case number of swaps). Hence,
+the number of [`total_outcomes`](@ref) is `N + 1`.
 
 ## Implements 
 
@@ -45,12 +46,17 @@ end
 
 # Add one to the total number of possible swaps because it may happen that we don't 
 # need to swap.
-total_outcomes(o::BubbleSortSwaps{m}) where {m} =  round(Int, (o.m * (o.m - 1)) / 2) + 1
-outcome_space(o::BubbleSortSwaps{m}) where {m} = collect(0:total_outcomes(o))
+total_outcomes(o::BubbleSortSwaps{m}, x) where {m} = total_outcomes(o)
+total_outcomes(o::BubbleSortSwaps{m}) where {m} = round(Int, (o.m * (o.m - 1)) / 2) + 1
+outcome_space(o::BubbleSortSwaps{m}) where {m} = collect(0:total_outcomes(o) - 1)
 
 function counts_and_outcomes(o::BubbleSortSwaps, x)
-    encoding = BubbleSwapEncoding{o.m}()
-    x_embedded = embed(x, o.m, o.τ)
-    observed_outs = encode.(Ref(encoding), x_embedded.data)
+    observed_outs = codify(o, x)
     return counts_and_outcomes(UniqueElements(), observed_outs)
+end
+
+function codify(o::BubbleSortSwaps, x)
+    encoding = BubbleSwapEncoding{o.m}()
+    x_embedded = embed(x, o.m, o.τ).data
+    return encode.(Ref(encoding), x_embedded)
 end
