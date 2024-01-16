@@ -69,7 +69,7 @@ end
 function SequentialPairDistances(x; n::I = 3, m::M = 3, τ::T = 1, 
     metric::DM = Chebyshev()) where {I, M, T, DM}
     x_embed = embed(x, m, τ)
-    dists = [metric(x_embed[i], x_embed[i+1]) for i in 1:length(x)-1]
+    dists = [metric(x_embed[i], x_embed[i + 1]) for i in 1:(length(x) - 1)]
     mindist, maxdist = minimum(dists), maximum(dists)
     encoding = PairDistanceEncoding(mindist, maxdist; n, metric)
     D, E = typeof(dists), typeof(encoding)
@@ -87,23 +87,6 @@ outcome_space(est::SequentialPairDistances) = collect(1:est.n)
 function counts_and_outcomes(o::SequentialPairDistances, x)
     return counts_and_outcomes(UniqueElements(), codify(o, x))
 end
-
-# ----------------------------------------------------------------
-# A convenience iterator over pairwise points.
-# ----------------------------------------------------------------
-struct SequentialPairIterator{T}
-    it::Vector{T}
-end
-function Base.iterate(p::SequentialPairIterator, i::Int=1)
-    l = length(p.it)
-    if i < l
-        return (p.it[i], p.it[i + 1]), i + 1
-    else
-        return nothing
-    end
-end
-Base.eltype(::Type{SequentialPairIterator{T}}) where {T} = Tuple{T,T}
-Base.length(p::SequentialPairIterator) = length(p.it) - 1
 
 function codify(o::SequentialPairDistances, x)
     return encode.(Ref(o.encoding.binencoder), o.dists)
