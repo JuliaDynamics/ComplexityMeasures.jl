@@ -57,23 +57,23 @@ o = SequentialPairDistances(x, n = 3, metric = Chebyshev()) # metric from origin
 h = information(Shannon(base = 2), o, x)
 ```
 """
-Base.@kwdef struct SequentialPairDistances{I<:Integer, M, T, DM, D, E} <: CountBasedOutcomeSpace
-    n::I = 3
-    m::M = 3
-    τ::T = 1
-    metric::DM = Chebyshev()
+struct SequentialPairDistances{I<:Integer, M, T, DM, D, E} <: CountBasedOutcomeSpace
+    n::I
+    m::M
+    τ::T
+    metric::DM
     dists::D
     encoding::E
+end
 
-    function SequentialPairDistances(x; n::I = 3, m::M = 3, τ::T = 1, 
-        metric::DM = Chebyshev()) where {I, M, T, DM}
-        x_embed = embed(x, m, τ)
-        dists = [metric(x_embed[i], x_embed[i+1]) for i in 1:length(x)-1]
-        mindist, maxdist = minimum(dists), maximum(dists)
-        encoding = PairDistanceEncoding(mindist, maxdist; n, metric)
-        D, E = typeof(dists), typeof(encoding)
-        return new{I, M, T, DM, D, E}(n, m, τ, metric, dists, encoding)
-    end
+function SequentialPairDistances(x; n::I = 3, m::M = 3, τ::T = 1, 
+    metric::DM = Chebyshev()) where {I, M, T, DM}
+    x_embed = embed(x, m, τ)
+    dists = [metric(x_embed[i], x_embed[i+1]) for i in 1:length(x)-1]
+    mindist, maxdist = minimum(dists), maximum(dists)
+    encoding = PairDistanceEncoding(mindist, maxdist; n, metric)
+    D, E = typeof(dists), typeof(encoding)
+    return new{I, M, T, DM, D, E}(n, m, τ, metric, dists, encoding)
 end
 
 # ----------------------------------------------------------------
