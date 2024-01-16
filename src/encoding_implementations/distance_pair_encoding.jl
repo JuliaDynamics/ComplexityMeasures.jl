@@ -13,8 +13,7 @@ using the given `metric`, then dividing the interval [`min_dist, max_dist]` into
 Bins are enumerated as `1:n`. When [`decode`](@ref)-ing the bin integer, the left edge
 of the bin is returned.
 
-If `precise == true`, mapping into bins is more precise at the bin edges. 
-This is slower, so `precise == false` is the default.
+`precise` has the same meaning as in [`RectangularBinEncoding`](@ref).
 
 ## Example
 
