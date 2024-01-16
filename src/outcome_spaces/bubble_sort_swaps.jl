@@ -67,6 +67,6 @@ end
 
 function codify(o::BubbleSortSwaps, x)
     encoding = BubbleSortSwapsEncoding{o.m}()
-    x_embedded = embed(x, o.m, o.τ).data
+    x_embedded = vec(embed(x, o.m, o.τ))
     return encode.(Ref(encoding), x_embedded)
 end
