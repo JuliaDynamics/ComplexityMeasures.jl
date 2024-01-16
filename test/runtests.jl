@@ -20,6 +20,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("outcome_spaces/implementations/dispersion.jl")
     testfile("outcome_spaces/implementations/cosine_similarity_binning.jl")
     testfile("outcome_spaces/implementations/sequential_pair_distances.jl")
+    testfile("outcome_spaces/implementations/bubble_sort_swaps.jl")
     testfile("outcome_spaces/implementations/spatial/spatial_ordinal_patterns.jl")
     testfile("outcome_spaces/implementations/spatial/spatial_dispersion.jl")
 

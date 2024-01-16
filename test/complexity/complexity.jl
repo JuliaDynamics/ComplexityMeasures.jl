@@ -6,6 +6,7 @@
     testfile("measures/entropy_sample.jl")
     testfile("measures/statistical_complexity.jl")
     testfile("measures/lempel_ziv.jl")
+    testfile("measures/entropy_bubble.jl")
 
     testfile("missing_outcomes.jl")
 end

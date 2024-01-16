@@ -2,6 +2,12 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 3.4
+
+- New complexity measure: `BubbleEntropy`. 
+- New outcome space: `BubbleSortSwaps`.
+- New encoding: `BubbleSortSwapsEncoding`.
+
 ## 3.3
 
 - Added the `SequentialPairDistances` outcome space. In the literature, this outcome

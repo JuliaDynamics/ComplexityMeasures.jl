@@ -92,6 +92,12 @@ Diversity
 SequentialPairDistances
 ```
 
+### Bubble sort swaps
+
+```@docs
+BubbleSortSwaps
+```
+
 ### Spatial outcome spaces
 
 ```@docs
@@ -161,5 +167,6 @@ RelativeMeanEncoding
 RelativeFirstDifferenceEncoding
 UniqueElementsEncoding
 PairDistanceEncoding
+BubbleSortSwapsEncoding
 CombinationEncoding
 ```
