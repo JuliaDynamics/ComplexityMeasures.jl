@@ -86,6 +86,12 @@ CosineSimilarityBinning
 Diversity
 ```
 
+### Sequential pair distances
+
+```@docs
+SequentialPairDistances
+```
+
 ### Bubble sort swaps
 
 ```@docs
@@ -160,6 +166,7 @@ RectangularBinEncoding
 RelativeMeanEncoding
 RelativeFirstDifferenceEncoding
 UniqueElementsEncoding
+PairDistanceEncoding
 BubbleSortSwapsEncoding
 CombinationEncoding
 ```
