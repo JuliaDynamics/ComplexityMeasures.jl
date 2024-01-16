@@ -38,6 +38,8 @@ inspired by [Manis2017](@cite). Note: this is not actually a new entropy - it is
 a new way of discretizing the input data. To reproduce the bubble entropy measure
 from [Manis2017](@cite), see [`BubbleEntropy`](@ref).
 
+## Examples
+
 ```julia
 using ComplexityMeasures
 x = rand(100000)
