@@ -19,9 +19,8 @@ Base.@kwdef struct Shannon{B} <: Entropy
 end
 
 function information(e::Shannon, probs::Probabilities)
-    base = e.base
     non0_probs = Iterators.filter(!iszero, vec(probs))
-    logf = log_with_base(base)
+    logf = log_with_base(e.base)
     return -sum(x*logf(x) for x in non0_probs)
 end
 
