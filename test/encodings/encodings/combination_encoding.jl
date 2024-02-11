@@ -56,3 +56,7 @@ c = CombinationEncoding(encodings)
 @test occursin("encodings = ", repr(c))
 @test !occursin("linear_indices = ", repr(c))
 @test !occursin("cartesian_indices = ", repr(c))
+# -----------------------------------------------------------------
+# Ensuring that empty encoding throw an error 
+# -----------------------------------------------------------------
+@test_throws ArgumentError CombinationEncoding()
