@@ -75,8 +75,8 @@ hidefields(::Type{<:CombinationEncoding}) = [:linear_indices, :cartesian_indices
 
 CombinationEncoding(encodings) = CombinationEncoding(encodings...)
 function CombinationEncoding(encodings::Vararg{Encoding, N}) where N
-    if N == 0
-        throw(ArgumentError("N < 1 . Atleast one Encoding value required")) #Error thrown when N=0
+    if N < 1 
+        throw(ArgumentError("N < 1 . Greater than one encoding value required")) #Error thrown when N=0
     end
     ranges = tuple([1:total_outcomes(e) for e in encodings]...)
     linear_indices = LinearIndices(ranges)
