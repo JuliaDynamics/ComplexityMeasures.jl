@@ -2,6 +2,10 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 3.5
+
+- New spatial outcome space: `SpatialBubbleSortSwaps`.
+
 ## 3.4
 
 - New complexity measure: `BubbleEntropy`. 
