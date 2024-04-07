@@ -73,10 +73,10 @@ Base.@kwdef struct SampleEntropy{R} <: ComplexityEstimator
         r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
         new{R}(m, τ, r)
     end
-    function SampleEntropy(x::AbstractVector; m::Int = 2, τ::Int = 1)
-        r = 0.2 * Statistics.std(x)
-        SampleEntropy(m, τ, r)
-    end
+end
+
+function SampleEntropy(x::AbstractVector; r = 0.2Statistics.std(x), m::Int = 2, τ::Int = 1)
+    return SampleEntropy(m, τ, r)
 end
 
 # See comment in https://github.com/JuliaDynamics/ComplexityMeasures.jl/pull/71 for why

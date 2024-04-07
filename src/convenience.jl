@@ -8,7 +8,7 @@ export entropy_distribution
     entropy_distribution(x; τ = 1, m = 3, n = 3, base = 2)
 
 Compute the distribution entropy [Li2015](@cite) of `x` using embedding dimension `m`
-with delay/lag `τ`, using the Chebyshev distance metric, and using an `n`-element 
+with delay/lag `τ`, using the Chebyshev distance metric, and using an `n`-element
 equally-spaced binning over the distribution of distances to estimate probabilities.
 
 This function is just a convenience call to:
@@ -90,8 +90,8 @@ This is just a wrapper for `complexity(SampleEntropy(; r, m, τ, base), x)`.
 
 See also: [`SampleEntropy`](@ref), [`complexity`](@ref), [`complexity_normalized`](@ref)).
 """
-function entropy_sample(x; normalize = true, kwargs...)
-    c = SampleEntropy(x; kwargs...)
+function entropy_sample(x; normalize = true, r = 0.2std(x), kwargs...)
+    c = SampleEntropy(x; r, kwargs...)
     if normalize
         complexity_normalized(c, x)
     else
