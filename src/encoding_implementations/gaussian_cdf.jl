@@ -1,4 +1,5 @@
-using Statistics, QuadGK
+using Statistics
+using StatsFuns: normcdf
 
 export GaussianCDFEncoding
 
@@ -120,15 +121,9 @@ end
 gaussian(x, μ, σ) = exp((-(x - μ)^2)/(2σ^2))
 
 function encode(encoding::GaussianCDFEncoding, x::Real)
-    σ, μ = encoding.σ, encoding.μ
-    # We only need the value of the integral (not the error), so
-    # index first element returned from quadgk
-    k = 1/(σ*sqrt(2π))
-    y = k * first(quadgk(x -> gaussian(x, μ, σ), -Inf, x))
-    # The integral estimate sometime returns a value slightly above 1.0, so we need
-    # to adjust to be sure that all points fall within the FixedRectangularBinning.
-    y_corrected = min(y, 1.0)
-    return encode(encoding.binencoder, y_corrected)
+    binencoder, σ, μ = encoding.binencoder, encoding.σ, encoding.μ
+    
+    return encode(binencoder, normcdf(μ, σ, x))
 end
 
 function encode(encoding::GaussianCDFEncoding{m}, x::AbstractVector) where m
