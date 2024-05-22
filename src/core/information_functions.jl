@@ -12,17 +12,18 @@ const InfoMeasureOrEst = Union{InformationMeasure, DiscreteInfoEstimator}
 const ProbEstOrOutcomeSpace = Union{OutcomeSpace, ProbabilitiesEstimator}
 
 """
-    information(e::DiscreteInfoEstimator, [est::ProbabilitiesEstimator,] o::OutcomeSpace, x) → h::Real
+    information([die::DiscreteInfoEstimator,] [est::ProbabilitiesEstimator,] o::OutcomeSpace, x) → h::Real
+    information(o::OutcomeSpace, x) → h::Real
 
 Estimate a discrete information measure from input data `x` using the provided
 [`DiscreteInfoEstimator`](@ref) and [`ProbabilitiesEstimator`](@ref) over the
 given [`OutcomeSpace`](@ref).
 
 As an alternative, you can provide an [`InformationMeasure`](@ref)
-for the first argument which will default to [`PlugIn`](@ref) estimation) for
-the information estimation. You may also skip the first argument, in which case
+for the first argument (`die`) which will default to [`PlugIn`](@ref) estimation) for
+the information estimation. You may also skip the first argument (`die`), in which case
 `Shannon()` will be used. You may also skip
-the second argument (`est`) argument, giving only an outcome space, which will default to the
+the second argument (`est`), which will default to the
 [`RelativeAmount`](@ref) probabilities estimator.
 Note that some information measure estimators (e.g., [`GeneralizedSchuermann`](@ref))
 operate directly on counts and hence ignore `est`.
