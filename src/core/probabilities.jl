@@ -243,10 +243,7 @@ function probabilities_and_outcomes end
 """
     probabilities(
         [est::ProbabilitiesEstimator], o::OutcomeSpace, x::Array_or_SSSet
-    ) → (p::Probabilities, Ω)
-
-Like [`probabilities_and_outcomes`](@ref), but returns the [`Probabilities`](@ref) `p`
-directly.
+    ) → p::Probabilities
 
 Compute the same probabilities as in the [`probabilities_and_outcomes`](@ref) function,
 with two differences:
