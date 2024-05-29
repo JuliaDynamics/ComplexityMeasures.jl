@@ -21,7 +21,7 @@ The key features that it provides can be summarized as:
 - Estimators for other complexity measures that are not estimated based on probability functions.
 - An extendable interface and well thought out API accompanied by dedicated developer documentation pages. These makes it trivial to define new outcome spaces, or new estimators for probabilities, information measures, or complexity measures and integrate them with everything else in the software.
 
-ComplexityMeasures.jl can be used as a standalone package, or as part of other projects in the JuliaDynamics organization, such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystems.jl/dev/) or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
+ComplexityMeasures.jl can be used as a standalone package, or as part of other projects in the JuliaDynamics organization, such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/dynamicalsystems/dev/) or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
 
 To install it, run `import Pkg; Pkg.add("ComplexityMeasures")`.
 
