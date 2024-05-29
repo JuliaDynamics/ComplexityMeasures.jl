@@ -8,7 +8,10 @@
 [![Package Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/Entropies)](https://pkgs.genieframework.com?packages=Entropies)
 [![DOI](https://zenodo.org/badge/306859984.svg)](https://zenodo.org/badge/latestdoi/306859984)
 
-A Julia package that provides:
+ComplexityMeasures.jl is a software measure for calculating 1000s of various kinds of
+probabilities, entropies, and other so-called _complexity measures_ from input data.
+
+The key features that it provides can be summarized as:
 
 - A rigorous framework for extracting probabilities from data, based on the mathematical formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space).
 - Several (12+) outcome spaces, i.e., ways to discretize data into probabilities.
