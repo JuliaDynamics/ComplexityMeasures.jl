@@ -4,7 +4,7 @@ using SpecialFunctions: digamma
 using QuadGK
 
 """
-    Schuermann <: DiscreteInfoEstimator
+    Schuermann <: DiscreteInfoEstimatorShannon
     Schuermann(definition::Shannon; a = 1.0)
 
 The `Schuermann` estimator is used with [`information`](@ref) to compute the
@@ -13,7 +13,7 @@ given in [Schurmann2004](@citet).
 
 See detailed description for [`GeneralizedSchuermann`](@ref) for details.
 """
-Base.@kwdef struct Schuermann{I <: InformationMeasure, A} <: DiscreteInfoEstimator{I}
+Base.@kwdef struct Schuermann{I <: InformationMeasure, A} <: DiscreteInfoEstimatorShannon{I}
     definition::I = Shannon()
     a::A = 1.0
 end

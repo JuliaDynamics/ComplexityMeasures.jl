@@ -2,7 +2,7 @@ export PlugIn
 
 # Dummy estimator that doesn't actually change anything from the definitions
 """
-    PlugIn(e::InformationMeasure) <: DiscreteInfoEstimator
+    PlugIn(e::InformationMeasure) <: DiscreteInfoEstimatorGeneric
 
 The `PlugIn` estimator is also called the empirical/naive/"maximum likelihood" estimator,
 and is used with [`information`](@ref) to any discrete [`InformationMeasure`](@ref).
@@ -28,7 +28,7 @@ the [`MillerMadow`](@ref) estimator is a simple correction to the plug-in estima
 adds back the bias term above. Many other estimators exist; see
 [`DiscreteInfoEstimator`](@ref)s for an overview.
 """
-Base.@kwdef struct PlugIn{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
+Base.@kwdef struct PlugIn{I <: InformationMeasure} <: DiscreteInfoEstimatorGeneric{I}
     definition::I = Shannon()
 end
 
