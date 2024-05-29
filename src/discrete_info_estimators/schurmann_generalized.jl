@@ -1,7 +1,7 @@
 export GeneralizedSchuermann
 
 """
-    GeneralizedSchuermann <: DiscreteInfoEstimator
+    GeneralizedSchuermann <: DiscreteInfoEstimatorShannon
     GeneralizedSchuermann(definition = Shannon(); a = 1.0)
 
 The `GeneralizedSchuermann` estimator is used with [`information`](@ref) to compute the
@@ -37,7 +37,7 @@ G_n(a) = \\varphi(n) + (-1)^n \\int_0^a \\dfrac{x^{n - 1}}{x + 1} dx,
 G_n = \\varphi(n) + (-1)^n \\int_0^1 \\dfrac{x^{n - 1}}{x + 1} dx.
 ```
 """
-Base.@kwdef struct GeneralizedSchuermann{I <: InformationMeasure, A} <: DiscreteInfoEstimator{I}
+Base.@kwdef struct GeneralizedSchuermann{I <: InformationMeasure, A} <: DiscreteInfoEstimatorShannon{I}
     definition::I = Shannon()
     # `a[i]` is the parameter for the i-th outcome, and there must be one
     # parameter per outcome. The user should construct

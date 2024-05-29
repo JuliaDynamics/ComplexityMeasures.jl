@@ -159,6 +159,9 @@ provide improvements over the naive [`PlugIn`](@ref) estimator.
 """
 abstract type DiscreteInfoEstimator{I <: InformationMeasure} <: InformationMeasureEstimator{I} end
 
+# Define further some subtyping for generic or Shannon-only estimators
+abstract type DiscreteInfoEstimatorGeneric{I <: InformationMeasure} <: DiscreteInfoEstimator{I} end
+abstract type DiscreteInfoEstimatorShannon{I <: InformationMeasure} <: DiscreteInfoEstimator{I} end
 
 """
     DifferentialInfoEstimator

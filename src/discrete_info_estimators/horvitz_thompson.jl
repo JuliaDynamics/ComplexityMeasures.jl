@@ -1,7 +1,7 @@
 export HorvitzThompson
 
 """
-    HorvitzThompson <: DiscreteInfoEstimator
+    HorvitzThompson <: DiscreteInfoEstimatorShannon
     HorvitzThompson(measure::Shannon = Shannon())
 
 
@@ -23,7 +23,7 @@ probability that the outcome appears at least once in a sample of size ``N``
 compensates for situations where certain outcomes have so low probabilities that they are
 not often observed in a sample, for example in power-law distributions.
 """
-Base.@kwdef struct HorvitzThompson{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
+Base.@kwdef struct HorvitzThompson{I <: InformationMeasure} <: DiscreteInfoEstimatorShannon{I}
     definition::I = Shannon()
 end
 
