@@ -22,7 +22,7 @@ function concrete_subtypes!(out, type::Type)
     out
 end
 
-# # Count Based Outcome Spaces
+# ## Count Based Outcome Spaces
 #
 # Each `OutcomeSpace` is a possible way of discretizing the input data. For the
 # purpose of counting measures, **we treat the an outcome space with different
@@ -60,7 +60,7 @@ n_outcome_spaces_count = length(OUTCOME_SPACES_COUNT)
 n_probests_count = length(PROBESTS_COUNT)
 n_probs_count = n_outcome_spaces_count * n_probests_count
 
-# # Non-count-based outcome spaces
+# ## Non-count-based outcome spaces
 #
 # We also provide some outcome spaces that are not count-based, but can still
 # be used to estimate discrete probabilities by using some sort of "relative
@@ -78,14 +78,14 @@ OUTCOME_SPACES_NOCOUNT
 # Only `RelativeAmount` probabilities estimator works with non-count-based outcome spaces
 n_probs_noncount = length(OUTCOME_SPACES_NOCOUNT) * 1
 
-# # Grand total of extracting PMFs from data
+# ## Grand total of extracting PMFs from data
 
 # Therefore the total ways to estimate discrete probabilities from data
 # in ComplexityMeasures.jl is just
 
 n_probs_discrete = n_probs_noncount + n_probs_count
 
-# # Discrete Information measures
+# ## Discrete Information measures
 
 # Currently, the InformationMeasures implemented are different types of
 # entropies and the lesser-known extropies. Each of these measures, in their
@@ -119,7 +119,7 @@ n_discrete_estimators_shannon = length(INFO_MEASURE_ESTIMATOR_SHANNON)
 
 n_discrete_info_est = n_discrete_estimators_shannon + n_discrete_infoest_generic
 
-# # Grand total of discrete information measures
+# ## Grand total of discrete information measures
 
 # This total is obtained as the direct multiplication of all ways
 # to obtain a PMF and all ways to compute an information measure from PMF
@@ -128,7 +128,7 @@ n_discrete_info = n_discrete_info_est * n_probs_discrete
 
 # That's quite a lot and we are only half-way done!
 
-# # Differential information measures
+# ## Differential information measures
 
 # The differential information measures and their estimators are
 # all grouped into one level of abstraction as long as the user is concerned,
@@ -144,7 +144,7 @@ DIFF_INFO_EST = concrete_subtypes(DifferentialInfoEstimator)
 
 n_diff_info = length(DIFF_INFO_EST) + 2
 
-# # Complexity measures
+# ## Complexity measures
 #
 # We also provide a number of estimators that are not probability based, which
 # we call just complexity estimators for this discussion.
@@ -171,7 +171,7 @@ n_complexity_measures_statistical_complexity = length(INFO_MEASURES_DISCRETE) * 
 
 n_complexity_measures_total = n_complexity_measures_basic + n_complexity_measures_statistical_complexity
 
-# # Probabilities functions
+# ## Probabilities functions
 
 # Besides calculating complexity measures, ComplexityMeasures.jl gives the user
 # the unique possibility of accessing the probability mass function directly.
@@ -188,7 +188,7 @@ n_complexity_measures_total = n_complexity_measures_basic + n_complexity_measure
 
 n_extra_prob_measures = 2 * n_probs_discrete
 
-# # Grand total of measures
+# ## Grand total of measures
 
 # Right, so the grand total of all measures that can be estimated with
 # ComplexityMeasures.jl are:
