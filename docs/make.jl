@@ -6,6 +6,8 @@ import Literate
 Literate.markdown("src/tutorial.jl", "src"; credit = false)
 Literate.markdown("src/measure_count.jl", "src"; credit = false)
 
+import Documenter
+
 pages = [
     "index.md",
     "tutorial.md",
@@ -16,7 +18,7 @@ pages = [
     "examples.md",
     "devdocs.md",
     "references.md",
-    hide("measure_count.md"),
+    Documenter.hide("measure_count.md"),
 ]
 
 # For easier debugging when downloading from a specific branch.
