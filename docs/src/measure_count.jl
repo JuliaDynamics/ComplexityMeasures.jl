@@ -1,4 +1,4 @@
-# # Counting the number of measures in ComplexityMeasures.jl
+# # [Counting the number of measures in ComplexityMeasures.jl](@id total_measures)
 
 # In this page we will count all the possible complexity measures
 # than one can compute with the current version of ComplexityMeasures.jl!
