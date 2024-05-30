@@ -4,6 +4,7 @@
 # than one can compute with the current version of ComplexityMeasures.jl!
 
 using ComplexityMeasures
+using InteractiveUtils: subtypes
 import Pkg; Pkg.status("ComplexityMeasures")
 
 # First let's define a function that counts concrete subtypes
