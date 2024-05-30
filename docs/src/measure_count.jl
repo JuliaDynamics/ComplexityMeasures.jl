@@ -9,10 +9,7 @@ import Pkg; Pkg.status("ComplexityMeasures")
 # First let's define a function that counts concrete subtypes
 # that we will be re-using to count measures in ComplexityMeasures.jl.
 
-function concrete_subtypes(type::Type)
-    out = Any[]
-    concrete_subtypes!(out, type)
-end
+concrete_subtypes(type::Type) = concrete_subtypes!(Any[], type)
 function concrete_subtypes!(out, type::Type)
     if !isabstracttype(type)
         push!(out, type)

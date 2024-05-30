@@ -152,7 +152,7 @@ for (i, e) in enumerate(knn_estimators)
     lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels_knn[i])
     band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs); alpha = 0.5,
         color = (Main.COLORS[i], 0.5))
-    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, lw = 5, linestyle = :dash)
+    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, linewidth = 5, linestyle = :dash)
 
     ylims!(1.2, 1.6)
     axislegend()
@@ -164,7 +164,7 @@ for (i, e) in enumerate(estimators_os)
     lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels_os[i])
     band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs), alpha = 0.5,
         color = (Main.COLORS[i], 0.5))
-    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, lw = 5, linestyle = :dash)
+    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, linewidth = 5, linestyle = :dash)
     ylims!(1.2, 1.6)
     axislegend()
 end
@@ -235,7 +235,7 @@ ax = Axis(fig[1, 1]; ylabel = "h (bits)")
 lines!(ax, Ns, hs_mean; color = Cycled(1), label = "LeonenkoProzantoSavani")
 band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev,
     alpha = 0.5, color = (Main.COLORS[1], 0.5))
-hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
+hlines!(ax, [h_true], color = :black, linewidth = 5, linestyle = :dash)
 axislegend()
 fig
 ```
@@ -297,7 +297,7 @@ ax = Axis(fig[1, 1]; ylabel = "h (bits)")
 lines!(ax, Ns, hs_mean; color = Cycled(1), label = "LeonenkoProzantoSavani")
 band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev,
     alpha = 0.5, color = (Main.COLORS[1], 0.5))
-hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
+hlines!(ax, [h_true], color = :black, linewidth = 5, linestyle = :dash)
 axislegend()
 fig
 ```
