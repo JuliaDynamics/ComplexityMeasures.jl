@@ -7,3 +7,6 @@ Manifest.toml
 *.css
 *.scss
 *style.jl
+docs/src/measure_count.md
+
+docs/src/tutorial.md
