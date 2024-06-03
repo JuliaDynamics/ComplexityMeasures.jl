@@ -157,15 +157,16 @@ n_complexity_measures_basic = length(COMPLEXITY_ESTIMATORS) - 1
 # In ComplexityMeasures.jl `StatisticalComplexity` can be combined with any discrete
 # information measure, any information estimator, and any count-based outcome space.
 # Additionally, `StatisticalComplexity` in ComplexityMeasures.jl can be combined with any
-# metric from the Distances.jl package. Just the distance metric variability itself
-# brings 1000s of additional variability of measures into the package,
-# but for the current discussion we decided to consider the metric used as just a
-# parameter of the `StatisticalComplexity`. To keep the estimate here
-# a bit conservative, we will count only the variability of the outcome space
-# and information measure definition as input variability,
-# so that `StatisticalComplexity` is a sufficiently different metric for each combination.
+# metric from the Distances.jl package.
 
-# This gives us all possible statistical complexity measures as:
+# For `StatisticalComplexity`, counting all possible combinations of outcome spaces,
+# probabilities estimators, information measure definitions, information measure estimators,
+# along with distance measures, as unique measures would over-inflate the measure count.
+# For practicality, we here count different version of `StatisticalComplexity` by considering
+# the number of statistical complexity measures resulting from counting unique outcome spaces
+# and information measures, since these are the largest contributors to changes in the
+# computed numerical value of the measure. Therefore we have:
+
 n_complexity_measures_statistical_complexity = length(INFO_MEASURES_DISCRETE) * length(concrete_subtypes(OutcomeSpace))
 
 # which gives us the following total number of complexity estimators
