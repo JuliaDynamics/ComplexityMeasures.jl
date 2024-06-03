@@ -1,8 +1,8 @@
-export Composite
+export CompositeDownsampling
 
 """
-    Composite <: MultiScaleAlgorithm
-    Composite(; f::Function = Statistics.mean)
+    CompositeDownsampling <: MultiScaleAlgorithm
+    CompositeDownsampling(; f::Function = Statistics.mean)
 
 Composite multi-scale algorithm for multiscale entropy analysis [Wu2013](@cite), used,
 with [`multiscale`](@ref) to compute, for example, composite multiscale entropy (CMSE).
@@ -10,7 +10,7 @@ with [`multiscale`](@ref) to compute, for example, composite multiscale entropy 
 ## Description
 
 Given a scalar-valued input time series `x`, the composite multiscale algorithm,
-like [`Regular`](@ref), downsamples and coarse-grains `x` by splitting it into
+like [`RegularDownsampling`](@ref), downsamples and coarse-grains `x` by splitting it into
 non-overlapping windows of length `s`, and then constructing downsampled time series by
 applying the function `f` to each of the resulting length-`s` windows.
 
@@ -35,16 +35,16 @@ function, for example [`information`](@ref) or [`complexity`](@ref).
 !!! note "Relation to Regular"
     The downsampled time series ``D_{t, 1}(s)`` constructed using the composite
     multiscale method is equivalent to the downsampled time series ``D_{t}(s)`` constructed
-    using the [`Regular`](@ref) method, for which `k == 1` is fixed, such that only
+    using the [`RegularDownsampling`](@ref) method, for which `k == 1` is fixed, such that only
     a single time series is returned.
 
-See also: [`Regular`](@ref).
+See also: [`RegularDownsampling`](@ref).
 """
-Base.@kwdef struct Composite <: MultiScaleAlgorithm
+Base.@kwdef struct CompositeDownsampling <: MultiScaleAlgorithm
     f::Function = Statistics.mean
 end
 
-function downsample(method::Composite, s::Int, x::AbstractVector{T}, args...;
+function downsample(method::CompositeDownsampling, s::Int, x::AbstractVector{T}, args...;
         kwargs...) where T
     verify_scale_level(method, s, x)
 
@@ -87,28 +87,17 @@ function downsample(method::Composite, s::Int, x::AbstractVector{T}, args...;
     end
 end
 
-function multiscale(alg::Composite, e::InformationMeasure,
-        est::Union{ProbabilitiesEstimator, DifferentialInfoEstimator},
-        x::AbstractVector;
-        maxscale::Int = 8)
+function apply_multiscale(alg::CompositeDownsampling, f::Function, args...;
+        maxscale = 8)
+    # Assume last argument is the input data.
+    downscaled_timeseries = [downsample(alg, s, last(args)) for s in 1:maxscale]
 
-    downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
+    # Use all args for estimation, except the last argument, which is the input data.
+    estimation_args = @views args[1:end-1]
     hs = zeros(Float64, maxscale)
     for s in 1:maxscale
-        hs[s] = mean(entropy.(Ref(e), Ref(est), downscaled_timeseries[s]))
-    end
-
-    return hs
-end
-
-function multiscale_normalized(alg::Composite, e::InformationMeasure, est::ProbabilitiesEstimator,
-        x::AbstractVector;
-        maxscale::Int = 8)
-
-    downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
-    hs = zeros(Float64, maxscale)
-    for s in 1:maxscale
-        hs[s] = mean(information_normalized.(Ref(e), Ref(est), downscaled_timeseries[s]))
+        x = downscaled_timeseries[s] # contains an array of time series
+        hs[s] = mean([f(estimation_args..., tsᵢ) for tsᵢ in x])
     end
 
     return hs

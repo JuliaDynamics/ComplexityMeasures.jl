@@ -24,7 +24,7 @@ include("core/information_measures.jl")
 include("core/information_functions.jl")
 include("core/encodings.jl")
 include("core/complexity.jl")
-include("multiscale.jl")
+include("multiscale/multiscale.jl")
 include("convenience.jl")
 include("core/pretty_printing.jl")
 

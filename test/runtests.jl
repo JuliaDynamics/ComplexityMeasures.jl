@@ -30,8 +30,8 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     include("infomeasures/infomeasures.jl")
     include("complexity/complexity.jl")
 
-    #When multiscale is exported, this should be turned on
-    #include("multiscale/multiscale.jl")
+    # multiscale
+    include("multiscale/multiscale.jl")
 
     #Various
     testfile("encodings/encodings.jl")

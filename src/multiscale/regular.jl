@@ -1,8 +1,8 @@
-export Regular
+export RegularDownsampling
 
 """
-    Regular <: MultiScaleAlgorithm
-    Regular(; f::Function = Statistics.mean)
+    RegularDownsampling <: MultiScaleAlgorithm
+    RegularDownsampling(; f::Function = Statistics.mean)
 
 The original multi-scale algorithm for multiscale entropy analysis [Costa2002](@cite),
 which yields a single downsampled time series per scale `s`.
@@ -33,13 +33,14 @@ literature. For example:
 - `f == Statistics.var` yields the generalized multiscale sample entropy [Costa2015](@cite),
     which uses the second-moment (variance) instead of the mean.
 
-See also: [`Composite`](@ref).
+See also: [`CompositeDownsampling`](@ref).
 """
-Base.@kwdef struct Regular <: MultiScaleAlgorithm
+Base.@kwdef struct RegularDownsampling <: MultiScaleAlgorithm
     f::Function = Statistics.mean
 end
 
-function downsample(method::Regular, s::Int, x::AbstractVector{T}, args...; kwargs...) where T
+function downsample(method::RegularDownsampling, s::Int, x::AbstractVector{T}, args...;
+        kwargs...) where T
     f = method.f
     verify_scale_level(method, s, x)
 
@@ -59,19 +60,12 @@ function downsample(method::Regular, s::Int, x::AbstractVector{T}, args...; kwar
     end
 end
 
-function multiscale(alg::Regular, e::InformationMeasure,
-        est::Union{ProbabilitiesEstimator, DifferentialInfoEstimator},
-        x::AbstractVector;
-        maxscale::Int = 8)
+function apply_multiscale(alg::RegularDownsampling, f::Function, args...;
+        maxscale = 8)
+    # Assume last argument is the input data.
+    downscaled_timeseries = [downsample(alg, s, last(args)) for s in 1:maxscale]
 
-    downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
-    return entropy.(Ref(e), Ref(est), downscaled_timeseries)
-end
-
-function multiscale_normalized(alg::Regular, e::InformationMeasure,
-        est::ProbabilitiesEstimator, x::AbstractVector,;
-        maxscale::Int = 8)
-
-    downscaled_timeseries = [downsample(alg, s, x) for s in 1:maxscale]
-    return information_normalized.(Ref(e), Ref(est), downscaled_timeseries)
+    # Use all args for estimation, except the last argument, which is the input data.
+    estimation_args = @views args[1:end-1]
+    return [f(estimation_args..., ts) for ts in downscaled_timeseries]
 end

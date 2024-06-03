@@ -152,7 +152,7 @@ for (i, e) in enumerate(knn_estimators)
     lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels_knn[i])
     band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs); alpha = 0.5,
         color = (Main.COLORS[i], 0.5))
-    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, lw = 5, linestyle = :dash)
+    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, linewidth = 5, linestyle = :dash)
 
     ylims!(1.2, 1.6)
     axislegend()
@@ -164,7 +164,7 @@ for (i, e) in enumerate(estimators_os)
     lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels_os[i])
     band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs), alpha = 0.5,
         color = (Main.COLORS[i], 0.5))
-    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, lw = 5, linestyle = :dash)
+    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, linewidth = 5, linestyle = :dash)
     ylims!(1.2, 1.6)
     axislegend()
 end
@@ -235,7 +235,7 @@ ax = Axis(fig[1, 1]; ylabel = "h (bits)")
 lines!(ax, Ns, hs_mean; color = Cycled(1), label = "LeonenkoProzantoSavani")
 band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev,
     alpha = 0.5, color = (Main.COLORS[1], 0.5))
-hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
+hlines!(ax, [h_true], color = :black, linewidth = 5, linestyle = :dash)
 axislegend()
 fig
 ```
@@ -297,7 +297,7 @@ ax = Axis(fig[1, 1]; ylabel = "h (bits)")
 lines!(ax, Ns, hs_mean; color = Cycled(1), label = "LeonenkoProzantoSavani")
 band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev,
     alpha = 0.5, color = (Main.COLORS[1], 0.5))
-hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
+hlines!(ax, [h_true], color = :black, linewidth = 5, linestyle = :dash)
 axislegend()
 fig
 ```
@@ -988,5 +988,30 @@ min_curve, max_curve = entropy_complexity_curves(c)
 lines!(ax, min_curve; color=:black)
 lines!(ax, max_curve; color=:black)
 axislegend(; position=:lt)
+fig
+```
+
+## Complexity: multiscale
+
+Let's use [`multiscale`](@ref) analysis to investigate the [`SampleEntropy`](@ref) of a
+signal across coarse-graining scales.
+
+```@example
+using ComplexityMeasures
+using CairoMakie
+
+N, a = 2000, 20
+t = LinRange(0, 2*a*π, N)
+
+x = repeat([-5:5 |> collect; 4:-1:-4 |> collect], N ÷ 20);
+y = sin.(t .+ cos.(t/0.5)) .+ 0.2 .* x
+maxscale = 10
+hs = multiscale_normalized(RegularDownsampling(), SampleEntropy(y), y; maxscale)
+
+fig = Figure()
+ax1 = Axis(fig[1,1]; ylabel = "y")
+lines!(ax1, t, y; color = Cycled(1));
+ax2 = Axis(fig[2, 1]; ylabel = "Sample entropy (h)", xlabel = "Scale")
+scatterlines!(ax2, 1:maxscale |> collect, hs; color = Cycled(1));
 fig
 ```

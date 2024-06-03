@@ -101,3 +101,23 @@ This amounts to adding a new definition of an information measure, not an estima
     probability distribution with a known number of elements, implementing dispatch for
     [`information_maximum`](@ref) automatically enables [`information_normalized`](@ref)
     for your type.
+
+## Adding a new `MultiScaleAlgorithm`
+
+A new `MultiScaleAlgorithm` is simply a new way of coarse-graining input time series 
+across multiple scales.
+
+### Mandatory steps
+
+1. Define a new type `YourNewMultiScaleType <: MultiScaleAlgorithm`. This type will
+    define how coarse graining is performed.
+2. Implement dispatch for [`downsample`](@ref), which transforms the original time series
+    into a vector of coarse-grained time series, one per scale (may be nested if needed).
+3. Implement dispatch for the internal `apply_multiscale` function.
+4. Add an entry for your new type in the `multiscale.md` file.
+5. Add tests for your new type. You specifically need to implement analytical tests
+    that verify that [`downsample`](@ref) is correctly implemented. For API tests,
+    simply copy the tests from e.g. `tests/multiscale/Composite.jl`, and replace the
+    multiscale coarse-graining algorithm with an instance of your algorithm.
+6. Hooray! You're new coarse-graining procedure is integrated with the entire
+    ComplexityMeasures.jl ecosystem!

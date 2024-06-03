@@ -11,6 +11,7 @@ pages = [
     "probabilities.md",
     "information_measures.md",
     "complexity.md",
+    "multiscale.md",
     "convenience.md",
     "examples.md",
     "devdocs.md",
