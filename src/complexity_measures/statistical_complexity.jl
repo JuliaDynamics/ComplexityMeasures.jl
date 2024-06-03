@@ -74,7 +74,7 @@ accessed as a `Ref` value of the struct as
 x = randn(100)
 c = StatisticalComplexity()
 compl = complexity(c, x)
-entr = c.entr_val[]
+entr = first(entropy_complexity(c, x)) # both complexity and entropy value
 ```
 
 `complexity(c::StatisticalComplexity, x)` returns only the statistical complexity.
