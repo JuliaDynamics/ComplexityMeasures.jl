@@ -5,6 +5,7 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 ## 3.5
 
 - New multiscale API.
+- A script in the documentation now calculates explicitly the total possible complexity measures one can estimate with ComplexityMeasures.jl. For version 3.5 this is 1,600, excluding multiscale variants.
 
 ## 3.4
 
@@ -16,7 +17,7 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 
 - Added the `SequentialPairDistances` outcome space. In the literature, this outcome
     space has been used to compute the "distribution entropy", which can be reproduced
-    with `information(Shannon(), SequentialPairDistances(x), x)`. It can of course also 
+    with `information(Shannon(), SequentialPairDistances(x), x)`. It can of course also
     be used in combination with any other information measure.
 - Added the `PairDistanceEncoding` encoding.
 - Added the `entropy_distribution` convenience function.
