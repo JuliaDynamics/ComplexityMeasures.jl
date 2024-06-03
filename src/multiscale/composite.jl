@@ -32,7 +32,7 @@ element of the `k`-th downsampled time series at scale `s`.
 Finally, compute ``\\dfrac{1}{s} \\sum_{k = 1}^s g(D_{k}(s))``, where `g` is some summary
 function, for example [`information`](@ref) or [`complexity`](@ref).
 
-!!! note "Relation to Regular"
+!!! note "Relation to RegularDownsampling"
     The downsampled time series ``D_{t, 1}(s)`` constructed using the composite
     multiscale method is equivalent to the downsampled time series ``D_{t}(s)`` constructed
     using the [`RegularDownsampling`](@ref) method, for which `k == 1` is fixed, such that only

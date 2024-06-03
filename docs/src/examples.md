@@ -991,7 +991,7 @@ axislegend(; position=:lt)
 fig
 ```
 
-## Complexity: multiscale
+## [Complexity: multiscale](@id multiscale_example)
 
 Let's use [`multiscale`](@ref) analysis to investigate the [`SampleEntropy`](@ref) of a
 signal across coarse-graining scales.
