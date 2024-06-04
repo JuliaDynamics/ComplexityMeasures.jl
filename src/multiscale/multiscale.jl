@@ -35,6 +35,9 @@ downsample(alg::MultiScaleAlgorithm,  s::Int, x::AbstractStateSpaceSet) =
 A convenience function to compute the multiscale version of any
 [`InformationMeasureEstimator`](@ref) or [`ComplexityEstimator`](@ref).
 
+The return type of `multiscale` is either a `Vector{Real}` or a `Vector{Vector{Real}}`, see 
+the available coarse-graining methods below.
+
 ## Description
 
 This function generalizes tne multiscale entropy of [Costa2002](@cite) to any discrete
