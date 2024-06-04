@@ -5,7 +5,7 @@
 Multiscale complexity analysis is pervasive in the nonlinear time series analysis
 literature. Although their names, like "refined composite multiscale dispersion entropy",  
 might seem daunting, they're actually conceptually very simple. A multiscale complexity
-measure is just any regular [`InformationMeasure`](@ref) or [`ComplexityEstimator`](@ref)
+measure is just any regular complexity measure
 computed on several gradually more coarse-grained samplings of the input data
 ([example](@ref multiscale_example)).
 
