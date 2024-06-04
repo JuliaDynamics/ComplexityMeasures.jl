@@ -2,7 +2,7 @@ export CompositeDownsampling
 
 """
     CompositeDownsampling <: MultiScaleAlgorithm
-    CompositeDownsampling(; f::Function = Statistics.mean)
+    CompositeDownsampling(; f::Function = Statistics.mean, scales = 1:8)
 
 Composite multi-scale algorithm for multiscale entropy analysis [Wu2013](@cite), used
 with [`multiscale`](@ref) to compute, for example, composite multiscale entropy (CMSE).
@@ -32,6 +32,16 @@ element of the `k`-th downsampled time series at scale `s`.
 Finally, compute ``\\dfrac{1}{s} \\sum_{k = 1}^s g(D_{k}(s))``, where `g` is some summary
 function, for example [`information`](@ref) or [`complexity`](@ref).
 
+## Keyword Arguments
+
+- **`scales`**. The downsampling levels. If `scales` is set to an integer, then this integer
+    is taken as maximum number of scales (i.e. levels of downsampling), and downsampling
+    is done over levels `1:scales`. Otherwise, downsampling is done over the provided
+    `scales` (which may be a range, or some specific scales (e.g. `scales = [1, 5, 6]`).
+    The maximum scale level is `length(x) ÷ 2`, but to avoid applying the method to time
+    series that are extremely short, consider limiting the maximum scale  (e.g.
+    `scales = length(x) ÷ 5`).
+
 !!! note "Relation to RegularDownsampling"
     The downsampled time series ``D_{t, 1}(s)`` constructed using the composite
     multiscale method is equivalent to the downsampled time series ``D_{t}(s)`` constructed
@@ -40,14 +50,22 @@ function, for example [`information`](@ref) or [`complexity`](@ref).
 
 See also: [`RegularDownsampling`](@ref).
 """
-Base.@kwdef struct CompositeDownsampling <: MultiScaleAlgorithm
-    f::Function = Statistics.mean
+struct CompositeDownsampling{S} <: MultiScaleAlgorithm
+    f::Function
+    scales::S
+    function CompositeDownsampling(; f::Function = Statistics.mean, scales::S = 1:8) where S
+        if S <: Integer
+            s = 1:scales
+            return new{typeof(s)}(f, s)
+        end
+        return new{S}(f, scales)
+    end
 end
 
-function downsample(method::CompositeDownsampling, s::Int, x::AbstractVector{T}, args...;
-        kwargs...) where T
-    verify_scale_level(method, s, x)
+function downsample(method::CompositeDownsampling, s::Int, x::AbstractVector{T},
+        args...) where T
 
+    verify_scale_level(method, s, x)
     f = method.f
     ET = eltype(one(1.0)) # always return floats, even if input is e.g. integer-valued
 
@@ -80,23 +98,22 @@ function downsample(method::CompositeDownsampling, s::Int, x::AbstractVector{T},
         for k = 1:s
             for t = 1:min_possible_windows
                 inds = ((t - 1)*s + k):(t * s + k - 1)
-                ys[k][t] = @views f(x[inds], args...; kwargs...)
+                ys[k][t] = @views f(x[inds], args...)
             end
         end
         return ys
     end
 end
 
-function apply_multiscale(alg::CompositeDownsampling, f::Function, args...;
-        maxscale = 8)
-    # Assume last argument is the input data.
-    downscaled_timeseries = [downsample(alg, s, last(args)) for s in 1:maxscale]
+function apply_multiscale(alg::CompositeDownsampling, f::Function, args...)
+    # Assume last argument is the input data
+    downscaled_timeseries = [downsample(alg, s, last(args)) for s in alg.scales]
 
     # Use all args for estimation, except the last argument, which is the input data.
     estimation_args = @views args[1:end-1]
-    hs = zeros(Float64, maxscale)
-    for s in 1:maxscale
-        x = downscaled_timeseries[s] # contains an array of time series
+    hs = zeros(Float64, length(alg.scales))
+    for (i, s) in enumerate(alg.scales)
+        x = downscaled_timeseries[i] # contains an array of time series
         hs[s] = mean([f(estimation_args..., tsᵢ) for tsᵢ in x])
     end
 

@@ -2,6 +2,17 @@ using ComplexityMeasures
 using Statistics
 
 ########################################################################################
+# Constructors
+########################################################################################
+# It should be possible to provide arbitrary scales
+@test CompositeDownsampling(; f = mean, scales = [2, 3, 6]) isa CompositeDownsampling
+
+# Providing integer scale `n` should be equivalent to scales 1:n
+c_int = CompositeDownsampling(; f = mean, scales = 5)
+c_range = CompositeDownsampling(; f = mean, scales = 1:5)
+@test collect(c_int.scales) == collect(c_range.scales)
+
+########################################################################################
 # Downsampling. If these are correct, then upstream results are also guaranteed to be
 # correct (given the correctness of upstream methods).
 ########################################################################################
@@ -41,23 +52,34 @@ c = CompositeDownsampling(f = mean)
 ##############################################################
 # API
 ##############################################################
-x = rand(100)
-maxscale = 5
+x = randn(500)
+scales = 1:5
+c_range = CompositeDownsampling(f = mean; scales = scales)
+c = CompositeDownsampling(f = mean; scales = 5)
 
 # Discrete info measures
 hest = Shannon()
 o = Dispersion()
-mc = multiscale(c, hest, o, x; maxscale)
-mcn = multiscale_normalized(c, hest, o, x; maxscale)
+mc = multiscale(c, hest, o, x)
+mcn = multiscale_normalized(c, hest, o, x)
 @test mc isa Vector{T} where T <: Real
 @test mcn isa Vector{T} where T <: Real
 @test length(mc) == 5
 @test length(mcn) == 5
+@test multiscale(c_range, hest, o, x) == multiscale(c, hest, o, x)
 
 # `DifferentialInfoEstimator`s` should work for `multiscale`, but not `multiscale_normalized`
 @test multiscale(c, Kraskov(hest), x) isa Vector{T} where T <: Real
 @test_throws MethodError multiscale_normalized(c, Kraskov(hest), x)
 
 # `ComplexityEstimator`s
-@test multiscale(c, SampleEntropy(x), x) isa Vector
-@test multiscale_normalized(c, SampleEntropy(x), x) isa Vector
+cest = SampleEntropy(x)
+@test multiscale(r, cest, x) isa Vector
+@test multiscale_normalized(r, cest, x) isa Vector
+
+# any type of scale input should work
+c_arb = CompositeDownsampling(; f = mean, scales = [1, 2, 3, 4, 5])
+c_int = CompositeDownsampling(; f = mean, scales = 5)
+c_range = CompositeDownsampling(; f = mean, scales = 1:5)
+
+@test all(multiscale(c_arb, cest, x) .== multiscale(c_int, cest, x) .== multiscale(c_range, cest, x))

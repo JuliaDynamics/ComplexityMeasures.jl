@@ -2,6 +2,19 @@ using ComplexityMeasures
 using Statistics
 
 ########################################################################################
+# Constructors
+########################################################################################
+# It should be possible to provide arbitrary scales
+r_arb = RegularDownsampling(; f = mean, scales = [2, 3, 6])
+@test r_arb isa RegularDownsampling
+
+# Providing integer scale `n` should be equivalent to scales 1:n
+r_int = RegularDownsampling(; f = mean, scales = 5)
+r_range = RegularDownsampling(; f = mean, scales = 1:5)
+@test collect(r_int.scales) == collect(r_range.scales)
+
+
+########################################################################################
 # Downsampling. If these are correct, then upstream results are also guaranteed to be
 # correct (given the correctness of upstream methods).
 ########################################################################################
@@ -31,15 +44,15 @@ r = RegularDownsampling(f = mean)
 ##############################################################
 # API
 ##############################################################
-x = rand(100)
-r = RegularDownsampling()
+
+x = randn(500)
+r = RegularDownsampling(; scales = 5)
 hest = Shannon()
 o = Dispersion()
-maxscale = 5
 
 # Discrete information measures
-mr = multiscale(r, hest, o, x; maxscale)
-mrn = multiscale_normalized(r, hest, o, x; maxscale)
+mr = multiscale(r, hest, o, x)
+mrn = multiscale_normalized(r, hest, o, x)
 @test mr isa Vector{T} where T <: Real
 @test mrn isa Vector{T} where T <: Real
 @test length(mr) == 5
@@ -50,5 +63,13 @@ mrn = multiscale_normalized(r, hest, o, x; maxscale)
 @test_throws MethodError multiscale_normalized(r, Kraskov(hest), x)
 
 # `ComplexityEstimator`s
-@test multiscale(r, SampleEntropy(x), x) isa Vector
-@test multiscale_normalized(r, SampleEntropy(x), x) isa Vector
+cest = SampleEntropy(x)
+@test multiscale(r, cest, x) isa Vector
+@test multiscale_normalized(r, cest, x) isa Vector
+
+# any type of scale input should work
+r_arb = RegularDownsampling(; f = mean, scales = [1, 2, 3, 4, 5])
+r_int = RegularDownsampling(; f = mean, scales = 5)
+r_range = RegularDownsampling(; f = mean, scales = 1:5)
+
+@test multiscale(r_arb, cest, x) == multiscale(r_int, cest, x) == multiscale(r_range, cest, x)
