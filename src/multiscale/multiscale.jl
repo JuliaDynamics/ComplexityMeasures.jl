@@ -40,7 +40,7 @@ A convenience function to compute the multiscale version of any
 This function generalizes tne multiscale entropy of [Costa2002](@cite) to any discrete
 information measure, any differential information measure, and any other complexity measure.
 
-Utilizes [`downsample`](@ref) with the given `algorithm` to first produce coarse-grained,
+It utilizes [`downsample`](@ref) with the given `algorithm` to first produce coarse-grained,
 downsampled versions of `x` for scale factors `1:maxscale`. Then, [`information`](@ref) or
 [`complexity`](@ref), depending on the input arguments, is applied to each of
 the coarse-grained timeseries. If `N = length(x)`, then the length of the most severely
