@@ -9,8 +9,8 @@ measure is just any regular complexity measure
 computed on several gradually more coarse-grained samplings of the input data
 ([example](@ref multiscale_example)).
 
-We've generalized this type of analysis to work with any information measure, discrete or
-differential, and to any other type of complexity measure we implement.
+We've generalized this type of analysis to work with complexity measure that can 
+be estimated with ComplexityMeasures.jl.
 
 ## Multiscale API
 
