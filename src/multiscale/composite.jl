@@ -4,7 +4,7 @@ export CompositeDownsampling
     CompositeDownsampling <: MultiScaleAlgorithm
     CompositeDownsampling(; f::Function = Statistics.mean)
 
-Composite multi-scale algorithm for multiscale entropy analysis [Wu2013](@cite), used,
+Composite multi-scale algorithm for multiscale entropy analysis [Wu2013](@cite), used
 with [`multiscale`](@ref) to compute, for example, composite multiscale entropy (CMSE).
 
 ## Description
