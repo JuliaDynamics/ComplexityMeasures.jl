@@ -23,12 +23,12 @@ The multiscale API is defined by the functions
 which dispatch any of the [`MultiScaleAlgorithm`](@ref)s listed below.
 
 ```@docs
+multiscale
+multiscale_normalized
 MultiScaleAlgorithm
 RegularDownsampling
 CompositeDownsampling
 downsample
-multiscale
-multiscale_normalized
 ```
 
 ## Available literature methods
