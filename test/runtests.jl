@@ -23,6 +23,7 @@ testfile(file, testname=defaultname(file)) = @testset "$testname" begin; include
     testfile("outcome_spaces/implementations/bubble_sort_swaps.jl")
     testfile("outcome_spaces/implementations/spatial/spatial_ordinal_patterns.jl")
     testfile("outcome_spaces/implementations/spatial/spatial_dispersion.jl")
+    testfile("outcome_spaces/implementations/spatial/spatial_bubble_sort_swaps.jl")
 
     # # probabilities
     testfile("probabilities_estimators/probabilities_estimators.jl")

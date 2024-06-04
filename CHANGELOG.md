@@ -5,7 +5,8 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 ## 3.5
 
 - New multiscale API.
-- A script in the documentation now calculates explicitly the total possible complexity measures one can estimate with ComplexityMeasures.jl. For version 3.5 this is 1,600, excluding multiscale variants.
+- New spatial outcome space: `SpatialBubbleSortSwaps`.
+- A script in the documentation now calculates explicitly the total possible complexity measures one can estimate with ComplexityMeasures.jl. For version 3.5 this is roughly 1,600.
 
 ## 3.4
 

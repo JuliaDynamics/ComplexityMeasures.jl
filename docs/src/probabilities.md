@@ -103,6 +103,7 @@ BubbleSortSwaps
 ```@docs
 SpatialOrdinalPatterns
 SpatialDispersion
+SpatialBubbleSortSwaps
 ```
 
 ## `Probabilities` and related functions
