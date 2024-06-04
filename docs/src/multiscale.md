@@ -31,7 +31,7 @@ CompositeDownsampling
 downsample
 ```
 
-## Available literature methods
+## Example literature methods
 
 A non-exhaustive list of literature methods, and the syntax to compute them, are listed
 below. Please open an issue or make a pull-request to
