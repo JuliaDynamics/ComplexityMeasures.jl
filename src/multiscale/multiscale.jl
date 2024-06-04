@@ -37,7 +37,7 @@ A convenience function to compute the multiscale version of any
 
 ## Description
 
-This function generalizes of the [Costa2002](@cite) multiscale entropy to any discrete
+This function generalizes tne multiscale entropy of [Costa2002](@cite) to any discrete
 information measure, any differential information measure, and any other complexity measure.
 
 Utilizes [`downsample`](@ref) with the given `algorithm` to first produce coarse-grained,
