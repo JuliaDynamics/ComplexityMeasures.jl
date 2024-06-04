@@ -1,7 +1,7 @@
 export ChaoShen
 
 """
-    ChaoShen <: DiscreteInfoEstimator
+    ChaoShen <: DiscreteInfoEstimatorShannon
     ChaoShen(definition::Shannon = Shannon())
 
 The `ChaoShen` estimator is used with [`information`](@ref) to compute the
@@ -23,7 +23,7 @@ where ``N`` is the sample size and ``M`` is the number of [`outcomes`](@ref). If
 ``f_1 = N``, then ``f_1`` is set to ``f_1 = N - 1`` to ensure positive entropy
 [Arora2022](@cite).
 """
-Base.@kwdef struct ChaoShen{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
+Base.@kwdef struct ChaoShen{I <: InformationMeasure} <: DiscreteInfoEstimatorShannon{I}
     definition::I = Shannon()
 end
 

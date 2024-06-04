@@ -41,3 +41,8 @@ In general though, the standard DynamicalSystems.jl approach is taken and as suc
 ```@docs
 StateSpaceSet
 ```
+
+## Total entropy/information/complexity measures
+
+ComplexityMeasures.jl offers thousands of measures computable right out of the box.
+To see an exact number of how many, see this [calculation page](@ref total_measures).

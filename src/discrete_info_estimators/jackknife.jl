@@ -1,7 +1,7 @@
 export Jackknife
 
 """
-    Jackknife <: DiscreteInfoEstimator
+    Jackknife <: DiscreteInfoEstimatorGeneric
     Jackknife(definition::InformationMeasure = Shannon())
 
 The `Jackknife` estimator is used with [`information`](@ref) to compute any
@@ -25,7 +25,7 @@ where ``N`` is the sample size, ``H_S^{plugin}`` is the plugin estimate of Shann
 and ``{H_S^{plugin}}^{-\\{i\\}}`` is the plugin estimate, but computed with the ``i``-th
 sample left out.
 """
-Base.@kwdef struct Jackknife{I <: InformationMeasure} <: DiscreteInfoEstimator{I}
+Base.@kwdef struct Jackknife{I <: InformationMeasure} <: DiscreteInfoEstimatorGeneric{I}
     definition::I = Shannon()
 end
 

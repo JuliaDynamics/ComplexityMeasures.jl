@@ -5,10 +5,11 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 ## 3.5
 
 - New spatial outcome space: `SpatialBubbleSortSwaps`.
+A script in the documentation now calculates explicitly the total possible complexity measures one can estimate with ComplexityMeasures.jl. For version 3.5 this is roughly 1,600.
 
 ## 3.4
 
-- New complexity measure: `BubbleEntropy`. 
+- New complexity measure: `BubbleEntropy`.
 - New outcome space: `BubbleSortSwaps`.
 - New encoding: `BubbleSortSwapsEncoding`.
 
@@ -16,7 +17,7 @@ Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.
 
 - Added the `SequentialPairDistances` outcome space. In the literature, this outcome
     space has been used to compute the "distribution entropy", which can be reproduced
-    with `information(Shannon(), SequentialPairDistances(x), x)`. It can of course also 
+    with `information(Shannon(), SequentialPairDistances(x), x)`. It can of course also
     be used in combination with any other information measure.
 - Added the `PairDistanceEncoding` encoding.
 - Added the `entropy_distribution` convenience function.
