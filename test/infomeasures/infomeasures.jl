@@ -15,6 +15,7 @@ include("infomeasure_types/tsallis_extropy.jl")
 include("infomeasure_types/renyi_extropy.jl")
 
 include("infomeasure_types/electronic_entropy.jl")
+include("infomeasure_types/fluctuation_complexity.jl")
 
 
 # Estimators

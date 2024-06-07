@@ -36,6 +36,7 @@ ShannonExtropy
 RenyiExtropy
 TsallisExtropy
 ElectronicEntropy
+FluctuationComplexity
 ```
 
 ## Discrete information estimators
