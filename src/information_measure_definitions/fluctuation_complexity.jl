@@ -5,7 +5,7 @@ export FluctuationComplexity
     FluctuationComplexity(; definition = Shannon(; base = 2), base = 2)
 
 The "fluctuation complexity" quantifies the standard deviation of the information content of the states 
-``\\omega_i`` around some  summary statistic ) of a PMF (an [`InformationMeasure`](@ref). Specifically, given some 
+``\\omega_i`` around some summary statistic ([`InformationMeasure`](@ref)) of a PMF. Specifically, given some 
 outcome space ``\\Omega`` with outcomes ``\\omega_i \\in \\Omega`` 
 and a probability mass function ``p(\\Omega) = \\{ p(\\omega_i) \\}_{i=1}^N``, it is defined as
 
