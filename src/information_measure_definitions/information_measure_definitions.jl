@@ -12,3 +12,5 @@ include("renyi_extropy.jl")
 
 # Measures that are not strictly entropies nor extropies (but perhaps a combination)
 include("electronic.jl")
+
+include("fluctuation_complexity.jl")
