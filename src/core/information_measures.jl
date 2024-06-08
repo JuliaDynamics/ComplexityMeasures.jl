@@ -37,6 +37,7 @@ for usage examples.
 - [`RenyiExtropy`](@ref).
 - [`TsallisExtropy`](@ref).
 - [`ShannonExtropy`](@ref), which is a subcase of the above two in the limit `q → 1`.
+- [`FluctuationComplexity`](@ref).
 
 ## Estimators
 
