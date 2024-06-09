@@ -40,3 +40,8 @@ end
 function information_maximum(e::Kaniadakis, L::Int)
     throw(ErrorException("information_maximum not implemeted for Kaniadakis entropy yet"))
 end
+
+function selfinformation(e::Kaniadakis, pᵢ)
+    κ = e.κ
+    return (pᵢ^(-κ) - pᵢ^κ) / (2κ)
+end
