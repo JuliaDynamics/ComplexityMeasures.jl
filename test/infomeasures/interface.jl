@@ -31,6 +31,11 @@ end
     @test_throws ArgumentError information(AlizadehArghami(Tsallis()), x)
 
     @test_throws ArgumentError entropy(ShannonExtropy(), OrdinalPatterns(), x)
+    
+    # Error when measure doesn't implement `self_information`.
+    struct MyNewInfoMeasure <: InformationMeasure end
+    p = 0.1
+    @test_throws ArgumentError self_information(MyNewInfoMeasure(), p)
 
 
     # some new measure
