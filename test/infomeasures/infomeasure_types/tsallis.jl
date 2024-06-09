@@ -48,3 +48,5 @@ end
 p = Probabilities([1//5, 1//5, 1//5, 1//2, 0])
 Ht = Tsallis(q = 2)
 @test round(information_from_selfinfo(Ht, p), digits = 5) ≈ round(information(Ht, p), digits = 5)
+
+

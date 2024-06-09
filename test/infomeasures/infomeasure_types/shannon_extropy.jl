@@ -20,3 +20,16 @@ js = information_normalized(ShannonExtropy(), UniqueElements(), x)
 x = [0.2, 0.2, 0.4, 0.4, 0.5, 0.5]
 js = information(ShannonExtropy(base = 2), UniqueElements(), x)
 @test js ≈ (3 - 1)*log(2, (3 / (3 - 1)))
+
+# ---------------------------------------------------------------------------------------------------------
+# Self-information tests
+# ---------------------------------------------------------------------------------------------------------
+# Check experimentally that the self-information expressions are correct by comparing to the 
+# regular computation of the measure from a set of probabilities.
+function information_from_selfinfo(e::ShannonExtropy, probs::Probabilities)
+    non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
+    return sum((1 - pᵢ) * selfinformation(e, pᵢ) for pᵢ in non0_probs)
+end
+p = Probabilities([1//5, 1//5, 1//5, 1//2, 0])
+Js = ShannonExtropy()
+@test round(information_from_selfinfo(Js, p), digits = 5) ≈ round(information(Js, p), digits = 5)
