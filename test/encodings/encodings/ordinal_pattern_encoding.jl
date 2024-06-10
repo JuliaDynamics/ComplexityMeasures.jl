@@ -72,7 +72,7 @@ end
     o = OrdinalPatternEncoding{2}() # random is less
     res = [encode(o, [1,1]) for i in 1:1000]
     @test unique(res) == [1, 2]
-    o = OrdinalPatternEncoding{2}(isless) # random is less
+    o = OrdinalPatternEncoding{2}(isless) # normal is less
     res = [encode(o, [1,1]) for i in 1:1000]
     @test unique(res) == [1]
 end
