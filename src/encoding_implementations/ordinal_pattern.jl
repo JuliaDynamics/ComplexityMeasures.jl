@@ -68,7 +68,7 @@ function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector) where {
     if m != length(χ)
         throw(ArgumentError("Permutation order and length of input must match!"))
     end
-    perm = sortperm!(encoding.perm, χ)
+    perm = sortperm!(encoding.perm, χ; lt = encoding.lt)
     return permutation_to_integer(perm)
 end
 

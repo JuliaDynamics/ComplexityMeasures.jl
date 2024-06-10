@@ -58,7 +58,7 @@ end
     @test missing_outcomes(OrdinalPatterns(; m, τ), x) == 0
 end
 
-@testset "Pretty printing" begin 
+@testset "Pretty printing" begin
     o = OrdinalPatterns{3}()
     @test occursin("OrdinalPatterns{3}", repr(o))
     @test occursin("encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1", repr(o))
@@ -66,4 +66,13 @@ end
     os = [o, o, o]
     s = "[OrdinalPatterns{3}(encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1), OrdinalPatterns{3}(encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1), OrdinalPatterns{3}(encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1)]"
     @test occursin(s, repr(os))
+end
+
+@testset "usage of isless" begin
+    o = OrdinalPatternEncoding{2}() # random is less
+    res = [encode(o, [1,1]) for i in 1:1000]
+    @test unique(res) == [1, 2]
+    o = OrdinalPatternEncoding{2}(isless) # random is less
+    res = [encode(o, [1,1]) for i in 1:1000]
+    @test unique(res) == [1]
 end
