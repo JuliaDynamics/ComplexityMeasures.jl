@@ -103,7 +103,7 @@ function decode(::OrdinalPatternEncoding{m}, s::Integer) where {m}
         perm[i] = popat!(xs, f[i] + 1)
     end
 
-    return SVector{m, Int}(perm) # converting from SVector to MVector is essentially free
+    return SVector{m, Int}(perm) # converting to SVector is free
 end
 
 """
