@@ -79,14 +79,14 @@ data, see [`ValueBinning`](@ref).
 struct FixedRectangularBinning{R<:Tuple} <: AbstractBinning
     ranges::R
     precise::Bool
-end
-
-function FixedRectangularBinning(ranges::R, precise = false) where {R}
-    if any(r -> !issorted(r), ranges)
-        throw(ArgumentError("All input ranges must be sorted!"))
+    function FixedRectangularBinning(ranges::R, precise) where {R}
+        if any(r -> !issorted(r), ranges)
+            throw(ArgumentError("All input ranges must be sorted!"))
+        end
+        return new{R}(ranges, precise)
     end
-    return FixedRectangularBinning{R}(ranges, precise)
 end
+FixedRectangularBinning(ranges) = FixedRectangularBinning(ranges, false)
 
 """
     FixedRectangularBinning(range::AbstractRange, D::Int = 1, precise = false)
