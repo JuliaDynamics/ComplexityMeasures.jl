@@ -9,6 +9,7 @@ using StaticArrays: SVector
     b = FixedRectangularBinning(0:0.2:1.0)
     @test RectangularBinEncoding(b, x) isa RectangularBinEncoding
     @test_throws ArgumentError RectangularBinEncoding(b, y)
+    @test_throws ArgumentError RectangularBinEncoding((5:-1:0,))
 end
 
 seeds = [1234, 57772, 90897, 2158081, 888]
