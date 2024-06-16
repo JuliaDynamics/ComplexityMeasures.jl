@@ -55,9 +55,8 @@ end
 function information(e::FluctuationComplexity, probs::Probabilities)
     def = e.definition
     h = information(def, probs)
-    non0_probs = Iterators.filter(!iszero, vec(probs))
-    logf = log_with_base(e.base)
-    return sqrt(sum(pᵢ * (-logf(pᵢ) - h) ^ 2 for pᵢ in non0_probs))
+    s = self_information(def, probs)
+    return sqrt(sum(pᵢ * (s - h)^2 for pᵢ in non0_probs))
 end
 
 # The maximum is not generally known.
