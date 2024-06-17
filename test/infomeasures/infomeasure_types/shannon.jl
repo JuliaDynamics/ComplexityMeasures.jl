@@ -25,7 +25,7 @@ xp = Probabilities(x)
 # regular computation of the measure from a set of probabilities.
 function information_from_selfinfo(e::Shannon, probs::Probabilities)
     non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
-    return sum(pᵢ * selfinformation(e, pᵢ) for pᵢ in non0_probs)
+    return sum(pᵢ * self_information(e, pᵢ) for pᵢ in non0_probs)
 end
 p = Probabilities([1//10, 1//5, 1//7, 1//5, 0])
 Hs = Shannon()

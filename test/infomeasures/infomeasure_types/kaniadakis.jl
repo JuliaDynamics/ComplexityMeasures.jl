@@ -21,7 +21,7 @@ p = Probabilities([0, 1])
 function information_from_selfinfo(e::Kaniadakis, probs::Probabilities)
     e.κ ≈ 1.0 && return information_wm(Shannon(; base = e.base ), probs)
     non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
-    return sum(pᵢ * selfinformation(e, pᵢ) for pᵢ in non0_probs)
+    return sum(pᵢ * self_information(e, pᵢ) for pᵢ in non0_probs)
 end
 p = Probabilities([1//5, 1//5, 1//5, 0, 1//5])
 Hk = Kaniadakis(κ = 2)

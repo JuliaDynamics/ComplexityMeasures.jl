@@ -28,7 +28,7 @@ js = information(ShannonExtropy(base = 2), UniqueElements(), x)
 # regular computation of the measure from a set of probabilities.
 function information_from_selfinfo(e::ShannonExtropy, probs::Probabilities)
     non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
-    return sum((1 - pᵢ) * selfinformation(e, pᵢ) for pᵢ in non0_probs)
+    return sum((1 - pᵢ) * self_information(e, pᵢ) for pᵢ in non0_probs)
 end
 p = Probabilities([1//5, 1//5, 1//5, 1//2, 0])
 Js = ShannonExtropy()
