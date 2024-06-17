@@ -58,12 +58,8 @@ end
 
 function self_information(e::StretchedExponential, pᵢ) 
     η, base = e.η, e.base 
-    # We need the scaled  *upper* incomplete gamma function, which is the second
-    # entry in the tuple returned from `gamma_inc`.
     Γ₁ = gamma((η + 1) / η, -log(base, pᵢ))
     Γ₂ = gamma((η + 1) / η)
-    if pᵢ == 0
-        throw(ArgumentError("Probability `pᵢ` cannot be zero"))
-    end
+    # NB! Filter for pᵢ != 0 before calling this method.
     return Γ₁/pᵢ - Γ₂
 end

@@ -286,6 +286,8 @@ end
 Compute the "self-information"/"surprisal" of a single probability `pᵢ` under the given 
 information measure. 
 
+This function assumes `pᵢ > 0`, so make sure to pre-filter your probabilities.
+
 ## Definition
 
 We here use the definition "self-information" very loosely, and 
