@@ -37,7 +37,7 @@ properties [Bates1993](@cite).
     As far as we know, using other information measures besides Shannon entropy for the 
     fluctuation complexity hasn't been explored in the literature yet. Our implementation, however, allows for it.
     We're currently writing a paper outlining the generalizations to other measures. For now, we verify 
-    correctness of the measure through numerical examples in out test-suite.
+    correctness of the measure through numerical examples in our test-suite.
 """
 struct FluctuationComplexity{M <: InformationMeasure, I <: Integer} <: InformationMeasure
     definition::M
