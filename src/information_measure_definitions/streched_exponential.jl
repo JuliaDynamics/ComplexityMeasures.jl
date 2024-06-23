@@ -56,7 +56,7 @@ function information_maximum(e::StretchedExponential, L::Int)
     L * gamma_inc(x, log(e.base, L))[2] * Γx - Γx
 end
 
-function self_information(e::StretchedExponential, pᵢ) 
+function self_information(e::StretchedExponential, pᵢ, N) 
     η, base = e.η, e.base 
     Γ₁ = gamma((η + 1) / η, -log(base, pᵢ))
     Γ₂ = gamma((η + 1) / η)

@@ -51,6 +51,6 @@ function information_maximum(e::Tsallis, L::Int)
     end
 end
 
-function self_information(e::Tsallis, pᵢ)
+function self_information(e::Tsallis, pᵢ, N = nothing)
     return (1 - pᵢ^(e.q- 1)) / (e.q - 1)
 end

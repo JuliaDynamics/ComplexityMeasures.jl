@@ -281,12 +281,17 @@ function information(::InformationMeasure, ::DifferentialInfoEstimator, args...)
 end
 
 """
-    self_information(measure::InformationMeasure, pᵢ)
+    self_information(measure::InformationMeasure, p, N::Int)
 
-Compute the "self-information"/"surprisal" of a single probability `pᵢ` under the given 
-information measure. 
+Compute the "self-information"/"surprisal" of a single probability `p` under the given 
+information measure, assuming that `p` is part of a length-`N` probability distribution.
 
-This function assumes `pᵢ > 0`, so make sure to pre-filter your probabilities.
+For some `measure`s, the information content is independent of `N`, while for others 
+it depends on `N`. For consistency, we require that you always provide `N` (`N` will be 
+ignored if not relevant).
+
+    This function requires `p > 0`; giving `0` can yield `Inf` or `NaN` for certain 
+`measure`s.
 
 ## Definition
 
@@ -302,12 +307,12 @@ sum of the self-information equals the information measure.
 
 !!! note "Motivation for this definition"
     This definition is motivated by the desire to compute generalized 
-    [`FluctuationComplexity`](@ref), which is a measure of fluctuations of local self-information
+    [`InformationFluctuation`](@ref), which is a measure of fluctuations of local self-information
     relative to some information-theoretic summary statistic of a distribution. Defining 
     these self-information functions has, as far as we know, not been treated in the literature 
     before, and will be part of an upcoming paper we're writing! 
 """
-function self_information(measure::InformationMeasure, pᵢ)
+function self_information(measure::InformationMeasure, pᵢ, N = nothing)
     throw(ArgumentError(
         """`InformationMeasure` $(typeof(measure)) does not implement `self_information`."""
     ))

@@ -24,7 +24,7 @@ function information(e::Shannon, probs::Probabilities)
     return -sum(x*logf(x) for x in non0_probs)
 end
 
-function self_information(e::Shannon, pᵢ)
+function self_information(e::Shannon, pᵢ, N)
     return -log(e.base, pᵢ)
 end
 
