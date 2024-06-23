@@ -33,3 +33,7 @@ function information_maximum(e::ShannonExtropy, L::Int)
 
     return (L - 1) * log(e.base, L / (L - 1))
 end
+
+function self_information(e::ShannonExtropy, pᵢ, N = nothing)
+    return -log(e.base, 1 - pᵢ)
+end

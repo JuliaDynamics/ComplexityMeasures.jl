@@ -15,6 +15,7 @@ information(::InformationMeasure, ::OutcomeSpace, ::Any)
 information(::DifferentialInfoEstimator, ::Any)
 information_maximum
 information_normalized
+self_information
 ```
 
 ## Entropies

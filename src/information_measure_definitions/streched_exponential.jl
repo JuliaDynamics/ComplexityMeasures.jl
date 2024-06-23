@@ -39,7 +39,6 @@ function stretched_exponential(pᵢ, η, base)
     # integral used in Anteneodo & Plastino (1999). See
     # https://specialfunctions.juliamath.org/stable/functions_list/#SpecialFunctions.gamma_inc
     Γx = gamma(x)
-
     return gamma_inc(x, -log(base, pᵢ))[2] * Γx - pᵢ * Γx
 end
 
@@ -55,4 +54,12 @@ function information_maximum(e::StretchedExponential, L::Int)
     # We need the scaled  *upper* incomplete gamma function, which is the second
     # entry in the tuple returned from `gamma_inc`.
     L * gamma_inc(x, log(e.base, L))[2] * Γx - Γx
+end
+
+function self_information(e::StretchedExponential, pᵢ, N) 
+    η, base = e.η, e.base 
+    Γ₁ = gamma((η + 1) / η, -log(base, pᵢ))
+    Γ₂ = gamma((η + 1) / η)
+    # NB! Filter for pᵢ != 0 before calling this method.
+    return Γ₁/pᵢ - Γ₂
 end

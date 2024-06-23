@@ -34,3 +34,8 @@ function information_maximum(e::Curado, L::Int)
     # Maximized for the uniform distribution, which for distribution of length L is
     return L * (1 - exp(-b/L)) + exp(-b) - 1
 end
+
+function self_information(e::Curado, p, N::Int)
+    b = e.b
+    return exp(-b*p)/p + (exp(-b) - 1)/N
+end
