@@ -57,3 +57,8 @@ function information_maximum(e::TsallisExtropy, L::Int)
 
     return ((L - 1) * L^(q - 1) - (L - 1)^q) / ((q - 1) * L^(q - 1))
 end
+
+function self_information(e::TsallisExtropy, pᵢ, N) #must have N
+    k, q = e.k, e.q
+    return (N - 1)/(q - 1) - (1 - pᵢ)^q / (q-1)
+end

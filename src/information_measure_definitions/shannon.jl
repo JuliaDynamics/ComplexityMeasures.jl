@@ -24,4 +24,8 @@ function information(e::Shannon, probs::Probabilities)
     return -sum(x*logf(x) for x in non0_probs)
 end
 
+function self_information(e::Shannon, pᵢ, N)
+    return -log(e.base, pᵢ)
+end
+
 information_maximum(e::Shannon, L::Int) = log_with_base(e.base)(L)
