@@ -35,6 +35,7 @@ probabilities(x) = probabilities(UniqueElements(), x)
 outcome_space(::UniqueElements, x) = sort!(unique(x))
 
 function codify(o::UniqueElements, x)
-    encoding = UniqueElementsEncoding(x)
-    encode.(Ref(encoding), x)
+    xv = vec(x)
+    encoding = UniqueElementsEncoding(xv)
+    encode.(Ref(encoding), xv)
 end
