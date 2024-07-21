@@ -27,7 +27,7 @@ struct UniqueElementsEncoding{T, I <: Integer} <: Encoding
     decode_dict::Dict{I, T}
 end
 function UniqueElementsEncoding(x)
-    # Ecode in order of first appearance, because `sort` doesn't work if we mix types,
+    # Encode in order of first appearance, because `sort` doesn't work if we mix types,
     # e.g. `String` and `Int`.
     x_unique = unique(vec(x))
     T = eltype(x_unique)
