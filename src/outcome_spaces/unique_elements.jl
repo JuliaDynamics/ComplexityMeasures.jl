@@ -36,5 +36,5 @@ outcome_space(::UniqueElements, x) = sort!(unique(x))
 
 function codify(o::UniqueElements, x)
     encoding = UniqueElementsEncoding(x)
-    encode.(Ref(encoding), x)
+    return [encode(encoding, xᵢ) for xᵢ in x]
 end
