@@ -25,20 +25,21 @@ encode.(Ref(e), x) == [1, 2, 3, 2, 3, 1] # true
 struct UniqueElementsEncoding{T, I <: Integer} <: Encoding
     encode_dict::Dict{T, I}
     decode_dict::Dict{I, T}
-    function UniqueElementsEncoding(x)
-
-        # Ecode in order of first appearance, because `sort` doesn't work if we mix types,
-        # e.g. `String` and `Int`.
-        x_unique = unique(x)
-        encode_dict = Dict{eltype(x), Int}()
-        decode_dict = Dict{Int, eltype(x)}()
-        for (i, xu) in enumerate(x_unique)
-            encode_dict[xu] = i
-            decode_dict[i] = xu
-        end
-        new{eltype(x), Int}(encode_dict, decode_dict)
-    end
 end
+function UniqueElementsEncoding(x)
+    # Ecode in order of first appearance, because `sort` doesn't work if we mix types,
+    # e.g. `String` and `Int`.
+    x_unique = unique(vec(x))
+    T = eltype(x_unique)
+    encode_dict = Dict{T, Int}()
+    decode_dict = Dict{Int, T}()
+    for (i, xu) in enumerate(x_unique)
+        encode_dict[xu] = i
+        decode_dict[i] = xu
+    end
+    return UniqueElementsEncoding(encode_dict, decode_dict)
+end
+
 function UniqueElementsEncoding()
     throw(ArgumentError("`UniqueElementsEncoding` can't be initialized without input data."))
 end
@@ -47,6 +48,6 @@ function encode(encoding::UniqueElementsEncoding, x)
     return encoding.encode_dict[x]
 end
 
-function decode(encoding::UniqueElementsEncoding, ω::Integer)
+function decode(encoding::UniqueElementsEncoding, ω::I) where I <: Integer
     return encoding.decode_dict[ω]
 end
