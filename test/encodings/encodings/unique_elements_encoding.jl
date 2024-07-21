@@ -1,6 +1,6 @@
 using Test
 using ComplexityMeasures
-using statespacesets
+using StateSpaceSets
 
 x = ['a', 2, 5, 2, 5, 'a']
 e = UniqueElementsEncoding(x)
