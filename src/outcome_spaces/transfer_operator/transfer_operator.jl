@@ -129,7 +129,7 @@ function inds_in_terms_of_unique(x)
         end
     end
 
-    return inds
+    return inds,Nu
 end
 
 # Taking advantage of the fact that x is sorted reduces runtime by 1.5 orders of magnitude
@@ -165,6 +165,46 @@ end
 inds_in_terms_of_unique(x::AbstractStateSpaceSet) = inds_in_terms_of_unique(x.data)
 
 
+function calculate_transition_matrix(S::SparseMatrixCSC;verbose=true)
+	S_returned = deepcopy(S)
+	calculate_transition_matrix!(S_returned,verbose=verbose)
+	return S_returned
+end
+
+#normalize each row of S (sum is 1) to get p_ij trans. probabilities
+#by looping through CSC sparse matrix efficiently
+function calculate_transition_matrix!(S::SparseMatrixCSC;verbose=true)
+
+    stochasticity = true
+
+    St = spzeros(size(S))
+    ftranspose!(St,S, x -> x)
+    vals = nonzeros(St)
+    _,n = size(St)
+
+    #loop over columns
+	for j in 1:n
+        sumSi = 0.0
+        #loop nonzero values from that column
+        nzi = nzrange(St,j)
+        for i in nzi
+            sumSi += vals[i]
+        end
+
+        #catch rows (columns) with only zero values
+        sumSi == 0.0 && (stochasticity=false)
+
+        #normalize
+        for i in nzi
+            vals[i] /= sumSi
+        end
+    end
+    ftranspose!(S,St, x->x)
+    (stochasticity == false && verbose) && @warn "Transition matrix is not stochastic!"
+    nothing
+end
+
+
 """
     TransferOperatorApproximationRectangular(to, binning::RectangularBinning, mini,
         edgelengths, bins, sort_idxs)
@@ -194,7 +234,6 @@ struct TransferOperatorApproximationRectangular{
     encoding::E
     bins::BINS
     sort_idxs::Vector{Int}
-    visitors::Vector{Vector{Int}}
 end
 
 """
@@ -215,8 +254,7 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
     end
     encoding = RectangularBinEncoding(binning, pts)
 
-
-    # The L points visits a total of L bins, which are the following bins (referenced
+    # The L points visits a total of N bins, which are the following bins (referenced
     # here as cartesian coordinates, not absolute bins):
     visited_bins = map(pᵢ -> encode(encoding, pᵢ), pts)
     sort_idxs = sortperm(visited_bins)
@@ -224,94 +262,32 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
 
     # There are N=length(unique(visited_bins)) unique bins.
     # Which of the unqiue bins does each of the L points visit?
-    visits_whichbin = inds_in_terms_of_unique(visited_bins, false) # set to true when sorting is fixed
+    visits_whichbin,N = inds_in_terms_of_unique(visited_bins, false) # set to true when sorting is fixed
 
-    # `visitors` lists the indices of the points visiting each of the N unique bins.
-    slices = GroupSlices.groupslices(visited_bins)
-    visitors = GroupSlices.groupinds(slices)
 
-    # first_visited_by == [x[1] for x in visitors]
-    first_visited_by = GroupSlices.firstinds(slices)
-    L = length(first_visited_by)
+    #matrix to store the occurrence counts of each transition
+	Q = spzeros(N, N)
 
-    I = Int32[]
-    J = Int32[]
-    P = Float64[]
+	#probability distribution of outcomes
+	state_probabilities = zeros(N) 
 
-    # Preallocate target index for the case where there is only
-    # one point of the orbit visiting a bin.
-    target_bin_j::Int = 0
-    n_visitsᵢ::Int = 0
-   
-    if boundary_condition == :circular
-        append!(visits_whichbin, [1])
-    elseif boundary_condition == :random
-        append!(visits_whichbin, [rand(rng, 1:length(visits_whichbin))])
-    else
-        error("Boundary condition $(boundary_condition) not implemented")
-    end
+	#count transitions in Q, assuming symbols from 1 to N
+    #also count how many time a bin is visited 
+	for i in 1:(L - 1)
+		Q[visits_whichbin[i],visits_whichbin[i+1]] += 1.0
+		state_probabilities[visits_whichbin[i]] += 1.0
+	end
+	state_probabilities[visits_whichbin[end]] += 1.0
 
-    # Loop over the visited bins bᵢ
-    for i in 1:L
-        # How many times is this bin visited?
-        n_visitsᵢ = length(visitors[i])
+    #normalize state distribution
+    state_probabilities = state_probabilities ./ sum(state_probabilities)
 
-        # If both conditions below are true, then there is just one
-        # point visiting the i-th bin. If there is only one visiting point and
-        # it happens to be the last, we skip it, because we don't know its
-        # image.
-        if n_visitsᵢ == 1 && !(i == visits_whichbin[end])
-            # To which bin does the single point visiting bᵢ jump if we
-            # shift it one time step ahead along its orbit?
-            target_bin_j = visits_whichbin[visitors[i][1] + 1][1]
+    #normalize Q (not strictly necessary) and fill P by normalizing rows
+    Q .= Q./sum(Q)
+    P = calculate_transition_matrix(Q)
 
-            # We now know that exactly one point (the i-th) does the
-            # transition from i to the target j.
-            push!(I, i)
-            push!(J, target_bin_j)
-            push!(P, 1.0)
-        end
-
-        # If more than one point of the orbit visits the i-th bin, we
-        # identify the visiting points and track which bins bⱼ they end up
-        # in after the forward linear map of the points.
-        if n_visitsᵢ > 1
-            timeindices_visiting_pts = visitors[i]
-            # If bᵢ is the bin visited by the last point in the orbit, then
-            # the last entry of `visiting_pts` will be the time index of the
-            # last point of the orbit. In the next time step, that point will
-            # have nowhere to go along its orbit (precisely because it is the
-            # last data point). Thus, we exclude it.
-            if i == visits_whichbin[end]
-                #warn("Removing last point")
-                n_visitsᵢ = length(timeindices_visiting_pts) - 1
-                timeindices_visiting_pts = timeindices_visiting_pts[1:(end - 1)]
-            end
-
-            # To which boxes do each of the visitors to bᵢ jump in the next
-            # time step?
-            target_bins = visits_whichbin[timeindices_visiting_pts .+ 1]
-
-            # Count how many points jump from the i-th bin to each of
-            # the unique target bins, and use that to calculate the transition
-            # probability from bᵢ to bⱼ.
-            for (j, bᵤ) in enumerate(unique(target_bins))
-                n_transitions_i_to_j = sum(target_bins .== bᵤ)
-
-                push!(I, i)
-                push!(J, bᵤ)
-                push!(P, n_transitions_i_to_j / n_visitsᵢ)
-            end
-        end
-    end
-
-    # Transfer operator is just the normalized transition probabilities between the boxes.
-    TO = sparse(I, J, P)
-
-    # visited_bins[i] corresponds to the i-th row/column of the transfer operator
-    unique!(visited_bins)
-    TransferOperatorApproximationRectangular(
-        TO, encoding, visited_bins, sort_idxs, visitors)
+    return TransferOperatorApproximationRectangular(
+        P, encoding, visited_bins, sort_idxs)
 end
 
 """
