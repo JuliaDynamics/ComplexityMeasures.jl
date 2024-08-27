@@ -188,7 +188,7 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
 	Q = spzeros(N, N)
 
 	#count transitions in Q, assuming symbols from 1 to N
-	@time for i in 1:(L - 1)
+	for i in 1:(L - 1)
         Q[visits_whichbin[i],visits_whichbin[i+1]] += 1.0
 	end
 

@@ -58,7 +58,7 @@ binnings = [
     end
 
     #--------------test if they're equal---------------
-    @show p_bins,ρ_bins
+    #@show p_bins,ρ_bins
     @test all(isapprox.(p_bins,ρ_bins;atol=1e-3))
 
 end
