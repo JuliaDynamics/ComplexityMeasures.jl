@@ -2,12 +2,12 @@ using DelayEmbeddings, SparseArrays
 using StaticArrays
 using Random
 
-include("GroupSlices.jl")
+include("utils.jl")
 
 export
     TransferOperator, # the probabilities estimator
     InvariantMeasure, invariantmeasure,
-    transfermatrix
+    transfermatrix, transferoperator
 
 """
     TransferOperator <: OutcomeSpace
@@ -112,97 +112,6 @@ function TransferOperator(ϵ::Union{Real,Vector};
     return TransferOperator(RectangularBinning(ϵ), warn_precise, rng)
 end
 
-# If x is not sorted, we need to look at all pairwise comparisons
-function inds_in_terms_of_unique(x)
-    U = unique(x)
-    N = length(x)
-    Nu = length(U)
-    inds = zeros(Int, N)
-
-    for j = 1:N
-        xⱼ = view(x, j)
-        for i = 1:Nu
-            # using views doesn't allocate
-            @inbounds if xⱼ == view(U, i)
-                inds[j] = i
-            end
-        end
-    end
-
-    return inds,Nu
-end
-
-# Taking advantage of the fact that x is sorted reduces runtime by 1.5 orders of magnitude
-# for datasets of >100 000+ points
-function inds_in_terms_of_unique_sorted(x) # assumes sorted
-    @assert issorted(x)
-    N = length(x)
-    prev = view(x, 1)
-    inds = zeros(Int, N)
-    uidx = 1
-    @inbounds for j = 1:N
-        xⱼ = view(x, j)
-        # if the current value has changed, then we know that the corresponding index
-        # for the unique point must be incremented by 1
-        if xⱼ != prev
-            prev = xⱼ
-            uidx += 1
-        end
-        inds[j] = uidx
-    end
-
-    return inds
-end
-
-function inds_in_terms_of_unique(x, sorted::Bool)
-    if sorted
-        return inds_in_terms_of_unique_sorted(x)
-    else
-        return inds_in_terms_of_unique(x)
-    end
-end
-
-inds_in_terms_of_unique(x::AbstractStateSpaceSet) = inds_in_terms_of_unique(x.data)
-
-
-function calculate_transition_matrix(S::SparseMatrixCSC;verbose=true)
-	S_returned = deepcopy(S)
-	calculate_transition_matrix!(S_returned,verbose=verbose)
-	return S_returned
-end
-
-#normalize each row of S (sum is 1) to get p_ij trans. probabilities
-#by looping through CSC sparse matrix efficiently
-function calculate_transition_matrix!(S::SparseMatrixCSC;verbose=true)
-
-    stochasticity = true
-
-    St = spzeros(size(S))
-    ftranspose!(St,S, x -> x)
-    vals = nonzeros(St)
-    _,n = size(St)
-
-    #loop over columns
-	for j in 1:n
-        sumSi = 0.0
-        #loop nonzero values from that column
-        nzi = nzrange(St,j)
-        for i in nzi
-            sumSi += vals[i]
-        end
-
-        #catch rows (columns) with only zero values
-        sumSi == 0.0 && (stochasticity=false)
-
-        #normalize
-        for i in nzi
-            vals[i] /= sumSi
-        end
-    end
-    ftranspose!(S,St, x->x)
-    (stochasticity == false && verbose) && @warn "Transition matrix is not stochastic!"
-    nothing
-end
 
 
 """
@@ -233,7 +142,6 @@ struct TransferOperatorApproximationRectangular{
     transfermatrix::AbstractArray{T, 2}
     encoding::E
     bins::BINS
-    sort_idxs::Vector{Int}
 end
 
 """
@@ -245,7 +153,7 @@ rectangular partition given by the `binning`.
 """
 function transferoperator(pts::AbstractStateSpaceSet{D, T},
         binning::Union{FixedRectangularBinning, RectangularBinning};
-        boundary_condition = :circular, 
+        boundary_condition = :none, 
         warn_precise = true) where {D, T<:Real}
 
     L = length(pts)
@@ -256,38 +164,41 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
 
     # The L points visits a total of N bins, which are the following bins (referenced
     # here as cartesian coordinates, not absolute bins):
-    visited_bins = map(pᵢ -> encode(encoding, pᵢ), pts)
-    sort_idxs = sortperm(visited_bins)
+    outcomes = map(pᵢ -> encode(encoding, pᵢ), pts)
+    #sort_idxs = sortperm(visited_bins)
     #sort!(visited_bins) # see todo on github
 
     # There are N=length(unique(visited_bins)) unique bins.
     # Which of the unqiue bins does each of the L points visit?
-    visits_whichbin,N = inds_in_terms_of_unique(visited_bins, false) # set to true when sorting is fixed
-
+    visits_whichbin,unique_outcomes = inds_in_terms_of_unique(outcomes, false) # set to true when sorting is fixed
+    N = length(unique_outcomes)
+   
+    #apply boundary conditions (default is :none)
+    if boundary_condition == :circular
+        append!(visits_whichbin, [1])
+        L += 1
+    elseif boundary_condition == :random
+        append!(visits_whichbin, [rand(rng, 1:length(visits_whichbin))])
+        L += 1
+    elseif boundary_condition != :none
+        error("Boundary condition $(boundary_condition) not implemented")
+    end
 
     #matrix to store the occurrence counts of each transition
 	Q = spzeros(N, N)
 
-	#probability distribution of outcomes
-	state_probabilities = zeros(N) 
-
 	#count transitions in Q, assuming symbols from 1 to N
-    #also count how many time a bin is visited 
-	for i in 1:(L - 1)
-		Q[visits_whichbin[i],visits_whichbin[i+1]] += 1.0
-		state_probabilities[visits_whichbin[i]] += 1.0
+	@time for i in 1:(L - 1)
+        Q[visits_whichbin[i],visits_whichbin[i+1]] += 1.0
 	end
-	state_probabilities[visits_whichbin[end]] += 1.0
 
-    #normalize state distribution
-    state_probabilities = state_probabilities ./ sum(state_probabilities)
-
-    #normalize Q (not strictly necessary) and fill P by normalizing rows
+    #normalize Q (not strictly necessary) and fill P by normalizing rows of Q
     Q .= Q./sum(Q)
     P = calculate_transition_matrix(Q)
 
+    unique!(outcomes)
     return TransferOperatorApproximationRectangular(
-        P, encoding, visited_bins, sort_idxs)
+        P, encoding, outcomes)
 end
 
 """
