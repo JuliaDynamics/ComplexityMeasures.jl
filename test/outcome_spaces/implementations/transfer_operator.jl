@@ -1,4 +1,3 @@
-using Revise 
 using ComplexityMeasures, Test
 using Random: MersenneTwister
 using DynamicalSystemsBase
