@@ -112,7 +112,7 @@ end
 
 # 2D matrix. This method is all we need, because for higher dimensional arrays, we 
 # show 2D slices, not the entire ND arrays.
-function print_array_with_margins(io::IO, x::AbstractArray{T, 2}, margins::Tuple{Vararg{<:AbstractVector, 2}}) where {T}
+function print_array_with_margins(io::IO, x::AbstractArray{T, 2}, margins::Tuple{Vararg{AbstractVector, 2}}) where {T}
     h, w = displaysize(io)
     outs_x1, outs_x2 = vectorized_outcomes.(margins)
     h, w = displaysize(io)
