@@ -82,7 +82,9 @@ Base.@kwdef struct ApproximateEntropy{I, B, R} <: ComplexityEstimator
     end
 end
 
-
+function complexity(c::ApproximateEntropy, x::AbstractStateSpaceSet)
+    throw(ArgumentError("Approximate entropy is only computable for timeseries."))
+end
 
 function complexity(c::ApproximateEntropy, x::AbstractVector{T}) where T
     (; m, τ, r, base) = c
