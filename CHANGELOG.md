@@ -2,7 +2,12 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
-## 3.6 
+## 3.7
+
+- Updated to StateSpaceSets.jl v2.0
+- Fixed a bug in `codify` with `StateSpaceSet`. Now it does exactly as described in the docstring.
+
+## 3.6
 
 - New information measure: `FluctuationComplexity`.
 
