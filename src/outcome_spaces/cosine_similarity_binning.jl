@@ -50,8 +50,8 @@ An alias to [`CosineSimilarityBinning`](@ref).
 const Diversity = CosineSimilarityBinning
 
 function counts_and_outcomes(o::CosineSimilarityBinning, x::AbstractVector{T}) where T <: Real
-    # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval. To 
-    # do so, we call the `counts_and_outcomes(::RectangularBinEncoding, x)` in the file 
+    # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval. To
+    # do so, we call the `counts_and_outcomes(::RectangularBinEncoding, x)` in the file
     # `encoding_implementations/rectangular_binning.jl`.
     rbc::RectangularBinEncoding = encoding_for_diversity(o.nbins)
     cdists = cosine_similarity_distances(o, x)
@@ -87,7 +87,7 @@ function encoding_for_diversity(nbins::Int)
     return RectangularBinEncoding(binning)
 end
 
-function codify(o::CosineSimilarityBinning, x::AbstractVector{T}) where T
+function codify(o::CosineSimilarityBinning, x::AbstractVector{<:Real})
     τs = 0:o.τ:(o.m - 1)*o.τ
     Y = genembed(x, τs)
     ds = zeros(Float64, length(Y) - 1)

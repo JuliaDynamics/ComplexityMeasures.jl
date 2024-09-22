@@ -69,4 +69,6 @@ spaces preserve the input data length (e.g. [`UniqueElements`](@ref)), while
 some outcome spaces (e.g. [`OrdinalPatterns`](@ref)) do e.g. delay embeddings before
 encoding, so that `length(s) < length(x)`.
 """
-function codify end
+function codify(o::OutcomeSpace, s::AbstractStateSpaceSet)
+    return map(x -> codify(o, x), columns(s))
+end

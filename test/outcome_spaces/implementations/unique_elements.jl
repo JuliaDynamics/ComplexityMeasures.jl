@@ -38,7 +38,7 @@ end
 
 # Codification of vector inputs (time series)
 x = [1, 3, 2, 1, 2, 2, 1, 3, 1]
-y = StateSpaceSet(["a", "b", "c", "b", "a"])
+y = ["a", "b", "c", "b", "a"]
 
 @test codify(UniqueElements(), x) isa Vector{Int}
 @test codify(UniqueElements(), y) isa Vector{Int}
