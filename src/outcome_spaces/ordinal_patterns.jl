@@ -200,18 +200,18 @@ is_counting_based(o::AmplitudeAwareOrdinalPatterns) = false
 function OrdinalPatterns{m}(τ = 1, lt = isless_rand; kwargs...) where {m}
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `OrdinalPatterns` is deprecated. " *
-        "The signature is now " * 
-        "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" * 
-        ", so provide `τ` as a positional argument instead. " * 
+        "The signature is now " *
+        "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
+        ", so provide `τ` as a positional argument instead. " *
         "In this call, the given keyword `τ` is used instead of the positional `τ`."
         @warn msg
         τ = kwargs[:τ]
     end
     if haskey(kwargs, :lt)
         msg = "Keyword argument `lt` to `OrdinalPatterns` is deprecated. " *
-        "The signature is now " * 
-        "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" * 
-        ", so provide `lt` as a positional argument instead. "  * 
+        "The signature is now " *
+        "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
+        ", so provide `lt` as a positional argument instead. "  *
         "In this call, the given keyword `lt` is used instead of the positional `lt`."
         @warn msg
         lt = kwargs[:lt]
@@ -225,18 +225,18 @@ end
 function WeightedOrdinalPatterns{m}(τ = 1, lt = isless_rand; kwargs...) where {m}
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `WeightedOrdinalPatterns` is deprecated. " *
-        "The signature is now " * 
-        "`WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=ComplexityMeasures.isless_rand)`" * 
-        ", so provide `τ` as a positional argument instead. "  * 
+        "The signature is now " *
+        "`WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=ComplexityMeasures.isless_rand)`" *
+        ", so provide `τ` as a positional argument instead. "  *
         "In this call, the given keyword `τ` is used instead of the positional `τ`."
         @warn msg
         τ = kwargs[:τ]
     end
     if haskey(kwargs, :lt)
         msg = "Keyword argument `lt` to `WeightedOrdinalPatterns` is deprecated. " *
-        "The signature is now " * 
-        "`WeightedOrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" * 
-        ", so provide `lt` as a positional argument instead. "  * 
+        "The signature is now " *
+        "`WeightedOrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
+        ", so provide `lt` as a positional argument instead. "  *
         "In this call, the given keyword `lt` is used instead of the positional `lt`."
         @warn msg
         lt = kwargs[:lt]
@@ -248,7 +248,7 @@ function WeightedOrdinalPatterns{m}(τ = 1, lt = isless_rand; kwargs...) where {
     return WeightedOrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
 
-function AmplitudeAwareOrdinalPatterns{m}(τ = 1, A = 0.5, lt = isless_rand; 
+function AmplitudeAwareOrdinalPatterns{m}(τ = 1, A = 0.5, lt = isless_rand;
         kwargs...) where {m}
     # because the order of the arguments is different from the other ordinal outcome spaces
     if A isa Function
@@ -256,30 +256,30 @@ function AmplitudeAwareOrdinalPatterns{m}(τ = 1, A = 0.5, lt = isless_rand;
         "Got a $(typeof(A)).";
         throw(ArgumentError(msg))
     end
-    
+
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
-        "The signature is now " * 
-        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
-        ", so provide `τ` as a positional argument instead. "  * 
+        "The signature is now " *
+        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
+        ", so provide `τ` as a positional argument instead. "  *
         "In this call, the given keyword `τ` is used instead of the positional `τ`."
         @warn msg
         τ = kwargs[:τ]
     end
     if haskey(kwargs, :lt)
         msg = "Keyword argument `lt` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
-        "The signature is now " * 
-        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
-        ", so provide `lt` as a positional argument instead. "  * 
+        "The signature is now " *
+        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
+        ", so provide `lt` as a positional argument instead. "  *
         "In this call, the given keyword `lt` is used instead of the positional `lt`."
         @warn msg
         lt = kwargs[:lt]
     end
     if haskey(kwargs, :A)
         msg = "Keyword argument `A` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
-        "The signature is now " * 
-        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
-        ", so provide `A` as a positional argument instead. "  * 
+        "The signature is now " *
+        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
+        ", so provide `A` as a positional argument instead. "  *
         "In this call, the given keyword `A` is used instead of the positional `A`."
         @warn msg
         A = kwargs[:A]
@@ -335,25 +335,9 @@ function fasthist!(πs::Vector{Int}, est::OrdinalOutcomeSpace{m}, x::AbstractSta
     return cts
 end
 
-function codify(est::OrdinalOutcomeSpace{m}, x) where m
-    if x isa AbstractVector
-        dataset = embed(x, m, est.τ)
-    elseif x isa AbstractStateSpaceSet && dimension(x) == 1
-        err = "Convert your univariate time series to a subtype of `AbstractVector` to " * 
-        "codify with ordinal patterns! A `StateSpaceSet` input is assumed to be " * 
-        "already  embedded in D = m >= 2 dimensional space."
-        throw(ArgumentError(err))
-    else
-        dataset = x
-    end
-    m != dimension(dataset) && throw(ArgumentError(
-        "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
-    ))
-    πs = zeros(Int, length(dataset))
-    @inbounds for (i, χ) in enumerate(dataset)
-        πs[i] = encode(est.encoding, χ)
-    end
-    return πs
+function codify(o::OrdinalOutcomeSpace{m}, x::AbstractVector{<:Real}) where {m}
+    emb = embed(x, m, o.τ).data
+    return encode.(Ref(o.encoding), emb)
 end
 
 # Special treatment for counting-based
@@ -447,9 +431,4 @@ Encode relative amplitude information of the elements of `a`.
 """
 function AAPE(x, A::Real = 0.5, m::Int = length(x))
     (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
-end
-
-function codify(o::OrdinalPatterns{m}, x::AbstractVector) where {m}
-    emb = embed(x, m, o.τ).data
-    return encode.(Ref(o.encoding), emb)
 end
