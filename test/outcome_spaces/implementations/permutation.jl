@@ -91,6 +91,11 @@ end
     WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
     # Codification of vector inputs (time series)
     x = rand(30)
-    @test codify(S(), x) isa Vector{Int}
-    @test_throws ArgumentError codify(S(),StateSpaceSet(x))
+    y = rand(30)
+    s = StateSpaceSet(x, y)
+    c1 = codify(S(), x)
+    @test c1 isa Vector{Int}
+    out = codify(S(), s)
+    @test out isa Tuple
+    @test out[1] == c1
 end
