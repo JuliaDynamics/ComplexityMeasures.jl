@@ -2,11 +2,6 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
-## 3.8
-
-- Fixed a bug in the `Probabilities` constructor. It is now again possible to construct `Probabilities`
-  when outcome vectors have different element types.
- 
 ## 3.7
 
 - Updated to StateSpaceSets.jl v2.0
