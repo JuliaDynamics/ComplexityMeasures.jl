@@ -71,6 +71,6 @@ function probs_and_outs_from_histogram(est::AddConstant, outcomemodel::OutcomeSp
         probs[k] = (nₖ + c) / (n + (c * m))
     end
     @assert sum(probs) ≈ 1
-
+    
     return Probabilities(probs, outs,)
 end
