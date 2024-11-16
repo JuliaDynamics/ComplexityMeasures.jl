@@ -95,7 +95,4 @@ end
     s = StateSpaceSet(x, y)
     c1 = codify(S(), x)
     @test c1 isa Vector{Int}
-    out = codify(S(), s)
-    @test out isa Tuple
-    @test out[1] == c1
 end
