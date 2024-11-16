@@ -49,12 +49,8 @@ export codify
 """
 
     codify(o::OutcomeSpace, x::Vector) → s::Vector{Int}
-    codify(o::OutcomeSpace, x::AbstractStateSpaceSet{D}) → s::NTuple{D, Vector{Int}
 
 Codify `x` according to the outcome space `o`.
-If `x` is a `Vector`, then a `Vector{<:Integer}` is returned. If `x` is a
-`StateSpaceSet{D}`, then symbolization is done column-wise and an
-`NTuple{D, Vector{<:Integer}}` is returned, where `D = dimension(x)`.
 
 ## Description
 
@@ -69,6 +65,4 @@ spaces preserve the input data length (e.g. [`UniqueElements`](@ref)), while
 some outcome spaces (e.g. [`OrdinalPatterns`](@ref)) do e.g. delay embeddings before
 encoding, so that `length(s) < length(x)`.
 """
-function codify(o::OutcomeSpace, s::AbstractStateSpaceSet)
-    return map(x -> codify(o, x), columns(s))
-end
+function codify(o::OutcomeSpace, x) end

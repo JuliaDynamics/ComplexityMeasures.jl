@@ -95,7 +95,7 @@ function codify(o::ValueBinning{<:FixedRectangularBinning}, x::AbstractStateSpac
     return encode.(Ref(encoder), x.data)
 end
 
-function codify(o::ValueBinning{<:RectangularBinning}, x::AbstractVector{<:Real})
+function codify(o::ValueBinning{<:RectangularBinning}, x::AbstractVector)
     encoder = RectangularBinEncoding(o.binning, x)
     return encode.(Ref(encoder), x)
 end
