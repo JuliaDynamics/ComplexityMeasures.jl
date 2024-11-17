@@ -92,6 +92,12 @@ Diversity
 SequentialPairDistances
 ```
 
+### Sequential category transitions
+
+```@docs
+SequentialCategoryTransitions
+```
+
 ### Bubble sort swaps
 
 ```@docs
