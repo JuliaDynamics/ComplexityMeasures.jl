@@ -9,14 +9,14 @@
 [![publication](https://img.shields.io/badge/publication-arXiv.2406.05011-blueviolet.svg)](https://doi.org/10.48550/arXiv.2406.05011)
 
 ComplexityMeasures.jl is a Julia-based software for calculating 1000s of various kinds of
-probabilities, entropies, and other so-called _complexity measures_ from a single-variable input datasets. For relational measures across many input datasets see its extension [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
+probabilities, entropies, and other so-called _complexity measures_ from a single-variable input datasets. For relational measures across many input datasets see its extension [Associations.jl](https://juliadynamics.github.io/Associations.jl/dev/).
 If you are a user of other programming languages (Python, R, MATLAB, ...),
 you can still use ComplexityMeasures.jl due to Julia's interoperability.
 For example, for Python use [`juliacall`](https://pypi.org/project/juliacall/).
 
 A careful comparison with alternative widely used software shows that ComplexityMeasures.jl outclasses the alternatives in several objective aspects of comparison, such as computational performance, overall amount of measures, reliability, and extendability. See the associated publication for more details.
 
-The key features that it provides can be summarized as:
+The key features that ComplexityMeasures.jl provides can be summarized as:
 
 - A rigorous framework for extracting probabilities from data, based on the mathematical formulation of [probability spaces](https://en.wikipedia.org/wiki/Probability_space).
 - Several (12+) outcome spaces, i.e., ways to discretize data into probabilities.
@@ -25,7 +25,7 @@ The key features that it provides can be summarized as:
 - Several discrete and continuous (differential) estimators for entropies, which correct theoretically known estimation biases.
 - An extendable interface and well thought out API accompanied by dedicated developer documentation. This makes it trivial to define new outcome spaces, or new estimators for probabilities, information measures, or complexity measures and integrate them with everything else in the software without boilerplate code.
 
-ComplexityMeasures.jl can be used as a standalone package, or as part of other projects in the JuliaDynamics organization, such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/dynamicalsystems/dev/) or [CausalityTools.jl](https://juliadynamics.github.io/CausalityTools.jl/dev/).
+ComplexityMeasures.jl can be used as a standalone package, or as part of other projects in the JuliaDynamics organization, such as [DynamicalSystems.jl](https://juliadynamics.github.io/DynamicalSystemsDocs.jl/dynamicalsystems/dev/) or [Associations.jl](https://juliadynamics.github.io/Associations.jl/dev/).
 
 To install it, run `import Pkg; Pkg.add("ComplexityMeasures")`.
 
