@@ -146,7 +146,7 @@ end
 
 """
     transferoperator(pts::AbstractStateSpaceSet,
-        binning::RectangularBinning) → TransferOperatorApproximationRectangular
+        binning::Union{FixedRectangularBinning, RectangularBinning};boundary_condition = :none,warn_precise = true) → TransferOperatorApproximationRectangular
 
 Estimate the transfer operator given a set of sequentially ordered points subject to a
 rectangular partition given by the `binning`.

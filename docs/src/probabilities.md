@@ -64,6 +64,7 @@ TransferOperator
 InvariantMeasure
 invariantmeasure
 transfermatrix
+transferoperator
 ```
 
 ### Kernel density
