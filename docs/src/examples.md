@@ -834,7 +834,7 @@ using CairoMakie
 N, a = 2000, 10
 t = LinRange(0, 2*a*π, N)
 
-x = repeat([-5:5 |> collect; 4:-1:-4 |> collect], N ÷ 20);
+x = repeat([-5:5.0 |> collect; 4.0:-1:-4 |> collect], N ÷ 20);
 y = sin.(t .+ cos.(t/0.5));
 z = rand(N)
 
