@@ -57,7 +57,7 @@ struct Probabilities{T, N, S} <: AbstractArray{T, N}
     dimlabels::NTuple{N, S}
 
     function Probabilities(x::AbstractArray{T, N},
-            outcomes::Tuple{Vararg{V, N}} where V,
+            outcomes::Tuple{Vararg{AbstractVector, N}},
             dimlabels::NTuple{N, S};
             normed::Bool = false) where {T, N, S}
         if !normed # `normed` is an internal argument that skips checking the sum.

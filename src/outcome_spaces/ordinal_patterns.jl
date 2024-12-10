@@ -335,7 +335,7 @@ function fasthist!(πs::Vector{Int}, est::OrdinalOutcomeSpace{m}, x::AbstractSta
     return cts
 end
 
-function codify(o::OrdinalOutcomeSpace{m}, x::AbstractVector{<:Real}) where {m}
+function codify(o::OrdinalOutcomeSpace{m}, x::AbstractVector) where {m}
     emb = embed(x, m, o.τ).data
     return encode.(Ref(o.encoding), emb)
 end

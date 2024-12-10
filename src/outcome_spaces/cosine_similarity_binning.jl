@@ -65,7 +65,14 @@ function cosine_similarity_distances(o::CosineSimilarityBinning, x::AbstractVect
     Y = genembed(x, τs)
     ds = zeros(Float64, length(Y) - 1)
     @inbounds for i in 1:(length(Y)-1)
-        ds[i] = cosine_similarity(Y[i], Y[i+1])
+        # The cosine similarity, by construction, is bounded to [-1, 1]. Due to precision errors,
+        # its value may sometimes be slightly outside this range. This causes problems when 
+        # computing the histogram over the cosine similarity distances using `RectangularBinEncoding`.
+        # By subtracting a machine epsilon, we ensure that  no cosine similarities are encoded 
+        # as the outcome `-1`. Note: we could also do this in the construction of the binning
+        # by expanding the range slightly. But to keep the binning conceptually aligned with
+        # the cosine similarity definition, we apply the correction here.
+        ds[i] = min(cosine_similarity(Y[i], Y[i+1]), 1.0 - eps())
     end
     return ds
 end
@@ -80,10 +87,12 @@ function encoded_space_cardinality(o::CosineSimilarityBinning, x::AbstractVector
     return n_pts_embedded - 1
 end
 
-cosine_similarity(xᵢ, xⱼ) = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
+cosine_similarity(xᵢ, xⱼ) = cs = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) * sqrt(sum(xⱼ .^ 2)))
 
 function encoding_for_diversity(nbins::Int)
-    binning = FixedRectangularBinning((range(-1.0, nextfloat(1.0); length = nbins+1),))
+    precise = false
+    r = range(-1.0, nextfloat(1.0); length = nbins+1)
+    binning = FixedRectangularBinning((r,), precise)
     return RectangularBinEncoding(binning)
 end
 
