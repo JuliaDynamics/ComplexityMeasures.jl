@@ -149,7 +149,6 @@ end
 
 Approximate the transfer operator given a set of sequentially ordered points subject to a
 rectangular partition given by the `binning`.
-The returned type is [`TransferOperatorApproximationRectangular`](@ref).
 The keywords `boundary_condition = :none, warn_precise = true` are as in [`TransferOperator`](@ref).
 """
 function transferoperator(pts::AbstractStateSpaceSet{D, T},
