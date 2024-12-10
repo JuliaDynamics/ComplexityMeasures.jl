@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>ComplexityMeasures.jl Examples · ComplexityMeasures.jl</title><meta name="title" content="ComplexityMeasures.jl Examples · ComplexityMeasures.jl"/><meta property="og:title" content="ComplexityMeasures.jl Examples · ComplexityMeasures.jl"/><meta property="twitter:title" content="ComplexityMeasures.jl Examples · ComplexityMeasures.jl"/><meta name="description" content="Documentation for ComplexityMeasures.jl."/><meta property="og:description" content="Documentation for ComplexityMeasures.jl."/><meta property="twitter:description" content="Documentation for ComplexityMeasures.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="https://fonts.googleapis.com/css?family=Montserrat|Source+Code+Pro&amp;display=swap" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">ComplexityMeasures.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">ComplexityMeasures.jl</a></li><li><a class="tocitem" href="../tutorial/">Tutorial</a></li><li><a class="tocitem" href="../probabilities/">Probabilities</a></li><li><a class="tocitem" href="../information_measures/">Information measures (entropies and co.)</a></li><li><a class="tocitem" href="../complexity/">Complexity measures</a></li><li><a class="tocitem" href="../convenience/">Convenience functions</a></li><li class="is-active"><a class="tocitem" href>ComplexityMeasures.jl Examples</a><ul class="internal"><li><a class="tocitem" href="#Probabilities:-kernel-density"><span>Probabilities: kernel density</span></a></li><li><a class="tocitem" href="#Probabilities:-KL-divergence-of-histograms"><span>Probabilities: KL-divergence of histograms</span></a></li><li><a class="tocitem" href="#Differential-entropy:-estimator-comparison"><span>Differential entropy: estimator comparison</span></a></li><li><a class="tocitem" href="#Discrete-entropy:-permutation-entropy"><span>Discrete entropy: permutation entropy</span></a></li><li><a class="tocitem" href="#Discrete-entropy:-wavelet-entropy"><span>Discrete entropy: wavelet entropy</span></a></li><li><a class="tocitem" href="#Discrete-entropies:-properties"><span>Discrete entropies: properties</span></a></li><li><a class="tocitem" href="#dispersion_example"><span>Discrete entropy: dispersion entropy</span></a></li><li><a class="tocitem" href="#Discrete-entropy:-normalized-entropy-for-comparing-different-signals"><span>Discrete entropy: normalized entropy for comparing different signals</span></a></li><li><a class="tocitem" href="#Spatiotemporal-permutation-entropy"><span>Spatiotemporal permutation entropy</span></a></li><li><a class="tocitem" href="#Spatial-discrete-entropy:-Fabio"><span>Spatial discrete entropy: Fabio</span></a></li><li><a class="tocitem" href="#Complexity:-reverse-dispersion-entropy"><span>Complexity: reverse dispersion entropy</span></a></li><li><a class="tocitem" href="#Complexity:-missing-dispersion-patterns"><span>Complexity: missing dispersion patterns</span></a></li><li><a class="tocitem" href="#Complexity:-approximate-entropy"><span>Complexity: approximate entropy</span></a></li><li><a class="tocitem" href="#Complexity:-sample-entropy"><span>Complexity: sample entropy</span></a></li><li><a class="tocitem" href="#Statistical-complexity-of-iterated-maps"><span>Statistical complexity of iterated maps</span></a></li></ul></li><li><a class="tocitem" href="../devdocs/">ComplexityMeasures.jl Dev Docs</a></li><li><a class="tocitem" href="../references/">References</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>ComplexityMeasures.jl Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>ComplexityMeasures.jl Examples</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaDynamics/ComplexityMeasures.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaDynamics/ComplexityMeasures.jl/blob/main/docs/src/examples.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="examples"><a class="docs-heading-anchor" href="#examples">ComplexityMeasures.jl Examples</a><a id="examples-1"></a><a class="docs-heading-anchor-permalink" href="#examples" title="Permalink"></a></h1><h2 id="Probabilities:-kernel-density"><a class="docs-heading-anchor" href="#Probabilities:-kernel-density">Probabilities: kernel density</a><a id="Probabilities:-kernel-density-1"></a><a class="docs-heading-anchor-permalink" href="#Probabilities:-kernel-density" title="Permalink"></a></h2><p>Here, we draw some random points from a 2D normal distribution. Then, we use kernel density estimation to associate a probability to each point <code>p</code>, measured by how many points are within radius <code>1.5</code> of <code>p</code>. Plotting the actual points, along with their associated probabilities estimated by the KDE procedure, we get the following surface plot.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using CairoMakie
+using Distributions: MvNormal
+using LinearAlgebra
+
+μ = [1.0, -4.0]
+σ = [2.0, 2.0]
+𝒩 = MvNormal(μ, LinearAlgebra.Diagonal(map(abs2, σ)))
+N = 500
+D = StateSpaceSet(sort([rand(𝒩) for i = 1:N]))
+x, y = columns(D)
+p = probabilities(NaiveKernel(1.5), D)
+fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
+    markersize=8, axis=(type = Axis3,)
+)
+surface!(ax, x, y, p.p)
+ax.zlabel = &quot;P&quot;
+ax.zticklabelsvisible = false
+fig</code></pre><img src="f5b93701.png" alt="Example block output"/><h2 id="Probabilities:-KL-divergence-of-histograms"><a class="docs-heading-anchor" href="#Probabilities:-KL-divergence-of-histograms">Probabilities: KL-divergence of histograms</a><a id="Probabilities:-KL-divergence-of-histograms-1"></a><a class="docs-heading-anchor-permalink" href="#Probabilities:-KL-divergence-of-histograms" title="Permalink"></a></h2><p>In this example we show how simple it is to compute the <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">KL-divergence</a> (or any other distance function for probability distributions) using ComplexityMeasures.jl. For simplicity, we will compute the KL-divergence between the <a href="../probabilities/#ComplexityMeasures.ValueBinning"><code>ValueBinning</code></a>s of two timeseries.</p><p>Note that it is <strong>crucial</strong> to use <a href="../probabilities/#ComplexityMeasures.allprobabilities_and_outcomes"><code>allprobabilities_and_outcomes</code></a> instead of <a href="../probabilities/#ComplexityMeasures.probabilities_and_outcomes"><code>probabilities_and_outcomes</code></a>.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+
+N = 1000
+t = range(0, 20π; length=N)
+x = @. clamp(sin(t), -0.5, 1)
+y = @. sin(t + cos(2t))
+
+r = -1:0.1:1
+est = ValueBinning(FixedRectangularBinning(r))
+px, outsx = allprobabilities_and_outcomes(est, x)
+py, outsy = allprobabilities_and_outcomes(est, y)
+
+# Visualize
+using CairoMakie
+bins = r[1:end-1] .+ step(r)/2
+fig, ax = barplot(bins, px; label = L&quot;p_x&quot;)
+barplot!(ax, bins, py; label = L&quot;p_y&quot;)
+axislegend(ax; labelsize = 30)
+fig</code></pre><img src="ba193698.png" alt="Example block output"/><pre><code class="language-julia hljs">using StatsBase: kldivergence
+
+kldivergence(px, py)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">0.7899097070515434</code></pre><pre><code class="language-julia hljs">kldivergence(py, px)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Inf</code></pre><p>(<code>Inf</code> because there are events with 0 probability in <code>px</code>)</p><h2 id="Differential-entropy:-estimator-comparison"><a class="docs-heading-anchor" href="#Differential-entropy:-estimator-comparison">Differential entropy: estimator comparison</a><a id="Differential-entropy:-estimator-comparison-1"></a><a class="docs-heading-anchor-permalink" href="#Differential-entropy:-estimator-comparison" title="Permalink"></a></h2><h3 id="Shannon-entropy"><a class="docs-heading-anchor" href="#Shannon-entropy">Shannon entropy</a><a id="Shannon-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Shannon-entropy" title="Permalink"></a></h3><p>Here, we compare how the nearest neighbor differential entropy estimators (<a href="../information_measures/#ComplexityMeasures.Kraskov"><code>Kraskov</code></a>, <a href="../information_measures/#ComplexityMeasures.KozachenkoLeonenko"><code>KozachenkoLeonenko</code></a>, <a href="../information_measures/#ComplexityMeasures.Zhu"><code>Zhu</code></a>, <a href="../information_measures/#ComplexityMeasures.ZhuSingh"><code>ZhuSingh</code></a>, etc.) converge towards the true <a href="../information_measures/#ComplexityMeasures.Shannon"><code>Shannon</code></a> entropy value for increasing time series length.</p><p>ComplexityMeasures.jl also provides entropy estimators based on <a href="https://en.wikipedia.org/wiki/Order_statistic">order statistics</a>. These estimators are only defined for scalar-valued vectors, in this example, so we compute these estimates separately, and add these estimators (<a href="../information_measures/#ComplexityMeasures.Vasicek"><code>Vasicek</code></a>, <a href="../information_measures/#ComplexityMeasures.Ebrahimi"><code>Ebrahimi</code></a>, <a href="../information_measures/#ComplexityMeasures.AlizadehArghami"><code>AlizadehArghami</code></a> and <a href="../information_measures/#ComplexityMeasures.Correa"><code>Correa</code></a>) to the comparison.</p><p>Input data are from a normal 1D distribution <span>$\mathcal{N}(0, 1)$</span>, for which the true entropy is <code>0.5*log(2π) + 0.5</code> nats when using natural logarithms.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using CairoMakie, Statistics
+nreps = 30
+Ns = [100:100:500; 1000:1000:5000]
+e = Shannon(; base = MathConstants.e)
+
+# --------------------------
+# kNN estimators
+# --------------------------
+w = 0 # Theiler window of 0 (only exclude the point itself during neighbor searches)
+ent = Shannon(; base = ℯ)
+knn_estimators = [
+    # with k = 1, Kraskov is virtually identical to
+    # Kozachenko-Leonenko, so pick a higher number of neighbors for Kraskov
+    Kraskov(ent; k = 3, w),
+    KozachenkoLeonenko(ent; w),
+    Zhu(ent; k = 3, w),
+    ZhuSingh(ent; k = 3, w),
+    Gao(ent; k = 3, corrected = false, w),
+    Gao(ent; k = 3, corrected = true, w),
+    Goria(ent; k = 3, w),
+    Lord(ent; k = 20, w), # more neighbors for accurate ellipsoid estimation
+    LeonenkoProzantoSavani(ent; k = 3),
+]
+
+# Test each estimator `nreps` times over time series of varying length.
+Hs_uniform_knn = [[zeros(nreps) for N in Ns] for e in knn_estimators]
+for (i, est) in enumerate(knn_estimators)
+    for j = 1:nreps
+        pts = randn(maximum(Ns)) |&gt; StateSpaceSet
+        for (k, N) in enumerate(Ns)
+            Hs_uniform_knn[i][k][j] = information(est, pts[1:N])
+        end
+    end
+end
+
+# --------------------------
+# Order statistic estimators
+# --------------------------
+
+# Just provide types here, they are instantiated inside the loop
+estimators_os = [Vasicek, Ebrahimi, AlizadehArghami, Correa]
+Hs_uniform_os = [[zeros(nreps) for N in Ns] for e in estimators_os]
+for (i, est_os) in enumerate(estimators_os)
+    for j = 1:nreps
+        pts = randn(maximum(Ns)) # raw timeseries, not a `StateSpaceSet`
+        for (k, N) in enumerate(Ns)
+            m = floor(Int, N / 100) # Scale `m` to timeseries length
+            est = est_os(ent; m) # Instantiate estimator with current `m`
+            Hs_uniform_os[i][k][j] = information(est, pts[1:N])
+        end
+    end
+end
+
+# -------------
+# Plot results
+# -------------
+fig = Figure(resolution = (700, 11 * 200))
+labels_knn = [&quot;KozachenkoLeonenko&quot;, &quot;Kraskov&quot;, &quot;Zhu&quot;, &quot;ZhuSingh&quot;, &quot;Gao (not corrected)&quot;,
+    &quot;Gao (corrected)&quot;, &quot;Goria&quot;, &quot;Lord&quot;, &quot;LeonenkoProzantoSavani&quot;]
+labels_os = [&quot;Vasicek&quot;, &quot;Ebrahimi&quot;, &quot;AlizadehArghami&quot;, &quot;Correa&quot;]
+
+for (i, e) in enumerate(knn_estimators)
+    Hs = Hs_uniform_knn[i]
+    ax = Axis(fig[i,1]; ylabel = &quot;h (nats)&quot;)
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels_knn[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs); alpha = 0.5,
+        color = (Main.COLORS[i], 0.5))
+    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, lw = 5, linestyle = :dash)
+
+    ylims!(1.2, 1.6)
+    axislegend()
+end
+
+for (i, e) in enumerate(estimators_os)
+    Hs = Hs_uniform_os[i]
+    ax = Axis(fig[i + length(knn_estimators),1]; ylabel = &quot;h (nats)&quot;)
+    lines!(ax, Ns, mean.(Hs); color = Cycled(i), label = labels_os[i])
+    band!(ax, Ns, mean.(Hs) .+ std.(Hs), mean.(Hs) .- std.(Hs), alpha = 0.5,
+        color = (Main.COLORS[i], 0.5))
+    hlines!(ax, [(0.5*log(2π) + 0.5)], color = :black, lw = 5, linestyle = :dash)
+    ylims!(1.2, 1.6)
+    axislegend()
+end
+
+fig</code></pre><img src="ab187a32.png" alt="Example block output"/><p>All estimators approach the true differential entropy, but those based on order statistics are negatively biased for small sample sizes.</p><h3 id="Rényi-entropy"><a class="docs-heading-anchor" href="#Rényi-entropy">Rényi entropy</a><a id="Rényi-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Rényi-entropy" title="Permalink"></a></h3><p>Here, we see how the <a href="../information_measures/#ComplexityMeasures.LeonenkoProzantoSavani"><code>LeonenkoProzantoSavani</code></a> estimator approaches the known target <a href="../information_measures/#ComplexityMeasures.Renyi"><code>Renyi</code></a> entropy of a multivariate normal distribution for increasing time series length. We&#39;ll consider the Rényi entropy with <code>q = 2</code>.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+import ComplexityMeasures: information # we&#39;re overriding this function in the example
+using CairoMakie, Statistics
+using Distributions: MvNormal
+import Distributions.entropy as dentropy
+using Random
+rng = MersenneTwister(1234)
+
+&quot;&quot;&quot;
+    information(e::Renyi, 𝒩::MvNormal; base = 2)
+
+Compute the analytical value of the `Renyi` entropy for a multivariate normal distribution.
+&quot;&quot;&quot;
+function information(e::Renyi, 𝒩::MvNormal; base = 2)
+    q = e.q
+    if q ≈ 1.0
+        h = dentropy(𝒩)
+    else
+        Σ = 𝒩.Σ
+        D = length(𝒩.μ)
+        h = dentropy(𝒩) - (D / 2) * (1 + log(q) / (1 - q))
+    end
+    return convert_logunit(h, ℯ, base)
+end
+
+nreps = 30
+Ns = [100:100:500; 1000:1000:5000]
+def = Renyi(q = 2, base = 2)
+
+μ = [-1, 1]
+σ = [1, 0.5]
+𝒩 = MvNormal(μ, LinearAlgebra.Diagonal(map(abs2, σ)))
+h_true = information(def, 𝒩; base = 2)
+
+# Estimate `nreps` times for each time series length
+
+hs = [zeros(nreps) for N in Ns]
+for (i, N) in enumerate(Ns)
+    for j = 1:nreps
+        pts = StateSpaceSet(transpose(rand(rng, 𝒩, N)))
+        hs[i][j] = information(LeonenkoProzantoSavani(def; k = 5), pts)
+    end
+end
+
+# We plot the mean and standard deviation of the estimator again the true value
+hs_mean, hs_stdev = mean.(hs), std.(hs)
+
+fig = Figure()
+ax = Axis(fig[1, 1]; ylabel = &quot;h (bits)&quot;)
+lines!(ax, Ns, hs_mean; color = Cycled(1), label = &quot;LeonenkoProzantoSavani&quot;)
+band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev,
+    alpha = 0.5, color = (Main.COLORS[1], 0.5))
+hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
+axislegend()
+fig</code></pre><img src="7e67a751.png" alt="Example block output"/><h3 id="Tsallis-entropy"><a class="docs-heading-anchor" href="#Tsallis-entropy">Tsallis entropy</a><a id="Tsallis-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Tsallis-entropy" title="Permalink"></a></h3><p>Here, we see how the <a href="../information_measures/#ComplexityMeasures.LeonenkoProzantoSavani"><code>LeonenkoProzantoSavani</code></a> estimator approaches the known target <a href="../information_measures/#ComplexityMeasures.Tsallis"><code>Tsallis</code></a> entropy of a multivariate normal distribution for increasing time series length. We&#39;ll consider the Rényi entropy with <code>q = 2</code>.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+import ComplexityMeasures: information # we&#39;re overriding this function in the example
+using CairoMakie, Statistics
+using Distributions: MvNormal
+import Distributions.entropy as dentropy
+using Random
+rng = MersenneTwister(1234)
+
+&quot;&quot;&quot;
+    information(e::Tsallis, 𝒩::MvNormal; base = 2)
+
+Compute the analytical value of the `Tsallis` entropy for a multivariate normal distribution.
+&quot;&quot;&quot;
+function information(e::Tsallis, 𝒩::MvNormal; base = 2)
+    q = e.q
+    Σ = 𝒩.Σ
+    D = length(𝒩.μ)
+    # uses the function from the example above
+    hr = information(Renyi(q = q), 𝒩; base = ℯ) # stick with natural log, convert after
+    h = (exp((1 - q) * hr) - 1) / (1 - q)
+    return convert_logunit(h, ℯ, base)
+end
+
+nreps = 30
+Ns = [100:100:500; 1000:1000:5000]
+def = Tsallis(q = 2, base = 2)
+
+μ = [-1, 1]
+σ = [1, 0.5]
+𝒩 = MvNormal(μ, LinearAlgebra.Diagonal(map(abs2, σ)))
+h_true = information(def, 𝒩; base = 2)
+
+# Estimate `nreps` times for each time series length
+
+hs = [zeros(nreps) for N in Ns]
+for (i, N) in enumerate(Ns)
+    for j = 1:nreps
+        pts = StateSpaceSet(transpose(rand(rng, 𝒩, N)))
+        hs[i][j] = information(LeonenkoProzantoSavani(def; k = 5), pts)
+    end
+end
+
+# We plot the mean and standard deviation of the estimator again the true value
+hs_mean, hs_stdev = mean.(hs), std.(hs)
+
+fig = Figure()
+ax = Axis(fig[1, 1]; ylabel = &quot;h (bits)&quot;)
+lines!(ax, Ns, hs_mean; color = Cycled(1), label = &quot;LeonenkoProzantoSavani&quot;)
+band!(ax, Ns, hs_mean .+ hs_stdev, hs_mean .- hs_stdev,
+    alpha = 0.5, color = (Main.COLORS[1], 0.5))
+hlines!(ax, [h_true], color = :black, lw = 5, linestyle = :dash)
+axislegend()
+fig</code></pre><img src="664a3014.png" alt="Example block output"/><h2 id="Discrete-entropy:-permutation-entropy"><a class="docs-heading-anchor" href="#Discrete-entropy:-permutation-entropy">Discrete entropy: permutation entropy</a><a id="Discrete-entropy:-permutation-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Discrete-entropy:-permutation-entropy" title="Permalink"></a></h2><p>This example plots permutation entropy for time series of the chaotic logistic map. Entropy estimates using <a href="../probabilities/#ComplexityMeasures.WeightedOrdinalPatterns"><code>WeightedOrdinalPatterns</code></a> and <a href="../probabilities/#ComplexityMeasures.AmplitudeAwareOrdinalPatterns"><code>AmplitudeAwareOrdinalPatterns</code></a> are added here for comparison. The entropy behaviour can be parallelized with the <code>ChaosTools.lyapunov</code> of the map.</p><pre><code class="language-julia hljs">using DynamicalSystemsBase, CairoMakie
+
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1-x[1]))
+ds = DeterministicIteratedMap(logistic_rule, [0.4], [4.0])
+rs = 3.4:0.001:4
+N_lyap, N_ent = 100000, 10000
+m, τ = 6, 1 # Symbol size/dimension and embedding lag
+
+# Generate one time series for each value of the logistic parameter r
+hs_perm, hs_wtperm, hs_ampperm = [zeros(length(rs)) for _ in 1:4]
+
+for (i, r) in enumerate(rs)
+    ds.p[1] = r
+
+    x, t = trajectory(ds, N_ent)
+    ## `x` is a 1D dataset, need to recast into a timeseries
+    x = columns(x)[1]
+    hs_perm[i] = information(OrdinalPatterns(; m, τ), x)
+    hs_wtperm[i] = information(WeightedOrdinalPatterns(; m, τ), x)
+    hs_ampperm[i] = information(AmplitudeAwareOrdinalPatterns(; m, τ), x)
+end
+
+fig = Figure()
+a1 = Axis(fig[1,1]; ylabel = L&quot;h_6 (SP)&quot;)
+lines!(a1, rs, hs_perm; color = Cycled(2))
+a2 = Axis(fig[2,1]; ylabel = L&quot;h_6 (WT)&quot;)
+lines!(a2, rs, hs_wtperm; color = Cycled(3))
+a3 = Axis(fig[3,1]; ylabel = L&quot;h_6 (SAAP)&quot;, xlabel = L&quot;r&quot;)
+lines!(a3, rs, hs_ampperm; color = Cycled(4))
+
+for a in (a1,a2,a3)
+    hidexdecorations!(a, grid = false)
+end
+fig</code></pre><img src="458b4790.png" alt="Example block output"/><h2 id="Discrete-entropy:-wavelet-entropy"><a class="docs-heading-anchor" href="#Discrete-entropy:-wavelet-entropy">Discrete entropy: wavelet entropy</a><a id="Discrete-entropy:-wavelet-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Discrete-entropy:-wavelet-entropy" title="Permalink"></a></h2><p>The scale-resolved wavelet entropy should be lower for very regular signals (most of the energy is contained at one scale) and higher for very irregular signals (energy spread more out across scales).</p><pre><code class="language-julia hljs">using CairoMakie
+N, a = 1000, 10
+t = LinRange(0, 2*a*π, N)
+
+x = sin.(t);
+y = sin.(t .+ cos.(t/0.5));
+z = sin.(rand(1:15, N) ./ rand(1:10, N))
+
+h_x = entropy_wavelet(x)
+h_y = entropy_wavelet(y)
+h_z = entropy_wavelet(z)
+
+fig = Figure()
+ax = Axis(fig[1,1]; ylabel = &quot;x&quot;)
+lines!(ax, t, x; color = Cycled(1), label = &quot;h=$(h=round(h_x, sigdigits = 5))&quot;);
+ay = Axis(fig[2,1]; ylabel = &quot;y&quot;)
+lines!(ay, t, y; color = Cycled(2), label = &quot;h=$(h=round(h_y, sigdigits = 5))&quot;);
+az = Axis(fig[3,1]; ylabel = &quot;z&quot;, xlabel = &quot;time&quot;)
+lines!(az, t, z; color = Cycled(3), label = &quot;h=$(h=round(h_z, sigdigits = 5))&quot;);
+for a in (ax, ay, az); axislegend(a); end
+for a in (ax, ay); hidexdecorations!(a; grid=false); end
+fig</code></pre><img src="9774600f.png" alt="Example block output"/><h2 id="Discrete-entropies:-properties"><a class="docs-heading-anchor" href="#Discrete-entropies:-properties">Discrete entropies: properties</a><a id="Discrete-entropies:-properties-1"></a><a class="docs-heading-anchor-permalink" href="#Discrete-entropies:-properties" title="Permalink"></a></h2><p>Here, we show the sensitivity of the various entropies to variations in their parameters.</p><h3 id="Curado-entropy"><a class="docs-heading-anchor" href="#Curado-entropy">Curado entropy</a><a id="Curado-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Curado-entropy" title="Permalink"></a></h3><p>Here, we reproduce Figure 2 from <a href="../references/#Curado2004">Curado and Nobre (2004)</a>, showing how the <a href="../information_measures/#ComplexityMeasures.Curado"><code>Curado</code></a> entropy changes as function of the parameter <code>a</code> for a range of two-element probability distributions given by <code>Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)</code>.</p><pre><code class="language-julia hljs">using ComplexityMeasures, CairoMakie
+bs = [1.0, 1.5, 2.0, 3.0, 4.0, 10.0]
+ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
+hs = [[information(Curado(; b = b), p) for p in ps] for b in bs]
+fig = Figure()
+ax = Axis(fig[1,1]; xlabel = &quot;p&quot;, ylabel = &quot;H(p)&quot;)
+pp = [p[1] for p in ps]
+for (i, b) in enumerate(bs)
+    lines!(ax, pp, hs[i], label = &quot;b=$b&quot;, color = Cycled(i))
+end
+axislegend(ax)
+fig</code></pre><img src="442f8ca2.png" alt="Example block output"/><h3 id="Kaniadakis-entropy"><a class="docs-heading-anchor" href="#Kaniadakis-entropy">Kaniadakis entropy</a><a id="Kaniadakis-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Kaniadakis-entropy" title="Permalink"></a></h3><p>Here, we show how <a href="../information_measures/#ComplexityMeasures.Kaniadakis"><code>Kaniadakis</code></a> entropy changes as function of the parameter <code>a</code> for a range of two-element probability distributions given by <code>Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)</code>.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using CairoMakie
+
+probs = [Probabilities([p, 1-p]) for p in 0.0:0.01:1.0]
+ps = collect(0.0:0.01:1.0);
+κs = [-0.99, -0.66, -0.33, 0, 0.33, 0.66, 0.99];
+Hs = [[information(Kaniadakis(κ = κ), p) for p in probs] for κ in κs];
+
+fig = Figure()
+ax = Axis(fig[1, 1], xlabel = &quot;p&quot;, ylabel = &quot;H(p)&quot;)
+
+for (i, H) in enumerate(Hs)
+    lines!(ax, ps, H, label = &quot;$(κs[i])&quot;)
+end
+
+axislegend()
+
+fig</code></pre><img src="703e30a2.png" alt="Example block output"/><h3 id="Stretched-exponential-entropy"><a class="docs-heading-anchor" href="#Stretched-exponential-entropy">Stretched exponential entropy</a><a id="Stretched-exponential-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Stretched-exponential-entropy" title="Permalink"></a></h3><p>Here, we reproduce the example from <a href="../references/#Anteneodo1999">Anteneodo and Plastino (1999)</a>, showing how the stretched exponential entropy changes as function of the parameter <code>η</code> for a range of two-element probability distributions given by <code>Probabilities([p, 1 - p] for p in 1:0.0:0.01:1.0)</code>.</p><pre><code class="language-julia hljs">using ComplexityMeasures, SpecialFunctions, CairoMakie
+ηs = [0.01, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 3.0]
+ps = [Probabilities([p, 1 - p]) for p = 0.0:0.01:1.0]
+
+hs_norm = [[information(StretchedExponential( η = η), p) / gamma((η + 1)/η) for p in ps] for η in ηs]
+fig = Figure()
+ax = Axis(fig[1,1]; xlabel = &quot;p&quot;, ylabel = &quot;H(p)&quot;)
+pp = [p[1] for p in ps]
+
+for (i, η) in enumerate(ηs)
+    lines!(ax, pp, hs_norm[i], label = &quot;η=$η&quot;)
+end
+axislegend(ax)
+fig</code></pre><img src="c1fcf7e2.png" alt="Example block output"/><h2 id="dispersion_example"><a class="docs-heading-anchor" href="#dispersion_example">Discrete entropy: dispersion entropy</a><a id="dispersion_example-1"></a><a class="docs-heading-anchor-permalink" href="#dispersion_example" title="Permalink"></a></h2><p>Here we compute dispersion entropy (<a href="../references/#Rostaghi2016">Rostaghi and Azami, 2016</a>), using the use the <a href="../probabilities/#ComplexityMeasures.Dispersion"><code>Dispersion</code></a> probabilities estimator, for a time series consisting of normally distributed noise with a single spike in the middle of the signal. We compute the entropies over a range subsets of the data, using a sliding window consisting of 70 data points, stepping the window 10 time steps at a time. This example is adapted from <a href="../references/#Li2019">Li <em>et al.</em> (2019)</a>.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using Random
+using CairoMakie
+using Distributions: Normal
+
+n = 1000
+ts = 1:n
+x = [i == n ÷ 2 ? 50.0 : 0.0 for i in ts]
+rng = Random.default_rng()
+s = rand(rng, Normal(0, 1), n)
+y = x .+ s
+
+ws = 70
+windows = [t:t+ws for t in 1:10:n-ws]
+rdes = zeros(length(windows))
+des = zeros(length(windows))
+pes = zeros(length(windows))
+
+m, c = 2, 6
+est_de = Dispersion(c = c, m = m, τ = 1)
+for (i, window) in enumerate(windows)
+    des[i] = information_normalized(Renyi(), est_de, y[window])
+end
+
+fig = Figure()
+a1 = Axis(fig[1,1]; xlabel = &quot;Time step&quot;, ylabel = &quot;Value&quot;)
+lines!(a1, ts, y)
+display(fig)
+a2 = Axis(fig[2, 1]; xlabel = &quot;Time step&quot;, ylabel = &quot;Value&quot;)
+p_de = scatterlines!([first(w) for w in windows], des,
+    label = &quot;Dispersion entropy&quot;,
+    color = :red,
+    markercolor = :red, marker = &#39;●&#39;, markersize = 20)
+
+axislegend(position = :rc)
+ylims!(0, max(maximum(pes), 1))
+fig</code></pre><img src="7bb41880.png" alt="Example block output"/><h2 id="Discrete-entropy:-normalized-entropy-for-comparing-different-signals"><a class="docs-heading-anchor" href="#Discrete-entropy:-normalized-entropy-for-comparing-different-signals">Discrete entropy: normalized entropy for comparing different signals</a><a id="Discrete-entropy:-normalized-entropy-for-comparing-different-signals-1"></a><a class="docs-heading-anchor-permalink" href="#Discrete-entropy:-normalized-entropy-for-comparing-different-signals" title="Permalink"></a></h2><p>When comparing different signals or signals that have different length, it is best to normalize entropies so that the &quot;complexity&quot; or &quot;disorder&quot; quantification is directly comparable between signals. Here is an example based on the wavelet entropy example where we use the spectral entropy instead of the wavelet entropy:</p><pre><code class="language-julia hljs">using ComplexityMeasures
+N1, N2, a = 101, 10001, 10
+
+for N in (N1, N2)
+    local t = LinRange(0, 2*a*π, N)
+    local x = sin.(t) # periodic
+    local y = sin.(t .+ cos.(t/0.5)) # periodic, complex spectrum
+    local z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
+
+    for q in (x, y, z)
+        local h = information(PowerSpectrum(), q)
+        local n = information_normalized(PowerSpectrum(), q)
+        println(&quot;entropy: $(h), normalized: $(n).&quot;)
+    end
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">entropy: 0.3131510976800182, normalized: 0.05520585619046334.
+entropy: 1.2651873361559447, normalized: 0.22304169026158024.
+entropy: 2.761253002070024, normalized: 0.4867852524455314.
+entropy: 7.57800737722389e-5, normalized: 6.1669977445812415e-6.
+entropy: 0.8397257036159657, normalized: 0.06833704775520644.
+entropy: 5.247678661507905, normalized: 0.4270571518190041.</code></pre><p>You see that while the direct entropy values of noisy signal changes strongly with <code>N</code> but they are almost the same for the normalized version. For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.</p><h2 id="Spatiotemporal-permutation-entropy"><a class="docs-heading-anchor" href="#Spatiotemporal-permutation-entropy">Spatiotemporal permutation entropy</a><a id="Spatiotemporal-permutation-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Spatiotemporal-permutation-entropy" title="Permalink"></a></h2><p>Usage of a <a href="../probabilities/#ComplexityMeasures.SpatialOrdinalPatterns"><code>SpatialOrdinalPatterns</code></a> estimator is straightforward. Here we get the spatial permutation entropy of a 2D array (e.g., an image):</p><pre><code class="language-julia hljs">using ComplexityMeasures
+x = rand(50, 50) # some image
+stencil = [1 1; 0 1] # or one of the other ways of specifying stencils
+est = SpatialOrdinalPatterns(stencil, x)
+h = information(est, x)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">2.583389336264781</code></pre><p>To apply this to timeseries of spatial data, simply loop over the call, e.g.:</p><pre><code class="language-julia hljs">data = [rand(50, 50) for i in 1:10] # e.g., evolution of a 2D field of a PDE
+est = SpatialOrdinalPatterns(stencil, first(data))
+h_vs_t = map(d -&gt; information(est, d), data)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">10-element Vector{Float64}:
+ 2.584337199907348
+ 2.5828938275306674
+ 2.5823089223154314
+ 2.584608269295371
+ 2.584147292198547
+ 2.5845479711868165
+ 2.581560781635008
+ 2.584177772342812
+ 2.5839345058668526
+ 2.5845315338561816</code></pre><p>Computing any other generalized spatiotemporal permutation entropy is trivial, e.g. with <a href="../information_measures/#ComplexityMeasures.Renyi"><code>Renyi</code></a>:</p><pre><code class="language-julia hljs">x = reshape(repeat(1:5, 500) .+ 0.1*rand(500*5), 50, 50)
+est = SpatialOrdinalPatterns(stencil, x)
+information(Renyi(q = 2), est, x)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.5562847261635089</code></pre><h2 id="Spatial-discrete-entropy:-Fabio"><a class="docs-heading-anchor" href="#Spatial-discrete-entropy:-Fabio">Spatial discrete entropy: Fabio</a><a id="Spatial-discrete-entropy:-Fabio-1"></a><a class="docs-heading-anchor-permalink" href="#Spatial-discrete-entropy:-Fabio" title="Permalink"></a></h2><p>Let&#39;s see how the normalized permutation and dispersion entropies increase for an image that gets progressively more noise added to it.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using Distributions: Uniform
+using CairoMakie
+using Statistics
+using TestImages, ImageTransformations, CoordinateTransformations, Rotations
+
+img = testimage(&quot;fabio_grey_256&quot;)
+rot = warp(img, recenter(RotMatrix(-3pi/2), center(img));)
+original = Float32.(rot)
+noise_levels = collect(0.0:0.25:1.0) .* std(original) * 5 # % of 1 standard deviation
+
+noisy_imgs = [i == 1 ? original : original .+ rand(Uniform(0, nL), size(original))
+    for (i, nL) in enumerate(noise_levels)]
+
+# a 2x2 stencil (i.e. dispersion/permutation patterns of length 4)
+stencil = ((2, 2), (1, 1))
+
+est_disp = SpatialDispersion(stencil, original; c = 5, periodic = false)
+est_perm = SpatialOrdinalPatterns(stencil, original; periodic = false)
+hs_disp = [information_normalized(est_disp, img) for img in noisy_imgs]
+hs_perm = [information_normalized(est_perm, img) for img in noisy_imgs]
+
+# Plot the results
+fig = Figure(size = (800, 1000))
+ax = Axis(fig[1, 1:length(noise_levels)],
+    xlabel = &quot;Noise level&quot;,
+    ylabel = &quot;Normalized entropy&quot;)
+scatterlines!(ax, noise_levels, hs_disp, label = &quot;Dispersion&quot;)
+scatterlines!(ax, noise_levels, hs_perm, label = &quot;Permutation&quot;)
+ylims!(ax, 0, 1.05)
+axislegend(position = :rb)
+for (i, nl) in enumerate(noise_levels)
+    ax_i = Axis(fig[2, i])
+    image!(ax_i, Matrix(Float32.(noisy_imgs[i])), label = &quot;$nl&quot;)
+    hidedecorations!(ax_i)  # hides ticks, grid and lables
+    hidespines!(ax_i)  # hide the frame
+end
+fig</code></pre><img src="16da57ae.png" alt="Example block output"/><p>While the normalized <a href="../probabilities/#ComplexityMeasures.SpatialOrdinalPatterns"><code>SpatialOrdinalPatterns</code></a> entropy quickly approaches its maximum value, the normalized <a href="../probabilities/#ComplexityMeasures.SpatialDispersion"><code>SpatialDispersion</code></a> entropy much better resolves the increase in entropy as the image gets noiser. This can probably be explained by the fact that the number of possible states (or <a href="../probabilities/#ComplexityMeasures.total_outcomes"><code>total_outcomes</code></a>) for any given <code>stencil</code> is larger for <a href="../probabilities/#ComplexityMeasures.SpatialDispersion"><code>SpatialDispersion</code></a> than for <a href="../probabilities/#ComplexityMeasures.SpatialOrdinalPatterns"><code>SpatialOrdinalPatterns</code></a>, so the dispersion approach is much less sensitive to noise addition (i.e. noise saturation over the possible states is slower for <a href="../probabilities/#ComplexityMeasures.SpatialDispersion"><code>SpatialDispersion</code></a>).</p><h2 id="Complexity:-reverse-dispersion-entropy"><a class="docs-heading-anchor" href="#Complexity:-reverse-dispersion-entropy">Complexity: reverse dispersion entropy</a><a id="Complexity:-reverse-dispersion-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Complexity:-reverse-dispersion-entropy" title="Permalink"></a></h2><p>Here, we compare regular dispersion entropy (<a href="../references/#Rostaghi2016">Rostaghi and Azami, 2016</a>), and reverse dispersion entropy (<a href="../references/#Li2019">Li <em>et al.</em>, 2019</a>) for a time series consisting of normally distributed noise with a single spike in the middle of the signal. We compute the entropies over a range subsets of the data, using a sliding window consisting of 70 data points, stepping the window 10 time steps at a time. This example reproduces parts of figure 3 in (<a href="../references/#Li2019">Li <em>et al.</em>, 2019</a>), but results here are not exactly the same as in the original paper, because their examples are based on randomly generated numbers and do not provide code that specify random number seeds.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using Random
+using CairoMakie
+using Distributions: Normal
+
+n = 1000
+ts = 1:n
+x = [i == n ÷ 2 ? 50.0 : 0.0 for i in ts]
+rng = Random.default_rng()
+s = rand(rng, Normal(0, 1), n)
+y = x .+ s
+
+ws = 70
+windows = [t:t+ws for t in 1:10:n-ws]
+rdes = zeros(length(windows))
+des = zeros(length(windows))
+pes = zeros(length(windows))
+
+m, c = 2, 6
+est_rd = ReverseDispersion(; c, m, τ = 1)
+est_de = Dispersion(; c, m, τ = 1)
+
+for (i, window) in enumerate(windows)
+    rdes[i] = complexity_normalized(est_rd, y[window])
+    des[i] = information_normalized(Renyi(), est_de, y[window])
+end
+
+fig = Figure()
+
+a1 = Axis(fig[1,1]; xlabel = &quot;Time step&quot;, ylabel = &quot;Value&quot;)
+lines!(a1, ts, y)
+display(fig)
+
+a2 = Axis(fig[2, 1]; xlabel = &quot;Time step&quot;, ylabel = &quot;Value&quot;)
+p_rde = scatterlines!([first(w) for w in windows], rdes,
+    label = &quot;Reverse dispersion entropy&quot;,
+    color = :black,
+    markercolor = :black, marker = &#39;●&#39;)
+p_de = scatterlines!([first(w) for w in windows], des,
+    label = &quot;Dispersion entropy&quot;,
+    color = :red,
+    markercolor = :red, marker = &#39;x&#39;, markersize = 20)
+
+axislegend(position = :rc)
+ylims!(0, max(maximum(pes), 1))
+fig</code></pre><img src="47a55b8c.png" alt="Example block output"/><h2 id="Complexity:-missing-dispersion-patterns"><a class="docs-heading-anchor" href="#Complexity:-missing-dispersion-patterns">Complexity: missing dispersion patterns</a><a id="Complexity:-missing-dispersion-patterns-1"></a><a class="docs-heading-anchor-permalink" href="#Complexity:-missing-dispersion-patterns" title="Permalink"></a></h2><pre><code class="language-julia hljs">using ComplexityMeasures
+using CairoMakie
+using DynamicalSystemsBase
+using TimeseriesSurrogates
+
+est = MissingDispersionPatterns(Dispersion(m = 3, c = 7))
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1-x[1]))
+sys = DeterministicIteratedMap(logistic_rule, [0.6], [4.0])
+Ls = collect(100:100:1000)
+nL = length(Ls)
+nreps = 30 # should be higher for real applications
+method = WLS(IAAFT(), rescale = true)
+
+r_det, r_noise = zeros(length(Ls)), zeros(length(Ls))
+r_det_surr, r_noise_surr = [zeros(nreps) for L in Ls], [zeros(nreps) for L in Ls]
+y = rand(maximum(Ls))
+
+for (i, L) in enumerate(Ls)
+    # Deterministic time series
+    x, t = trajectory(sys, L - 1, Ttr = 5000)
+    x = columns(x)[1] # remember to make it `Vector{&lt;:Real}
+    sx = surrogenerator(x, method)
+    r_det[i] = complexity_normalized(est, x)
+    r_det_surr[i][:] = [complexity_normalized(est, sx()) for j = 1:nreps]
+
+    # Random time series
+    r_noise[i] = complexity_normalized(est, y[1:L])
+    sy = surrogenerator(y[1:L], method)
+    r_noise_surr[i][:] = [complexity_normalized(est, sy()) for j = 1:nreps]
+end
+
+fig = Figure()
+ax = Axis(fig[1, 1],
+    xlabel = &quot;Time series length (L)&quot;,
+    ylabel = &quot;# missing dispersion patterns (normalized)&quot;
+)
+
+lines!(ax, Ls, r_det, label = &quot;logistic(x0 = 0.6; r = 4.0)&quot;, color = :black)
+lines!(ax, Ls, r_noise, label = &quot;Uniform noise&quot;, color = :red)
+for i = 1:nL
+    if i == 1
+        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black,
+            label = &quot;WIAAFT surrogates (logistic)&quot;)
+         boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red,
+            label = &quot;WIAAFT surrogates (noise)&quot;)
+    else
+        boxplot!(ax, fill(Ls[i], nL), r_det_surr[i]; width = 50, color = :black)
+        boxplot!(ax, fill(Ls[i], nL), r_noise_surr[i]; width = 50, color = :red)
+    end
+end
+axislegend(position = :rc)
+ylims!(0, 1.1)
+
+fig</code></pre><img src="dc841ee7.png" alt="Example block output"/><p>We don&#39;t need to actually to compute the quantiles here to see that for the logistic map, across all time series lengths, the <span>$N_{MDP}$</span> values are above the extremal values of the <span>$N_{MDP}$</span> values for the surrogate ensembles. Thus, we conclude that the logistic map time series has nonlinearity (well, of course).</p><p>For the univariate noise time series, there is considerable overlap between <span>$N_{MDP}$</span> for the surrogate distributions and the original signal, so we can&#39;t claim nonlinearity for this signal.</p><p>Of course, to robustly reject the null hypothesis, we&#39;d need to generate a sufficient number of surrogate realizations, and actually compute quantiles to compare with.</p><h2 id="Complexity:-approximate-entropy"><a class="docs-heading-anchor" href="#Complexity:-approximate-entropy">Complexity: approximate entropy</a><a id="Complexity:-approximate-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Complexity:-approximate-entropy" title="Permalink"></a></h2><p>Here, we reproduce the Henon map example with <span>$R=0.8$</span> from <a href="../references/#Pincus1991">Pincus (1991)</a>, comparing our values with relevant values from table 1 in <a href="../references/#Pincus1991">Pincus (1991)</a>.</p><p>We use <code>DiscreteDynamicalSystem</code> from <code>DynamicalSystemsBase</code> to represent the map, and use the <code>trajectory</code> function from the same package to iterate the map for different initial conditions, for multiple time series lengths.</p><p>Finally, we summarize our results in box plots and compare the values to those obtained by <a href="../references/#Pincus1991">Pincus (1991)</a>.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using DynamicalSystemsBase
+using DelayEmbeddings
+using CairoMakie
+
+# Equation 13 in Pincus (1991)
+function henon_rule(u, p, n)
+    R = p[1]
+    x, y = u
+    dx = R*y + 1 - 1.4*x^2
+    dy = 0.3*R*x
+    return SVector(dx, dy)
+end
+
+function henon(; u₀ = rand(2), R = 0.8)
+    DeterministicIteratedMap(henon_rule, u₀, [R])
+end
+
+ts_lengths = [300, 1000, 2000, 3000]
+nreps = 100
+apens_08 = [zeros(nreps) for i = 1:length(ts_lengths)]
+
+# For some initial conditions, the Henon map as specified here blows up,
+# so we need to check for infinite values.
+containsinf(x) = any(isinf.(x))
+
+c = ApproximateEntropy(r = 0.05, m = 2)
+
+for (i, L) in enumerate(ts_lengths)
+    k = 1
+    while k &lt;= nreps
+        sys = henon(u₀ = rand(2), R = 0.8)
+        t = trajectory(sys, L; Ttr = 5000)[1]
+
+        if !any([containsinf(tᵢ) for tᵢ in t])
+            x, y = columns(t)
+            apens_08[i][k] = complexity(c, x)
+            k += 1
+        end
+    end
+end
+
+fig = Figure()
+
+# Example time series
+a1 = Axis(fig[1,1]; xlabel = &quot;Time (t)&quot;, ylabel = &quot;Value&quot;)
+sys = henon(u₀ = [0.5, 0.1], R = 0.8)
+x, y = columns(first(trajectory(sys, 100, Ttr = 500))) # we don&#39;t need time indices
+lines!(a1, 1:length(x), x, label = &quot;x&quot;)
+lines!(a1, 1:length(y), y, label = &quot;y&quot;)
+
+# Approximate entropy values, compared to those of the original paper (black dots).
+a2 = Axis(fig[2, 1];
+    xlabel = &quot;Time series length (L)&quot;,
+    ylabel = &quot;ApEn(m = 2, r = 0.05)&quot;)
+
+# hacky boxplot, but this seems to be how it&#39;s done in Makie at the moment
+n = length(ts_lengths)
+for i = 1:n
+    boxplot!(a2, fill(ts_lengths[i], n), apens_08[i];
+        width = 200)
+end
+
+scatter!(a2, ts_lengths, [0.337, 0.385, NaN, 0.394];
+    label = &quot;Pincus (1991)&quot;, color = :black)
+fig</code></pre><img src="d1f8132f.png" alt="Example block output"/><h2 id="Complexity:-sample-entropy"><a class="docs-heading-anchor" href="#Complexity:-sample-entropy">Complexity: sample entropy</a><a id="Complexity:-sample-entropy-1"></a><a class="docs-heading-anchor-permalink" href="#Complexity:-sample-entropy" title="Permalink"></a></h2><p>Completely regular signals should have sample entropy approaching zero, while less regular signals should have higher sample entropy.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using CairoMakie
+N, a = 2000, 10
+t = LinRange(0, 2*a*π, N)
+
+x = repeat([-5:5 |&gt; collect; 4:-1:-4 |&gt; collect], N ÷ 20);
+y = sin.(t .+ cos.(t/0.5));
+z = rand(N)
+
+h_x, h_y, h_z = map(t -&gt; complexity(SampleEntropy(t), t), (x, y, z))
+
+fig = Figure()
+ax = Axis(fig[1,1]; ylabel = &quot;x&quot;)
+lines!(ax, t, x; color = Cycled(1), label = &quot;h=$(h=round(h_x, sigdigits = 5))&quot;);
+ay = Axis(fig[2,1]; ylabel = &quot;y&quot;)
+lines!(ay, t, y; color = Cycled(2), label = &quot;h=$(h=round(h_y, sigdigits = 5))&quot;);
+az = Axis(fig[3,1]; ylabel = &quot;z&quot;, xlabel = &quot;time&quot;)
+lines!(az, t, z; color = Cycled(3), label = &quot;h=$(h=round(h_z, sigdigits = 5))&quot;);
+for a in (ax, ay, az); axislegend(a); end
+for a in (ax, ay); hidexdecorations!(a; grid=false); end
+fig</code></pre><img src="9b649aa5.png" alt="Example block output"/><p>Next, we compare the sample entropy obtained for different values of the radius <code>r</code> for uniform noise, normally distributed noise, and a periodic signal.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using CairoMakie
+using Statistics
+using Distributions: Normal
+N = 2000
+x_U = rand(N)
+x_N = rand(Normal(0, 3), N)
+x_periodic = repeat(rand(20), N ÷ 20)
+
+x_U .= (x_U .- mean(x_U)) ./ std(x_U)
+x_N .= (x_N .- mean(x_N)) ./ std(x_N)
+x_periodic .= (x_periodic .- mean(x_periodic)) ./ std(x_periodic)
+
+rs = 10 .^ range(-1, 0, length = 30)
+base = 2
+m = 2
+hs_U = [complexity_normalized(SampleEntropy(m = m, r = r), x_U) for r in rs]
+hs_N = [complexity_normalized(SampleEntropy(m = m, r = r), x_N) for r in rs]
+hs_periodic = [complexity_normalized(SampleEntropy(m = m, r = r), x_periodic) for r in rs]
+
+fig = Figure()
+# Time series
+a1 = Axis(fig[1,1]; xlabel = &quot;r&quot;, ylabel = &quot;Sample entropy&quot;)
+lines!(a1, rs, hs_U, label = &quot;Uniform noise, U(0, 1)&quot;)
+lines!(a1, rs, hs_N, label = &quot;Gaussian noise, N(0, 1)&quot;)
+lines!(a1, rs, hs_periodic, label = &quot;Periodic signal&quot;)
+axislegend()
+fig</code></pre><img src="fee3b7ae.png" alt="Example block output"/><h2 id="Statistical-complexity-of-iterated-maps"><a class="docs-heading-anchor" href="#Statistical-complexity-of-iterated-maps">Statistical complexity of iterated maps</a><a id="Statistical-complexity-of-iterated-maps-1"></a><a class="docs-heading-anchor-permalink" href="#Statistical-complexity-of-iterated-maps" title="Permalink"></a></h2><p>In this example, we reproduce parts of Fig. 1 in <a href="../references/#Rosso2007">Rosso <em>et al.</em> (2007)</a>: We compute the statistical complexity of the Henon, logistic and Schuster map, as well as that of k-noise.</p><pre><code class="language-julia hljs">using ComplexityMeasures
+using Distances
+using DynamicalSystemsBase
+using CairoMakie
+using FFTW
+using Statistics
+
+N = 2^15
+
+function logistic(x0=0.4; r = 4.0)
+    return DeterministicIteratedMap(logistic_rule, SVector(x0), [r])
+end
+logistic_rule(x, p, n) = @inbounds SVector(p[1]*x[1]*(1 - x[1]))
+logistic_jacob(x, p, n) = @inbounds SMatrix{1,1}(p[1]*(1 - 2x[1]))
+
+function henon(u0=zeros(2); a = 1.4, b = 0.3)
+    return DeterministicIteratedMap(henon_rule, u0, [a,b])
+end
+henon_rule(x, p, n) = SVector{2}(1.0 - p[1]*x[1]^2 + x[2], p[2]*x[1])
+henon_jacob(x, p, n) = SMatrix{2,2}(-2*p[1]*x[1], p[2], 1.0, 0.0)
+
+function schuster(x0=0.5, z=3.0/2)
+    return DeterministicIteratedMap(schuster_rule, SVector(x0), [z])
+end
+schuster_rule(x, p, n) = @inbounds SVector((x[1]+x[1]^p[1]) % 1)
+
+# generate noise with power spectrum that falls like 1/f^k
+function k_noise(k=3)
+    function f(N)
+        x = rand(Float64, N)
+        # generate power spectrum of random numbers and multiply by f^(-k/2)
+        x_hat = fft(x) .* abs.(vec(fftfreq(length(x)))) .^ (-k/2)
+        # set to zero for frequency zero
+        x_hat[1] = 0
+        return real.(ifft(x_hat))
+    end
+    return f
+end
+
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel=L&quot;H_S&quot;, ylabel=L&quot;C_{JS}&quot;)
+
+m, τ = 6, 1
+m_kwargs = (
+        (color=:transparent,
+        strokecolor=:red,
+        marker=:utriangle,
+        strokewidth=2),
+        (color=:transparent,
+        strokecolor=:blue,
+        marker=:rect,
+        strokewidth=2),
+        (color=:magenta,
+        marker=:circle),
+        (color=:blue,
+        marker=:rect)
+    )
+
+n = 100
+
+c = StatisticalComplexity(
+    dist=JSDivergence(),
+    est=OrdinalPatterns(; m, τ),
+    entr=Renyi()
+)
+for (j, (ds_gen, sym, ds_name)) in enumerate(zip(
+        (logistic, henon, schuster, k_noise),
+        (:utriangle, :rect, :dtriangle, :diamond),
+        (&quot;Logistic map&quot;, &quot;Henon map&quot;, &quot;Schuster map&quot;, &quot;k-noise (k=3)&quot;),
+    ))
+
+    if j &lt; 4
+        dim = dimension(ds_gen())
+        hs, cs = zeros(n), zeros(n)
+        for k in 1:n
+            ic = rand(dim) * 0.3
+            ds = ds_gen(SVector{dim}(ic))
+            x, t = trajectory(ds, N, Ttr=100)
+            hs[k], cs[k] = entropy_complexity(c, x[:, 1])
+        end
+        scatter!(ax, mean(hs), mean(cs); label=&quot;$ds_name&quot;, markersize=25, m_kwargs[j]...)
+    else
+        ds = ds_gen()
+        hs, cs = zeros(n), zeros(n)
+        for k in 1:n
+            x = ds(N)
+            hs[k], cs[k] = entropy_complexity(c, x[:, 1])
+        end
+        scatter!(ax, mean(hs), mean(cs); label=&quot;$ds_name&quot;, markersize=25, m_kwargs[j]...)
+    end
+end
+
+min_curve, max_curve = entropy_complexity_curves(c)
+lines!(ax, min_curve; color=:black)
+lines!(ax, max_curve; color=:black)
+axislegend(; position=:lt)
+fig</code></pre><img src="df147200.png" alt="Example block output"/></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../convenience/">« Convenience functions</a><a class="docs-footer-nextpage" href="../devdocs/">ComplexityMeasures.jl Dev Docs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Saturday 13 January 2024 10:02">Saturday 13 January 2024</span>. Using Julia version 1.10.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
