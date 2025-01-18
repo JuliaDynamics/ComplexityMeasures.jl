@@ -97,6 +97,7 @@ below some threshold.
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref),
 [`invariantmeasure`](@ref).
 """
+#=
 struct TransferOperator{R<:AbstractBinning, RNG} <: OutcomeSpace
     binning::R
     warn_precise::Bool
@@ -112,7 +113,7 @@ function TransferOperator(ϵ::Union{Real,Vector};
     return TransferOperator(RectangularBinning(ϵ), warn_precise, rng)
 end
 
-
+=#
 
 """
     TransferOperatorApproximationRectangular(to, binning::RectangularBinning, mini,
@@ -135,13 +136,13 @@ points that visits `bins[i]`.
 
 See also: [`RectangularBinning`](@ref).
 """
-struct TransferOperatorApproximationRectangular{
-        T<:Real,
-        BINS,
-        E}
+
+struct TransferOperator <: ProbabilitiesEstimator end
+
+struct TransferOperatorApproximation{T<:Real,OC<:OutcomeSpace} <: ProbabilitiesEstimator
     transfermatrix::AbstractArray{T, 2}
-    encoding::E
-    bins::BINS
+    outcome_space::OC
+    outcomes
 end
 
 """
@@ -151,22 +152,18 @@ Approximate the transfer operator given a set of sequentially ordered points sub
 rectangular partition given by the `binning`.
 The keywords `boundary_condition = :none, warn_precise = true` are as in [`TransferOperator`](@ref).
 """
-function transferoperator(pts::AbstractStateSpaceSet{D, T},
-        binning::Union{FixedRectangularBinning, RectangularBinning};
+function transferoperator(o::OutcomeSpace,x;
         boundary_condition = :none, 
-        warn_precise = true) where {D, T<:Real}
-
-    L = length(pts)
+        warn_precise = true)     
+    #=
     if warn_precise && !binning.precise
         @warn "`binning.precise == false`. You may be getting points outside the binning."
     end
     encoding = RectangularBinEncoding(binning, pts)
+    =#
 
-    # The L points visits a total of N bins, which are the following bins (referenced
-    # here as cartesian coordinates, not absolute bins):
-    outcomes = map(pᵢ -> encode(encoding, pᵢ), pts)
-    #sort_idxs = sortperm(visited_bins)
-    #sort!(visited_bins) # see todo on github
+    outcomes = codify(o,x)
+    L = length(outcomes)
 
     # There are N=length(unique(visited_bins)) unique bins.
     # Which of the unqiue bins does each of the L points visit?
@@ -197,8 +194,8 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
     P = calculate_transition_matrix(Q)
 
     unique!(outcomes)
-    return TransferOperatorApproximationRectangular(
-        P, encoding, outcomes)
+    return TransferOperatorApproximation(
+        P, o, outcomes)
 end
 
 """
@@ -273,7 +270,7 @@ The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
 
 See also: [`InvariantMeasure`](@ref).
 """
-function invariantmeasure(to::TransferOperatorApproximationRectangular;
+function invariantmeasure(to::TransferOperatorApproximation;
         N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8,
         rng = Random.default_rng())
 
@@ -357,10 +354,9 @@ end
 
 # Explicitly extend `probabilities` because we can skip the decoding step, which is 
 # expensive.
-function probabilities(est::TransferOperator, x::Array_or_SSSet)
-    to = transferoperator(StateSpaceSet(x), est.binning; 
-        warn_precise = est.warn_precise)
-    return Probabilities(invariantmeasure(to; rng = est.rng).ρ)
+function probabilities(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet;kwargs...)
+    to = transferoperator(o,x)
+    return Probabilities(invariantmeasure(to; kwargs...).ρ)
 end
 
 function probabilities_and_outcomes(est::TransferOperator, x::Array_or_SSSet)
