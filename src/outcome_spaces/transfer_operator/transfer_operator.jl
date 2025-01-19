@@ -155,27 +155,26 @@ The keywords `boundary_condition = :none, warn_precise = true` are as in [`Trans
 function transferoperator(o::OutcomeSpace,x;
         boundary_condition = :none, 
         warn_precise = true)     
-    #=
-    if warn_precise && !binning.precise
+    
+    #warning (only when used with some kind of binning)
+    if warn_precise && typeof(o) <: ValueBinning  && !o.binning.precise
         @warn "`binning.precise == false`. You may be getting points outside the binning."
     end
-    encoding = RectangularBinEncoding(binning, pts)
-    =#
 
     outcomes = codify(o,x)
     L = length(outcomes)
 
-    # There are N=length(unique(visited_bins)) unique bins.
-    # Which of the unqiue bins does each of the L points visit?
-    visits_whichbin,unique_outcomes = inds_in_terms_of_unique(outcomes, false) # set to true when sorting is fixed
+    # There are L number of outcomes
+    # turn the time series of outcomes into a sequence of unique indices of outcomes
+    unique_indices,unique_outcomes = inds_in_terms_of_unique(outcomes, false) # set to true when sorting is fixed
     N = length(unique_outcomes)
    
     #apply boundary conditions (default is :none)
     if boundary_condition == :circular
-        append!(visits_whichbin, [1])
+        append!(unique_indices, [1])
         L += 1
     elseif boundary_condition == :random
-        append!(visits_whichbin, [rand(rng, 1:length(visits_whichbin))])
+        append!(unique_indices, [rand(rng, 1:length(unique_indices))])
         L += 1
     elseif boundary_condition != :none
         error("Boundary condition $(boundary_condition) not implemented")
@@ -186,16 +185,15 @@ function transferoperator(o::OutcomeSpace,x;
 
 	#count transitions in Q, assuming symbols from 1 to N
 	for i in 1:(L - 1)
-        Q[visits_whichbin[i],visits_whichbin[i+1]] += 1.0
+        Q[unique_indices[i],unique_indices[i+1]] += 1.0
 	end
 
     #normalize Q (not strictly necessary) and fill P by normalizing rows of Q
     Q .= Q./sum(Q)
-    P = calculate_transition_matrix(Q)
+    P = normalize_transition_matrix(Q)
 
-    unique!(outcomes)
     return TransferOperatorApproximation(
-        P, o, outcomes)
+        P, o, unique_outcomes)
 end
 
 """
@@ -274,6 +272,10 @@ function invariantmeasure(to::TransferOperatorApproximation;
         N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8,
         rng = Random.default_rng())
 
+
+    @show N
+    @show tolerance
+    @show delta
     TO = to.transfermatrix
     #=
     # Start with a random distribution `Ρ` (big rho). Normalise it so that it
@@ -320,6 +322,7 @@ function invariantmeasure(to::TransferOperatorApproximation;
         distance = norm(distribution - Ρ) / norm(Ρ)
     end
     distribution = dropdims(distribution, dims = 1)
+    @show counter
 
     # Do the last normalisation and check
     colsum_distribution = sum(distribution)
