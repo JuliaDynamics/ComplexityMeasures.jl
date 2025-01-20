@@ -97,23 +97,8 @@ below some threshold.
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref),
 [`invariantmeasure`](@ref).
 """
-#=
-struct TransferOperator{R<:AbstractBinning, RNG} <: OutcomeSpace
-    binning::R
-    warn_precise::Bool
-    rng::RNG
-    function TransferOperator(b::R; 
-            rng::RNG = Random.default_rng(), 
-            warn_precise = true) where {R <: AbstractBinning, RNG}
-        return new{R, RNG}(b, warn_precise, rng)
-    end
-end
-function TransferOperator(ϵ::Union{Real,Vector}; 
-        rng = Random.default_rng(), warn_precise = true)
-    return TransferOperator(RectangularBinning(ϵ), warn_precise, rng)
-end
 
-=#
+struct TransferOperator <: ProbabilitiesEstimator end
 
 """
     TransferOperatorApproximationRectangular(to, binning::RectangularBinning, mini,
@@ -136,8 +121,6 @@ points that visits `bins[i]`.
 
 See also: [`RectangularBinning`](@ref).
 """
-
-struct TransferOperator <: ProbabilitiesEstimator end
 
 struct TransferOperatorApproximation{T<:Real,OC<:OutcomeSpace} <: ProbabilitiesEstimator
     transfermatrix::AbstractArray{T, 2}
@@ -272,10 +255,6 @@ function invariantmeasure(to::TransferOperatorApproximation;
         N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8,
         rng = Random.default_rng())
 
-
-    @show N
-    @show tolerance
-    @show delta
     TO = to.transfermatrix
     #=
     # Start with a random distribution `Ρ` (big rho). Normalise it so that it
@@ -322,7 +301,6 @@ function invariantmeasure(to::TransferOperatorApproximation;
         distance = norm(distribution - Ρ) / norm(Ρ)
     end
     distribution = dropdims(distribution, dims = 1)
-    @show counter
 
     # Do the last normalisation and check
     colsum_distribution = sum(distribution)
