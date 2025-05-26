@@ -157,7 +157,7 @@ function RectangularBinEncoding(b::RectangularBinning, x)
 end
 function FixedRectangularBinning(b::RectangularBinning, x)
     D = dimension(x)
-    T = eltype(x)
+    T = eltype(eltype(x)) # elements might be in vectors
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
     if ϵ isa AbstractFloat || ϵ isa AbstractVector{<:AbstractFloat}
