@@ -50,3 +50,7 @@ function information_maximum(e::Tsallis, L::Int)
         return k*(L^(1 - q) - 1) / (1 - q)
     end
 end
+
+function self_information(e::Tsallis, pᵢ, N = nothing)
+    return (1 - pᵢ^(e.q- 1)) / (e.q - 1)
+end

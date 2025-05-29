@@ -1,4 +1,5 @@
 export information, information_maximum, information_normalized, convert_logunit
+export self_information
 export entropy
 
 ###########################################################################################
@@ -276,6 +277,44 @@ function information(::InformationMeasure, ::DifferentialInfoEstimator, args...)
     throw(ArgumentError(
         """`InformationMeasure` must be given as an argument to `est`, not to `information`.
         """
+    ))
+end
+
+"""
+    self_information(measure::InformationMeasure, p, N::Int)
+
+Compute the "self-information"/"surprisal" of a single probability `p` under the given 
+information measure, assuming that `p` is part of a length-`N` probability distribution.
+
+For some `measure`s, the information content is independent of `N`, while for others 
+it depends on `N`. For consistency, we require that you always provide `N` (`N` will be 
+ignored if not relevant).
+
+    This function requires `p > 0`; giving `0` can yield `Inf` or `NaN` for certain 
+`measure`s.
+
+## Definition
+
+We here use the definition "self-information" very loosely, and 
+define it as the functional ``I_M(p_i)`` that satisfies ``\\sum_i p_i I_M(p_i) = I_M``,
+where `I_M` is the given information measure. 
+
+If `measure` is [`Shannon`](@ref), then this is the 
+[Shannon self-information](https://en.wikipedia.org/wiki/Information_content), which 
+fulfils a set of axioms. If `measure` is some other information, then it is not guaranteed
+that these axioms are fulfilled. We *only* guarantee that the probability-weighted 
+sum of the self-information equals the information measure.
+
+!!! note "Motivation for this definition"
+    This definition is motivated by the desire to compute generalized 
+    [`InformationFluctuation`](@ref), which is a measure of fluctuations of local self-information
+    relative to some information-theoretic summary statistic of a distribution. Defining 
+    these self-information functions has, as far as we know, not been treated in the literature 
+    before, and will be part of an upcoming paper we're writing! 
+"""
+function self_information(measure::InformationMeasure, pᵢ, N = nothing)
+    throw(ArgumentError(
+        """`InformationMeasure` $(typeof(measure)) does not implement `self_information`."""
     ))
 end
 
