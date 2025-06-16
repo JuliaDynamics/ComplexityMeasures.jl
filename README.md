@@ -14,7 +14,7 @@ If you are a user of other programming languages (Python, R, MATLAB, ...),
 you can still use ComplexityMeasures.jl due to Julia's interoperability.
 For example, for Python use [`juliacall`](https://pypi.org/project/juliacall/).
 
-A careful comparison with alternative widely used software shows that ComplexityMeasures.jl outclasses the alternatives in several objective aspects of comparison, such as computational performance, overall amount of measures, reliability, and extendability. See the associated publication for more details.
+A careful comparison with alternative widely used software shows that ComplexityMeasures.jl outclasses the alternatives in several objective aspects of comparison, such as computational performance, overall amount of measures, reliability, and extendability. See the [associated publication](https://doi.org/10.1371/journal.pone.0324431) for more details.
 
 The key features that ComplexityMeasures.jl provides can be summarized as:
 
