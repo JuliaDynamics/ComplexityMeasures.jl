@@ -40,3 +40,16 @@ jn = information_normalized(TsallisExtropy(; q = 2), UniqueElements(), x)
 # Equivalent to Shannon extropy for q == 1
 @test information(TsallisExtropy(q = 1), UniqueElements(), x) ≈
     information(ShannonExtropy(), UniqueElements(), x)
+
+# ---------------------------------------------------------------------------------------------------------
+# Self-information tests
+# ---------------------------------------------------------------------------------------------------------
+# Check experimentally that the self-information expressions are correct by comparing to the 
+# regular computation of the measure from a set of probabilities.
+function information_from_selfinfo(e::TsallisExtropy, probs::Probabilities)
+    non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
+    return sum((1 - pᵢ) * self_information(e, pᵢ, length(non0_probs)) for pᵢ in non0_probs)
+end
+p = Probabilities([1//5, 1//5, 1//5, 1//2, 0])
+Jt = TsallisExtropy(q = 2)
+@test round(information_from_selfinfo(Jt, p), digits = 5) ≈ round(information(Jt, p), digits = 5)
