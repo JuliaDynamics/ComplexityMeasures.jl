@@ -17,7 +17,7 @@ Base.show(io::IO, o::Outcome) = print(io, "Outcome($(o.num))")
 
 # Some necessary methods for ranges to work.
 Outcome{T}(x::Outcome{T}) where T<:Integer = Outcome(x.num)
-Integer(x::Outcome{T}) where T<:Integer = x.num
+Base.Integer(x::Outcome{T}) where T<:Integer = x.num
 
 import Base: -, +, *, rem, div, inv
 for f in [:(*), :(+), :(-), :rem, :div]
