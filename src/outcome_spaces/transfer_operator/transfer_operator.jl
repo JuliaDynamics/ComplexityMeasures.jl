@@ -121,7 +121,7 @@ points that visits `bins[i]`.
 
 See also: [`RectangularBinning`](@ref).
 """
-
+#should it include an encoding as well?
 struct TransferOperatorApproximation{T<:Real,OC<:OutcomeSpace} <: ProbabilitiesEstimator
     transfermatrix::AbstractArray{T, 2}
     outcome_space::OC
@@ -194,7 +194,7 @@ struct InvariantMeasure{T}
 end
 
 function invariantmeasure(iv::InvariantMeasure)
-    return iv.ρ, iv.to.bins
+    return iv.ρ, iv.to.outcomes
 end
 
 
@@ -262,7 +262,7 @@ function invariantmeasure(to::TransferOperatorApproximation;
     =#
     Ρ = rand(rng, Float64, 1, size(to.transfermatrix, 1))
     Ρ = Ρ ./ sum(Ρ, dims = 2)
-
+    
     #=
     # Start estimating the invariant distribution. We could either do this by
     # finding the left-eigenvector of M, or by repeated application of M on Ρ
@@ -271,7 +271,6 @@ function invariantmeasure(to::TransferOperatorApproximation;
     # iterations.
     =#
     distribution = Ρ * to.transfermatrix
-
     distance = norm(distribution - Ρ) / norm(Ρ)
 
     check = floor(Int, 1 / delta)
@@ -297,7 +296,6 @@ function invariantmeasure(to::TransferOperatorApproximation;
                 distribution = distribution ./ colsum_distribution
             end
         end
-
         distance = norm(distribution - Ρ) / norm(Ρ)
     end
     distribution = dropdims(distribution, dims = 1)
@@ -340,19 +338,14 @@ function probabilities(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSe
     return Probabilities(invariantmeasure(to; kwargs...).ρ)
 end
 
-function probabilities_and_outcomes(est::TransferOperator, x::Array_or_SSSet)
-    to = transferoperator(StateSpaceSet(x), est.binning; 
-        warn_precise = est.warn_precise)
-    probs = invariantmeasure(to; rng = est.rng).ρ
+function probabilities_and_outcomes(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)
+    to = transferoperator(o,x)
+    probs = probabilities(pest, o, x)
 
-    # Note: bins are *not* sorted. They occur in the order of first appearance, according
-    # to the input time series. Taking the unique bins preserves the order of first
-    # appearance.
-    bins = to.bins
-    unique!(bins)
-    outs = decode.(Ref(to.encoding), bins) # coordinates of the visited bins
+    #doesn't work for ValueBinning outcome space
+    outs = decode.(Ref(o.encoding), to.outcomes) # coordinates of the visited bins
     probs = Probabilities(probs, (outs, ))
-    return probs, outcomes(probs)
+    return probs, to.outcomes
 end
 
 outcome_space(est::TransferOperator, x) = outcome_space(est.binning, x)

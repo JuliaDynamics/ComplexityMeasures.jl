@@ -2,6 +2,39 @@ using ComplexityMeasures, Test
 using Random: MersenneTwister
 using DynamicalSystemsBase
 using Integrals
+
+#test for all count-based outcome spaces
+
+@testset begin "Count-based outcome spaces" 
+
+    #simple 1d rand 
+    x = rand(100)
+    x_ue = rand([0.0:0.1:1.0;],100) #for unique elements
+
+    #def count-based 1d outcome spaces 
+    outcome_spaces = [BubbleSortSwaps(),AmplitudeAwareOrdinalPatterns(),OrdinalPatterns(),
+        WeightedOrdinalPatterns(),CosineSimilarityBinning(),Dispersion(),
+        SequentialPairDistances(x),UniqueElements(),ValueBinning(RectangularBinning(5))] 
+    
+    #build transferoperator from every outcomespace
+    for ocs in outcome_spaces
+        if ocs isa UniqueElements
+            to = transferoperator(ocs,x_ue) #unique elements 
+        else 
+            to = transferoperator(ocs,x)
+        end
+
+        #test if transition matrix is normalized
+        sum_rows = sum(to.transfermatrix;dims=2) 
+        @test all( isapprox.(1.0, sum_rows ;atol = 1e-3))
+    end
+
+    #leave out spatial methods for now:
+    #SpatialBubbleSortSwaps,SpatialDispersion,SpatialOrdinalPatterns
+    #not trivial how to implement transferoperator!
+
+end
+
 @test TransferOperator(RectangularBinning(3)) isa TransferOperator
 
 D = StateSpaceSet(rand(MersenneTwister(1234), 100, 2))
@@ -37,16 +70,17 @@ binnings = [
     orbit,t = trajectory(ds, 10^7; Ttr = 10^4)
 
     #--------------estimate invariant measure----------
-    b = RectangularBinning(10, true)
-    to = ComplexityMeasures.transferoperator(orbit, b)
+    b = ValueBinning(FixedRectangularBinning(range(0,1;length=11),1,true))
+    to = transferoperator(b,orbit)
     iv = invariantmeasure(to)
     p,outcomes = invariantmeasure(iv)
+    @show outcomes
 
     #order from leftmost bin to rightmost bin  
     p_bins = p[sortperm(outcomes)]
 
     #----------compute probability for each bin analytically----------
-    bin_ranges = to.encoding.ranges[1]
+    bin_ranges = to.outcome_space.binning.ranges[1]
     ρ_bins = zeros(10)
 
     for i in 1:length(bin_ranges)-1
@@ -64,8 +98,8 @@ end
 
 @testset "Binning test $i" for i in eachindex(binnings)
     b = binnings[i]
-    to = ComplexityMeasures.transferoperator(D, b)
-    @test to isa ComplexityMeasures.TransferOperatorApproximationRectangular
+    to = ComplexityMeasures.transferoperator(ValueBinning(b),D)
+    @test to isa ComplexityMeasures.TransferOperatorApproximation
 
     iv = invariantmeasure(to)
     @test iv isa InvariantMeasure
@@ -74,12 +108,11 @@ end
     @test p isa Probabilities
     @test bins isa Vector{Int}
 
-    o = TransferOperator(binnings[i])
-    @test probabilities(o, D) isa Probabilities
-    @test probabilities_and_outcomes(o, D) isa Tuple{Probabilities, Vector{SVector{2, Float64}}}
+    @test probabilities(TransferOperator(), ValueBinning(b) , D) isa Probabilities
+    @test probabilities_and_outcomes(TransferOperator(), ValueBinning(b), D) isa Tuple{Probabilities, Vector{SVector{2, Float64}}}
 
     # Test that gives approximately same entropy as ValueBinning:
-    abs(information(TransferOperator(b), D) - information(ValueBinning(b), D) ) < 0.1 # or something like that
+    abs(information(Shannon(), p) - information(ValueBinning(b), D) ) < 0.1 # or something like that
 end
 
 # Warn if we're not using precise binnings.
