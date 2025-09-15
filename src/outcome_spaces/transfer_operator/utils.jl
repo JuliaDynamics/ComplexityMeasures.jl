@@ -51,15 +51,15 @@ end
 inds_in_terms_of_unique(x::AbstractStateSpaceSet) = inds_in_terms_of_unique(x.data)
 
 
-function calculate_transition_matrix(S::SparseMatrixCSC;verbose=true)
+function normalize_transition_matrix(S::SparseMatrixCSC;verbose=true)
 	S_returned = deepcopy(S)
-	calculate_transition_matrix!(S_returned,verbose=verbose)
+	normalize_transition_matrix!(S_returned,verbose=verbose)
 	return S_returned
 end
 
 #normalize each row of S (sum is 1) to get p_ij trans. probabilities
 #by looping through CSC sparse matrix efficiently
-function calculate_transition_matrix!(S::SparseMatrixCSC;verbose=true)
+function normalize_transition_matrix!(S::SparseMatrixCSC;verbose=true)
 
     stochasticity = true
 
