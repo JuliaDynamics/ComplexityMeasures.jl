@@ -46,12 +46,12 @@ julia> c = Counts([12, 16, 12], ["out1", "out2", "out3"]); Probabilities(c)
  "out3"  0.3
 ```
 """
-struct Probabilities{T, N, S} <: AbstractArray{T, N}
+struct Probabilities{T, N, S, A<:AbstractArray{T, N}, O<:Tuple{Vararg{AbstractVector, N}}} <: AbstractArray{T, N}
     # The probabilities table.
-    p::AbstractArray{T, N}
+    p::A
 
     # outcomes[i] has the same number of elements as `cts` along dimension `i`.
-    outcomes::Tuple{Vararg{AbstractVector, N}}
+    outcomes::O
 
     # A label for each dimension
     dimlabels::NTuple{N, S}
@@ -83,7 +83,7 @@ struct Probabilities{T, N, S} <: AbstractArray{T, N}
             end
         end
 
-        return new{eltype(p), N, S}(p, outcomes, dimlabels)
+        return new{eltype(p), N, S, typeof(p), typeof(outcomes)}(p, outcomes, dimlabels)
     end
 
 end
