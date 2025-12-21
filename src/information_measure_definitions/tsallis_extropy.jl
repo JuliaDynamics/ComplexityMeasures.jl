@@ -2,7 +2,8 @@ export TsallisExtropy
 
 """
     TsallisExtropy <: InformationMeasure
-    TsallisExtropy(; base = 2)
+    TsallisExtropy(q; k = 1.0, base = 2)
+    TsallisExtropy(; q = 1.0, k = 1.0, base = 2)
 
 The Tsallis extropy [Xue2023](@cite).
 
