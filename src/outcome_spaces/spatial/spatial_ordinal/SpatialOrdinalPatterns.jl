@@ -106,7 +106,6 @@ end
 
 # Don't use generic dispatch, because we need to use `counts_and_outcomes`!.
 function probabilities!(est::SpatialOrdinalPatterns, x, s)
-    s = zeros(Int, length(est.valid))
     return Probabilities(first(counts_and_outcomes!(s, est, x)))
 end
 
