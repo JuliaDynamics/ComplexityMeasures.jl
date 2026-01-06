@@ -1,4 +1,5 @@
 using DelayEmbeddings, SparseArrays
+using KrylovKit: eigsolve
 using StaticArrays
 using Random
 
@@ -120,13 +121,32 @@ vector of vectors, where `visitors[i]` contains the indices of the (sorted)
 points that visits `bins[i]`.
 
 See also: [`RectangularBinning`](@ref).
+
 """
-#should it include an encoding as well?
-struct TransferOperatorApproximation{T<:Real,OC<:OutcomeSpace} <: ProbabilitiesEstimator
-    transfermatrix::AbstractArray{T, 2}
+struct TransferOperatorApproximation{OC<:OutcomeSpace} <: ProbabilitiesEstimator
+    transfermatrix::AbstractArray{<:Real,2}
     outcome_space::OC
     outcomes
 end
+
+struct TransferOperatorApproximationIterative{OC<:OutcomeSpace} <: ProbabilitiesEstimator
+    transferoperator::TransferOperatorApproximation{OC}
+    N::Int 
+    tolerance::Float64 
+    delta::Float64
+    rng
+end
+
+#constructor with default method parameters
+#N,tol,delta,rng
+pars_default_iterative = (200, 1e-8, 1e-8, Random.default_rng())
+TransferOperatorApproximationIterative(to) = 
+    TransferOperatorApproximationIterative(to, pars_default_iterative...)
+
+struct TransferOperatorApproximationEigen{OC<:OutcomeSpace} <: ProbabilitiesEstimator
+    transferoperator::TransferOperatorApproximation{OC}
+end
+
 
 """
     transferoperator(pts::StateSpaceSet, binning; kw...)
@@ -251,17 +271,17 @@ The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
 
 See also: [`InvariantMeasure`](@ref).
 """
-function invariantmeasure(to::TransferOperatorApproximation;
-        N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8,
-        rng = Random.default_rng())
+function invariantmeasure(to_iter::TransferOperatorApproximationIterative)
+    to = to_iter.transferoperator
+    N, tolerance, delta, rng = to_iter.N, to_iter.tolerance, to_iter.delta, to_iter.rng
 
-    TO = to.transfermatrix
+    P = to.transfermatrix
     #=
-    # Start with a random distribution `Ρ` (big rho). Normalise it so that it
+    # Start with a random distribution `ρ` (rho). Normalise it so that it
     # sums to 1 and forms a true probability distribution over the partition elements.
     =#
-    Ρ = rand(rng, Float64, 1, size(to.transfermatrix, 1))
-    Ρ = Ρ ./ sum(Ρ, dims = 2)
+    ρ = rand(rng, Float64, 1, size(P, 1))
+    ρ = ρ ./ sum(ρ, dims = 2)
     
     #=
     # Start estimating the invariant distribution. We could either do this by
@@ -270,8 +290,8 @@ function invariantmeasure(to::TransferOperatorApproximation;
     # meaning that we iterate until Ρ doesn't change substantially between
     # iterations.
     =#
-    distribution = Ρ * to.transfermatrix
-    distance = norm(distribution - Ρ) / norm(Ρ)
+    distribution = ρ * P
+    distance = norm(distribution - ρ) / norm(ρ)
 
     check = floor(Int, 1 / delta)
     check_pts = floor.(Int, transpose(collect(1:N)) ./ check) .* transpose(collect(1:N))
@@ -282,10 +302,10 @@ function invariantmeasure(to::TransferOperatorApproximation;
     counter = 1
     while counter <= N && distance >= tolerance
         counter += 1
-        Ρ = distribution
+        ρ = distribution
 
         # Apply the Markov matrix to the current state of the distribution
-        distribution = Ρ * to.transfermatrix
+        distribution = ρ * P
 
         if (check_pts_counter <= num_checkpts &&
            counter == check_pts[check_pts_counter])
@@ -296,7 +316,7 @@ function invariantmeasure(to::TransferOperatorApproximation;
                 distribution = distribution ./ colsum_distribution
             end
         end
-        distance = norm(distribution - Ρ) / norm(Ρ)
+        distance = norm(distribution - ρ) / norm(ρ)
     end
     distribution = dropdims(distribution, dims = 1)
 
@@ -310,11 +330,37 @@ function invariantmeasure(to::TransferOperatorApproximation;
     return InvariantMeasure(to, Probabilities(distribution))
 end
 
-function invariantmeasure(x::AbstractStateSpaceSet,
-        binning::Union{FixedRectangularBinning, RectangularBinning};
-        warn_precise = true, rng = Random.default_rng())
-    to = transferoperator(x, binning; warn_precise)
-    return invariantmeasure(to; rng)
+#TODO:add comments here
+function invariantmeasure(to_eig::TransferOperatorApproximationEigen)
+    to = to_eig.transferoperator
+    P = to.transfermatrix
+    vals, vecs, info = eigsolve(P', 1, :LR)
+    info.converged < 1 && @warn "KrylovKit.eigsolve did not converge!"
+    ρ = real.(vecs[1]) ./ sum(real.(vecs[1]))
+    return InvariantMeasure(to, Probabilities(ρ.nzval))
+end
+
+function invariantmeasure(o::OutcomeSpace, x::Array_or_SSSet; method=:iterate, warn_precise=true, kwargs...)
+    
+    to = transferoperator(o, x; warn_precise) #returns a TransferOperatorApproximation
+
+    return invariantmeasure(to,method)
+
+end
+
+function invariantmeasure(to::TransferOperatorApproximation,method=:iterate;kwargs...)
+
+    #wrap to depending on the selected method
+    if method == :iterate
+        to_wrap = TransferOperatorApproximationIterative(to; kwargs...)
+    elseif method == :eigen
+        to_wrap = TransferOperatorApproximationEigen(to; kwargs...)
+    else
+        throw(ArgumentError("This method isn't implemented yet! Available methods for invariant distribution (measure) calculation are :iterate and :eigen. "))
+    end
+
+    return invariantmeasure(to_wrap)
+
 end
 
 """
@@ -328,24 +374,43 @@ probability of jumping from the state defined by `bins[i]` to the state defined 
 See also: [`TransferOperator`](@ref).
 """
 function transfermatrix(iv::InvariantMeasure)
-    return iv.to.transfermatrix, iv.to.bins
+    return iv.to.transfermatrix
 end
+
 
 # Explicitly extend `probabilities` because we can skip the decoding step, which is 
 # expensive.
-function probabilities(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet;kwargs...)
+function probabilities(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet; method=:iterate, kwargs...)
+    
     to = transferoperator(o,x)
-    return Probabilities(invariantmeasure(to; kwargs...).ρ)
+    ρ =  invariantmeasure(to, method; kwargs...).ρ
+
+    #if o isa ValueBinning, return bins in order
+    if o isa ValueBinning
+        outs = to.outcomes
+        ordering = sortperm(outs)
+        outs_ordered = outs[ordering]
+        return Probabilities(ρ.p[ordering], (outs_ordered,))
+    end
+
+    return Probabilities(ρ, (to.outcomes,))
 end
 
-function probabilities_and_outcomes(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)
+function probabilities_and_outcomes(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet;method=:iterate, kwargs...)
     to = transferoperator(o,x)
-    probs = probabilities(pest, o, x)
+    probs = probabilities(pest, o, x; method=:iterate, kwargs...)
 
-    #doesn't work for ValueBinning outcome space
-    outs = decode.(Ref(o.encoding), to.outcomes) # coordinates of the visited bins
+    #different for ValueBinning outcome space 
+    if o isa ValueBinning
+        outs = outcome_space(o, x)[sortperm(to.outcomes)] #get bins in the correct order
+        probs = Probabilities(probs, (outs,))
+        return probs,outs 
+    end
+    
+    #for other outcome spaces use decoding
+    outs = decode.(Ref(o.encoding), to.outcomes) # outcomes decoded from integers
     probs = Probabilities(probs, (outs, ))
-    return probs, to.outcomes
+
+    return probs, outs
 end
 
-outcome_space(est::TransferOperator, x) = outcome_space(est.binning, x)
