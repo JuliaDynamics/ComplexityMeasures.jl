@@ -2,10 +2,11 @@ export PowerSpectrum
 import FFTW
 
 """
-    PowerSpectrum() <: OutcomeSpace
+    PowerSpectrum(δ = 0.0) <: OutcomeSpace
 
 An [`OutcomeSpace`](@ref) based on the power spectrum of a timeseries (amplitude square of
-its Fourier transform).
+its Fourier transform). There is an optional threshold, δ, that can be used to set amplitude
+square of the timeseries' Fourier transform below δ's value to zero.
 
 If used with [`probabilities`](@ref), then the spectrum normalized to sum = 1
 is returned as probabilities.
@@ -22,14 +23,23 @@ The outcome space `Ω` for `PowerSpectrum` is the set of frequencies in Fourier 
 should be multiplied with the sampling rate of the signal, which is assumed to be `1`.
 Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-struct PowerSpectrum <: OutcomeSpace end
+struct PowerSpectrum{T<:Real} <: OutcomeSpace
+    δ::T
 
-function probabilities_and_outcomes(::PowerSpectrum, x)
+    function PowerSpectrum(δ::T = 0.0) where {T}
+        new{T}(δ)
+    end
+end
+
+function probabilities_and_outcomes(P::PowerSpectrum, x)
     if !(x isa AbstractVector{<:Real})
         throw(ArgumentError("`PowerSpectrum` only works for timeseries input!"))
     end
+    δ = getfield.(Ref(P), (:δ))
     f = FFTW.rfft(x)
-    probs = Probabilities(abs2.(f))
+    amp_squared = abs2.(f)
+    amp_squared[0.0 .< amp_squared  .< δ] .= 0.0
+    probs = Probabilities(amp_squared)
     outs = FFTW.rfftfreq(length(x))
     p = Probabilities(probs, outs)
     return p, outcomes(p)
