@@ -1,4 +1,5 @@
 using DelayEmbeddings, SparseArrays
+using KrylovKit: eigsolve
 using StaticArrays
 using Random
 
@@ -97,22 +98,8 @@ below some threshold.
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref),
 [`invariantmeasure`](@ref).
 """
-struct TransferOperator{R<:AbstractBinning, RNG} <: OutcomeSpace
-    binning::R
-    warn_precise::Bool
-    rng::RNG
-    function TransferOperator(b::R; 
-            rng::RNG = Random.default_rng(), 
-            warn_precise = true) where {R <: AbstractBinning, RNG}
-        return new{R, RNG}(b, warn_precise, rng)
-    end
-end
-function TransferOperator(ϵ::Union{Real,Vector}; 
-        rng = Random.default_rng(), warn_precise = true)
-    return TransferOperator(RectangularBinning(ϵ), warn_precise, rng)
-end
 
-
+struct TransferOperator <: ProbabilitiesEstimator end
 
 """
     TransferOperatorApproximationRectangular(to, binning::RectangularBinning, mini,
@@ -134,15 +121,32 @@ vector of vectors, where `visitors[i]` contains the indices of the (sorted)
 points that visits `bins[i]`.
 
 See also: [`RectangularBinning`](@ref).
+
 """
-struct TransferOperatorApproximationRectangular{
-        T<:Real,
-        BINS,
-        E}
-    transfermatrix::AbstractArray{T, 2}
-    encoding::E
-    bins::BINS
+struct TransferOperatorApproximation{OC<:OutcomeSpace} <: ProbabilitiesEstimator
+    transfermatrix::AbstractArray{<:Real,2}
+    outcome_space::OC
+    outcomes
 end
+
+struct TransferOperatorApproximationIterative{OC<:OutcomeSpace} <: ProbabilitiesEstimator
+    transferoperator::TransferOperatorApproximation{OC}
+    N::Int 
+    tolerance::Float64 
+    delta::Float64
+    rng
+end
+
+#constructor with default method parameters
+#N,tol,delta,rng
+pars_default_iterative = (200, 1e-8, 1e-8, Random.default_rng())
+TransferOperatorApproximationIterative(to) = 
+    TransferOperatorApproximationIterative(to, pars_default_iterative...)
+
+struct TransferOperatorApproximationEigen{OC<:OutcomeSpace} <: ProbabilitiesEstimator
+    transferoperator::TransferOperatorApproximation{OC}
+end
+
 
 """
     transferoperator(pts::StateSpaceSet, binning; kw...)
@@ -151,34 +155,29 @@ Approximate the transfer operator given a set of sequentially ordered points sub
 rectangular partition given by the `binning`.
 The keywords `boundary_condition = :none, warn_precise = true` are as in [`TransferOperator`](@ref).
 """
-function transferoperator(pts::AbstractStateSpaceSet{D, T},
-        binning::Union{FixedRectangularBinning, RectangularBinning};
+function transferoperator(o::OutcomeSpace,x;
         boundary_condition = :none, 
-        warn_precise = true) where {D, T<:Real}
-
-    L = length(pts)
-    if warn_precise && !binning.precise
+        warn_precise = true)     
+    
+    #warning (only when used with some kind of binning)
+    if warn_precise && typeof(o) <: ValueBinning  && !o.binning.precise
         @warn "`binning.precise == false`. You may be getting points outside the binning."
     end
-    encoding = RectangularBinEncoding(binning, pts)
 
-    # The L points visits a total of N bins, which are the following bins (referenced
-    # here as cartesian coordinates, not absolute bins):
-    outcomes = map(pᵢ -> encode(encoding, pᵢ), pts)
-    #sort_idxs = sortperm(visited_bins)
-    #sort!(visited_bins) # see todo on github
+    outcomes = codify(o,x)
+    L = length(outcomes)
 
-    # There are N=length(unique(visited_bins)) unique bins.
-    # Which of the unqiue bins does each of the L points visit?
-    visits_whichbin,unique_outcomes = inds_in_terms_of_unique(outcomes, false) # set to true when sorting is fixed
+    # There are L number of outcomes
+    # turn the time series of outcomes into a sequence of unique indices of outcomes
+    unique_indices,unique_outcomes = inds_in_terms_of_unique(outcomes, false) # set to true when sorting is fixed
     N = length(unique_outcomes)
    
     #apply boundary conditions (default is :none)
     if boundary_condition == :circular
-        append!(visits_whichbin, [1])
+        append!(unique_indices, [1])
         L += 1
     elseif boundary_condition == :random
-        append!(visits_whichbin, [rand(rng, 1:length(visits_whichbin))])
+        append!(unique_indices, [rand(rng, 1:length(unique_indices))])
         L += 1
     elseif boundary_condition != :none
         error("Boundary condition $(boundary_condition) not implemented")
@@ -189,16 +188,15 @@ function transferoperator(pts::AbstractStateSpaceSet{D, T},
 
 	#count transitions in Q, assuming symbols from 1 to N
 	for i in 1:(L - 1)
-        Q[visits_whichbin[i],visits_whichbin[i+1]] += 1.0
+        Q[unique_indices[i],unique_indices[i+1]] += 1.0
 	end
 
     #normalize Q (not strictly necessary) and fill P by normalizing rows of Q
     Q .= Q./sum(Q)
-    P = calculate_transition_matrix(Q)
+    P = normalize_transition_matrix(Q)
 
-    unique!(outcomes)
-    return TransferOperatorApproximationRectangular(
-        P, encoding, outcomes)
+    return TransferOperatorApproximation(
+        P, o, unique_outcomes)
 end
 
 """
@@ -216,7 +214,7 @@ struct InvariantMeasure{T}
 end
 
 function invariantmeasure(iv::InvariantMeasure)
-    return iv.ρ, iv.to.bins
+    return iv.ρ, iv.to.outcomes
 end
 
 
@@ -273,18 +271,18 @@ The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
 
 See also: [`InvariantMeasure`](@ref).
 """
-function invariantmeasure(to::TransferOperatorApproximationRectangular;
-        N::Int = 200, tolerance::Float64 = 1e-8, delta::Float64 = 1e-8,
-        rng = Random.default_rng())
+function invariantmeasure(to_iter::TransferOperatorApproximationIterative)
+    to = to_iter.transferoperator
+    N, tolerance, delta, rng = to_iter.N, to_iter.tolerance, to_iter.delta, to_iter.rng
 
-    TO = to.transfermatrix
+    P = to.transfermatrix
     #=
-    # Start with a random distribution `Ρ` (big rho). Normalise it so that it
+    # Start with a random distribution `ρ` (rho). Normalise it so that it
     # sums to 1 and forms a true probability distribution over the partition elements.
     =#
-    Ρ = rand(rng, Float64, 1, size(to.transfermatrix, 1))
-    Ρ = Ρ ./ sum(Ρ, dims = 2)
-
+    ρ = rand(rng, Float64, 1, size(P, 1))
+    ρ = ρ ./ sum(ρ, dims = 2)
+    
     #=
     # Start estimating the invariant distribution. We could either do this by
     # finding the left-eigenvector of M, or by repeated application of M on Ρ
@@ -292,9 +290,8 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     # meaning that we iterate until Ρ doesn't change substantially between
     # iterations.
     =#
-    distribution = Ρ * to.transfermatrix
-
-    distance = norm(distribution - Ρ) / norm(Ρ)
+    distribution = ρ * P
+    distance = norm(distribution - ρ) / norm(ρ)
 
     check = floor(Int, 1 / delta)
     check_pts = floor.(Int, transpose(collect(1:N)) ./ check) .* transpose(collect(1:N))
@@ -305,10 +302,10 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     counter = 1
     while counter <= N && distance >= tolerance
         counter += 1
-        Ρ = distribution
+        ρ = distribution
 
         # Apply the Markov matrix to the current state of the distribution
-        distribution = Ρ * to.transfermatrix
+        distribution = ρ * P
 
         if (check_pts_counter <= num_checkpts &&
            counter == check_pts[check_pts_counter])
@@ -319,8 +316,7 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
                 distribution = distribution ./ colsum_distribution
             end
         end
-
-        distance = norm(distribution - Ρ) / norm(Ρ)
+        distance = norm(distribution - ρ) / norm(ρ)
     end
     distribution = dropdims(distribution, dims = 1)
 
@@ -334,11 +330,37 @@ function invariantmeasure(to::TransferOperatorApproximationRectangular;
     return InvariantMeasure(to, Probabilities(distribution))
 end
 
-function invariantmeasure(x::AbstractStateSpaceSet,
-        binning::Union{FixedRectangularBinning, RectangularBinning};
-        warn_precise = true, rng = Random.default_rng())
-    to = transferoperator(x, binning; warn_precise)
-    return invariantmeasure(to; rng)
+#TODO:add comments here
+function invariantmeasure(to_eig::TransferOperatorApproximationEigen)
+    to = to_eig.transferoperator
+    P = to.transfermatrix
+    vals, vecs, info = eigsolve(P', 1, :LR)
+    info.converged < 1 && @warn "KrylovKit.eigsolve did not converge!"
+    ρ = real.(vecs[1]) ./ sum(real.(vecs[1]))
+    return InvariantMeasure(to, Probabilities(ρ.nzval))
+end
+
+function invariantmeasure(o::OutcomeSpace, x::Array_or_SSSet; method=:iterate, warn_precise=true, kwargs...)
+    
+    to = transferoperator(o, x; warn_precise) #returns a TransferOperatorApproximation
+
+    return invariantmeasure(to,method)
+
+end
+
+function invariantmeasure(to::TransferOperatorApproximation,method=:iterate;kwargs...)
+
+    #wrap to depending on the selected method
+    if method == :iterate
+        to_wrap = TransferOperatorApproximationIterative(to; kwargs...)
+    elseif method == :eigen
+        to_wrap = TransferOperatorApproximationEigen(to; kwargs...)
+    else
+        throw(ArgumentError("This method isn't implemented yet! Available methods for invariant distribution (measure) calculation are :iterate and :eigen. "))
+    end
+
+    return invariantmeasure(to_wrap)
+
 end
 
 """
@@ -352,30 +374,43 @@ probability of jumping from the state defined by `bins[i]` to the state defined 
 See also: [`TransferOperator`](@ref).
 """
 function transfermatrix(iv::InvariantMeasure)
-    return iv.to.transfermatrix, iv.to.bins
+    return iv.to.transfermatrix
 end
+
 
 # Explicitly extend `probabilities` because we can skip the decoding step, which is 
 # expensive.
-function probabilities(est::TransferOperator, x::Array_or_SSSet)
-    to = transferoperator(StateSpaceSet(x), est.binning; 
-        warn_precise = est.warn_precise)
-    return Probabilities(invariantmeasure(to; rng = est.rng).ρ)
+function probabilities(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet; method=:iterate, kwargs...)
+    
+    to = transferoperator(o,x)
+    ρ =  invariantmeasure(to, method; kwargs...).ρ
+
+    #if o isa ValueBinning, return bins in order
+    if o isa ValueBinning
+        outs = to.outcomes
+        ordering = sortperm(outs)
+        outs_ordered = outs[ordering]
+        return Probabilities(ρ.p[ordering], (outs_ordered,))
+    end
+
+    return Probabilities(ρ, (to.outcomes,))
 end
 
-function probabilities_and_outcomes(est::TransferOperator, x::Array_or_SSSet)
-    to = transferoperator(StateSpaceSet(x), est.binning; 
-        warn_precise = est.warn_precise)
-    probs = invariantmeasure(to; rng = est.rng).ρ
+function probabilities_and_outcomes(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet;method=:iterate, kwargs...)
+    to = transferoperator(o,x)
+    probs = probabilities(pest, o, x; method=:iterate, kwargs...)
 
-    # Note: bins are *not* sorted. They occur in the order of first appearance, according
-    # to the input time series. Taking the unique bins preserves the order of first
-    # appearance.
-    bins = to.bins
-    unique!(bins)
-    outs = decode.(Ref(to.encoding), bins) # coordinates of the visited bins
+    #different for ValueBinning outcome space 
+    if o isa ValueBinning
+        outs = outcome_space(o, x)[sortperm(to.outcomes)] #get bins in the correct order
+        probs = Probabilities(probs, (outs,))
+        return probs,outs 
+    end
+    
+    #for other outcome spaces use decoding
+    outs = decode.(Ref(o.encoding), to.outcomes) # outcomes decoded from integers
     probs = Probabilities(probs, (outs, ))
-    return probs, outcomes(probs)
+
+    return probs, outs
 end
 
-outcome_space(est::TransferOperator, x) = outcome_space(est.binning, x)
