@@ -35,7 +35,6 @@ function probabilities_and_outcomes(P::PowerSpectrum, x)
     if !(x isa AbstractVector{<:Real})
         throw(ArgumentError("`PowerSpectrum` only works for timeseries input!"))
     end
-    δ = getfield.(Ref(P), (:δ))
     f = FFTW.rfft(x)
     amp_squared = abs2.(f)
     amp_squared[0.0 .< amp_squared  .< δ] .= 0.0
