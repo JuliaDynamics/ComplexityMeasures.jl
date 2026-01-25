@@ -5,8 +5,7 @@ import FFTW
     PowerSpectrum(δ = 0.0) <: OutcomeSpace
 
 An [`OutcomeSpace`](@ref) based on the power spectrum of a timeseries (amplitude square of
-its Fourier transform). There is an optional threshold, δ, that can be used to set amplitude
-square of the timeseries' Fourier transform below δ's value to zero.
+its Fourier transform). The optional threshold `δ` sets amplitudes below `δ` to zero.
 
 If used with [`probabilities`](@ref), then the spectrum normalized to sum = 1
 is returned as probabilities.
