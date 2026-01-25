@@ -22,12 +22,8 @@ The outcome space `Ω` for `PowerSpectrum` is the set of frequencies in Fourier 
 should be multiplied with the sampling rate of the signal, which is assumed to be `1`.
 Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-struct PowerSpectrum{T<:Real} <: OutcomeSpace
-    δ::T
-
-    function PowerSpectrum(δ::T = 0.0) where {T}
-        new{T}(δ)
-    end
+@kwdef struct PowerSpectrum{T<:Real} <: OutcomeSpace
+    δ::T = 0.0
 end
 
 function probabilities_and_outcomes(P::PowerSpectrum, x)
