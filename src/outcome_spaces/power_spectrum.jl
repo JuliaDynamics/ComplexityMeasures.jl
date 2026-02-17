@@ -23,9 +23,9 @@ The outcome space `Ω` for `PowerSpectrum` is the set of frequencies in Fourier 
 should be multiplied with the sampling rate of the signal, which is assumed to be `1`.
 Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-@kwdef struct PowerSpectrum{T<:Real, X<:Bool} <: OutcomeSpace
+@kwdef struct PowerSpectrum{T<:Real} <: OutcomeSpace
     δ::T = 0.0
-    apply_threshold_to_spectrum::X = false
+    apply_threshold_to_spectrum::Bool = false
 end
 
 function probabilities_and_outcomes(P::PowerSpectrum, x)
@@ -41,7 +41,9 @@ function probabilities_and_outcomes(P::PowerSpectrum, x)
     outs = FFTW.rfftfreq(length(x))
     p = Probabilities(probs, outs)
     if P.δ > 0 && !P.apply_threshold_to_spectrum
-        p = Probabilities([x >= P.δ ? x : 0.0 for x in p], outs)
+        probs = [x >= P.δ ? x : 0.0 for x in p]
+        @assert !all(probs .== 0) "Threshold is too high! δ = $(P.δ); max probability = $(maximum(p))"
+        p = Probabilities(probs, outs)
     end
     return p, outcomes(p)
 end
