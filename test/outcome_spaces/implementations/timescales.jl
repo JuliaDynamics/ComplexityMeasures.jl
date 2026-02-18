@@ -1,4 +1,6 @@
 using ComplexityMeasures, Test
+using Random
+rng = Random.MersenneTwister(1234)
 
 @testset "Timescales" begin
     N = 200
@@ -38,5 +40,19 @@ using ComplexityMeasures, Test
         @test probs[1] ≈ 0 atol=1e-16  # sine wave has 0 mean value
         @test outs[end] == 0.5 # Nyquist frequency, 1/2 the sampling rate (Which is 1)
         @test issorted(outcome_space(o, x))
+
+        x = cos.(range(0, 2π; length = 10000)) .+ 1e-2 .* randn(rng, 10000)
+        o = PowerSpectrum(δ = 0.1)
+        p, outs = probabilities_and_outcomes(o, x)
+        @test sum(p .> 0.0) == 1
+        @test length(outs) == length(p) == 5001
+        @test outs[1] ≈ 0 atol=1e-16
+        @test p[1] ≈ 0 atol=1e-16
+        o = PowerSpectrum(10.5, true)
+        p, ~ = probabilities_and_outcomes(o, x)
+        @test sum(p .> 0.0) == 1
+        @test length(outs) == length(p) == 5001
+        @test outs[1] ≈ 0 atol=1e-16
+        @test p[1] ≈ 0 atol=1e-16
     end
 end
