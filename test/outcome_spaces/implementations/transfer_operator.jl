@@ -98,7 +98,7 @@ binnings = [
     @show i
     b = binnings[i]
     to = transferoperator(ValueBinning(b),D)
-    @test to isa ComplexityMeasures.TransferOperatorApproximation
+    @test to isa TransferOperatorApproximation
 
     iv = invariantmeasure(to)
     @test iv isa InvariantMeasure
@@ -107,8 +107,8 @@ binnings = [
     @test p isa Probabilities
     @test bins isa Vector{Int}
 
-    @test probabilities(TransferOperator(), ValueBinning(b) , D) isa Probabilities
-    @test probabilities_and_outcomes(TransferOperator(), ValueBinning(b), D) isa Tuple{Probabilities, Vector{SVector{2, Float64}}}
+    @test probabilities(TransferOperatorEstimator(), ValueBinning(b), D) isa Probabilities
+    @test probabilities_and_outcomes(TransferOperatorEstimator(), ValueBinning(b), D) isa Tuple{Probabilities,Vector{SVector{2,Float64}}}
 
     # Test that gives approximately same entropy as ValueBinning:
     abs(information(Shannon(), p) - information(ValueBinning(b), D) ) < 0.1 # or something like that
@@ -117,7 +117,7 @@ end
 # Warn if we're not using precise binnings.
 imprecise_warning = "`binning.precise == false`. You may be getting points outside the binning."
 b = RectangularBinning(5)
-@test_logs (:warn, imprecise_warning) transferoperator(ValueBinning(b), D; warn_precise = true)
+@test_logs (:warn, imprecise_warning) transferoperator(ValueBinning(b), D)
 
 #=
 # ---------------
@@ -145,14 +145,14 @@ p2 = probabilities(TransferOperator(b; rng), D)
     o = OrdinalPatterns{3}()
 
     #iterative method
-    im_iter = invariantmeasure(o, x; method=:iterate)
-    @test im_iter.to isa ComplexityMeasures.TransferOperatorApproximation
+    @time im_iter = invariantmeasure(o, x)
+    @test im_iter.to isa TransferOperatorApproximation
     ρ_iter = im_iter.ρ
     @test ρ_iter isa Probabilities
 
     #eigenvec method
-    im_eigen = invariantmeasure(o, x; method=:eigen)
-    @test im_eigen.to isa ComplexityMeasures.TransferOperatorApproximation
+    @time im_eigen = invariantmeasure(o, x; approximation_method=ApproximationEigen())
+    @test im_eigen.to isa TransferOperatorApproximation
     ρ_eigen = im_eigen.ρ
     @test ρ_eigen isa Probabilities
 
@@ -170,13 +170,13 @@ p2 = probabilities(TransferOperator(b; rng), D)
 
     #try binning on logistic
     os = ValueBinning(RectangularBinning(10, true))
-    p_TO = probabilities(TransferOperator(),os,orbit) #correct but and ordered as RelativeAmount
+    @time p_TO = probabilities(TransferOperatorEstimator(ApproximationIterative()),os,orbit) #correct but and ordered as RelativeAmount
     p = probabilities(RelativeAmount(), os, orbit)
     @test all(isapprox.(p_TO.p, p.p; atol=1e-3))
 
     #try op on logistic
     op = OrdinalPatterns{3}()
-    p_TO = probabilities(TransferOperator(), op, orbit) #correct but not ordered as RelativeAmount
+    @time p_TO = probabilities(TransferOperatorEstimator(ApproximationEigen()), op, orbit) #correct but not ordered as RelativeAmount
     p = probabilities(RelativeAmount(), op, orbit)
     @show p_TO.p 
     @show p.p

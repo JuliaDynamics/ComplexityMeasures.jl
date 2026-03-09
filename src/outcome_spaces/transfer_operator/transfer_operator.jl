@@ -1,14 +1,12 @@
 using DelayEmbeddings, SparseArrays
-using KrylovKit: eigsolve
+using KrylovKit: eigsolve, KrylovDefaults
 using StaticArrays
 using Random
 
 include("utils.jl")
 
-export
-    TransferOperator, # the probabilities estimator
-    InvariantMeasure, invariantmeasure,
-    transfermatrix, transferoperator
+export TransferOperatorEstimator,TransferOperatorApproximation, ApproximationIterative, ApproximationEigen,
+    InvariantMeasure, invariantmeasure,transfermatrix, transferoperator
 
 """
     TransferOperator <: OutcomeSpace
@@ -99,7 +97,7 @@ See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref),
 [`invariantmeasure`](@ref).
 """
 
-struct TransferOperator <: ProbabilitiesEstimator end
+struct TransferOperator <: OutcomeSpace end
 
 """
     TransferOperatorApproximationRectangular(to, binning::RectangularBinning, mini,
@@ -123,14 +121,32 @@ points that visits `bins[i]`.
 See also: [`RectangularBinning`](@ref).
 
 """
-struct TransferOperatorApproximation{OC<:OutcomeSpace} <: ProbabilitiesEstimator
+
+abstract type ApproximationMethod end
+
+struct TransferOperatorEstimator <: ProbabilitiesEstimator 
+    approximation_method::ApproximationMethod
+    boundary_condition
+end
+
+#default constructor
+TransferOperatorEstimator() = TransferOperatorEstimator(ApproximationIterative(), :none)
+TransferOperatorEstimator(approximation_method::ApproximationMethod) = TransferOperatorEstimator(approximation_method, :none)
+
+abstract type TransferOperatorEstimatorApproximation <: ProbabilitiesEstimator end
+
+struct TransferOperatorApproximation{OC<:OutcomeSpace,AM<:ApproximationMethod} <: TransferOperatorEstimatorApproximation
     transfermatrix::AbstractArray{<:Real,2}
     outcome_space::OC
     outcomes
+    approximation_method::AM
 end
 
-struct TransferOperatorApproximationIterative{OC<:OutcomeSpace} <: ProbabilitiesEstimator
-    transferoperator::TransferOperatorApproximation{OC}
+#convenience constructor to switch out approximation_method
+TransferOperatorApproximation(to, approximation_method) =
+    TransferOperatorApproximation(to.transfermatrix, to.outcome_space, to.outcomes, approximation_method)
+
+struct ApproximationIterative <: ApproximationMethod
     N::Int 
     tolerance::Float64 
     delta::Float64
@@ -140,13 +156,19 @@ end
 #constructor with default method parameters
 #N,tol,delta,rng
 pars_default_iterative = (200, 1e-8, 1e-8, Random.default_rng())
-TransferOperatorApproximationIterative(to) = 
-    TransferOperatorApproximationIterative(to, pars_default_iterative...)
+ApproximationIterative() = ApproximationIterative(pars_default_iterative...)
 
-struct TransferOperatorApproximationEigen{OC<:OutcomeSpace} <: ProbabilitiesEstimator
-    transferoperator::TransferOperatorApproximation{OC}
+struct ApproximationEigen <: ApproximationMethod 
+    tol
+    krylovdim 
+    maxiter
+    orth
 end
 
+#constructor with default method parameters
+ApproximationEigen() = ApproximationEigen(KrylovDefaults.tol,
+    KrylovDefaults.krylovdim, 
+    KrylovDefaults.maxiter,KrylovDefaults.orth)
 
 """
     transferoperator(pts::StateSpaceSet, binning; kw...)
@@ -156,11 +178,11 @@ rectangular partition given by the `binning`.
 The keywords `boundary_condition = :none, warn_precise = true` are as in [`TransferOperator`](@ref).
 """
 function transferoperator(o::OutcomeSpace,x;
-        boundary_condition = :none, 
-        warn_precise = true)     
+        boundary_condition = :none,
+        approximation_method=ApproximationIterative())
     
     #warning (only when used with some kind of binning)
-    if warn_precise && typeof(o) <: ValueBinning  && !o.binning.precise
+    if typeof(o) <: ValueBinning  && !o.binning.precise
         @warn "`binning.precise == false`. You may be getting points outside the binning."
     end
 
@@ -195,8 +217,7 @@ function transferoperator(o::OutcomeSpace,x;
     Q .= Q./sum(Q)
     P = normalize_transition_matrix(Q)
 
-    return TransferOperatorApproximation(
-        P, o, unique_outcomes)
+    return TransferOperatorApproximation(P, o, unique_outcomes,approximation_method)
 end
 
 """
@@ -205,7 +226,7 @@ end
 Minimal return struct for [`invariantmeasure`](@ref) that contains the estimated invariant
 measure `ρ`, as well as the transfer operator `to` from which it is computed (including
 bin information).
-
+ApproximationIterative()
 See also: [`invariantmeasure`](@ref).
 """
 struct InvariantMeasure{T}
@@ -271,9 +292,10 @@ The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
 
 See also: [`InvariantMeasure`](@ref).
 """
-function invariantmeasure(to_iter::TransferOperatorApproximationIterative)
-    to = to_iter.transferoperator
-    N, tolerance, delta, rng = to_iter.N, to_iter.tolerance, to_iter.delta, to_iter.rng
+function invariantmeasure(to::TransferOperatorApproximation{<:OutcomeSpace,ApproximationIterative})
+
+    N, tolerance, delta, rng = to.approximation_method.N, to.approximation_method.tolerance, 
+        to.approximation_method.delta, to.approximation_method.rng
 
     P = to.transfermatrix
     #=
@@ -331,35 +353,20 @@ function invariantmeasure(to_iter::TransferOperatorApproximationIterative)
 end
 
 #TODO:add comments here
-function invariantmeasure(to_eig::TransferOperatorApproximationEigen)
-    to = to_eig.transferoperator
+function invariantmeasure(to::TransferOperatorApproximation{<:OutcomeSpace,ApproximationEigen})
     P = to.transfermatrix
+    #first eigenvalue with Largest Real part
     vals, vecs, info = eigsolve(P', 1, :LR)
     info.converged < 1 && @warn "KrylovKit.eigsolve did not converge!"
     ρ = real.(vecs[1]) ./ sum(real.(vecs[1]))
     return InvariantMeasure(to, Probabilities(ρ.nzval))
 end
 
-function invariantmeasure(o::OutcomeSpace, x::Array_or_SSSet; method=:iterate, warn_precise=true, kwargs...)
+function invariantmeasure(o::OutcomeSpace, x::Array_or_SSSet; approximation_method=ApproximationIterative())
     
-    to = transferoperator(o, x; warn_precise) #returns a TransferOperatorApproximation
+    to = transferoperator(o, x; approximation_method=approximation_method) #returns a TransferOperatorApproximation
 
-    return invariantmeasure(to,method)
-
-end
-
-function invariantmeasure(to::TransferOperatorApproximation,method=:iterate;kwargs...)
-
-    #wrap to depending on the selected method
-    if method == :iterate
-        to_wrap = TransferOperatorApproximationIterative(to; kwargs...)
-    elseif method == :eigen
-        to_wrap = TransferOperatorApproximationEigen(to; kwargs...)
-    else
-        throw(ArgumentError("This method isn't implemented yet! Available methods for invariant distribution (measure) calculation are :iterate and :eigen. "))
-    end
-
-    return invariantmeasure(to_wrap)
+    return invariantmeasure(to)
 
 end
 
@@ -380,10 +387,11 @@ end
 
 # Explicitly extend `probabilities` because we can skip the decoding step, which is 
 # expensive.
-function probabilities(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet; method=:iterate, kwargs...)
-    
-    to = transferoperator(o,x)
-    ρ =  invariantmeasure(to, method; kwargs...).ρ
+function probabilities(probest::TransferOperatorEstimator, o::OutcomeSpace, x::Array_or_SSSet)
+    approx_method = probest.approximation_method
+    boundary_cond = probest.boundary_condition
+    to = transferoperator(o, x; approximation_method=approx_method, boundary_condition=boundary_cond)
+    ρ =  invariantmeasure(to).ρ
 
     #if o isa ValueBinning, return bins in order
     if o isa ValueBinning
@@ -396,14 +404,16 @@ function probabilities(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSe
     return Probabilities(ρ, (to.outcomes,))
 end
 
-function probabilities_and_outcomes(pest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet;method=:iterate, kwargs...)
-    to = transferoperator(o,x)
-    probs = probabilities(pest, o, x; method=:iterate, kwargs...)
+function probabilities_and_outcomes(probest::TransferOperatorEstimator, o::OutcomeSpace, x::Array_or_SSSet)
+    approx_method = probest.approximation_method
+    boundary_cond = probest.boundary_condition
+    to = transferoperator(o, x; approximation_method=approx_method, boundary_condition=boundary_cond)
+    ρ = invariantmeasure(to).ρ
 
     #different for ValueBinning outcome space 
     if o isa ValueBinning
         outs = outcome_space(o, x)[sortperm(to.outcomes)] #get bins in the correct order
-        probs = Probabilities(probs, (outs,))
+        probs = Probabilities(ρ, (outs,))
         return probs,outs 
     end
     
