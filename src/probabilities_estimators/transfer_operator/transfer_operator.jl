@@ -5,7 +5,7 @@ using Random
 
 include("utils.jl")
 
-export TransferOperatorEstimator,TransferOperatorApproximation, ApproximationIterative, ApproximationEigen,
+export TransferOperator,TransferOperatorApproximation, ApproximationIterative, ApproximationEigen,
     InvariantMeasure, invariantmeasure,transfermatrix, transferoperator
 
 """
@@ -97,8 +97,6 @@ See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref),
 [`invariantmeasure`](@ref).
 """
 
-struct TransferOperator <: OutcomeSpace end
-
 """
     TransferOperatorApproximationRectangular(to, binning::RectangularBinning, mini,
         edgelengths, bins, sort_idxs)
@@ -124,18 +122,18 @@ See also: [`RectangularBinning`](@ref).
 
 abstract type ApproximationMethod end
 
-struct TransferOperatorEstimator <: ProbabilitiesEstimator 
+struct TransferOperator <: ProbabilitiesEstimator 
     approximation_method::ApproximationMethod
     boundary_condition
 end
 
 #default constructor
-TransferOperatorEstimator() = TransferOperatorEstimator(ApproximationIterative(), :none)
-TransferOperatorEstimator(approximation_method::ApproximationMethod) = TransferOperatorEstimator(approximation_method, :none)
+TransferOperator() = TransferOperator(ApproximationIterative(), :none)
+TransferOperator(approximation_method::ApproximationMethod) = TransferOperator(approximation_method, :none)
 
-abstract type TransferOperatorEstimatorApproximation <: ProbabilitiesEstimator end
+abstract type AbstractTransferOperatorApproximation <: ProbabilitiesEstimator end
 
-struct TransferOperatorApproximation{OC<:OutcomeSpace,AM<:ApproximationMethod} <: TransferOperatorEstimatorApproximation
+struct TransferOperatorApproximation{OC<:OutcomeSpace,AM<:ApproximationMethod} <: AbstractTransferOperatorApproximation
     transfermatrix::AbstractArray{<:Real,2}
     outcome_space::OC
     outcomes
@@ -387,7 +385,9 @@ end
 
 # Explicitly extend `probabilities` because we can skip the decoding step, which is 
 # expensive.
-function probabilities(probest::TransferOperatorEstimator, o::OutcomeSpace, x::Array_or_SSSet)
+function probabilities(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)
+    verify_counting_based(o, "TransferOperator")
+
     approx_method = probest.approximation_method
     boundary_cond = probest.boundary_condition
     to = transferoperator(o, x; approximation_method=approx_method, boundary_condition=boundary_cond)
@@ -404,7 +404,10 @@ function probabilities(probest::TransferOperatorEstimator, o::OutcomeSpace, x::A
     return Probabilities(ρ, (to.outcomes,))
 end
 
-function probabilities_and_outcomes(probest::TransferOperatorEstimator, o::OutcomeSpace, x::Array_or_SSSet)
+function probabilities_and_outcomes(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)
+    verify_counting_based(o, "TransferOperator")
+
+
     approx_method = probest.approximation_method
     boundary_cond = probest.boundary_condition
     to = transferoperator(o, x; approximation_method=approx_method, boundary_condition=boundary_cond)

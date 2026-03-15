@@ -58,7 +58,6 @@ end
     to = transferoperator(b,orbit)
     iv = invariantmeasure(to)
     p,outcomes = invariantmeasure(iv)
-    @show outcomes
 
     #order from leftmost bin to rightmost bin  
     p_bins = p[sortperm(outcomes)]
@@ -95,7 +94,6 @@ binnings = [
 ]
 
 @testset "Binning test $i" for i in eachindex(binnings)
-    @show i
     b = binnings[i]
     to = transferoperator(ValueBinning(b),D)
     @test to isa TransferOperatorApproximation
@@ -107,8 +105,8 @@ binnings = [
     @test p isa Probabilities
     @test bins isa Vector{Int}
 
-    @test probabilities(TransferOperatorEstimator(), ValueBinning(b), D) isa Probabilities
-    @test probabilities_and_outcomes(TransferOperatorEstimator(), ValueBinning(b), D) isa Tuple{Probabilities,Vector{SVector{2,Float64}}}
+    @test probabilities(TransferOperator(), ValueBinning(b), D) isa Probabilities
+    @test probabilities_and_outcomes(TransferOperator(), ValueBinning(b), D) isa Tuple{Probabilities,Vector{SVector{2,Float64}}}
 
     # Test that gives approximately same entropy as ValueBinning:
     abs(information(Shannon(), p) - information(ValueBinning(b), D) ) < 0.1 # or something like that
@@ -170,15 +168,13 @@ p2 = probabilities(TransferOperator(b; rng), D)
 
     #try binning on logistic
     os = ValueBinning(RectangularBinning(10, true))
-    @time p_TO = probabilities(TransferOperatorEstimator(ApproximationIterative()),os,orbit) #correct but and ordered as RelativeAmount
+    @time p_TO = probabilities(TransferOperator(ApproximationIterative()),os,orbit) #correct but and ordered as RelativeAmount
     p = probabilities(RelativeAmount(), os, orbit)
     @test all(isapprox.(p_TO.p, p.p; atol=1e-3))
 
     #try op on logistic
     op = OrdinalPatterns{3}()
-    @time p_TO = probabilities(TransferOperatorEstimator(ApproximationEigen()), op, orbit) #correct but not ordered as RelativeAmount
+    @time p_TO = probabilities(TransferOperator(ApproximationEigen()), op, orbit) #correct but not ordered as RelativeAmount
     p = probabilities(RelativeAmount(), op, orbit)
-    @show p_TO.p 
-    @show p.p
     @test !all(isapprox.(p_TO.p, p.p; atol=1e-3))
 end
