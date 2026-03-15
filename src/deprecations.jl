@@ -124,3 +124,19 @@ function allcounts(args...)
     @warn "`allcounts` is deprecated. Use `allcounts_and_outcomes` instead."
     return first(allcounts_and_outcomes(args...))
 end
+
+function TransferOperator(b :: AbstractBinning)
+    @warn "`TransferOperator(b <: AbstractBinning)` is deprecated. Use `TransferOperator(approximation_method::ApproximationMethod,boundary_condition)` instead."
+    return TransferOperator()
+end
+
+function transferoperator(pts::Array_or_SSSet,
+        binning::Union{FixedRectangularBinning, RectangularBinning};
+        boundary_condition = :none, 
+        warn_precise = true) 
+
+    @warn "`transferoperator(pts, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `transferoperator(o::OutcomeSpace,x)` instead."
+
+    return transferoperator(ValueBinning(binning), pts)
+    
+end

@@ -186,5 +186,23 @@ end
         @test s.o isa OrdinalPatterns
         @test typeof(s.o.encoding).parameters[1] == 3
     end
+
+
+    @testset "TransferOperator" begin 
+        b = RectangularBinning(4)
+        x = rand(1000)
+        dep_message = "`TransferOperator(b <: AbstractBinning)` is deprecated. Use `TransferOperator(approximation_method::ApproximationMethod,boundary_condition)` instead."
+        @test_logs (:warn, dep_message) TransferOperator(b)
+
+        @test TransferOperator(b) isa TransferOperator
+
+        dep_message =  "`transferoperator(pts, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `transferoperator(o::OutcomeSpace,x)` instead."
+        warn_message = "`binning.precise == false`. You may be getting points outside the binning."
+        @test_logs (:warn, dep_message) (:warn, warn_message) transferoperator(x, b)
+        transferoperator(x, b) isa TransferOperatorApproximation
+
+
+    end
+
 end
 # 
