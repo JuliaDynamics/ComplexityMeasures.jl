@@ -2,6 +2,10 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 3.9
+
+- Adding a new feature to `PowerSpectrum` estimator that adds a threshold for "small" amplitudes. The threshold is applied to the probabilities by default with an option to apply it to the power spectrum.
+
 ## 3.7.4
 
 - Critical performance fix: central type `Probabilities` was type unstable.
