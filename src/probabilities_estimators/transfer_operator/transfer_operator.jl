@@ -9,115 +9,127 @@ export TransferOperator,TransferOperatorApproximation, ApproximationIterative, A
     InvariantMeasure, invariantmeasure,transfermatrix, transferoperator
 
 """
-    TransferOperator <: OutcomeSpace
-    TransferOperator(b::AbstractBinning; warn_precise = true, rng = Random.default_rng())
+    TransferOperator <: ProbabilitiesEstimator
+    TransferOperator(approximation_method::ApproximationMethod,boundary_condition)
 
-An [`OutcomeSpace`](@ref) based on binning data into rectangular boxes dictated by
-the given binning scheme `b`.
+An [`ProbabilitiesEstimator`](@ref) based on the transfer (Perron-Frobenius) operator.
 
-When used with [`probabilities`](@ref), then the transfer (Perron-Frobenius) operator
-is approximated over the bins, then bin probabilities are estimated as the invariant measure
+When used with [`probabilities`](@ref), then the transfer operator
+is approximated using a selected outcome space, by counting occurrences of transitions between each outcome.
+Probabilities are estimated as the invariant measure
 associated with that transfer operator. Assumes that the input data are sequential
-(time-ordered).
+(time-ordered). `approximation_method` decides how the invariant measure should be calculated. See 
+[`ApproximationIterative`, `ApproximationEigen`](@ref).
+`boundary_condition` decides the transition from the last observed outcome: `:circular` adds a transition to the first one, 
+`:random` adds a randomly chosen transition from the already observed, `:none` add nothing. 
 
-This implementation follows the grid estimator approach in [Diego2019](@citet).
+When constructing the transfer operator from time series using `transferoperator` 
+with a given `outcome_space`, a `TransferOperatorApproximation` is returned, 
+giving access to the transition probabilites between the observed outcomes.
 
-## Precision
+See also: [`transferoperator`, `TransferOperatorApproximation`](@ref).
 
-The default behaviour when using [`RectangularBinning`](@ref) or
-[`FixedRectangularBinning`](@ref) is to accept some loss of precision on the 
-bin boundaries for speed-ups, but this may lead to issues for `TransferOperator`
-where some points may be encoded as the symbol `-1` ("outside the binning").
-The `warn_precise` keyword controls whether the user is warned when a less 
-precise binning is used.
+## Outcome space requirements
 
-## Outcome space
+This estimator only works with counting-compatible outcome spaces.
 
-The outcome space for `TransferOperator` is the set of unique bins constructed
-from `b`. Bins are identified by their left (lowest-value) corners, are given in
-data units, and are returned as `SVector`s.
+## Outcome ordering
 
-## Bin ordering
-
-Bins returned by [`probabilities_and_outcomes`](@ref) are ordered according to first
-appearance (i.e. the first time the input (multivariate) timeseries visits the bin).
-Thus, if
+Outcomes returned by [`probabilities_and_outcomes`](@ref) are ordered according to first
+appearance for all outcome spaces, except for `ValueBinning`, where they returned in 
+an increasing order along each axis (from left to right in 1D, left to right and 
+bottom to top in 2D etc.). Thus, if
 
 ```julia
-b = RectangularBinning(4)
-est = TransferOperator(b)
-probs, outcomes = probabilities_and_outcomes(x, est) # x is some timeseries
+x = [1,2,3,1,2,3]
+op = OrdinalPatterns{3}() #ordinal patterns 
+probs,outs = probabilities_and_outcomes(TransferOperator(:circular),op,x) #use circular boundary for short time series 
 ```
+then `probs[i]` is the invariant measure (probability) of the outcome `outs[i]`, which is
+the `i`-th first appearance in the time series with nonzero measure.
 
-then `probs[i]` is the invariant measure (probability) of the bin `outcomes[i]`, which is
-the `i`-th bin visited by the timeseries with nonzero measure.
+```julia
+x = [0.3,0.2,0.1,0.3,0.1]
+vb = ValueBinning(RectangularBinning(3))
 
+ps,outs = probabilities_and_outcomes(TransferOperator(),vb,x) #bins are ordered
+```
 ## Description
 
 The transfer operator ``P^{N}``is computed as an `N`-by-`N` matrix of transition
-probabilities between the states defined by the partition elements, where `N` is the
-number of boxes in the partition that is visited by the orbit/points.
+probabilities between outcomes, where `N` is the
+number of observed outcomes. Note that an outcome can 
+correspond to a single (ex. 1D binning) or multiple datapoints (ex. ordinal patterns).
 
-If  ``\\{x_t^{(D)} \\}_{n=1}^L`` are the ``L`` different ``D``-dimensional points over
-which the transfer operator is approximated, ``\\{ C_{k=1}^N \\}`` are the ``N`` different
-partition elements (as dictated by `ϵ`) that gets visited by the points, and
- ``\\phi(x_t) = x_{t+1}``, then
+If  ``\\mathbf{x}^(L)_n`` is the ``n``-th sequence of datapoints that is encoded 
+to the ``i``-th outcome ``s_i``, and ``E(\\mathbf{x}^(L)_n) = s_i`` then 
 
 ```math
 P_{ij} = \\dfrac
-{\\#\\{ x_n | \\phi(x_n) \\in C_j \\cap x_n \\in C_i \\}}
-{\\#\\{ x_m | x_m \\in C_i \\}},
+{\\#\\{ s_i | E(\\mathbf{x}^(L)_{n+1}) = s_j \\cap E(\\mathbf{x}^(L)_{n+1}) = s_i \\}}
+{\\#\\{ s_i | E(\\mathbf{x}^(L)_{m}) = s_i \\}},
 ```
 
-where ``\\#`` denotes the cardinal. The element ``P_{ij}`` thus indicates how many points
-that are initially in box ``C_i`` end up in box ``C_j`` when the points in ``C_i`` are
-projected one step forward in time. Thus, the row ``P_{ik}^N`` where
+where ``\\#`` denotes the cardinal. The element ``P_{ij}`` thus indicates the 
+transition probability from outcome ``s_i`` to ``s_j``. Thus, the row ``P_{ik}^N`` where
 ``k \\in \\{1, 2, \\ldots, N \\}`` gives the probability
-of jumping from the state defined by box ``C_i`` to any of the other ``N`` states. It
+of jumping from the outcome ``s_i`` to any of the other ``N`` outcomes. It
 follows that ``\\sum_{k=1}^{N} P_{ik} = 1`` for all ``i``. Thus, ``P^N`` is a row/right
 stochastic matrix.
 
 ### Invariant measure estimation from transfer operator
 
-The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where
-``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row
-eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The distribution
-``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to
-`binning`, and can be taken as a probability distribution over the partition elements.
+#### Iterative method (default)
 
-In practice, the invariant measure ``\\mathbf{\\rho}^N`` is computed using
-[`invariantmeasure`](@ref), which also approximates the transfer matrix. The invariant
-distribution is initialized as a length-`N` random distribution which is then applied to
-``P^{N}``. For reproducibility in this step, set the `rng`.
+The invariant distribution is initialized as a length-`N` random distribution which is then applied to
+``P^{N}``. For reproducibility in this step, set the `rng` in `ApproximationIterative`.
 The resulting length-`N` distribution is then applied to ``P^{N}`` again. This process
 repeats until the difference between the distributions over consecutive iterations is
 below some threshold.
 
+Use `ApproximationIterative()` with `TransferOperator` to approximate the invariant measure 
+by the eigenvector method. 
+
+#### Eigenvector method
+
+The left invariant distribution ``\\mathbf{\\rho}^N`` is a row vector, where
+``\\mathbf{\\rho}^N P^{N} = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row
+eigenvector of the transfer matrix ``P^{N}`` associated with eigenvalue 1. The distribution
+``\\mathbf{\\rho}^N`` approximates the invariant density of the system subject to
+`outcome space`, and can be taken as a probability distribution over the 
+symbolization/partition elements.
+
+Use `ApproximationEigen()` with `TransferOperator` to approximate the invariant measure 
+by the eigenvector method. 
+
+
+## Precision when used with `ValueBinning` outcome space
+
+The default behaviour when using [`RectangularBinning`](@ref) or
+[`FixedRectangularBinning`](@ref) is to accept some loss of precision on the 
+bin boundaries for speed-ups, but this may lead to issues for `TransferOperator`
+where some points may be encoded as the symbol `-1` ("outside the binning").
+
+
+
+!!! hint "Transfer operator approach vs. naive histogram approach"
+
+    Why bother with the transfer operator instead of using regular histograms to obtain
+    probabilities?
+
+    In fact, the naive histogram approach and the
+    transfer operator approach are equivalent in the limit of long enough time series
+    (as ``n \\to \\intfy``), which is guaranteed by the ergodic theorem. There is a crucial
+    difference, however:
+
+    The naive histogram approach only gives the long-term probabilities that
+    orbits visit a certain region of the state space. The transfer operator encodes that
+    information too, but comes with the added benefit of knowing the *transition
+    probabilities* between states (see [`transfermatrix`](@ref)).
+
+
 See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref),
 [`invariantmeasure`](@ref).
-"""
-
-"""
-    TransferOperatorApproximationRectangular(to, binning::RectangularBinning, mini,
-        edgelengths, bins, sort_idxs)
-
-The `N`-by-`N` matrix `to` is an approximation to the transfer operator, subject to the
-given `binning`, computed over some set of sequentially ordered points.
-
-For convenience, `mini` and `edgelengths` provide the minima and box edge lengths along
-each coordinate axis, as determined by applying `ϵ` to the points. The coordinates of
-the (leftmost, if axis is ordered low-high) box corners are given in `bins`.
-
-Only bins actually visited by the points are considered, and `bins` give the coordinates
-of these bins. The element `bins[i]` correspond to the `i`-th state of the system, which
-corresponds to the `i`-th column/row of the transfer operator `to`.
-
-`sort_idxs` contains the indices that would sort the input points. `visitors` is a
-vector of vectors, where `visitors[i]` contains the indices of the (sorted)
-points that visits `bins[i]`.
-
-See also: [`RectangularBinning`](@ref).
-
 """
 
 abstract type ApproximationMethod end
@@ -127,12 +139,33 @@ struct TransferOperator <: ProbabilitiesEstimator
     boundary_condition
 end
 
-#default constructor
+#constructors with defaults
 TransferOperator() = TransferOperator(ApproximationIterative(), :none)
-TransferOperator(approximation_method::ApproximationMethod) = TransferOperator(approximation_method, :none)
+TransferOperator(approximation_method::ApproximationMethod) = TransferOperator(approximation_method,:none)
+TransferOperator(boundary_condition::Symbol) = TransferOperator(ApproximationIterative(), boundary_condition)
 
 abstract type AbstractTransferOperatorApproximation <: ProbabilitiesEstimator end
 
+
+"""
+    TransferOperatorApproximation(transfermatrix, outcome_space::OutcomeSpace, outcomes, approximation_method)
+
+* `transfermatrix`: an approximation to the transfer operator, subject to the
+given `outcome_space`, computed over some set of sequentially ordered points.
+
+* `outcome_space`: the outcome space that defines the outcomes 
+
+* `outcomes`: the observed, unique outcomes  
+
+* `approximation_method`: decides the `ApproximationMethod` used by `invariantmeasure`
+
+Only bins actually observed outcomes are considered. 
+The element `outcomes[i]` which
+corresponds to the `i`-th column/row of the transfer operator `to`.
+
+See also: [`TransferOperator`](@ref).
+
+"""
 struct TransferOperatorApproximation{OC<:OutcomeSpace,AM<:ApproximationMethod} <: AbstractTransferOperatorApproximation
     transfermatrix::AbstractArray{<:Real,2}
     outcome_space::OC
@@ -169,13 +202,15 @@ ApproximationEigen() = ApproximationEigen(KrylovDefaults.tol,
     KrylovDefaults.maxiter,KrylovDefaults.orth)
 
 """
-    transferoperator(pts::StateSpaceSet, binning; kw...)
+    transferoperator(o::OutcomeSpace,x;
+        boundary_condition = :none,
+        approximation_method=ApproximationIterative()) → to::TransferOperatorApproximation
 
-Approximate the transfer operator given a set of sequentially ordered points subject to a
-rectangular partition given by the `binning`.
-The keywords `boundary_condition = :none, warn_precise = true` are as in [`TransferOperator`](@ref).
+Approximate the transfer operator given a set of sequentially ordered points (time series) `x` subject to 
+an outcome space given by the `o::OutcomeSpace`. 
+The keywords `boundary_condition = :none` `boundary_condition = :ApproximationIterative()` are as in [`TransferOperator`](@ref).
 """
-function transferoperator(o::OutcomeSpace,x;
+function transferoperator(o::OutcomeSpace,x::Array_or_SSSet;
         boundary_condition = :none,
         approximation_method=ApproximationIterative())
     
@@ -223,8 +258,7 @@ end
 
 Minimal return struct for [`invariantmeasure`](@ref) that contains the estimated invariant
 measure `ρ`, as well as the transfer operator `to` from which it is computed (including
-bin information).
-ApproximationIterative()
+outcome information).
 See also: [`invariantmeasure`](@ref).
 """
 struct InvariantMeasure{T}
@@ -238,17 +272,27 @@ end
 
 
 import LinearAlgebra: norm
+"""
+## Probabilities and bin information
+
+    invariantmeasure(iv::InvariantMeasure) → (ρ::Probabilities, bins::Vector{<:SVector})
+
+From a pre-computed invariant measure, return the probabilities and associated bins.
+The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
+See also: [`InvariantMeasure`](@ref).
+"""
+
 
 """
-    invariantmeasure(x::AbstractStateSpaceSet, binning::RectangularBinning;
-        rng = Random.default_rng()) → iv::InvariantMeasure
+    invariantmeasure(o::OutcomeSpace, x::Array_or_SSSet; 
+        approximation_method=ApproximationIterative()) → iv::InvariantMeasure
 
-Estimate an invariant measure over the points in `x` based on binning the data into
-rectangular boxes dictated by the `binning`, then approximate the transfer
-(Perron-Frobenius) operator over the bins. From the approximation to the transfer operator,
-compute an invariant distribution over the bins. Assumes that the input data are sequential.
+Estimate an invariant measure of the approximate transfer operator over the points in `x` based on the provided outcome space and 
+approximation method. This is done by first constructing the transfer operator `to` by counting transitions between outcomes using 
+`transferoperator`, then calling `invariantmeasure(to::TransferOperatorApproximation)`.
+Assumes that the input data are sequential.
 
-Details on the estimation procedure is found the [`TransferOperator`](@ref) docstring.
+Details on the estimation procedure is found the [`transferoperator`](@ref) and [`TransferOperator`](@ref) docstring.
 
 ## Example
 
@@ -259,36 +303,28 @@ henon = DeterministicIteratedMap(henon_rule, zeros(2), [1.4, 0.3])
 orbit, t = trajectory(ds, 20_000; Ttr = 10)
 
 # Estimate the invariant measure over some coarse graining of the orbit.
-iv = invariantmeasure(orbit, RectangularBinning(15))
+vb = ValueBinning(RectangularBinning(15))
+iv = invariantmeasure(vb,orbit)
 
-# Get the probabilities and bins
-invariantmeasure(iv)
+# Get the probabilities and the corresponding outcome indexes
+ρ,outs = invariantmeasure(iv)
 ```
+"""
+function invariantmeasure(o::OutcomeSpace, x::Array_or_SSSet; approximation_method=ApproximationIterative())
 
-## Probabilities and bin information
+    to = transferoperator(o, x; approximation_method=approximation_method) #returns a TransferOperatorApproximation
 
-    invariantmeasure(iv::InvariantMeasure) → (ρ::Probabilities, bins::Vector{<:SVector})
+    return invariantmeasure(to)
 
-From a pre-computed invariant measure, return the probabilities and associated bins.
-The element `ρ[i]` is the probability of visitation to the box `bins[i]`.
+end
 
 
-!!! hint "Transfer operator approach vs. naive histogram approach"
+"""
+    invariantmeasure(to::TransferOperatorApproximation{<:OutcomeSpace,ApproximationIterative}) → iv::InvariantMeasure
 
-    Why bother with the transfer operator instead of using regular histograms to obtain
-    probabilities?
+Return an `Invariantmeasure` containing the invariant measure approximation computed using `ApproximationIterative`.
 
-    In fact, the naive histogram approach and the
-    transfer operator approach are equivalent in the limit of long enough time series
-    (as ``n \\to \\intfy``), which is guaranteed by the ergodic theorem. There is a crucial
-    difference, however:
-
-    The naive histogram approach only gives the long-term probabilities that
-    orbits visit a certain region of the state space. The transfer operator encodes that
-    information too, but comes with the added benefit of knowing the *transition
-    probabilities* between states (see [`transfermatrix`](@ref)).
-
-See also: [`InvariantMeasure`](@ref).
+See also: [`ApproximationIterative`](@ref).
 """
 function invariantmeasure(to::TransferOperatorApproximation{<:OutcomeSpace,ApproximationIterative})
 
@@ -350,7 +386,13 @@ function invariantmeasure(to::TransferOperatorApproximation{<:OutcomeSpace,Appro
     return InvariantMeasure(to, Probabilities(distribution))
 end
 
-#TODO:add comments here
+"""
+    invariantmeasure(to::TransferOperatorApproximation{<:OutcomeSpace,ApproximationEigen}) → iv::InvariantMeasure
+
+Return an `Invariantmeasure` containing the invariant measure approximation computed using `ApproximationEigen`.
+
+See also: [`ApproximationEigen`](@ref).
+"""
 function invariantmeasure(to::TransferOperatorApproximation{<:OutcomeSpace,ApproximationEigen})
     P = to.transfermatrix
     #first eigenvalue with Largest Real part
@@ -360,21 +402,11 @@ function invariantmeasure(to::TransferOperatorApproximation{<:OutcomeSpace,Appro
     return InvariantMeasure(to, Probabilities(ρ.nzval))
 end
 
-function invariantmeasure(o::OutcomeSpace, x::Array_or_SSSet; approximation_method=ApproximationIterative())
-    
-    to = transferoperator(o, x; approximation_method=approximation_method) #returns a TransferOperatorApproximation
-
-    return invariantmeasure(to)
-
-end
-
 """
-    transfermatrix(iv::InvariantMeasure) → (M::AbstractArray{<:Real, 2}, bins::Vector{<:SVector})
+    transfermatrix(iv::InvariantMeasure) → M::AbstractArray{<:Real, 2}
 
-Return the transfer matrix/operator and corresponding bins. Here, `bins[i]` corresponds
-to the i-th row/column of the transfer matrix. Thus, the entry `M[i, j]` is the
-probability of jumping from the state defined by `bins[i]` to the state defined by
-`bins[j]`.
+Return the transfer matrix/operator. Thus, the entry `M[i, j]` is the
+probability of jumping from the state `i` to the state `j`.
 
 See also: [`TransferOperator`](@ref).
 """
@@ -391,17 +423,18 @@ function probabilities(probest::TransferOperator, o::OutcomeSpace, x::Array_or_S
     approx_method = probest.approximation_method
     boundary_cond = probest.boundary_condition
     to = transferoperator(o, x; approximation_method=approx_method, boundary_condition=boundary_cond)
+    outs = to.outcomes
     ρ =  invariantmeasure(to).ρ
 
     #if o isa ValueBinning, return bins in order
     if o isa ValueBinning
-        outs = to.outcomes
         ordering = sortperm(outs)
         outs_ordered = outs[ordering]
-        return Probabilities(ρ.p[ordering], (outs_ordered,))
+        return Probabilities(ρ.p[ordering], (outs_ordered[ordering],))
     end
 
-    return Probabilities(ρ, (to.outcomes,))
+    outs_decoded = [decode(o.encoding, oc) for oc in outs] # outcomes decoded from integers
+    return Probabilities(ρ, (outs_decoded,))
 end
 
 function probabilities_and_outcomes(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)
@@ -411,19 +444,21 @@ function probabilities_and_outcomes(probest::TransferOperator, o::OutcomeSpace, 
     approx_method = probest.approximation_method
     boundary_cond = probest.boundary_condition
     to = transferoperator(o, x; approximation_method=approx_method, boundary_condition=boundary_cond)
+    outs = to.outcomes
     ρ = invariantmeasure(to).ρ
 
     #different for ValueBinning outcome space 
     if o isa ValueBinning
-        outs = outcome_space(o, x)[sortperm(to.outcomes)] #get bins in the correct order
-        probs = Probabilities(ρ, (outs,))
-        return probs,outs 
+        ordering = sortperm(outs) #get bins in the correct order
+        outs_decoded = [decode(RectangularBinEncoding(o.binning, x), i) for i in outs] #include decode step here
+        return Probabilities(ρ.p[ordering], (outs_decoded[ordering],)), outs_decoded[ordering]
     end
     
     #for other outcome spaces use decoding
-    outs = decode.(Ref(o.encoding), to.outcomes) # outcomes decoded from integers
-    probs = Probabilities(probs, (outs, ))
+    outs_decoded = [decode(o.encoding, oc) for oc in outs] # outcomes decoded from integers
 
-    return probs, outs
+    probs = Probabilities(ρ, (outs_decoded,))
+
+    return probs, outs_decoded
 end
 
