@@ -520,6 +520,12 @@ for N in (N1, N2)
         local h = information(PowerSpectrum(), q)
         local n = information_normalized(PowerSpectrum(), q)
         println("entropy: $(h), normalized: $(n).")
+        local h_thresh = information(PowerSpectrum(δ = 0.1), q)
+        local n_thresh = information_normalized(PowerSpectrum(δ = 0.1), q)
+        println("with a threshold; entropy: $(h_thresh), normalized: $(n_thresh).")
+        local h_thresh = information(PowerSpectrum(10.1, true), q)
+        local n_thresh = information_normalized(PowerSpectrum(10.1, true), q)
+        println("with threshold applied to power spectrum; entropy: $(h_thresh), normalized: $(n_thresh).")
     end
 end
 ```
