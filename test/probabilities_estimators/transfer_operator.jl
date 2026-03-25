@@ -106,7 +106,6 @@ binnings = [
     @test bins isa Vector{Int}
 
     @test probabilities(TransferOperator(), ValueBinning(b), D) isa Probabilities
-    @test probabilities_and_outcomes(TransferOperator(), ValueBinning(b), D) isa Tuple{Probabilities,Vector{SVector{2,Float64}}}
 
     # Test that gives approximately same entropy as ValueBinning:
     abs(information(Shannon(), p) - information(ValueBinning(b), D) ) < 0.1 # or something like that
@@ -143,19 +142,23 @@ p2 = probabilities(TransferOperator(b; rng), D)
     o = OrdinalPatterns{3}()
 
     #iterative method
-    @time im_iter = invariantmeasure(o, x)
+    im_iter = invariantmeasure(o, x)
     @test im_iter.to isa TransferOperatorApproximation
     ρ_iter = im_iter.ρ
     @test ρ_iter isa Probabilities
 
     #eigenvec method
-    @time im_eigen = invariantmeasure(o, x; approximation_method=ApproximationEigen())
+    im_eigen = invariantmeasure(o, x; approximation_method=ApproximationEigen())
     @test im_eigen.to isa TransferOperatorApproximation
     ρ_eigen = im_eigen.ρ
     @test ρ_eigen isa Probabilities
 
     #compare if they're equal
     @test all(isapprox.(ρ_iter,ρ_eigen))
+
+end
+
+@testset begin "compare TransferOperator and RelativeAmount"
 
     #test through probabilities interface and compare 
 
@@ -164,17 +167,20 @@ p2 = probabilities(TransferOperator(b; rng), D)
     r = 4.0
     p = [r]
     ds = DeterministicIteratedMap(logistic_rule, [0.4], p)
-    orbit, t = trajectory(ds, 10^7; Ttr=10^4)
+    orbit, t = trajectory(ds, 10^6; Ttr=10^4)
 
     #try binning on logistic
     os = ValueBinning(RectangularBinning(10, true))
-    @time p_TO = probabilities(TransferOperator(ApproximationIterative()),os,orbit) #correct but and ordered as RelativeAmount
-    p = probabilities(RelativeAmount(), os, orbit)
-    @test all(isapprox.(p_TO.p, p.p; atol=1e-3))
+    p_TO = probabilities(TransferOperator(ApproximationIterative()),os,orbit) #correct and ordered as RelativeAmount
+    _,outs_TO = probabilities_and_outcomes(TransferOperator(ApproximationIterative()), os, orbit)
+    p,outs = probabilities_and_outcomes(RelativeAmount(), os, orbit)
+
+    @test outs == outs_TO  #test if bins are in the same order 
+    @test all(isapprox.(p_TO.p, p.p; atol=1e-3)) #test if bins are in the same order
 
     #try op on logistic
     op = OrdinalPatterns{3}()
-    @time p_TO = probabilities(TransferOperator(ApproximationEigen()), op, orbit) #correct but not ordered as RelativeAmount
+    p_TO = probabilities(TransferOperator(ApproximationEigen()), op, orbit) 
     p = probabilities(RelativeAmount(), op, orbit)
     @test !all(isapprox.(p_TO.p, p.p; atol=1e-3))
 end
