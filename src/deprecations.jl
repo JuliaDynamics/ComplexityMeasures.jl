@@ -140,3 +140,27 @@ function transferoperator(pts::Array_or_SSSet,
     return transferoperator(ValueBinning(binning), pts)
     
 end
+
+function invariantmeasure(x::Array_or_SSSet,binning::Union{FixedRectangularBinning, RectangularBinning})
+
+    @warn "`invariantmeasure(x, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `invariantmeasure(o::OutcomeSpace,x)` instead."
+
+    o = ValueBinning(binning)
+    invariantmeasure(o, x)
+
+end
+
+function probabilities(x::Array_or_SSSet,est::TransferOperator)
+    @warn "`probabilities(est::TransferOperator, x` is deprecated. Since `TransferOperator` is no longer limited to binnings, you have to explicitly provide an `OutcomeSpace` as well. Use `probabilities(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)` instead. Defaulting to `RectangularBinning(3,true)`."
+    b = RectangularBinning(3,true)
+    o = ValueBinning(b)
+    probabilities(est, o, x)
+end
+
+
+function probabilities_and_outcomes(x::Array_or_SSSet,est::TransferOperator)
+    @warn "`probabilities_and_outcomes(est::TransferOperator, x` is deprecated. Since `TransferOperator` is no longer limited to binnings, you have to explicitly provide an `OutcomeSpace` as well. Use `probabilities_and_outcomes(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)` instead. Defaulting to `RectangularBinning(3,true)."
+    b = RectangularBinning(3, true)
+    o = ValueBinning(b)
+    probabilities_and_outcomes(est, o, x)
+end

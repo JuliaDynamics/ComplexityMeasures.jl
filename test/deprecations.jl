@@ -191,6 +191,9 @@ end
     @testset "TransferOperator" begin 
         b = RectangularBinning(4)
         x = rand(1000)
+
+        #transferoperator construction
+
         dep_message = "`TransferOperator(b <: AbstractBinning)` is deprecated. Use `TransferOperator(approximation_method::ApproximationMethod,boundary_condition)` instead."
         @test_logs (:warn, dep_message) TransferOperator(b)
 
@@ -201,7 +204,15 @@ end
         @test_logs (:warn, dep_message) (:warn, warn_message) transferoperator(x, b)
         transferoperator(x, b) isa TransferOperatorApproximation
 
+        #invariantmeasure, probabilities, probabilities_and_outcomes
+        dep_message = "`invariantmeasure(x, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `invariantmeasure(o::OutcomeSpace,x)` instead."
+        @test_logs (:warn, dep_message) (:warn, warn_message) invariantmeasure(x, b)
 
+        dep_message = "`probabilities(est::TransferOperator, x` is deprecated. Since `TransferOperator` is no longer limited to binnings, you have to explicitly provide an `OutcomeSpace` as well. Use `probabilities(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)` instead. Defaulting to `RectangularBinning(3,true)`."
+        @test_logs (:warn, dep_message) probabilities(x, TransferOperator())
+
+        dep_message = "`probabilities_and_outcomes(est::TransferOperator, x` is deprecated. Since `TransferOperator` is no longer limited to binnings, you have to explicitly provide an `OutcomeSpace` as well. Use `probabilities_and_outcomes(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)` instead. Defaulting to `RectangularBinning(3,true)."
+        @test_logs (:warn, dep_message) probabilities_and_outcomes(x, TransferOperator())
     end
 
 end
