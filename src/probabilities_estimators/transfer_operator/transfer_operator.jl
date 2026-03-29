@@ -170,12 +170,13 @@ struct TransferOperatorApproximation{OC<:OutcomeSpace,AM<:ApproximationMethod} <
     transfermatrix::AbstractArray{<:Real,2}
     outcome_space::OC
     outcomes
+    outcome_codes
     approximation_method::AM
 end
 
 #convenience constructor to switch out approximation_method
 TransferOperatorApproximation(to, approximation_method) =
-    TransferOperatorApproximation(to.transfermatrix, to.outcome_space, to.outcomes, approximation_method)
+    TransferOperatorApproximation(to.transfermatrix, to.outcome_space, to.outcomes, to.outcomes_codes, approximation_method)
 
 struct ApproximationIterative <: ApproximationMethod
     N::Int 
@@ -219,14 +220,34 @@ function transferoperator(o::OutcomeSpace,x::Array_or_SSSet;
         @warn "`binning.precise == false`. You may be getting points outside the binning."
     end
 
+    #symbolic time series (integer codes of outcomes)
     outcomes = codify(o,x)
     L = length(outcomes)
 
     # There are L number of outcomes
     # turn the time series of outcomes into a sequence of unique indices of outcomes
-    unique_indices,unique_outcomes = inds_in_terms_of_unique(outcomes, false) # set to true when sorting is fixed
-    N = length(unique_outcomes)
-   
+    unique_indices,unique_outcome_codes = inds_in_terms_of_unique(outcomes, false) # set to true when sorting is fixed
+    N = length(unique_outcome_codes)
+
+    #decode unique outcome codes
+    #add exceptions
+    if o isa UniqueElements 
+        outs_decoded = unique(x)
+    elseif o isa Dispersion
+        μ = mean(x)
+        σ = std(x)
+        decoder = GaussianCDFEncoding(;μ=μ, σ=σ, c=o.c)
+        outs_decoded = [decode(decoder, oc) for oc in unique_outcome_codes]
+
+    elseif o isa ValueBinning
+        outs_decoded = [decode(RectangularBinEncoding(o.binning, x), oc) for oc in unique_outcome_codes] 
+
+    elseif hasfield(typeof(o),:encoding) #check if it has encoding
+        outs_decoded = [decode(o.encoding, oc) for oc in unique_outcome_codes] # outcomes decoded from integers
+    else 
+        outs_decoded = fill(missing,length(unique_outcome_codes))
+    end
+
     #apply boundary conditions (default is :none)
     if boundary_condition == :circular
         append!(unique_indices, [1])
@@ -250,7 +271,7 @@ function transferoperator(o::OutcomeSpace,x::Array_or_SSSet;
     Q .= Q./sum(Q)
     P = normalize_transition_matrix(Q)
 
-    return TransferOperatorApproximation(P, o, unique_outcomes,approximation_method)
+    return TransferOperatorApproximation(P, o, outs_decoded, unique_outcome_codes, approximation_method)
 end
 
 """
@@ -267,7 +288,7 @@ struct InvariantMeasure{T}
 end
 
 function invariantmeasure(iv::InvariantMeasure)
-    return iv.ρ, iv.to.outcomes
+    return iv.ρ
 end
 
 
@@ -414,27 +435,23 @@ function transfermatrix(iv::InvariantMeasure)
     return iv.to.transfermatrix
 end
 
-
-# Explicitly extend `probabilities` because we can skip the decoding step, which is 
-# expensive.
 function probabilities(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)
     verify_counting_based(o, "TransferOperator")
 
     approx_method = probest.approximation_method
     boundary_cond = probest.boundary_condition
     to = transferoperator(o, x; approximation_method=approx_method, boundary_condition=boundary_cond)
-    outs = to.outcomes
     ρ =  invariantmeasure(to).ρ
 
     #if o isa ValueBinning, return bins in order
     if o isa ValueBinning
-        ordering = sortperm(outs)
-        outs_ordered = outs[ordering]
-        return Probabilities(ρ.p[ordering], (outs_ordered[ordering],))
+        out_codes = to.outcome_codes
+        ordering = sortperm(out_codes)
+        outs_ordered = to.outcomes[ordering]
+        return Probabilities(ρ.p[ordering], (outs_ordered,))
     end
 
-    outs_decoded = [decode(o.encoding, oc) for oc in outs] # outcomes decoded from integers
-    return Probabilities(ρ, (outs_decoded,))
+    return Probabilities(ρ, (to.outcomes,))
 end
 
 function probabilities_and_outcomes(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)
@@ -444,21 +461,18 @@ function probabilities_and_outcomes(probest::TransferOperator, o::OutcomeSpace, 
     approx_method = probest.approximation_method
     boundary_cond = probest.boundary_condition
     to = transferoperator(o, x; approximation_method=approx_method, boundary_condition=boundary_cond)
-    outs = to.outcomes
     ρ = invariantmeasure(to).ρ
 
     #different for ValueBinning outcome space 
     if o isa ValueBinning
+        outs = to.outcome_codes
         ordering = sortperm(outs) #get bins in the correct order
-        outs_decoded = [decode(RectangularBinEncoding(o.binning, x), i) for i in outs] #include decode step here
-        return Probabilities(ρ.p[ordering], (outs_decoded[ordering],)), outs_decoded[ordering]
+        outs_ordered = to.outcomes[ordering]
+        return Probabilities(ρ.p[ordering], (outs_ordered,)), outs_ordered
     end
     
-    #for other outcome spaces use decoding
-    outs_decoded = [decode(o.encoding, oc) for oc in outs] # outcomes decoded from integers
+    probs = Probabilities(ρ, (to.outcomes,))
 
-    probs = Probabilities(ρ, (outs_decoded,))
-
-    return probs, outs_decoded
+    return probs, to.outcomes
 end
 

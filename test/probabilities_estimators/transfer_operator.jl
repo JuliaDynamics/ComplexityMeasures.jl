@@ -13,9 +13,9 @@ cd(@__DIR__)
     x_ue = rand([0.0:0.1:1.0;],100) #for unique elements
 
     #def count-based 1d outcome spaces 
-    outcome_spaces = [BubbleSortSwaps(),AmplitudeAwareOrdinalPatterns(),OrdinalPatterns(),
-        WeightedOrdinalPatterns(),CosineSimilarityBinning(),Dispersion(),
-        SequentialPairDistances(x),UniqueElements(),ValueBinning(RectangularBinning(5))] 
+    outcome_spaces = [AmplitudeAwareOrdinalPatterns(), OrdinalPatterns(),
+        WeightedOrdinalPatterns(), Dispersion(),BubbleSortSwaps(), CosineSimilarityBinning(),
+        SequentialPairDistances(x),UniqueElements(),ValueBinning(RectangularBinning(5,true))] 
     
     #build transferoperator from every outcomespace
     for ocs in outcome_spaces
@@ -29,10 +29,6 @@ cd(@__DIR__)
         sum_rows = sum(to.transfermatrix;dims=2) 
         @test all( isapprox.(1.0, sum_rows ;atol = 1e-3))
     end
-
-    #leave out spatial methods for now:
-    #SpatialBubbleSortSwaps,SpatialDispersion,SpatialOrdinalPatterns
-    #not trivial how to implement transferoperator!
 
 end
 
@@ -57,10 +53,10 @@ end
     b = ValueBinning(FixedRectangularBinning(range(0,1;length=11),1,true))
     to = transferoperator(b,orbit)
     iv = invariantmeasure(to)
-    p,outcomes = invariantmeasure(iv)
+    p = invariantmeasure(iv)
 
     #order from leftmost bin to rightmost bin  
-    p_bins = p[sortperm(outcomes)]
+    p_bins = p[sortperm(to.outcome_codes)]
 
     #----------compute probability for each bin analytically----------
     bin_ranges = to.outcome_space.binning.ranges[1]
@@ -101,9 +97,8 @@ binnings = [
     iv = invariantmeasure(to)
     @test iv isa InvariantMeasure
 
-    p, bins = invariantmeasure(iv)
+    p = invariantmeasure(iv)
     @test p isa Probabilities
-    @test bins isa Vector{Int}
 
     @test probabilities(TransferOperator(), ValueBinning(b), D) isa Probabilities
 
