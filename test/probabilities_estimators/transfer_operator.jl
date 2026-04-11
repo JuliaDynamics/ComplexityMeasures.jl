@@ -79,17 +79,29 @@ end
 
 D = StateSpaceSet(rand(MersenneTwister(1234), 100, 2))
 
-# Note that if `false` is used for `precise` the tests will fail.
-# But that's okay, since we do not do guarantees for that case.
+# Test on binnings with `precise == false` and `precise == true`. 
+# Note that we are more permissive here: when `false` is used for `precise` 
+# the tests will pass with warnings, even if some points were outside the binning.
 binnings = [
+    RectangularBinning(3),
+    RectangularBinning(0.2),
+    RectangularBinning([2, 3]),
+    RectangularBinning([0.2, 0.3]),
+    FixedRectangularBinning(range(0, 1; length=5), 2),
+    FixedRectangularBinning(range(0, 0.8; length=5), 2)
+]
+
+binnings_precise = [
     RectangularBinning(3, true),
     RectangularBinning(0.2, true),
     RectangularBinning([2, 3], true),
     RectangularBinning([0.2, 0.3], true),
-    FixedRectangularBinning(range(0, 1; length=5), 2, true)
+    FixedRectangularBinning(range(0, 1; length=5), 2, true),
+    FixedRectangularBinning(range(0, 0.8; length=5), 2,true)
+
 ]
 
-@testset "Binning test $i" for i in eachindex(binnings)
+@testset "Binning test (precise==false) $i" for i in eachindex(binnings)
     b = binnings[i]
     to = transferoperator(ValueBinning(b),D)
     @test to isa TransferOperatorApproximation
@@ -106,10 +118,32 @@ binnings = [
     abs(information(Shannon(), p) - information(ValueBinning(b), D) ) < 0.1 # or something like that
 end
 
+@testset "Binning test (precise==true) $i" for i in eachindex(binnings_precise)
+    b = binnings[i]
+    to = transferoperator(ValueBinning(b), D)
+    @test to isa TransferOperatorApproximation
+
+    iv = invariantmeasure(to)
+    @test iv isa InvariantMeasure
+
+    p = invariantmeasure(iv)
+    @test p isa Probabilities
+
+    @test probabilities(TransferOperator(), ValueBinning(b), D) isa Probabilities
+
+    # Test that gives approximately same entropy as ValueBinning:
+    abs(information(Shannon(), p) - information(ValueBinning(b), D)) < 0.1 # or something like that
+end
+
 # Warn if we're not using precise binnings.
 imprecise_warning = "`binning.precise == false`. You may be getting points outside the binning."
 b = RectangularBinning(5)
 @test_logs (:warn, imprecise_warning) transferoperator(ValueBinning(b), D)
+
+# Warn if there are points outside the binning.
+outside_bin_warning = "You are getting points outside the binning with outcomes that cannot be decoded. If you are using binning, set precise == true in the binning options."
+b = FixedRectangularBinning(range(0, 0.8; length=5), 2, true)
+@test_logs (:warn, outside_bin_warning) transferoperator(ValueBinning(b), D)
 
 #=
 # ---------------

@@ -229,25 +229,6 @@ function transferoperator(o::OutcomeSpace,x::Array_or_SSSet;
     unique_indices,unique_outcome_codes = inds_in_terms_of_unique(outcomes, false) # set to true when sorting is fixed
     N = length(unique_outcome_codes)
 
-    #decode unique outcome codes
-    #add exceptions
-    if o isa UniqueElements 
-        outs_decoded = unique(x)
-    elseif o isa Dispersion
-        μ = mean(x)
-        σ = std(x)
-        decoder = GaussianCDFEncoding(;μ=μ, σ=σ, c=o.c)
-        outs_decoded = [decode(decoder, oc) for oc in unique_outcome_codes]
-
-    elseif o isa ValueBinning
-        outs_decoded = [decode(RectangularBinEncoding(o.binning, x), oc) for oc in unique_outcome_codes] 
-
-    elseif hasfield(typeof(o),:encoding) #check if it has encoding
-        outs_decoded = [decode(o.encoding, oc) for oc in unique_outcome_codes] # outcomes decoded from integers
-    else 
-        outs_decoded = fill(missing,length(unique_outcome_codes))
-    end
-
     #apply boundary conditions (default is :none)
     if boundary_condition == :circular
         append!(unique_indices, [1])
@@ -270,6 +251,52 @@ function transferoperator(o::OutcomeSpace,x::Array_or_SSSet;
     #normalize Q (not strictly necessary) and fill P by normalizing rows of Q
     Q .= Q./sum(Q)
     P = normalize_transition_matrix(Q)
+
+    #-------------decode unique outcome codes--------------
+    
+    #add exceptions
+
+    #UniqueElements
+    if o isa UniqueElements
+        outs_decoded = [decode(UniqueElementsEncoding(x), oc) for oc in unique_outcome_codes]
+        return TransferOperatorApproximation(P, o, outs_decoded, unique_outcome_codes, approximation_method)
+    end 
+
+    #Dispersion
+    #(not the patterns, no embedding here)
+    if o isa Dispersion
+        μ = mean(x)
+        σ = std(x)
+        decoder = GaussianCDFEncoding(; μ=μ, σ=σ, c=o.c)
+        outs_decoded = [decode(decoder, oc) for oc in unique_outcome_codes]
+        return TransferOperatorApproximation(P, o, outs_decoded, unique_outcome_codes, approximation_method)
+    end
+
+    #ValueBinning and SequentialPairDistances
+    if o isa ValueBinning || o isa SequentialPairDistances
+
+        encoding = o isa ValueBinning ? RectangularBinEncoding(o.binning, x) : o.encoding
+
+        outs_decoded = Vector{Union{SVector,Missing}}(missing, length(unique_outcome_codes))
+        for (i,oc) in enumerate(unique_outcome_codes)
+
+            #catch outcome left uncoded (outside binning) 
+            if oc == -1
+                @warn "You are getting points outside the binning with outcomes that cannot be decoded. If you are using binning, set precise == true in the binning options."
+                outs_decoded[i] = missing
+                continue
+            end
+            outs_decoded[i] = decode(encoding, oc)
+        end
+        return TransferOperatorApproximation(P, o, outs_decoded, unique_outcome_codes, approximation_method)
+    end
+
+    #all other outcome types containing encoding
+    if hasfield(typeof(o), :encoding) 
+        outs_decoded = [decode(o.encoding, oc) for oc in unique_outcome_codes] # outcomes decoded from integers
+    else  #if encoding is not possible
+        outs_decoded = fill(missing, length(unique_outcome_codes))
+    end
 
     return TransferOperatorApproximation(P, o, outs_decoded, unique_outcome_codes, approximation_method)
 end
