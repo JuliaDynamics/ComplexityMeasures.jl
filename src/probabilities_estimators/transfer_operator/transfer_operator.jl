@@ -22,7 +22,6 @@ is approximated using a selected outcome space, by counting occurrences of trans
 Probabilities are estimated as the invariant measure
 associated with that transfer operator. Assumes that the input data are sequential
 (time-ordered). `approximation_method` decides how the invariant measure should be calculated. 
-See  [`ApproximationIterative`, `ApproximationEigen`](@ref).
 
 ## Description
 
@@ -31,13 +30,13 @@ probabilities between outcomes, where `N` is the
 number of observed outcomes. Note that an outcome can 
 correspond to a single (ex. 1D binning) or multiple datapoints (ex. ordinal patterns).
 
-If  ``\\mathbf{x}^(L)_n`` is the ``n``-th sequence of datapoints of length ``L`` that is encoded 
-to the ``i``-th outcome ``s_i``, and ``E(\\mathbf{x}^(L)_n) = s_i`` then 
+If  ``\\mathbf{x}^{(L)}_n`` is the ``n``-th sequence of datapoints of length ``L`` that is encoded 
+to the ``i``-th outcome ``s_i``, and ``E(\\mathbf{x}^{(L)}_n) = s_i`` then 
 
 ```math
 P_{ij} = \\dfrac
-{\\#\\{ s_i | E(\\mathbf{x}^(L)_{n+1}) = s_j \\cap E(\\mathbf{x}^(L)_{n}) = s_i \\}}
-{\\#\\{ s_i | E(\\mathbf{x}^(L)_{m}) = s_i \\}},
+{\\#\\{ s_i | E(\\mathbf{x}^{(L)}_{n+1}) = s_j \\cap E(\\mathbf{x}^{(L)}_{n}) = s_i \\}}
+{\\#\\{ s_i | E(\\mathbf{x}^{(L)}_{m}) = s_i \\}},
 ```
 
 where ``\\#`` denotes the cardinal. The element ``P_{ij}`` thus indicates the 
@@ -56,8 +55,6 @@ stochastic matrix.
 When constructing the transfer operator from time series using `transferoperator` 
 with a given `outcome_space`, a `TransferOperatorApproximation` is returned, 
 giving access to the transition probabilites between the observed outcomes.
-
-See also: [`transferoperator`, `TransferOperatorApproximation`](@ref).
 
 ## Outcome space requirements
 
@@ -111,23 +108,23 @@ ps,outs = probabilities_and_outcomes(TransferOperator(),vb,x) #bins are ordered
 
 ### Iterative method (default)
 
-The invariant distribution is initialized as a length-`N` random distribution which is then applied to
+The invariant distribution is initialized as a random distribution which is then applied to
 ``P``. For reproducibility in this step, set the `rng` in `ApproximationIterative`.
 The resulting length-`N` distribution is then applied to ``P`` again. This process
 repeats until the difference between the distributions over consecutive iterations is
 below some threshold.
 
 Use `ApproximationIterative()` with `TransferOperator` to approximate the invariant measure 
-by the eigenvector method. 
+using the eigenvector method. 
 
 ### Eigenvector method
 
 The left invariant distribution ``\\mathbf{\\rho}`` is a row vector, where
-``\\mathbf{\\rho}^N P = \\mathbf{\\rho}^N``. Hence, ``\\mathbf{\\rho}^N`` is a row
+``\\mathbf{\\rho} P = \\mathbf{\\rho}``. Hence, ``\\mathbf{\\rho}`` is a row
 eigenvector of the transfer matrix ``P`` associated with eigenvalue 1. The distribution
 ``\\mathbf{\\rho}`` approximates the invariant density of the system subject to
 `outcome space`, and can be taken as a probability distribution over the 
-symbolization/partition elements.
+outcomes.
 
 Use `ApproximationEigen()` with `TransferOperator` to approximate the invariant measure 
 by the eigenvector method. 
@@ -160,11 +157,9 @@ to = transferoperator(vb,x)
     The naive histogram approach only gives the long-term probabilities that
     orbits visit a certain region of the state space. The transfer operator encodes that
     information too, but comes with the added benefit of knowing the *transition
-    probabilities* between states (see [`transfermatrix`](@ref)).
+    probabilities* between states.
 
 
-See also: [`RectangularBinning`](@ref), [`FixedRectangularBinning`](@ref),
-[`invariantmeasure`](@ref).
 """
 struct TransferOperator <: ProbabilitiesEstimator 
     approximation_method::ApproximationMethod
@@ -180,7 +175,15 @@ abstract type AbstractTransferOperatorApproximation <: ProbabilitiesEstimator en
 
 
 """
-    TransferOperatorApproximation(transfermatrix, outcome_space::OutcomeSpace, outcomes, approximation_method)
+    TransferOperatorApproximation 
+
+Type that holds data for the TransferOperator: transition probabilities, the selected outcome space,
+outcomes and the approximation method.  
+When constructing the transfer operator from time series using `transferoperator` 
+with a given `outcome_space`, a `TransferOperatorApproximation` is returned, 
+giving access to the transition probabilites between the observed outcomes.
+
+## Fields 
 
 * `transfermatrix`: sparse matrix containing the transition probabilites where `P[i, j]` is the
     probability of jumping from the `i`-th outcome to the `j`-th outcome. Order of entries correspond
@@ -196,7 +199,7 @@ abstract type AbstractTransferOperatorApproximation <: ProbabilitiesEstimator en
 
 Only outcomes that actually are observed are considered. 
 
-See also: [`transfermatrix`,`TransferOperator`](@ref).
+See also: [`transfermatrix`](@ref), [`TransferOperator`](@ref).
 
 """
 struct TransferOperatorApproximation{OC<:OutcomeSpace,AM<:ApproximationMethod} <: AbstractTransferOperatorApproximation
@@ -209,10 +212,10 @@ end
 
 #helper API to access fields cleanly
 """
-    transfermatrix(iv::InvariantMeasure) → M::AbstractArray{<:Real, 2}
+    transfermatrix(to::TransferOperatorApproximation) → P::AbstractArray{<:Real, 2}
 
-Return the transfer matrix/operator. Thus, the entry `M[i, j]` is the
-probability of jumping from the state `i` to the state `j`.
+Return the transfer matrix/operator. Thus, the entry `P[i, j]` is the
+probability of jumping from the outcome `i` to the outcome `j`.
 
 See also: [`TransferOperator`](@ref).
 """
@@ -228,6 +231,27 @@ end
 TransferOperatorApproximation(to, approximation_method) =
     TransferOperatorApproximation(to.transfermatrix, to.outcome_space, to.outcomes, to.outcomes_codes, approximation_method)
 
+"""
+    ApproximationIterative
+
+Stores parameters for the iterative version of finding the invariant measure from the transfer matrix. 
+Subtype of `ApproximationMethod`. 
+
+## Description
+
+The invariant distribution is initialized as a random distribution which is then applied to
+``P``. For reproducibility in this step, set the `rng` in `ApproximationIterative`.
+The resulting distribution is then applied to ``P`` again. This process
+repeats until the difference between the distributions over consecutive iterations is
+below some threshold.
+
+## Fields 
+
+* N = 200 : maximum number of iterations 
+* tolerance = 1e-8 : sets stopping condition for relative diffence of the norm between iterations   
+* delta = 1e-8 : sets tolerance for normalization to 1 of the distribution
+* rng = Random.default_rng() : used for random initialization of the distribution
+"""
 struct ApproximationIterative <: ApproximationMethod
     N::Int 
     tolerance::Float64 
@@ -240,6 +264,28 @@ end
 pars_default_iterative = (200, 1e-8, 1e-8, Random.default_rng())
 ApproximationIterative() = ApproximationIterative(pars_default_iterative...)
 
+"""
+    ApproximationEigen
+
+Stores parameters for the eigenvector method for finding the invariant measure from the transfer matrix. 
+Subtype of `ApproximationMethod`. 
+
+## Description
+
+The left invariant distribution ``\\mathbf{\\rho}`` is a row vector, where
+``\\mathbf{\\rho} P = \\mathbf{\\rho}``. Hence, ``\\mathbf{\\rho}`` is a row
+eigenvector of the transfer matrix ``P`` associated with eigenvalue 1. The distribution
+``\\mathbf{\\rho}`` approximates the invariant density of the system subject to
+`outcome space`, and can be taken as a probability distribution over the 
+outcomes.
+
+Use `ApproximationEigen()` with `TransferOperator` to approximate the invariant measure 
+using the eigenvector method. This uses `eigsolve` from `KrylovKit.jl`. 
+
+The default values for `eigsolve` are given by tol = KrylovDefaults.tol, krylovdim =
+KrylovDefaults.krylovdim, maxiter = KrylovDefaults.maxiter, orth =
+KrylovDefaults.orth. See KrylovDefaults in KrylovKit for details.
+"""
 struct ApproximationEigen <: ApproximationMethod 
     tol
     krylovdim 
@@ -529,22 +575,20 @@ Return an `Invariantmeasure` containing the invariant measure approximation comp
 See also: [`ApproximationEigen`](@ref).
 """
 function invariantmeasure(to::TransferOperatorApproximation{<:OutcomeSpace,ApproximationEigen})
+    #extract default kwargs 
+    defaults = (tol = to.approximation_method.tol.x, 
+        krylovdim = to.approximation_method.krylovdim.x, 
+        maxiter = to.approximation_method.maxiter.x, 
+        orth = to.approximation_method.orth)
+
     P = to.transfermatrix
     #first eigenvalue with Largest Real part
-    vals, vecs, info = eigsolve(P', 1, :LR)
+    vals, vecs, info = eigsolve(P', 1, :LR; defaults...)
     info.converged < 1 && @warn "KrylovKit.eigsolve did not converge!"
     ρ = real.(vecs[1]) ./ sum(real.(vecs[1]))
     return InvariantMeasure(to, Probabilities(ρ.nzval))
 end
 
-"""
-    transfermatrix(iv::InvariantMeasure) → M::AbstractArray{<:Real, 2}
-
-Return the transfer matrix/operator. Thus, the entry `M[i, j]` is the
-probability of jumping from the state `i` to the state `j`.
-
-See also: [`TransferOperator`](@ref).
-"""
 function transfermatrix(iv::InvariantMeasure)
     return transfermatrix(iv.to)
 end

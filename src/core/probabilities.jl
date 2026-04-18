@@ -167,6 +167,7 @@ The default probabilities estimator is [`RelativeAmount`](@ref), which is compat
 - [`Shrinkage`](@ref).
 - [`BayesianRegularization`](@ref).
 - [`AddConstant`](@ref).
+- [`TransferOperator`](@ref).
 
 ## Description
 
