@@ -124,3 +124,43 @@ function allcounts(args...)
     @warn "`allcounts` is deprecated. Use `allcounts_and_outcomes` instead."
     return first(allcounts_and_outcomes(args...))
 end
+
+function TransferOperator(b :: AbstractBinning)
+    @warn "`TransferOperator(b <: AbstractBinning)` is deprecated. Use `TransferOperator(approximation_method::ApproximationMethod,boundary_condition)` instead."
+    return TransferOperator()
+end
+
+function transferoperator(pts::Array_or_SSSet,
+        binning::Union{FixedRectangularBinning, RectangularBinning};
+        boundary_condition = :none, 
+        warn_precise = true) 
+
+    @warn "`transferoperator(pts, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `transferoperator(o::OutcomeSpace,x)` instead."
+
+    return transferoperator(ValueBinning(binning), pts)
+    
+end
+
+function invariantmeasure(x::Array_or_SSSet,binning::Union{FixedRectangularBinning, RectangularBinning})
+
+    @warn "`invariantmeasure(x, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `invariantmeasure(o::OutcomeSpace,x)` instead."
+
+    o = ValueBinning(binning)
+    invariantmeasure(o, x)
+
+end
+
+function probabilities(x::Array_or_SSSet,est::TransferOperator)
+    @warn "`probabilities(est::TransferOperator, x` is deprecated. Since `TransferOperator` is no longer limited to binnings, you have to explicitly provide an `OutcomeSpace` as well. Use `probabilities(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)` instead. Defaulting to `RectangularBinning(3,true)`."
+    b = RectangularBinning(3,true)
+    o = ValueBinning(b)
+    probabilities(est, o, x)
+end
+
+
+function probabilities_and_outcomes(x::Array_or_SSSet,est::TransferOperator)
+    @warn "`probabilities_and_outcomes(est::TransferOperator, x` is deprecated. Since `TransferOperator` is no longer limited to binnings, you have to explicitly provide an `OutcomeSpace` as well. Use `probabilities_and_outcomes(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)` instead. Defaulting to `RectangularBinning(3,true)."
+    b = RectangularBinning(3, true)
+    o = ValueBinning(b)
+    probabilities_and_outcomes(est, o, x)
+end

@@ -90,7 +90,6 @@ end
     x = rand(rng, 100)
     os = [
         WaveletOverlap(),
-        TransferOperator(RectangularBinning(3)),
         PowerSpectrum(),
         AmplitudeAwareOrdinalPatterns(),
         WeightedOrdinalPatterns(),

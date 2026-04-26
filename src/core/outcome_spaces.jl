@@ -35,7 +35,6 @@ discretize/encode the data directly.
 | [`CosineSimilarityBinning`](@ref)       | Cosine similarity                 | `Vector`                  | ✔                  |
 | [`BubbleSortSwaps`](@ref)               | Swap counts when sorting          | `Vector`                  | ✔                  |
 | [`SequentialPairDistances`](@ref)       | Sequential state vector distances | `Vector`, `StateSpaceSet` | ✔                  |
-| [`TransferOperator`](@ref)              | Binning (transfer operator)       | `Vector`, `StateSpaceSet` | ✖                  |
 | [`NaiveKernel`](@ref)                   | Kernel density estimation         | `StateSpaceSet`           | ✖                  |
 | [`WeightedOrdinalPatterns`](@ref)       | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✖                  |
 | [`AmplitudeAwareOrdinalPatterns`](@ref) | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✖                  |

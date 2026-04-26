@@ -190,7 +190,7 @@ probsy_bayes .- probsy
 
 # While the corrections of [`BayesianRegularization`](@ref) are small in this case, they are
 # nevertheless measurable.
-#
+
 # When calling [`probabilities`](@ref) only with an outcome space instance and some input
 # data (skipping the [`ProbabilitiesEstimator`](@ref)), then by default, the
 # [`RelativeAmount`](@ref) probabilities estimator is used to extract the probabilities.
