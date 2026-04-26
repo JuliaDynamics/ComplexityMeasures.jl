@@ -121,7 +121,15 @@ RelativeAmount
 BayesianRegularization
 Shrinkage
 AddConstant
+```
+
+### Transfer operator
+
+```@docs
 TransferOperator
+transferoperator
+ApproximationIterative
+ApproximationEigen
 ```
 
 ## [Encodings/Symbolizations API](@id encodings)
