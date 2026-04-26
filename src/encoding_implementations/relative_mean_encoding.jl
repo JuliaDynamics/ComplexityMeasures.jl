@@ -36,7 +36,7 @@ struct RelativeMeanEncoding{R} <: Encoding
     maxval::Real
     binencoder::R # RectangularBinEncoding
 
-    function RelativeMeanEncoding(n::Int, minval::Real, maxval::Real, binencoder::R) where R
+    function RelativeMeanEncoding(n::Int, minval::Real, maxval::Real, binencoder::R) where {R}
         if minval > maxval
             s = "Need minval <= maxval. Got minval=$minval and maxval=$maxval."
             throw(ArgumentError(s))

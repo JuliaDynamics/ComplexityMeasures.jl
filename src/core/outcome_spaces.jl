@@ -119,10 +119,14 @@ in which case the function dispatches to `outcome_space(o)`.
 In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
 function outcome_space(o::OutcomeSpace)
-    error(ErrorException("""
-    `outcome_space(o)` not implemented for outcome space $(typeof(o)).
-    Try calling `outcome_space(o, input_data)`, and if you get the same error, open an issue.
-    """))
+    error(
+        ErrorException(
+            """
+            `outcome_space(o)` not implemented for outcome space $(typeof(o)).
+            Try calling `outcome_space(o, input_data)`, and if you get the same error, open an issue.
+            """
+        )
+    )
 end
 outcome_space(o::OutcomeSpace, x) = outcome_space(o)
 

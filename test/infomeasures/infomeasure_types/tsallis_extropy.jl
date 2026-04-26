@@ -17,7 +17,7 @@ x = [0.1, 0.1, 0.1]
 x = [0.2, 0.4, 0.4]
 h = information(Tsallis(; q = 2), UniqueElements(), x)
 j = information(TsallisExtropy(; q = 2), UniqueElements(), x)
-@test 2h ≈ 2j ≈ 8/9
+@test 2h ≈ 2j ≈ 8 / 9
 
 # Example 3.4 from Xue & Deng (2023) (equivalence of Tsallis entropy/information for
 # two-element distributions)
@@ -29,7 +29,7 @@ j = information(TsallisExtropy(; q = 2), UniqueElements(), x)
 # Example 3.9 from Xue & Deng (2023)
 x = [0.2, 0.2, 0.4, 0.4, 0.5, 0.5]
 j = information(TsallisExtropy(; q = 2), UniqueElements(), x)
-@test j ≈ 2/3
+@test j ≈ 2 / 3
 
 # In general, normalized Tsallis information should be maximized (i.e. be equal to 1) for a
 # uniform distribution.

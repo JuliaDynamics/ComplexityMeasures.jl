@@ -48,6 +48,6 @@ function encode(encoding::UniqueElementsEncoding, x)
     return encoding.encode_dict[x]
 end
 
-function decode(encoding::UniqueElementsEncoding, ω::I) where I <: Integer
+function decode(encoding::UniqueElementsEncoding, ω::I) where {I <: Integer}
     return encoding.decode_dict[ω]
 end

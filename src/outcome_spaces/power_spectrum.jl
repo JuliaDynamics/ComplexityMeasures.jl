@@ -23,7 +23,7 @@ The outcome space `Ω` for `PowerSpectrum` is the set of frequencies in Fourier 
 should be multiplied with the sampling rate of the signal, which is assumed to be `1`.
 Input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-@kwdef struct PowerSpectrum{T<:Real} <: OutcomeSpace
+@kwdef struct PowerSpectrum{T <: Real} <: OutcomeSpace
     δ::T = 0.0
     apply_threshold_to_spectrum::Bool = false
 end
@@ -35,7 +35,7 @@ function probabilities_and_outcomes(P::PowerSpectrum, x)
     f = FFTW.rfft(x)
     amp_squared = abs2.(f)
     if P.δ > 0 && P.apply_threshold_to_spectrum
-        amp_squared[amp_squared  .< P.δ] .= 0.0
+        amp_squared[amp_squared .< P.δ] .= 0.0
     end
     probs = Probabilities(amp_squared)
     outs = FFTW.rfftfreq(length(x))
@@ -53,5 +53,5 @@ outcome_space(::PowerSpectrum, x) = FFTW.rfftfreq(length(x))
 function total_outcomes(::PowerSpectrum, x)
     n = length(x)
     # From the docstring of `AbstractFFTs.rfftfreq`:
-    iseven(n) ? length(0:(n÷2)) : length(0:((n-1)÷2))
+    return iseven(n) ? length(0:(n ÷ 2)) : length(0:((n - 1) ÷ 2))
 end

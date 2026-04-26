@@ -101,7 +101,7 @@ struct GaussianCDFEncoding{m, T, L <: LinearIndices, C <: CartesianIndices, R} <
         C = typeof(cartesian_indices)
         binencoder = RectangularBinEncoding(FixedRectangularBinning(0, 1, c + 1))
         R = typeof(binencoder)
-        new{m, T, L, C, R}(c, σ, μ, linear_indices, cartesian_indices, binencoder)
+        return new{m, T, L, C, R}(c, σ, μ, linear_indices, cartesian_indices, binencoder)
     end
 end
 
@@ -113,20 +113,20 @@ hidefields(::Type{<:GaussianCDFEncoding}) = [:linear_indices, :cartesian_indices
 # Backwards compatibility (previously, only scalars were encodable)
 GaussianCDFEncoding(; kwargs...) = GaussianCDFEncoding{1}(; kwargs...)
 
-function total_outcomes(encoding::GaussianCDFEncoding{m}) where m
+function total_outcomes(encoding::GaussianCDFEncoding{m}) where {m}
     c = encoding.c
     return c^m
 end
 
-gaussian(x, μ, σ) = exp((-(x - μ)^2)/(2σ^2))
+gaussian(x, μ, σ) = exp((-(x - μ)^2) / (2σ^2))
 
 function encode(encoding::GaussianCDFEncoding, x::Real)
     binencoder, σ, μ = encoding.binencoder, encoding.σ, encoding.μ
-    
+
     return encode(binencoder, normcdf(μ, σ, x))
 end
 
-function encode(encoding::GaussianCDFEncoding{m}, x::AbstractVector) where m
+function encode(encoding::GaussianCDFEncoding{m}, x::AbstractVector) where {m}
     L = length(x)
     if L != m
         throw(ArgumentError("length(`x`) must equal `m` (got length(x)=$L, m=$m)"))

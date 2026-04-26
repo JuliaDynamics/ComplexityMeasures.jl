@@ -21,7 +21,7 @@ end
 function information(e::Shannon, probs::Probabilities)
     non0_probs = Iterators.filter(!iszero, vec(probs))
     logf = log_with_base(e.base)
-    return -sum(x*logf(x) for x in non0_probs)
+    return -sum(x * logf(x) for x in non0_probs)
 end
 
 information_maximum(e::Shannon, L::Int) = log_with_base(e.base)(L)

@@ -61,10 +61,10 @@ struct CombinationEncoding{N, L, C} <: Encoding
     function CombinationEncoding(encodings::NTuple{N, Encoding}, l::L, c::C) where {N, L, C}
         if any(e isa CombinationEncoding for e in encodings)
             s = "CombinationEncoding doesn't accept a CombinationEncoding as one of its " *
-             "sub-encodings."
+                "sub-encodings."
             throw(ArgumentError(s))
         end
-        new{N, L, C}(encodings, l, c)
+        return new{N, L, C}(encodings, l, c)
     end
 end
 
@@ -74,8 +74,8 @@ end
 hidefields(::Type{<:CombinationEncoding}) = [:linear_indices, :cartesian_indices]
 
 CombinationEncoding(encodings) = CombinationEncoding(encodings...)
-function CombinationEncoding(encodings::Vararg{Encoding, N}) where N
-    if N < 1 
+function CombinationEncoding(encodings::Vararg{Encoding, N}) where {N}
+    if N < 1
         throw(ArgumentError("N < 1 . Greater than one encoding value required")) #Error thrown when N=0
     end
     ranges = tuple([1:total_outcomes(e) for e in encodings]...)

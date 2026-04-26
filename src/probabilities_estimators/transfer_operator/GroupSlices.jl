@@ -2,14 +2,14 @@
 # originally written by Andy Greenwell at https://github.com/AndyGreenwell/GroupSlices.jl,
 # and is MIT licensed.
 #
-# Maintained here for future stability, because the registered GroupSlices package is only 
+# Maintained here for future stability, because the registered GroupSlices package is only
 # v0.0.3.
-# 
-# License from (https://github.com/mcabbott/GroupSlices.jl/blob/master/LICENSE): 
+#
+# License from (https://github.com/mcabbott/GroupSlices.jl/blob/master/LICENSE):
 #
 # The MIT License (MIT)
 
-# Copyright (c) 2016 
+# Copyright (c) 2016
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -50,7 +50,7 @@ This is true:
 all(x == V[i] for (x,i) in zip(V, groupslices(V)))
 ```
 """
-groupslices(A::AbstractArray{T,N}; dims::Int=1) where {T,N} = groupslices(A, dims)
+groupslices(A::AbstractArray{T, N}; dims::Int = 1) where {T, N} = groupslices(A, dims)
 
 """
     groupslices(A; dims) = groupslices(A, dims)
@@ -71,8 +71,8 @@ elseif dims == 3
 end
 ```
 """
-@generated function groupslices(A::AbstractArray{T,N}, dim::Int) where {T,N}
-    quote
+@generated function groupslices(A::AbstractArray{T, N}, dim::Int) where {T, N}
+    return quote
         if !(1 <= dim <= $N)
             ArgumentError("Input argument dim must be 1 <= dim <= $N, but is currently $dim")
         end
@@ -80,14 +80,18 @@ end
 
         # Compute hash for each row
         k = 0
-        @nloops $N i A d->(if d == dim; k = i_d; end) begin
+        @nloops $N i A d -> (
+            if d == dim
+                k = i_d
+            end
+        ) begin
             @inbounds hashes[k] = hash(hashes[k], hash((@nref $N A i)))
         end
 
         # Collect index of first row for each hash
-        uniquerow = Array{Int}(undef,size(A, dim))
-        firstrow = Dict{Prehashed,Int}()
-        for k = 1:size(A, dim)
+        uniquerow = Array{Int}(undef, size(A, dim))
+        firstrow = Dict{Prehashed, Int}()
+        for k in 1:size(A, dim)
             uniquerow[k] = get!(firstrow, Prehashed(hashes[k]), k)
         end
         uniquerows = collect(values(firstrow))
@@ -95,12 +99,14 @@ end
         # Check for collisions
         collided = falses(size(A, dim))
         @inbounds begin
-            @nloops $N i A d->(if d == dim
-                k = i_d
-                j_d = uniquerow[k]
-            else
-                j_d = i_d
-            end) begin
+            @nloops $N i A d -> (
+                if d == dim
+                    k = i_d
+                    j_d = uniquerow[k]
+                else
+                    j_d = i_d
+                end
+            ) begin
                 if (@nref $N A j) != (@nref $N A i)
                     collided[k] = true
                 end
@@ -112,7 +118,7 @@ end
             while any(collided)
                 # Collect index of first row for each collided hash
                 empty!(firstrow)
-                for j = 1:size(A, dim)
+                for j in 1:size(A, dim)
                     collided[j] || continue
                     uniquerow[j] = get!(firstrow, Prehashed(hashes[j]), j)
                 end
@@ -122,7 +128,7 @@ end
 
                 # Check for collisions
                 fill!(nowcollided, false)
-                @nloops $N i A d->begin
+                @nloops $N i A d -> begin
                     if d == dim
                         k = i_d
                         j_d = uniquerow[k]
@@ -139,13 +145,13 @@ end
             end
         end
         ie = unique(uniquerow)
-        ic_dict = Dict{Int,Int}()
-        for k = 1:length(ie)
+        ic_dict = Dict{Int, Int}()
+        for k in 1:length(ie)
             ic_dict[ie[k]] = k
         end
 
         ic = similar(uniquerow)
-        for k = 1:length(ic)
+        for k in 1:length(ic)
             ic[k] = ie[ic_dict[uniquerow[k]]]
         end
         return ic
@@ -165,16 +171,16 @@ function groupinds(ic::Vector{Int})
     d = Dict{Int, Int}()
     ia = unique(ic)
     n = length(ia)
-    for i = 1:n
-        d[ia[i]]= i
+    for i in 1:n
+        d[ia[i]] = i
     end
 
     ib = Array{Vector{Int}}(undef, n)
-    for k = 1:n
+    for k in 1:n
         ib[k] = Int[]
     end
 
-    for h = 1:length(ic)
+    for h in 1:length(ic)
         push!(ib[d[ic[h]]], h)
     end
     return ib
@@ -197,15 +203,15 @@ operates on the output returned from `groupinds(ic::Vector{Int})`.
 function firstinds(ic::Vector{Int})
     id = unique(ic)
     n = length(id)
-    ia = Array{Int}(undef,n)
-    for i = 1:n
+    ia = Array{Int}(undef, n)
+    for i in 1:n
         ia[i] = something(findfirst(isequal(id[i]), ic), 0) # findfirst(ic, id[i])
     end
     return ia
 end
 
 function firstinds(ib::Vector{Vector{Int}})
-    ia = map(first, ib)
+    return ia = map(first, ib)
 end
 
 """
@@ -220,7 +226,7 @@ The implementation of `firstinds` accepting a vector of vector of integers
 operates on the output returned from `groupinds(ic::Vector{Int})`.
 """
 function lastinds(ib::Vector{Vector{Int}})
-    ia = map(last, ib)
+    return ia = map(last, ib)
 end
 
 

@@ -72,7 +72,7 @@ See also: [`RelativeAmount`](@ref), [`Shrinkage`](@ref).
 struct BayesianRegularization{A} <: ProbabilitiesEstimator
     a::A
     function BayesianRegularization(; a::A = 1.0) where {A}
-        new{A}(a)
+        return new{A}(a)
     end
 end
 
@@ -100,7 +100,7 @@ function probabilities_and_outcomes(est::BayesianRegularization, outcomemodel::O
     n = encoded_space_cardinality(outcomemodel, x)
 
     # Estimate probability for each observed outcome.
-    for i = 1:M
+    for i in 1:M
         yᵢ = observed_cts[i]
         aₖ = get_aₖ_bayes(a, i)
         probs[i] = θ̂bayes(yᵢ, aₖ, n, A)
@@ -121,8 +121,12 @@ function allprobabilities_and_outcomes(est::BayesianRegularization, outcomemodel
     Ω = outcome_space(outcomemodel, x)
     M = length(Ω)
     if a isa Vector{<:Real}
-        length(a) == M || throw(DimensionMismatch("length(a) must equal the number of " *
-        "elements in the outcome space (got $M outcomes, but length(a)=$(length(a)))."))
+        length(a) == M || throw(
+            DimensionMismatch(
+                "length(a) must equal the number of " *
+                    "elements in the outcome space (got $M outcomes, but length(a)=$(length(a)))."
+            )
+        )
     end
     observed_counts, observed_outcomes = counts_and_outcomes(outcomemodel, x)
 

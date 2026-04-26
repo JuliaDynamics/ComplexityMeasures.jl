@@ -36,7 +36,7 @@ os_noncount = [
     PowerSpectrum(),
     AmplitudeAwareOrdinalPatterns(),
     WeightedOrdinalPatterns(),
-    NaiveKernel(0.1)
+    NaiveKernel(0.1),
 ]
 
 @testset "`ProbabilitiesEstimator` with $(typeof(os_noncount[i]).name.name)" for i in eachindex(os_noncount)

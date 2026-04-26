@@ -5,7 +5,7 @@ rng = MersenneTwister(1234)
 
 @testset "RelativeAmount" begin
     @testset "1D estimators" begin
-        x = rand(rng, 1:10., 100)
+        x = rand(rng, 1:10.0, 100)
 
         os = [
             UniqueElements(),

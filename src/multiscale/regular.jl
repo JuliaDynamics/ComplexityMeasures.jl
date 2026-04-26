@@ -49,7 +49,7 @@ struct RegularDownsampling{S} <: MultiScaleAlgorithm
     f::Function
     scales::S
 
-    function RegularDownsampling(; f::Function = Statistics.mean, scales::S = 1:8) where S
+    function RegularDownsampling(; f::Function = Statistics.mean, scales::S = 1:8) where {S}
         if S <: Integer
             s = 1:scales
             return new{typeof(s)}(f, s)
@@ -58,7 +58,7 @@ struct RegularDownsampling{S} <: MultiScaleAlgorithm
     end
 end
 
-function downsample(method::RegularDownsampling, s::Int, x::AbstractVector{T}, args...) where T
+function downsample(method::RegularDownsampling, s::Int, x::AbstractVector{T}, args...) where {T}
     f = method.f
     verify_scale_level(method, s, x)
 
@@ -70,8 +70,8 @@ function downsample(method::RegularDownsampling, s::Int, x::AbstractVector{T}, a
         L = floor(Int, N / s)
         ys = zeros(ET, L)
 
-        for t = 1:L
-            inds = ((t - 1)*s + 1):(t * s)
+        for t in 1:L
+            inds = ((t - 1) * s + 1):(t * s)
             ys[t] = @views f(x[inds], args...)
         end
         return ys
@@ -83,6 +83,6 @@ function apply_multiscale(alg::RegularDownsampling, f::Function, args...)
     downscaled_timeseries = [downsample(alg, s, last(args)) for s in alg.scales]
 
     # Use all args for estimation, except the last argument, which is the input data.
-    estimation_args = @views args[1:end-1]
+    estimation_args = @views args[1:(end - 1)]
     return [f(estimation_args..., ts) for ts in downscaled_timeseries]
 end

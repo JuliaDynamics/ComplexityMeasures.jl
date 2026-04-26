@@ -37,7 +37,7 @@ end
 
     @testset "vector" begin
         z = y[:, 1]
-        w = view(z, 1:length(z)-1)
+        w = view(z, 1:(length(z) - 1))
         p1 = probabilities(o, z)
         p2 = probabilities(o, w)
         @test sum(vec(p1)) ≈ sum(vec(p2)) ≈ 1
@@ -51,8 +51,10 @@ end
     τ = 1
     x = rand(Random.MersenneTwister(1234), 100_000)
     D = embed(x, m, τ)
-    @testset "$(S)" for S in (OrdinalPatterns,
-        WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
+    @testset "$(S)" for S in (
+            OrdinalPatterns,
+            WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns,
+        )
         o = S(m = m, τ = τ)
         p1 = probabilities(o, x)
         p2 = probabilities(o, D)
@@ -66,13 +68,15 @@ end
     # [1, 2] => 3
     # [2, 1] => 2
     x = [1, 2, 1, 2, 1, 2]
-    @testset "$(S)" for S in (OrdinalPatterns,
-        WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
+    @testset "$(S)" for S in (
+            OrdinalPatterns,
+            WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns,
+        )
         # don't randomize in the case of equal values, so use Base.isless
         o = S(m = 2, lt = Base.isless)
         probs, πs = probabilities_and_outcomes(o, x)
         @test πs == SVector{2, Int}.([[1, 2], [2, 1]])
-        @test probs == [3/5, 2/5]
+        @test probs == [3 / 5, 2 / 5]
         o3 = S(m = 3)
         @test outcome_space(o3) == [
             [1, 2, 3],
@@ -87,8 +91,10 @@ end
     end
 end
 
-@testset "codification for $(S)" for S in (OrdinalPatterns,
-    WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns)
+@testset "codification for $(S)" for S in (
+        OrdinalPatterns,
+        WeightedOrdinalPatterns, AmplitudeAwareOrdinalPatterns,
+    )
     # Codification of vector inputs (time series)
     x = rand(30)
     y = rand(30)

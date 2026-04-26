@@ -24,7 +24,7 @@ prepared a notebook you can [view online](https://github.com/kahaaga/waveletentr
 As such, this estimator only works for timeseries input and
 input `x` is needed for a well-defined [`outcome_space`](@ref).
 """
-struct WaveletOverlap{W<:Wavelets.WT.OrthoWaveletClass} <: OutcomeSpace
+struct WaveletOverlap{W <: Wavelets.WT.OrthoWaveletClass} <: OutcomeSpace
     wl::W
 end
 WaveletOverlap() = WaveletOverlap(Wavelets.WT.Daubechies{12}())
@@ -53,17 +53,19 @@ function get_modwt(x, wl)
     orthofilter = Wavelets.wavelet(wl)
     nscales = Wavelets.WT.maxmodwttransformlevels(x)
     tr = Wavelets.modwt(x, orthofilter, nscales)
-    return tr[:, 1:end-1] # discard scaling coefficients in last column
+    return tr[:, 1:(end - 1)] # discard scaling coefficients in last column
 end
 
 function relative_wavelet_energies(W::AbstractMatrix)
     js = 1:size(W, 2)
     if any(j ∉ 1:size(W, 2) for j in js)
-        error("scales $(js) contains scales not present in wavelet coefficient "*
-              "matrix with scales j ∈ 1:$(size(W, 2))")
+        error(
+            "scales $(js) contains scales not present in wavelet coefficient " *
+                "matrix with scales j ∈ 1:$(size(W, 2))"
+        )
     end
     total_energy = sum(W .^ 2)
     return [energy_at_scale(W, j) / total_energy for j in js]
 end
 
-energy_at_scale(W, j::Int) = sum(w*w for w in @view(W[:, j]))
+energy_at_scale(W, j::Int) = sum(w * w for w in @view(W[:, j]))

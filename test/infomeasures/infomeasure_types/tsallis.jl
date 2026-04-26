@@ -4,8 +4,8 @@ m2 = Tsallis(q = 2.0)
 @test m1.q == 2.0
 @test m2.q == 2.0
 
-p = Probabilities(repeat([1/5], 5))
-@test round(information(Tsallis(q = -1/2, k = 1), p), digits = 2) ≈ 6.79
+p = Probabilities(repeat([1 / 5], 5))
+@test round(information(Tsallis(q = -1 / 2, k = 1), p), digits = 2) ≈ 6.79
 
 # Analytical tests from Tsallis (1998)
 # -----------------------------------
@@ -19,7 +19,7 @@ p = Probabilities(repeat([1/5], 5))
 # where N is the number of states. Then the entropy attains its information_maximum value
 # (N^(1 - q) - 1) / (1 - q)
 N = 4
-ps = Probabilities(repeat([1/N], N))
+ps = Probabilities(repeat([1 / N], N))
 
 q_cases = [-2.0, -0.5, 0.5, 2.0]
 t_entropies = [information(Tsallis(q = q, k = 1), ps) for q in q_cases]

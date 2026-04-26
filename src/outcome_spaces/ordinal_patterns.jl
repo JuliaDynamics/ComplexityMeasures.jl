@@ -13,7 +13,7 @@ Subtypes must implement fields:
     permutation patterns from embedding vectors.
 """
 abstract type OrdinalOutcomeSpace{m} <: CountBasedOutcomeSpace end
-special_typeparameter_info(::Type{<:OrdinalOutcomeSpace{m}}) where m = "{$m}"
+special_typeparameter_info(::Type{<:OrdinalOutcomeSpace{m}}) where {m} = "{$m}"
 
 # we use the supertype above but not ordinal pattern outcome spaces
 # are actually counti based, see the explicit `is_counting_based` extensions
@@ -95,34 +95,36 @@ p = probabilities!(πs_ts, est, x)
 ```
 """
 struct OrdinalPatterns{M, F, I <: Integer} <: OrdinalOutcomeSpace{M}
-    encoding::OrdinalPatternEncoding{M,F}
+    encoding::OrdinalPatternEncoding{M, F}
     τ::I
 end
 
 # Explicitly implement `counts`, because decoding outcomes is expensive.
-function counts(est::OrdinalPatterns{m}, x) where m
+function counts(est::OrdinalPatterns{m}, x) where {m}
     cts, πs = counts_and_symbols(est, x)
     outs = Outcome(1):1:Outcome(length(cts))
-    return Counts(cts, (outs, ))
+    return Counts(cts, (outs,))
 end
 
 # Decoded outcomes (expensive, so we override `counts_and_outcomes`).
-function counts_and_outcomes(est::OrdinalPatterns{m}, x) where m
+function counts_and_outcomes(est::OrdinalPatterns{m}, x) where {m}
     cts, πs = counts_and_symbols(est, x)
     outs = map(ω -> decode(est.encoding, ω), unique!(πs))
-    c = Counts(cts, (outs, ))
+    c = Counts(cts, (outs,))
     return c, outcomes(c)
 end
 
-function counts_and_symbols(est::OrdinalPatterns{m}, x) where m
+function counts_and_symbols(est::OrdinalPatterns{m}, x) where {m}
     if x isa AbstractVector
         dataset = embed(x, m, est.τ)
     else
         dataset = x
     end
-    m != dimension(dataset) && throw(ArgumentError(
-        "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
-    ))
+    m != dimension(dataset) && throw(
+        ArgumentError(
+            "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
+        )
+    )
     πs = zeros(Int, length(dataset))
     cts = fasthist!(πs, est, dataset)
     return cts, πs
@@ -188,7 +190,7 @@ elements of
 ``\\mathbf{x}_i`` are weighted. Only mean amplitude of the state vector
 elements are weighted when ``A=1``. With, ``0<A<1``, a combined weighting is used.
 """
-struct AmplitudeAwareOrdinalPatterns{M, F, I<:Integer, T<:Real} <: OrdinalOutcomeSpace{M}
+struct AmplitudeAwareOrdinalPatterns{M, F, I <: Integer, T <: Real} <: OrdinalOutcomeSpace{M}
     encoding::OrdinalPatternEncoding{M, F}
     τ::I
     A::T
@@ -200,19 +202,19 @@ is_counting_based(o::AmplitudeAwareOrdinalPatterns) = false
 function OrdinalPatterns{m}(τ = 1, lt = isless_rand; kwargs...) where {m}
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `OrdinalPatterns` is deprecated. " *
-        "The signature is now " *
-        "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
-        ", so provide `τ` as a positional argument instead. " *
-        "In this call, the given keyword `τ` is used instead of the positional `τ`."
+            "The signature is now " *
+            "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
+            ", so provide `τ` as a positional argument instead. " *
+            "In this call, the given keyword `τ` is used instead of the positional `τ`."
         @warn msg
         τ = kwargs[:τ]
     end
     if haskey(kwargs, :lt)
         msg = "Keyword argument `lt` to `OrdinalPatterns` is deprecated. " *
-        "The signature is now " *
-        "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
-        ", so provide `lt` as a positional argument instead. "  *
-        "In this call, the given keyword `lt` is used instead of the positional `lt`."
+            "The signature is now " *
+            "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
+            ", so provide `lt` as a positional argument instead. " *
+            "In this call, the given keyword `lt` is used instead of the positional `lt`."
         @warn msg
         lt = kwargs[:lt]
     end
@@ -225,19 +227,19 @@ end
 function WeightedOrdinalPatterns{m}(τ = 1, lt = isless_rand; kwargs...) where {m}
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `WeightedOrdinalPatterns` is deprecated. " *
-        "The signature is now " *
-        "`WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=ComplexityMeasures.isless_rand)`" *
-        ", so provide `τ` as a positional argument instead. "  *
-        "In this call, the given keyword `τ` is used instead of the positional `τ`."
+            "The signature is now " *
+            "`WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=ComplexityMeasures.isless_rand)`" *
+            ", so provide `τ` as a positional argument instead. " *
+            "In this call, the given keyword `τ` is used instead of the positional `τ`."
         @warn msg
         τ = kwargs[:τ]
     end
     if haskey(kwargs, :lt)
         msg = "Keyword argument `lt` to `WeightedOrdinalPatterns` is deprecated. " *
-        "The signature is now " *
-        "`WeightedOrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
-        ", so provide `lt` as a positional argument instead. "  *
-        "In this call, the given keyword `lt` is used instead of the positional `lt`."
+            "The signature is now " *
+            "`WeightedOrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
+            ", so provide `lt` as a positional argument instead. " *
+            "In this call, the given keyword `lt` is used instead of the positional `lt`."
         @warn msg
         lt = kwargs[:lt]
     end
@@ -248,39 +250,41 @@ function WeightedOrdinalPatterns{m}(τ = 1, lt = isless_rand; kwargs...) where {
     return WeightedOrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
 
-function AmplitudeAwareOrdinalPatterns{m}(τ = 1, A = 0.5, lt = isless_rand;
-        kwargs...) where {m}
+function AmplitudeAwareOrdinalPatterns{m}(
+        τ = 1, A = 0.5, lt = isless_rand;
+        kwargs...
+    ) where {m}
     # because the order of the arguments is different from the other ordinal outcome spaces
     if A isa Function
         msg = "Second argument to `AmplitudeAwareOrdinalPatterns` must be a function. " *
-        "Got a $(typeof(A)).";
+            "Got a $(typeof(A))."
         throw(ArgumentError(msg))
     end
 
     if haskey(kwargs, :τ)
         msg = "Keyword argument `τ` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
-        "The signature is now " *
-        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
-        ", so provide `τ` as a positional argument instead. "  *
-        "In this call, the given keyword `τ` is used instead of the positional `τ`."
+            "The signature is now " *
+            "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
+            ", so provide `τ` as a positional argument instead. " *
+            "In this call, the given keyword `τ` is used instead of the positional `τ`."
         @warn msg
         τ = kwargs[:τ]
     end
     if haskey(kwargs, :lt)
         msg = "Keyword argument `lt` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
-        "The signature is now " *
-        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
-        ", so provide `lt` as a positional argument instead. "  *
-        "In this call, the given keyword `lt` is used instead of the positional `lt`."
+            "The signature is now " *
+            "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
+            ", so provide `lt` as a positional argument instead. " *
+            "In this call, the given keyword `lt` is used instead of the positional `lt`."
         @warn msg
         lt = kwargs[:lt]
     end
     if haskey(kwargs, :A)
         msg = "Keyword argument `A` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
-        "The signature is now " *
-        "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
-        ", so provide `A` as a positional argument instead. "  *
-        "In this call, the given keyword `A` is used instead of the positional `A`."
+            "The signature is now " *
+            "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
+            ", so provide `A` as a positional argument instead. " *
+            "In this call, the given keyword `A` is used instead of the positional `A`."
         @warn msg
         A = kwargs[:A]
     end
@@ -299,15 +303,17 @@ end
 # types is whether they compute some additional weights that are affecting
 # how the probabilities are counted.
 
-function probabilities(est::OrdinalOutcomeSpace{m}, x::AbstractVector{T}) where {m, T<:Real}
-    dataset::StateSpaceSet{m,T} = embed(x, m, est.τ)
+function probabilities(est::OrdinalOutcomeSpace{m}, x::AbstractVector{T}) where {m, T <: Real}
+    dataset::StateSpaceSet{m, T} = embed(x, m, est.τ)
     return probabilities(est, dataset)
 end
 
 function probabilities(est::OrdinalOutcomeSpace{m}, x::AbstractStateSpaceSet{D}) where {m, D}
-    m != D && throw(ArgumentError(
-        "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
-    ))
+    m != D && throw(
+        ArgumentError(
+            "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
+        )
+    )
     πs = zeros(Int, length(x))
     probs = probabilities!(πs, est, x) # this sorts πs
 
@@ -315,11 +321,13 @@ function probabilities(est::OrdinalOutcomeSpace{m}, x::AbstractStateSpaceSet{D})
 end
 
 function probabilities!(::Vector{Int}, ::OrdinalOutcomeSpace, ::AbstractVector)
-    error("""
-    In-place `probabilities!` for `OrdinalPatterns` can only be used by
-    StateSpaceSet input, not timeseries. First embed the timeseries or use the
-    normal version `probabilities`.
-    """)
+    error(
+        """
+        In-place `probabilities!` for `OrdinalPatterns` can only be used by
+        StateSpaceSet input, not timeseries. First embed the timeseries or use the
+        normal version `probabilities`.
+        """
+    )
 end
 
 
@@ -374,9 +382,11 @@ function weighted_counts_and_outcomes(est::OrdinalOutcomeSpace{m}, x::Vector_or_
     else
         dataset = x
     end
-    m != dimension(dataset) && throw(ArgumentError(
-        "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
-    ))
+    m != dimension(dataset) && throw(
+        ArgumentError(
+            "Order of ordinal patterns and dimension of `StateSpaceSet` must match!"
+        )
+    )
     πs = zeros(Int, length(dataset))
     freqs = fasthist!(πs, est, dataset)
     # Okay, now we compute the outcomes. (`πs` is already sorted in `fasthist!`)
@@ -397,7 +407,7 @@ outcome_space(est::OrdinalOutcomeSpace) = outcome_space(est.encoding)
 # are mapped to outcomes. Otherwise, delay embedding is done.
 function encoded_space_cardinality(o::OrdinalOutcomeSpace{m}, x::AbstractArray) where {m}
     N = length(x)
-    return N - (m - 1)*o.τ
+    return N - (m - 1) * o.τ
 end
 
 ###########################################################################################
@@ -406,17 +416,17 @@ end
 permutation_weights(::OrdinalPatterns, ::Any) = nothing
 
 function permutation_weights(::WeightedOrdinalPatterns{m}, x::AbstractStateSpaceSet) where {m}
-    weights_from_variance.(vec(x), m)
+    return weights_from_variance.(vec(x), m)
 end
 
 function weights_from_variance(χ, m::Int)
     z = mean(χ)
     s = sum(e -> (e - z)^2, χ)
-    return s/m
+    return s / m
 end
 
 function permutation_weights(est::AmplitudeAwareOrdinalPatterns{m}, x::AbstractStateSpaceSet) where {m}
-    AAPE.(vec(x), est.A, m)
+    return AAPE.(vec(x), est.A, m)
 end
 
 # TODO: This has absolutely terrible performance, allocating liek 10 vectors for each
@@ -430,5 +440,5 @@ Encode relative amplitude information of the elements of `a`.
 - `A = 0.5` equally emphasizes average values and changes in the amplitude values.
 """
 function AAPE(x, A::Real = 0.5, m::Int = length(x))
-    (A/m)*sum(abs.(x)) + (1-A)/(m-1)*sum(abs.(diff(x)))
+    return (A / m) * sum(abs.(x)) + (1 - A) / (m - 1) * sum(abs.(diff(x)))
 end

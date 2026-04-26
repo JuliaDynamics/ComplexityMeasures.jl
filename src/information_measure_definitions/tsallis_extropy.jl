@@ -24,7 +24,7 @@ on the interval ``[0, 1]`` by normalizing to to the maximal Tsallis extropy, giv
 J_T(P) = \\dfrac{(N - 1)N^{q - 1} - (N - 1)^q}{(q - 1)N^{q - 1}}
 ```
 """
-struct TsallisExtropy{Q,K,B} <: InformationMeasure
+struct TsallisExtropy{Q, K, B} <: InformationMeasure
     q::Q
     k::K
     base::B

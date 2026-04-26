@@ -53,7 +53,7 @@ end
 @testset "Counting-based outcome space" begin
 
     @testset "1D estimators" begin
-        x = rand(rng, 1:10., 100)
+        x = rand(rng, 1:10.0, 100)
 
         os = [
             UniqueElements(),

@@ -5,8 +5,8 @@ rng = Random.MersenneTwister(1234)
 @testset "Timescales" begin
     N = 200
     a = 10
-    t = LinRange(0, 2*a*π, N)
-    x = sin.(t .+  cos.(t/0.1)) .- 0.1;
+    t = LinRange(0, 2 * a * π, N)
+    x = sin.(t .+ cos.(t / 0.1)) .- 0.1
 
     @testset "WaveletOverlap" begin
         # Only works for timeseries inputs
@@ -28,31 +28,31 @@ rng = Random.MersenneTwister(1234)
         N = 1000
         t = range(0, 10π, N)
         x = sin.(t)
-        y = @. sin(t) + sin(sqrt(3)*t)
+        y = @. sin(t) + sin(sqrt(3) * t)
         z = randn(N)
         o = PowerSpectrum()
-        ents = [information(Renyi(), o, w) for w in (x,y,z)]
+        ents = [information(Renyi(), o, w) for w in (x, y, z)]
         @test ents[1] < ents[2] < ents[3]
         # Test event stuff (analytically, using sine wave)
         probs, outs = probabilities_and_outcomes(o, x)
         @test length(outs) == length(probs) == 501
-        @test outs[1] ≈ 0 atol=1e-16 # 0 frequency, i.e., mean value
-        @test probs[1] ≈ 0 atol=1e-16  # sine wave has 0 mean value
+        @test outs[1] ≈ 0 atol = 1.0e-16 # 0 frequency, i.e., mean value
+        @test probs[1] ≈ 0 atol = 1.0e-16  # sine wave has 0 mean value
         @test outs[end] == 0.5 # Nyquist frequency, 1/2 the sampling rate (Which is 1)
         @test issorted(outcome_space(o, x))
 
-        x = cos.(range(0, 2π; length = 10000)) .+ 1e-2 .* randn(rng, 10000)
+        x = cos.(range(0, 2π; length = 10000)) .+ 1.0e-2 .* randn(rng, 10000)
         o = PowerSpectrum(δ = 0.1)
         p, outs = probabilities_and_outcomes(o, x)
         @test sum(p .> 0.0) == 1
         @test length(outs) == length(p) == 5001
-        @test outs[1] ≈ 0 atol=1e-16
-        @test p[1] ≈ 0 atol=1e-16
+        @test outs[1] ≈ 0 atol = 1.0e-16
+        @test p[1] ≈ 0 atol = 1.0e-16
         o = PowerSpectrum(10.5, true)
         p, ~ = probabilities_and_outcomes(o, x)
         @test sum(p .> 0.0) == 1
         @test length(outs) == length(p) == 5001
-        @test outs[1] ≈ 0 atol=1e-16
-        @test p[1] ≈ 0 atol=1e-16
+        @test outs[1] ≈ 0 atol = 1.0e-16
+        @test p[1] ≈ 0 atol = 1.0e-16
     end
 end

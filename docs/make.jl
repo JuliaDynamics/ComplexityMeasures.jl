@@ -38,9 +38,10 @@ using DocumenterCitations
 
 bib = CitationBibliography(
     joinpath(@__DIR__, "refs.bib");
-    style=:authoryear
+    style = :authoryear
 )
 
-build_docs_with_style(pages, ComplexityMeasures, StateSpaceSets;
-    expandfirst = ["index.md"], bib,linkcheck=false
+build_docs_with_style(
+    pages, ComplexityMeasures, StateSpaceSets;
+    expandfirst = ["index.md"], bib, linkcheck = false
 )

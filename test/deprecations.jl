@@ -6,8 +6,8 @@ rng = Xoshiro(1234)
     x = randn(rng, 1000)
 
     # Convenience
-    @test permentropy(x) == entropy_permutation(x; base=MathConstants.e)
-    msg ="`permentropy(x; τ, m, base)` is deprecated.\nUse instead: `entropy_permutation(x; τ, m, base)`, or even better, use the\ndirect syntax discussed in the docstring of `entropy_permutation`.\n"
+    @test permentropy(x) == entropy_permutation(x; base = MathConstants.e)
+    msg = "`permentropy(x; τ, m, base)` is deprecated.\nUse instead: `entropy_permutation(x; τ, m, base)`, or even better, use the\ndirect syntax discussed in the docstring of `entropy_permutation`.\n"
     @test_logs (:warn, msg) permentropy(x)
 
     # Generalized entropies
@@ -41,93 +41,93 @@ end
 
     @test entropy_normalized(Shannon(MathConstants.e), ValueBinning(4), x) ==
         information_normalized(Shannon(MathConstants.e), ValueBinning(4), x)
-    
+
     @testset "Ordinal pattern constructiors" begin
         @test SymbolicPermutation() isa OrdinalPatterns
         @test SymbolicWeightedPermutation() isa WeightedOrdinalPatterns
         @test SymbolicAmplitudeAwarePermutation() isa AmplitudeAwareOrdinalPatterns
 
-        @testset "OrdinalPatterns" begin 
+        @testset "OrdinalPatterns" begin
             msg = "Keyword argument `τ` to `OrdinalPatterns` is deprecated. " *
-            "The signature is now " * 
-            "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" * 
-            ", so provide `τ` as a positional argument instead. " * 
-            "In this call, the given keyword `τ` is used instead of the positional `τ`."
-            τ = 1; 
+                "The signature is now " *
+                "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
+                ", so provide `τ` as a positional argument instead. " *
+                "In this call, the given keyword `τ` is used instead of the positional `τ`."
+            τ = 1
             @test_logs (:warn, msg) OrdinalPatterns{3}(τ + 1; τ)
 
             msg = "Keyword argument `lt` to `OrdinalPatterns` is deprecated. " *
-            "The signature is now " * 
-            "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" * 
-            ", so provide `lt` as a positional argument instead. "  * 
-            "In this call, the given keyword `lt` is used instead of the positional `lt`."
-            lt = Base.isless;
+                "The signature is now " *
+                "`OrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
+                ", so provide `lt` as a positional argument instead. " *
+                "In this call, the given keyword `lt` is used instead of the positional `lt`."
+            lt = Base.isless
             @test_logs (:warn, msg) OrdinalPatterns{3}(τ, lt; lt)
 
             # Test that keyword argument is preferred over positional argument
             o = OrdinalPatterns{3}(5; τ = 2)
             @test o.τ == 2
-            lt = Base.isless;
+            lt = Base.isless
             ltr = ComplexityMeasures.isless_rand
             o = OrdinalPatterns{3}(2, lt; lt = ltr)
             @test o.encoding.lt == ltr
         end
 
-        @testset "WeightedOrdinalPatterns" begin 
+        @testset "WeightedOrdinalPatterns" begin
             msg = "Keyword argument `τ` to `WeightedOrdinalPatterns` is deprecated. " *
-            "The signature is now " * 
-            "`WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=ComplexityMeasures.isless_rand)`" * 
-            ", so provide `τ` as a positional argument instead. "  * 
-            "In this call, the given keyword `τ` is used instead of the positional `τ`."
-            τ = 1; 
+                "The signature is now " *
+                "`WeightedOrdinalPatterns{m}(τ::Int = 1, lt::F=ComplexityMeasures.isless_rand)`" *
+                ", so provide `τ` as a positional argument instead. " *
+                "In this call, the given keyword `τ` is used instead of the positional `τ`."
+            τ = 1
             @test_logs (:warn, msg) WeightedOrdinalPatterns{3}(τ + 1; τ)
 
             msg = "Keyword argument `lt` to `WeightedOrdinalPatterns` is deprecated. " *
-            "The signature is now " * 
-            "`WeightedOrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" * 
-            ", so provide `lt` as a positional argument instead. "  * 
-            "In this call, the given keyword `lt` is used instead of the positional `lt`."
-            lt = Base.isless;
+                "The signature is now " *
+                "`WeightedOrdinalPatterns{m}(τ = 1, lt::Function = ComplexityMeasures.isless_rand)`" *
+                ", so provide `lt` as a positional argument instead. " *
+                "In this call, the given keyword `lt` is used instead of the positional `lt`."
+            lt = Base.isless
             @test_logs (:warn, msg) WeightedOrdinalPatterns{3}(τ, lt; lt)
 
             # Test that keyword argument is preferred over positional argument
             o = WeightedOrdinalPatterns{3}(2; τ)
             @test o.τ == WeightedOrdinalPatterns{3}(τ).τ
-            lt = Base.isless;
+            lt = Base.isless
             ltr = ComplexityMeasures.isless_rand
             @test WeightedOrdinalPatterns{3}(2, lt; lt = ltr).encoding.lt == ltr
         end
 
-        @testset "AmplitudeAwareOrdinalPatterns" begin 
+        @testset "AmplitudeAwareOrdinalPatterns" begin
             msg = "Keyword argument `τ` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
-            "The signature is now " * 
-            "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
-            ", so provide `τ` as a positional argument instead. "  * 
-            "In this call, the given keyword `τ` is used instead of the positional `τ`."
-            τ = 1; 
+                "The signature is now " *
+                "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
+                ", so provide `τ` as a positional argument instead. " *
+                "In this call, the given keyword `τ` is used instead of the positional `τ`."
+            τ = 1
             @test_logs (:warn, msg) AmplitudeAwareOrdinalPatterns{3}(τ + 1; τ)
 
             msg = "Keyword argument `lt` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
-            "The signature is now " * 
-            "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
-            ", so provide `lt` as a positional argument instead. "  * 
-            "In this call, the given keyword `lt` is used instead of the positional `lt`."
-            lt = Base.isless;
+                "The signature is now " *
+                "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
+                ", so provide `lt` as a positional argument instead. " *
+                "In this call, the given keyword `lt` is used instead of the positional `lt`."
+            lt = Base.isless
             @test_logs (:warn, msg) AmplitudeAwareOrdinalPatterns{3}(τ, 0.5, lt; lt)
             @test_throws ArgumentError AmplitudeAwareOrdinalPatterns{3}(τ, lt; lt)
 
             msg = "Keyword argument `A` to `AmplitudeAwareOrdinalPatterns` is deprecated. " *
-            "The signature is now " * 
-            "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" * 
-            ", so provide `A` as a positional argument instead. "  * 
-            "In this call, the given keyword `A` is used instead of the positional `A`."
-            A = 0.5;
+                "The signature is now " *
+                "`AmplitudeAwareOrdinalPatterns{m}(τ::Int = 1, A = 0.5, lt::F=isless_rand)`" *
+                ", so provide `A` as a positional argument instead. " *
+                "In this call, the given keyword `A` is used instead of the positional `A`."
+            A = 0.5
             @test_logs (:warn, msg) AmplitudeAwareOrdinalPatterns{3}(τ, A; A)
 
             # Test that keyword argument is preferred over positional argument
             o = AmplitudeAwareOrdinalPatterns{3}(2; τ = 5)
             @test o.τ == 5
-            lt = Base.isless;
+            lt = Base.isless
             ltr = ComplexityMeasures.isless_rand
             o = AmplitudeAwareOrdinalPatterns{3}(2, 0.5, Base.isless; lt = ltr)
             @test o.encoding.lt == ltr
@@ -144,7 +144,7 @@ end
         @test entropy(a, x) == entropy(b, x)
     end
 
-    # `allcounts` and `allprobabilities` are redundant, because they always need to 
+    # `allcounts` and `allprobabilities` are redundant, because they always need to
     # compute all outcomes anyway.
     x = rand(rng, 1:20, 19)
     o = UniqueElements()
@@ -159,25 +159,25 @@ end
     @test allprobabilities(o, x) == first(allprobabilities_and_outcomes(o, x))
     @test allprobabilities(est, o, x) == first(allprobabilities_and_outcomes(est, o, x))
 
-    @testset "Statistical complexity" begin 
+    @testset "Statistical complexity" begin
         # Keyword `entr`
         # --------------------------------------------------------------------------------
-        msg = "Keyword argument `entr` is deprecated. Use `hest` instead. " * 
-        "Since you used `entr`, any value you gave `hest` will be overridden."
+        msg = "Keyword argument `entr` is deprecated. Use `hest` instead. " *
+            "Since you used `entr`, any value you gave `hest` will be overridden."
         @test_logs (:warn, msg) StatisticalComplexity(entr = Shannon())
 
         # Check that the statement above is true.
         s = StatisticalComplexity(entr = Shannon(), hest = Renyi())
         @test s.hest.definition == Shannon()
-        
+
         # Keyword `est`
         # --------------------------------------------------------------------------------
-        msg = "Keyword argument `est` is deprecated. " * 
-        "Use `o` to specify the outcome space instead. " *
-        "Since you used `est`, any value you gave `pest` will be overridden. " * 
-        "Note: the probabilities estimator `pest` must be provided separately ";
+        msg = "Keyword argument `est` is deprecated. " *
+            "Use `o` to specify the outcome space instead. " *
+            "Since you used `est`, any value you gave `pest` will be overridden. " *
+            "Note: the probabilities estimator `pest` must be provided separately "
         @test_logs (:warn, msg) StatisticalComplexity(est = OrdinalPatterns{3}())
-        
+
         # Check that the statement above is true.
         o = OrdinalPatterns{3}()
         s = StatisticalComplexity(est = o)
@@ -188,7 +188,7 @@ end
     end
 
 
-    @testset "TransferOperator" begin 
+    @testset "TransferOperator" begin
         b = RectangularBinning(4)
         x = rand(1000)
 
@@ -199,7 +199,7 @@ end
 
         @test TransferOperator(b) isa TransferOperator
 
-        dep_message =  "`transferoperator(pts, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `transferoperator(o::OutcomeSpace,x)` instead."
+        dep_message = "`transferoperator(pts, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `transferoperator(o::OutcomeSpace,x)` instead."
         warn_message = "`binning.precise == false`. You may be getting points outside the binning."
         @test_logs (:warn, dep_message) (:warn, warn_message) transferoperator(x, b)
         transferoperator(x, b) isa TransferOperatorApproximation
@@ -216,4 +216,4 @@ end
     end
 
 end
-# 
+#

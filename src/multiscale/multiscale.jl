@@ -26,7 +26,7 @@ Downsample and coarse-grain `x` to scale `s` according to the given
 """
 downsample(method::MultiScaleAlgorithm, s::Int, x)
 
-downsample(alg::MultiScaleAlgorithm,  s::Int, x::AbstractStateSpaceSet) =
+downsample(alg::MultiScaleAlgorithm, s::Int, x::AbstractStateSpaceSet) =
     StateSpaceSet(map(t -> downsample(alg, s, t)), columns(x)...)
 
 """
@@ -101,10 +101,10 @@ function multiscale_normalized end
 max_scale_level(method::MultiScaleAlgorithm, x) = length(x) ÷ 2
 function verify_scale_level(method, s::Int, x)
     err = DomainError(
-        "Maximum scale for length-$(length(x)) timeseries is "*
-        "`s = $(max_scale_level(method, x))`. Got s = $s"
+        "Maximum scale for length-$(length(x)) timeseries is " *
+            "`s = $(max_scale_level(method, x))`. Got s = $s"
     )
-    length(x) ÷ s >= 2 || throw(err)
+    return length(x) ÷ s >= 2 || throw(err)
 end
 
 # To extend the multiscale interface to a new `MultiscaleAlgorithm`, simply extend this
@@ -121,16 +121,16 @@ function apply_multiscale end
 
 # Generate code for all possible `MultiscaleAlgorithms`s with all possible complexity
 # measure quantifiers.
-for fun = (:information, :complexity, :information_normalized, :complexity_normalized)
+for fun in (:information, :complexity, :information_normalized, :complexity_normalized)
     @eval function $fun(multiscale_alg::MultiScaleAlgorithm, args...)
-        define_multiscale(multiscale_alg, $fun, args...)
+        return define_multiscale(multiscale_alg, $fun, args...)
     end
 end
 
 # Completely generic. Concrete implementations are in individual coarse-graining algorithm
 # files, listed at the bottom of this file.
 function multiscale(alg::MultiScaleAlgorithm, args...)
-   f = infer_complexity_func(first(args); normalize = false) # measure is first argument
+    f = infer_complexity_func(first(args); normalize = false) # measure is first argument
     return apply_multiscale(alg, f, args...)
 end
 function multiscale_normalized(alg::MultiScaleAlgorithm, args...)
