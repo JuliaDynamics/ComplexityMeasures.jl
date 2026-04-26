@@ -5,9 +5,9 @@ function inds_in_terms_of_unique(x)
     Nu = length(U)
     inds = zeros(Int, N)
 
-    for j = 1:N
+    for j in 1:N
         xⱼ = view(x, j)
-        for i = 1:Nu
+        for i in 1:Nu
             # using views doesn't allocate
             @inbounds if xⱼ == view(U, i)
                 inds[j] = i
@@ -15,7 +15,7 @@ function inds_in_terms_of_unique(x)
         end
     end
 
-    return inds,U
+    return inds, U
 end
 
 # Taking advantage of the fact that x is sorted reduces runtime by 1.5 orders of magnitude
@@ -26,7 +26,7 @@ function inds_in_terms_of_unique_sorted(x) # assumes sorted
     prev = view(x, 1)
     inds = zeros(Int, N)
     uidx = 1
-    @inbounds for j = 1:N
+    @inbounds for j in 1:N
         xⱼ = view(x, j)
         # if the current value has changed, then we know that the corresponding index
         # for the unique point must be incremented by 1
@@ -51,41 +51,41 @@ end
 inds_in_terms_of_unique(x::AbstractStateSpaceSet) = inds_in_terms_of_unique(x.data)
 
 
-function normalize_transition_matrix(S::SparseMatrixCSC;verbose=true)
-	S_returned = deepcopy(S)
-	normalize_transition_matrix!(S_returned,verbose=verbose)
-	return S_returned
+function normalize_transition_matrix(S::SparseMatrixCSC; verbose = true)
+    S_returned = deepcopy(S)
+    normalize_transition_matrix!(S_returned, verbose = verbose)
+    return S_returned
 end
 
 #normalize each row of S (sum is 1) to get p_ij trans. probabilities
 #by looping through CSC sparse matrix efficiently
-function normalize_transition_matrix!(S::SparseMatrixCSC;verbose=true)
+function normalize_transition_matrix!(S::SparseMatrixCSC; verbose = true)
 
     stochasticity = true
 
     St = spzeros(size(S))
-    ftranspose!(St,S, x -> x)
+    ftranspose!(St, S, x -> x)
     vals = nonzeros(St)
-    _,n = size(St)
+    _, n = size(St)
 
     #loop over columns
-	for j in 1:n
+    for j in 1:n
         sumSi = 0.0
         #loop nonzero values from that column
-        nzi = nzrange(St,j)
+        nzi = nzrange(St, j)
         for i in nzi
             sumSi += vals[i]
         end
 
         #catch rows (columns) with only zero values
-        sumSi == 0.0 && (stochasticity=false)
+        sumSi == 0.0 && (stochasticity = false)
 
         #normalize
         for i in nzi
             vals[i] /= sumSi
         end
     end
-    ftranspose!(S,St, x->x)
+    ftranspose!(S, St, x -> x)
     (stochasticity == false && verbose) && @warn "Transition matrix is not stochastic!"
-    nothing
+    return nothing
 end

@@ -15,7 +15,7 @@ end
 @testset "isless_rand" begin
     # because permutations are partially random, we sort many times and check that
     # we get *a* (not *the one*) correct answer every time
-    for i = 1:50
+    for i in 1:50
         s = sortperm([1, 2, 3, 2], lt = ComplexityMeasures.isless_rand)
         @test s == [1, 2, 4, 3] || s == [1, 4, 2, 3]
     end

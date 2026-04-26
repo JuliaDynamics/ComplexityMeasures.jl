@@ -4,7 +4,7 @@ using Test
 rng = MersenneTwister(1234)
 @testset "Shrinkage: counting-based outcome space" begin
     @testset "1D estimators" begin
-        x = rand(rng, 1:10., 100)
+        x = rand(rng, 1:10.0, 100)
 
         os = [
             UniqueElements(),
@@ -17,7 +17,7 @@ rng = MersenneTwister(1234)
             est = Shrinkage()
             outcomemodel = os[i]
 
-            ps, Ωobs = probabilities_and_outcomes(est,outcomemodel, x)
+            ps, Ωobs = probabilities_and_outcomes(est, outcomemodel, x)
             @test ps isa Probabilities
             @test probabilities(est, outcomemodel, x) == ps
             @test outcomes(est, outcomemodel, x) == Ωobs

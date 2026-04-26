@@ -12,7 +12,7 @@ z = rand(1:50, 2, 2, 3)
 
 # the outcomes
 ox = (collect(1:5),)
-oy = (collect(1:2), collect(1:2),)
+oy = (collect(1:2), collect(1:2))
 oz = (collect(1:2), collect(1:2), collect(1:3))
 
 # No labels provided: (`i`-th axis labels default to 1:size(x)[i] for i = 1:N, where `x`
@@ -22,12 +22,12 @@ oz = (collect(1:2), collect(1:2), collect(1:3))
 @test Counts(z, oz) isa Counts{T, 3} where {T}
 
 # Unnamed labels (should work for different outcome types)
-@test Counts(x, (1:5, )) isa Counts{T, 1} where {T}
+@test Counts(x, (1:5,)) isa Counts{T, 1} where {T}
 @test Counts(y, (1:2 |> collect, ['a', 'b'])) isa Counts{T, 2} where {T}
 @test Counts(z, (1:2, ['a', 'b'], 7:9)) isa Counts{T, 3} where {T}
 
 # ----------------------------------------------------------------
-# Base extensions 
+# Base extensions
 # ----------------------------------------------------------------
 c = Counts(x, ox)
 # extend base Array interface:
@@ -54,8 +54,8 @@ x = rand(1:50, 5)
 
 # Unnamed dimensions.
 @test outcomes(Counts(x)) == Outcome(1):1:Outcome(5)
-@test outcomes(Counts(x, (1:5, ))) == 1:5
-@test outcomes(Counts(x, (1:5, )), 1) == 1:5 # should be equivalent to not indexing
+@test outcomes(Counts(x, (1:5,))) == 1:5
+@test outcomes(Counts(x, (1:5,)), 1) == 1:5 # should be equivalent to not indexing
 
 # The number of counts and outcomes must match.
 @test_throws ArgumentError Counts(rand(1:3, 10), (1:9,))
@@ -66,10 +66,10 @@ x = rand(1:50, 5)
 y = rand(1:50, 2, 2)
 
 # Unnamed dimensions.
-@test outcomes(Counts(y, (1:2, ['a', 'b'],))) == (1:2, ['a', 'b'])
-@test outcomes(Counts(y, (1:2, ['a', 'b'],)), 1:2) == (1:2, ['a', 'b'])
-@test outcomes(Counts(y, (1:2, ['a', 'b'],)), 1) == 1:2
-@test outcomes(Counts(y, (1:2, ['a', 'b'],)), 2) == ['a', 'b']
+@test outcomes(Counts(y, (1:2, ['a', 'b']))) == (1:2, ['a', 'b'])
+@test outcomes(Counts(y, (1:2, ['a', 'b'])), 1:2) == (1:2, ['a', 'b'])
+@test outcomes(Counts(y, (1:2, ['a', 'b'])), 1) == 1:2
+@test outcomes(Counts(y, (1:2, ['a', 'b'])), 2) == ['a', 'b']
 
 # -----------------------------------------------------------------------------------------
 # 3D data.
@@ -97,7 +97,7 @@ s = split(out_capture, '\n')
 @test contains(last(s), "Outcome(3)")
 
 # 2D
-c = Counts(rand(1:30, 2, 3), (['a', 'e'], 2:2:6,))
+c = Counts(rand(1:30, 2, 3), (['a', 'e'], 2:2:6))
 out_capture = repr(MIME("text/plain"), c)
 s = split(out_capture, '\n')
 @test contains(first(s), "2×3 Counts{Int64,2}")

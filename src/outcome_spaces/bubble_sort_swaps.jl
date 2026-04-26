@@ -56,7 +56,7 @@ Base.@kwdef struct BubbleSortSwaps{M, T} <: CountBasedOutcomeSpace
     τ::T = 1
 end
 
-# Add one to the total number of possible swaps because it may happen that we don't 
+# Add one to the total number of possible swaps because it may happen that we don't
 # need to swap.
 total_outcomes(o::BubbleSortSwaps{m}) where {m} = round(Int, (o.m * (o.m - 1)) / 2) + 1
 outcome_space(o::BubbleSortSwaps{m}) where {m} = 0:(total_outcomes(o) - 1)

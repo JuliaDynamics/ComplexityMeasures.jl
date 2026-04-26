@@ -50,7 +50,7 @@ Base.@kwdef struct ReverseDispersion{S <: Encoding} <: ComplexityEstimator
     check_unique::Bool = false
 end
 
-total_outcomes(est::ReverseDispersion)::Int = est.c ^ est.m
+total_outcomes(est::ReverseDispersion)::Int = est.c^est.m
 
 """
     distance_to_whitenoise(estimator::ReverseDispersion, p::Probabilities;

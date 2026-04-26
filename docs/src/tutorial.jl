@@ -117,7 +117,7 @@ barplot(left_edges, probs; axis = (ylabel = "probability",))
 
 using DynamicalSystemsBase
 
-logistic_rule(u, r, t) = SVector(r*u[1]*(1 - u[1]))
+logistic_rule(u, r, t) = SVector(r * u[1] * (1 - u[1]))
 ds = DeterministicIteratedMap(logistic_rule, [0.4], 4.0)
 Y, t = trajectory(ds, 10_000; Ttr = 100)
 y = Y[:, 1]

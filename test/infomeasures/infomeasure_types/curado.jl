@@ -6,7 +6,7 @@ bs1 = [0.5, 1.0, 2.0, 5.0, 10.0]
 
 # Curado entropy is maximized for uniform distribution.
 max_hs = [information_maximum(Curado(b = b), N) for b in bs1]
-pu = Probabilities(repeat([1/N], N))
+pu = Probabilities(repeat([1 / N], N))
 hs = [information(Curado(b = b), pu) for b in bs1]
 @test all([h ≈ maxh for (h, maxh) in zip(hs, max_hs)])
 
@@ -20,7 +20,7 @@ N1 = 20
 bs2 = [0.2, 0.4, 0.6, 0.8, 1.0]
 
 max_hs_modified = [information_maximum(Curado(b = b), N1) for b in bs2]
-pu_modified = Probabilities(repeat([1/N1], N1))
+pu_modified = Probabilities(repeat([1 / N1], N1))
 hs_modified = [information(Curado(b = b), pu_modified) for b in bs2]
 @test all([h ≈ maxh for (h, maxh) in zip(hs_modified, max_hs_modified)])
 

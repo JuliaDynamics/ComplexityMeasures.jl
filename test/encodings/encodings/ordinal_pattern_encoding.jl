@@ -58,7 +58,7 @@ end
     @test missing_outcomes(OrdinalPatterns(; m, τ), x) == 0
 end
 
-@testset "Pretty printing" begin 
+@testset "Pretty printing" begin
     o = OrdinalPatterns{3}()
     @test occursin("OrdinalPatterns{3}", repr(o))
     @test occursin("encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1", repr(o))

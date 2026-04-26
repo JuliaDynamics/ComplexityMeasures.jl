@@ -49,7 +49,7 @@ An alias to [`CosineSimilarityBinning`](@ref).
 """
 const Diversity = CosineSimilarityBinning
 
-function counts_and_outcomes(o::CosineSimilarityBinning, x::AbstractVector{T}) where T <: Real
+function counts_and_outcomes(o::CosineSimilarityBinning, x::AbstractVector{T}) where {T <: Real}
     # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval. To
     # do so, we call the `counts_and_outcomes(::RectangularBinEncoding, x)` in the file
     # `encoding_implementations/rectangular_binning.jl`.
@@ -59,20 +59,20 @@ function counts_and_outcomes(o::CosineSimilarityBinning, x::AbstractVector{T}) w
     return cts, outcomes(cts)
 end
 
-function cosine_similarity_distances(o::CosineSimilarityBinning, x::AbstractVector{T}) where T <: Real
+function cosine_similarity_distances(o::CosineSimilarityBinning, x::AbstractVector{T}) where {T <: Real}
     # embed and then calculate cosine similary for each consecutive pair of delay vectors
-    τs = 0:o.τ:(o.m - 1)*o.τ
+    τs = 0:o.τ:((o.m - 1) * o.τ)
     Y = genembed(x, τs)
     ds = zeros(Float64, length(Y) - 1)
-    @inbounds for i in 1:(length(Y)-1)
+    @inbounds for i in 1:(length(Y) - 1)
         # The cosine similarity, by construction, is bounded to [-1, 1]. Due to precision errors,
-        # its value may sometimes be slightly outside this range. This causes problems when 
+        # its value may sometimes be slightly outside this range. This causes problems when
         # computing the histogram over the cosine similarity distances using `RectangularBinEncoding`.
-        # By subtracting a machine epsilon, we ensure that  no cosine similarities are encoded 
+        # By subtracting a machine epsilon, we ensure that  no cosine similarities are encoded
         # as the outcome `-1`. Note: we could also do this in the construction of the binning
         # by expanding the range slightly. But to keep the binning conceptually aligned with
         # the cosine similarity definition, we apply the correction here.
-        ds[i] = min(cosine_similarity(Y[i], Y[i+1]), 1.0 - eps())
+        ds[i] = min(cosine_similarity(Y[i], Y[i + 1]), 1.0 - eps())
     end
     return ds
 end
@@ -81,7 +81,7 @@ outcome_space(o::CosineSimilarityBinning) = outcome_space(encoding_for_diversity
 total_outcomes(o::CosineSimilarityBinning) = o.nbins
 
 function encoded_space_cardinality(o::CosineSimilarityBinning, x::AbstractVector{<:Real})
-    n_pts_embedded = length(x) - (o.m - 1)*o.τ
+    n_pts_embedded = length(x) - (o.m - 1) * o.τ
     # Since we consider cosine similarities for consecutive pairs of embedding points,
     # the last point isn't considered for the histogram.
     return n_pts_embedded - 1
@@ -91,17 +91,17 @@ cosine_similarity(xᵢ, xⱼ) = cs = sum(xᵢ .* xⱼ) / (sqrt(sum(xᵢ .^ 2)) *
 
 function encoding_for_diversity(nbins::Int)
     precise = false
-    r = range(-1.0, nextfloat(1.0); length = nbins+1)
+    r = range(-1.0, nextfloat(1.0); length = nbins + 1)
     binning = FixedRectangularBinning((r,), precise)
     return RectangularBinEncoding(binning)
 end
 
 function codify(o::CosineSimilarityBinning, x::AbstractVector{<:Real})
-    τs = 0:o.τ:(o.m - 1)*o.τ
+    τs = 0:o.τ:((o.m - 1) * o.τ)
     Y = genembed(x, τs)
     ds = zeros(Float64, length(Y) - 1)
-    @inbounds for i in 1:(length(Y)-1)
-        ds[i] = cosine_similarity(Y[i], Y[i+1])
+    @inbounds for i in 1:(length(Y) - 1)
+        ds[i] = cosine_similarity(Y[i], Y[i + 1])
     end
     # Cosine similarities are all on [-1.0, 1.0], so just discretize this interval
     rbc = encoding_for_diversity(o.nbins)

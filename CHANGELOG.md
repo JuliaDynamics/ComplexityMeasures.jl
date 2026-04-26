@@ -2,6 +2,10 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 3.10
+
+- `TransferOperator` has been reworked and substantially enhanced. It is now a `ProbabilitiesEstimator` and works with any count based outcome space. See its new docstring for more!
+
 ## 3.9
 
 - Adding a new feature to `PowerSpectrum` estimator that adds a threshold for "small" amplitudes. The threshold is applied to the probabilities by default with an option to apply it to the power spectrum.

@@ -55,7 +55,7 @@ counts_and_outcomes(o, x)
 information(Kaniadakis(), Shrinkage(), o, x)
 ```
 """
-struct SpatialBubbleSortSwaps{D,P,V,M,v} <: SpatialOutcomeSpace{D, P}
+struct SpatialBubbleSortSwaps{D, P, V, M, v} <: SpatialOutcomeSpace{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
@@ -70,8 +70,10 @@ function hidefields(::Type{<:SpatialBubbleSortSwaps})
     return [:viewer, :arraysize, :valid, :encoding]
 end
 
-function SpatialBubbleSortSwaps(stencil, x::AbstractArray{T, D};
-        periodic::Bool = true) where {T, D}
+function SpatialBubbleSortSwaps(
+        stencil, x::AbstractArray{T, D};
+        periodic::Bool = true
+    ) where {T, D}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
     m = stencil_length(stencil)
     encoding = BubbleSortSwapsEncoding{m}()

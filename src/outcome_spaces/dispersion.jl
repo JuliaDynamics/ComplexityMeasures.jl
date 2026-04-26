@@ -75,11 +75,11 @@ function counts_and_outcomes(o::Dispersion, x::AbstractVector{<:Real})
     symbols = codify(o, x)
     # We must use genembed, not embed, to make sure the zero lag is included
     m, τ = o.m, o.τ
-    τs = tuple((x for x in 0:-τ:-(m-1)*τ)...)
+    τs = tuple((x for x in 0:-τ:(-(m - 1) * τ))...)
     dispersion_patterns = genembed(symbols, τs, ones(m)).data
     cts = fasthist!(dispersion_patterns) # This sorts `dispersion_patterns`
     outs = unique!(dispersion_patterns) # Therefore, outcomes are the sorted patterns.
-    c = Counts(cts, (outs, ))
+    c = Counts(cts, (outs,))
     return c, outcomes(c)
 end
 
@@ -90,11 +90,11 @@ function outcome_space(est::Dispersion)
     return sort!(map(i -> V(Tuple(i)), vec(cart)))
 end
 # Performance extension
-total_outcomes(est::Dispersion)::Int = est.c ^ est.m
+total_outcomes(est::Dispersion)::Int = est.c^est.m
 
 function encoded_space_cardinality(o::Dispersion, x)
     N = length(x)
-    return N - (o.m - 1)*o.τ
+    return N - (o.m - 1) * o.τ
 end
 
 function codify(est::Dispersion, x)

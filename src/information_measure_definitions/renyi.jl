@@ -28,7 +28,7 @@ uniform distribution with ``L`` the [`total_outcomes`](@ref).
 """
 Base.@kwdef struct Renyi{Q, B} <: Entropy
     q::Q = 1.0
-    base::B  = 2.0
+    base::B = 2.0
 end
 Renyi(q) = Renyi(q, 2)
 
@@ -40,11 +40,11 @@ function information(e::Renyi, probs::Probabilities)
     if q ≈ 0
         return logf(count(!iszero, probs))
     elseif q ≈ 1
-        return -sum(x*logf(x) for x in non0_probs)
+        return -sum(x * logf(x) for x in non0_probs)
     elseif isinf(q)
         return -logf(maximum(non0_probs))
     else
-        return (1/(1-q))*logf(sum(x^q for x in non0_probs))
+        return (1 / (1 - q)) * logf(sum(x^q for x in non0_probs))
     end
 end
 

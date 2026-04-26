@@ -20,7 +20,7 @@ ezero = encode(encoding, 0.0)
 
 dzero = decode(encoding, ezero) # a two-element static vector
 @test dzero isa Vector{<:SVector}
-@test first(dzero[1]) ≈ 1/3
+@test first(dzero[1]) ≈ 1 / 3
 
 # ----------------------------------------------------------------
 # Integer encoding.
@@ -63,7 +63,7 @@ s = encode(encoding, y)
 @test 1 ≤ s ≤ total_outcomes(encoding)
 @test decode(encoding, s) isa AbstractVector{<:SVector}
 
-@test_throws ArgumentError encode(GaussianCDFEncoding{m-1}(; c = 3, μ, σ), y)
+@test_throws ArgumentError encode(GaussianCDFEncoding{m - 1}(; c = 3, μ, σ), y)
 
 # ----------------------------------------------------------------
 # Pretty printing

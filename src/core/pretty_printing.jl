@@ -1,16 +1,16 @@
-
 """
     const our_abstract_types
 
 The types from out package which we want to pretty-print.
 """
-const our_abstract_types = [Encoding, 
-    OutcomeSpace, 
-    ProbabilitiesEstimator, 
+const our_abstract_types = [
+    Encoding,
+    OutcomeSpace,
+    ProbabilitiesEstimator,
     InformationMeasure,
     DiscreteInfoEstimator,
     DifferentialInfoEstimator,
-    ComplexityEstimator
+    ComplexityEstimator,
 ]
 
 """
@@ -76,7 +76,7 @@ a given type.
 Defaults to nothing, but for types like `OrdinalPatterns`, we'd like to include the 
 display the type parameter m as `OrdinalPatterns{m}(...)`.
 """
-special_typeparameter_info(::Type{T}) where T = ""
+special_typeparameter_info(::Type{T}) where {T} = ""
 
 """
     PrintComponent
@@ -88,29 +88,34 @@ Stores a string `s` and instructions for how it shall be printed.
     
 `PrintComponent`s are intended for use with `printstyled`.
 """
-struct PrintComponent{S<:AbstractString}
+struct PrintComponent{S <: AbstractString}
     s::S
-    color::Union{Symbol,Int}
+    color::Union{Symbol, Int}
     bold::Bool
     underline::Bool
     blink::Bool
     hidden::Bool
     reverse::Bool
 
-    function PrintComponent(s::S; color::Union{Symbol,Int} = :normal,
-        bold::Bool = false, underline::Bool = false, blink::Bool = false,
-        hidden::Bool = false, reverse::Bool = false) where S
-        new{S}(s, color, bold, underline, blink, hidden, reverse) 
+    function PrintComponent(
+            s::S; color::Union{Symbol, Int} = :normal,
+            bold::Bool = false, underline::Bool = false, blink::Bool = false,
+            hidden::Bool = false, reverse::Bool = false
+        ) where {S}
+        return new{S}(s, color, bold, underline, blink, hidden, reverse)
     end
 end
-Base.show(io::IO, x::PrintComponent) = printstyled(io, x.s; 
+Base.show(io::IO, x::PrintComponent) = printstyled(
+    io, x.s;
     color = x.color, bold = x.bold, underline = x.underline, blink = x.blink,
-    hidden = x.hidden, reverse = x.reverse)
+    hidden = x.hidden, reverse = x.reverse
+)
 
-function Base.show(io::IO, x::Vector{<:PrintComponent}) 
+function Base.show(io::IO, x::Vector{<:PrintComponent})
     for component in x
         show(io, component)
     end
+    return
 end
 
 # The entire purpose for this type is so that we can print nested formatted types.
@@ -121,25 +126,27 @@ function Base.show(io::IO, x::EntireComponent)
     for component in x.s
         show(io, component)
     end
+    return
 end
 
 struct PrintComponents{T}
     x::Vector{T}
 end
-function Base.show(io::IO, x::PrintComponents) 
+function Base.show(io::IO, x::PrintComponents)
     for component in x.x
         show(io, component)
     end
+    return
 end
 
 
 function single_print_component!(v, name, fieldval, x; fieldcol = :grey)
     # Field names are colored as a weaker variant of the parent type color.
-    push!(v, PrintComponent("$name"; bold=false, color=fieldcol))
-   
+    push!(v, PrintComponent("$name"; bold = false, color = fieldcol))
+
     # Use standard formatting for the rest.
-    push!(v, PrintComponent(" = "; bold=false, color = :default))
-    if any(typeof(fieldval) <: T for T in our_abstract_types)
+    push!(v, PrintComponent(" = "; bold = false, color = :default))
+    return if any(typeof(fieldval) <: T for T in our_abstract_types)
         comps = printcomponents(fieldval)
         push!(v, EntireComponent(comps))
     else
@@ -148,7 +155,7 @@ function single_print_component!(v, name, fieldval, x; fieldcol = :grey)
         else
             custom_fieldcolor = :grey
         end
-        push!(v, PrintComponent("$fieldval"; bold=false, color=fieldcol))
+        push!(v, PrintComponent("$fieldval"; bold = false, color = fieldcol))
     end
 end
 
@@ -161,8 +168,12 @@ function printcomponents(x; custom_fieldcolor = :default, compact = true)
     push!(v, PrintComponent("$N"; color = type_printcolor(T), bold = true))
     extra_parameterinfo = special_typeparameter_info(T)
     if !isempty(extra_parameterinfo)
-        push!(v, PrintComponent(extra_parameterinfo; 
-            color = type_printcolor(T), bold = true))
+        push!(
+            v, PrintComponent(
+                extra_parameterinfo;
+                color = type_printcolor(T), bold = true
+            )
+        )
     end
 
     shownames = [name for name in relevant_fieldnames(x) if !(name in hidefields(T))]
@@ -172,20 +183,22 @@ function printcomponents(x; custom_fieldcolor = :default, compact = true)
     else
         push!(v, PrintComponent("("; color = type_printcolor(T), bold = true))
     end
-    
+
     for (i, name) in enumerate(shownames)
-        single_print_component!(v, name, getfield(x, name), x; 
-            fieldcol = custom_fieldcolor)
+        single_print_component!(
+            v, name, getfield(x, name), x;
+            fieldcol = custom_fieldcolor
+        )
         if i < length(shownames)
             if compact
-                push!(v, PrintComponent(", "; color=:normal))
+                push!(v, PrintComponent(", "; color = :normal))
             else
-                push!(v, PrintComponent("\n$tabSpace"; color=:normal))
+                push!(v, PrintComponent("\n$tabSpace"; color = :normal))
             end
         end
     end
     if !compact
-        push!(v, PrintComponent("\n"; hidden=false))
+        push!(v, PrintComponent("\n"; hidden = false))
     end
     if compact
         push!(v, PrintComponent(")"; color = type_printcolor(T), bold = true))
@@ -207,12 +220,11 @@ for S in our_abstract_types
             compact = false
         end
         p = PrintComponents(printcomponents(x; compact))
-        show(io, p)
+        return show(io, p)
     end
     # For compact printing (inside vectors, tuples etc)
     @eval function Base.show(io::IO, x::$S)
         p = PrintComponents(printcomponents(x, compact = true))
-        show(io, p)
+        return show(io, p)
     end
 end
-

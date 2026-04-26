@@ -76,8 +76,10 @@ Base.@kwdef struct ApproximateEntropy{I, B, R} <: ComplexityEstimator
         r > 0 || throw(ArgumentError("r must be > 0. Got r=$(r)."))
         new{I, B, R}(m, τ, base, r)
     end
-    function ApproximateEntropy(x::AbstractVector; m::Int = 2, τ::Int = 1,
-            base = MathConstants.e, r = 0.2 * Statistics.std(x))
+    function ApproximateEntropy(
+            x::AbstractVector; m::Int = 2, τ::Int = 1,
+            base = MathConstants.e, r = 0.2 * Statistics.std(x)
+        )
         ApproximateEntropy(m, τ, base, r)
     end
 end
@@ -86,12 +88,12 @@ function complexity(c::ApproximateEntropy, x::AbstractStateSpaceSet)
     throw(ArgumentError("Approximate entropy is only computable for timeseries."))
 end
 
-function complexity(c::ApproximateEntropy, x::AbstractVector{T}) where T
+function complexity(c::ApproximateEntropy, x::AbstractVector{T}) where {T}
     (; m, τ, r, base) = c
 
     # Definition in https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7515030/
     if m == 1
-       return compute_ϕ(x; k = m, r, τ, base)
+        return compute_ϕ(x; k = m, r, τ, base)
     else
         ϕᵐ = compute_ϕ(x; k = m, r, τ, base)
         ϕᵐ⁺¹ = compute_ϕ(x; k = m + 1, r, τ, base)
@@ -125,14 +127,16 @@ C_i^k(r) = \\textrm{number of } j \\textrm{ such that } d({\\bf u}_i, {\\bf u}_j
 where ``d`` is the maximum (Chebyshev) distance, `r` is the tolerance, and `N` is the
 length of the original scalar-valued time series `x`.
 """
-function compute_ϕ(x::AbstractVector{T}; r = 0.2 * Statistics.std(x), k::Int = 2,
-        τ::Int = 1, base = MathConstants.e) where T <: Real
-    τs = 0:τ:(k - 1)*τ
+function compute_ϕ(
+        x::AbstractVector{T}; r = 0.2 * Statistics.std(x), k::Int = 2,
+        τ::Int = 1, base = MathConstants.e
+    ) where {T <: Real}
+    τs = 0:τ:((k - 1) * τ)
     pts = genembed(x, τs)
     tree = KDTree(pts, Chebyshev())
 
     # Account for `τ != 1` in the normalization constant.
-    f = length(x) - (k - 1)*τ
+    f = length(x) - (k - 1) * τ
 
     # `inrangecount` counts the query point itself, which is wanted for approximate entropy,
     # because there are always neighbors and thus log(0) is never encountered.

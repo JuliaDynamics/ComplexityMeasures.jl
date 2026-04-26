@@ -15,7 +15,7 @@ end
 
 @testset "probabilities(x)" begin
     x = [1, 1, 2, 2, 3, 3]
-    @test probabilities(x) == probabilities(UniqueElements(), x) == [1/3, 1/3, 1/3]
+    @test probabilities(x) == probabilities(UniqueElements(), x) == [1 / 3, 1 / 3, 1 / 3]
 end
 
 @testset "entropy convenience function" begin

@@ -56,5 +56,5 @@ end
     s = Shannon(base = 7) # make sure non-standard base is also tested
     @test information_normalized(PlugIn(s), e1, x) > 0
     @test information_normalized(s, e1, x) > 0
-    @test information_normalized(s, e2, x) ≈ 1 atol=1e-3
+    @test information_normalized(s, e2, x) ≈ 1 atol = 1.0e-3
 end

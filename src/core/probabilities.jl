@@ -46,7 +46,7 @@ julia> c = Counts([12, 16, 12], ["out1", "out2", "out3"]); Probabilities(c)
  "out3"  0.3
 ```
 """
-struct Probabilities{T, N, S, A<:AbstractArray{T, N}, O<:Tuple{Vararg{AbstractVector, N}}} <: AbstractArray{T, N}
+struct Probabilities{T, N, S, A <: AbstractArray{T, N}, O <: Tuple{Vararg{AbstractVector, N}}} <: AbstractArray{T, N}
     # The probabilities table.
     p::A
 
@@ -56,10 +56,12 @@ struct Probabilities{T, N, S, A<:AbstractArray{T, N}, O<:Tuple{Vararg{AbstractVe
     # A label for each dimension
     dimlabels::NTuple{N, S}
 
-    function Probabilities(x::AbstractArray{T, N},
+    function Probabilities(
+            x::AbstractArray{T, N},
             outcomes::Tuple{Vararg{AbstractVector, N}},
             dimlabels::NTuple{N, S};
-            normed::Bool = false) where {T, N, S}
+            normed::Bool = false
+        ) where {T, N, S}
         if !normed # `normed` is an internal argument that skips checking the sum.
             s = sum(x, dims = 1:N)
             if s ≠ 1
@@ -74,7 +76,7 @@ struct Probabilities{T, N, S, A<:AbstractArray{T, N}, O<:Tuple{Vararg{AbstractVe
         end
 
         s = size(p)
-        for dim = 1:N
+        for dim in 1:N
             L = length(outcomes[dim])
             if L != s[dim]
                 msg = "The number of outcomes for dimension $dim must match the number " *
@@ -90,7 +92,7 @@ end
 
 # If no names are give for the dimension assign generic ones
 function Probabilities(x::AbstractArray{T, N}, outcomes::Tuple; normed::Bool = false) where {T, N}
-    return Probabilities(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...); normed)
+    return Probabilities(x, outcomes, tuple((Symbol("x$i") for i in 1:N)...); normed)
 end
 # If no outcomes are given, assign generic `EnumeratedOutcome`s.
 function Probabilities(x::AbstractArray{T, N}; normed::Bool = false) where {T, N}
@@ -100,7 +102,7 @@ end
 # Backwards compatibility
 Probabilities(x, normed::Bool) = Probabilities(x; normed)
 
-function Probabilities(x::AbstractArray{<:Integer, N}) where N
+function Probabilities(x::AbstractArray{<:Integer, N}) where {N}
     s = sum(x)
     return Probabilities(x ./ s; normed = true)
 end
@@ -109,16 +111,18 @@ Probabilities(x::Counts) = Probabilities(x.cts, x.outcomes, x.dimlabels)
 
 # Convenience wrappers for 1D case
 function Probabilities(x::AbstractVector, outcomes::AbstractVector; normed::Bool = false)
-    return Probabilities(x, (outcomes, ); normed)
+    return Probabilities(x, (outcomes,); normed)
 end
 function Probabilities(x::AbstractVector, outcomes::AbstractVector, label; normed::Bool = false)
-    return Probabilities(x, (outcomes, ), (label, ); normed)
+    return Probabilities(x, (outcomes,), (label,); normed)
 end
 
 # extend base Array interface:
-for f in (:length, :size, :eltype, :parent,
-    :lastindex, :firstindex, :vec, :getindex, :iterate)
-    @eval Base.$(f)(d::Probabilities, args...)= $(f)(d.p, args...)
+for f in (
+        :length, :size, :eltype, :parent,
+        :lastindex, :firstindex, :vec, :getindex, :iterate,
+    )
+    @eval Base.$(f)(d::Probabilities, args...) = $(f)(d.p, args...)
 end
 
 # One-argument definitions to avoid type ambiguities with Base:
@@ -128,7 +132,7 @@ Base.sort(p::Probabilities) = sort(p.p)
 
 Base.IteratorSize(::Probabilities) = Base.HasLength()
 # Special extension due to the rules of the API
-@inline Base.sum(::Probabilities{T}) where T = one(T)
+@inline Base.sum(::Probabilities{T}) where {T} = one(T)
 
 # -----------------------------------------------------------------
 # Outcomes are simply the labels on the marginal dimensional.
@@ -136,13 +140,13 @@ Base.IteratorSize(::Probabilities) = Base.HasLength()
 # a tuple of the outcomes --- one element per dimension.
 # -----------------------------------------------------------------
 outcomes(p::Probabilities) = p.outcomes
-outcomes(p::Probabilities{T, 1}) where T = first(p.outcomes)
+outcomes(p::Probabilities{T, 1}) where {T} = first(p.outcomes)
 # Integer indexing returns the outcomes for that dimension directly.
 function outcomes(p::Probabilities{T, N}, i::Int) where {T, N}
     return p.outcomes[i]
 end
 function outcomes(p::Probabilities{T, N}, idxs) where {T, N}
-    map(i -> p.outcomes[i], tuple(idxs...))
+    return map(i -> p.outcomes[i], tuple(idxs...))
 end
 
 """
@@ -354,7 +358,7 @@ function allprobabilities_and_outcomes(est::ProbabilitiesEstimator, o::OutcomeSp
             break
         end
     end
-    p = Probabilities(allprobs, (ospace, ))
+    p = Probabilities(allprobs, (ospace,))
     return p, outcomes(p)
 end
 function allprobabilities_and_outcomes(o::OutcomeSpace, x)

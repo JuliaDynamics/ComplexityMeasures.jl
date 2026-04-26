@@ -33,7 +33,7 @@ Base.@kwdef struct StretchedExponential{Q, B} <: Entropy
 end
 
 function stretched_exponential(pᵢ, η, base)
-    x = (η + 1)/η
+    x = (η + 1) / η
     # Note gamma_inc(a, b) returns (lower, upper) incomplete gamma functions,
     # scaled by 1/Γ(b), so we multiply by gamma(x) to obtain the non-normalized
     # integral used in Anteneodo & Plastino (1999). See
@@ -50,9 +50,9 @@ function information(e::StretchedExponential, prob::Probabilities)
 end
 
 function information_maximum(e::StretchedExponential, L::Int)
-    x = (e.η + 1)/e.η
+    x = (e.η + 1) / e.η
     Γx = gamma(x)
     # We need the scaled  *upper* incomplete gamma function, which is the second
     # entry in the tuple returned from `gamma_inc`.
-    L * gamma_inc(x, log(e.base, L))[2] * Γx - Γx
+    return L * gamma_inc(x, log(e.base, L))[2] * Γx - Γx
 end
