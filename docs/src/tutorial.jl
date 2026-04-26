@@ -190,22 +190,6 @@ probsy_bayes .- probsy
 
 # While the corrections of [`BayesianRegularization`](@ref) are small in this case, they are
 # nevertheless measurable.
-#
-# What are the most probable outcomes the system can transition to, given its current state?
-# Transition probabilities capture dynamic information and can also be relevant in cases 
-# where one needs more than just the probabilities of outcomes. 
-# The [`TransferOperator`](@ref) or (Perron-Frobenius operator) is also implemented as a 
-# subtype of `ProbabilitiesEstimator`, giving access to transition probabilities as well as 
-# the probabilities of outcomes themselves.
-
-o = OrdinalPatterns{3}()
-to = transferoperator(o, y)
-P = transfermatrix(to)
-probs = probabilities(TransferOperator(), o, y)
-outs = outcomes(to)
-P
-#
-probs
 
 # When calling [`probabilities`](@ref) only with an outcome space instance and some input
 # data (skipping the [`ProbabilitiesEstimator`](@ref)), then by default, the

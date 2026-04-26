@@ -66,6 +66,62 @@ kldivergence(py, px)
 
 (`Inf` because there are events with 0 probability in `px`)
 
+
+## Transition probabilitites: Transfer operator
+
+What are the most probable outcomes the system can transition to, given its current state?
+Transition probabilities capture dynamic information and can also be relevant in cases 
+where one needs more than just the probabilities of outcomes. 
+The [`TransferOperator`](@ref) or (Perron-Frobenius operator) is also implemented as a 
+subtype of `ProbabilitiesEstimator`, giving access to transition probabilities as well as 
+the probabilities of outcomes themselves.
+
+As a first example, let's look at transition probabilities between bins of
+the coarse-grained phase space (partitioning) of the Henon map:
+
+````@example MAIN
+using ComplexityMeasures
+using DynamicalSystemsBase
+
+henon_rule(x, p, n) = SVector{2}(1.0 - p[1]*x[1]^2 + x[2], p[2]*x[1])
+ds = DeterministicIteratedMap(henon_rule, [0.0,0.0], [1.4,0.3])
+timeseries, t = trajectory(ds, 10_000; Ttr = 500)
+
+
+b = ValueBinning(RectangularBinning(3,true)) #3x3 grid in 2D
+to = transferoperator(b, timeseries)
+P = transfermatrix(to)
+````
+
+Estimate probabilities from the transition matrix: 
+````@example MAIN
+outs = outcomes(to) #bins
+probs = probabilities(TransferOperator(), b, timeseries)
+````
+
+The transfer operator is generalized to work with many more outcomes. Let's look at 
+transition probabilities between ordinal patterns using time series  of the logistic map:
+````@example MAIN
+using ComplexityMeasures
+using DynamicalSystemsBase
+
+logistic_rule(u, r, t) = SVector(r*u[1]*(1 - u[1]))
+ds = DeterministicIteratedMap(logistic_rule, [0.4], 4.0)
+X, t = trajectory(ds, 10_000; Ttr = 100)
+x = x[:, 1]
+
+o = OrdinalPatterns{3}()
+to = transferoperator(o, x)
+P = transfermatrix(to)
+````
+
+Estimate probabilities from the transition matrix iteratively or by calculating eigenvectors: 
+````@example MAIN
+outs = outcomes(to) #show observed ordinal patterns
+p_it = probabilities(TransferOperator(ApproximationIterative()), o, x)
+p_eig = probabilities(TransferOperator(ApproximationEigen()), o, x)
+````
+
 ## Differential entropy: estimator comparison
 
 ### Shannon entropy
