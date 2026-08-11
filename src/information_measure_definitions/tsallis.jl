@@ -37,7 +37,7 @@ function information(e::Tsallis, probs::Probabilities)
     non0_probs = Iterators.filter(!iszero, probs.p)
     if q ≈ 1
         lb = log_with_base(base)
-        return -sum(p * lb(p) for p in non0_probs)
+        return -k * sum(p * lb(p) for p in non0_probs)
     else
         return k / (q - 1) * (1 - sum(p^q for p in non0_probs))
     end
@@ -46,7 +46,7 @@ end
 function information_maximum(e::Tsallis, L::Int)
     (; q, k, base) = e
     if q ≈ 1.0
-        return log_with_base(base)(L)
+        return k * log_with_base(base)(L)
     else
         return k * (L^(1 - q) - 1) / (1 - q)
     end
