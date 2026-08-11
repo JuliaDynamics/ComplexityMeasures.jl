@@ -26,8 +26,13 @@ js = information(ShannonExtropy(base = 2), UniqueElements(), x)
 # regular computation of the measure from a set of probabilities.
 function information_from_selfinfo(e::ShannonExtropy, probs::Probabilities)
     non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
-    return sum((1 - pᵢ) * self_information(e, pᵢ) for pᵢ in non0_probs)
+    return sum(pᵢ * self_information(e, pᵢ) for pᵢ in non0_probs)
 end
 p = Probabilities([1//5, 1//5, 1//5, 1//2, 0])
 Js = ShannonExtropy()
 @test round(information_from_selfinfo(Js, p), digits = 5) ≈ round(information(Js, p), digits = 5)
+
+# A certain outcome carries no information, and the limit pᵢ → 1⁻ is finite.
+@test self_information(ShannonExtropy(), 1.0) == 0.0
+# As pᵢ → 0⁺, the information content tends to log_b(e).
+@test self_information(ShannonExtropy(base = 2), 1e-12) ≈ log(2, ℯ)
