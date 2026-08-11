@@ -76,7 +76,7 @@ increase of the probability corresponding to the last bin (here `[0.9, 1)`)!
 `FixedRectangularBinning` leads to a well-defined outcome space without knowledge of input
 data, see [`ValueBinning`](@ref).
 """
-struct FixedRectangularBinning{R<:Tuple} <: AbstractBinning
+struct FixedRectangularBinning{R <: Tuple} <: AbstractBinning
     ranges::R
     precise::Bool
     function FixedRectangularBinning(ranges::R, precise) where {R}
@@ -95,7 +95,7 @@ This is a convenience method where each dimension of the binning has the same ra
 and the input data are `D` dimensional, which defaults to 1 (timeseries).
 """
 function FixedRectangularBinning(r::AbstractRange, D::Int = 1, precise = false)
-    FixedRectangularBinning(ntuple(x->r, D), precise)
+    return FixedRectangularBinning(ntuple(x -> r, D), precise)
 end
 
 """
@@ -110,7 +110,7 @@ and then calls the second call signature.
 
 See [`FixedRectangularBinning`](@ref) for info on mapping points to bins.
 """
-struct RectangularBinEncoding{R<:Tuple, D, T, C, L} <: HistogramEncoding
+struct RectangularBinEncoding{R <: Tuple, D, T, C, L} <: HistogramEncoding
     ranges::R
     precise::Bool
     mini::SVector{D, T}
@@ -121,9 +121,10 @@ struct RectangularBinEncoding{R<:Tuple, D, T, C, L} <: HistogramEncoding
 end
 
 function Base.show(io::IO, x::RectangularBinEncoding)
-    return print(io, "RectangularBinEncoding\n" *
-        "  ranges: $(x.ranges)\n" *
-        "  histogram size: $(x.histsize)"
+    return print(
+        io, "RectangularBinEncoding\n" *
+            "  ranges: $(x.ranges)\n" *
+            "  histogram size: $(x.histsize)"
     )
 end
 
@@ -133,35 +134,39 @@ end
 # Fixed grid
 function RectangularBinEncoding(b::FixedRectangularBinning)
     ranges = b.ranges
-    histsize = map(r -> length(r)-1, ranges)
+    histsize = map(r -> length(r) - 1, ranges)
     D = length(ranges)
     T = float(eltype(first(ranges)))
-    mini = SVector{D,T}(map(minimum, ranges))
-    widths = SVector{D,T}(map(step, ranges))
+    mini = SVector{D, T}(map(minimum, ranges))
+    widths = SVector{D, T}(map(step, ranges))
     ci = CartesianIndices(Tuple(histsize))
     li = LinearIndices(ci)
-    RectangularBinEncoding(ranges, b.precise, mini, widths, histsize, ci, li)
+    return RectangularBinEncoding(ranges, b.precise, mini, widths, histsize, ci, li)
 end
 function RectangularBinEncoding(b::FixedRectangularBinning, x)
     if length(b.ranges) != dimension(x)
-        throw(ArgumentError("""
-        The dimensionality of the `FixedRectangularBinning` and input `x` do not match.
-        Got $(b.ranges) and $(dimension(x))."""))
+        throw(
+            ArgumentError(
+                """
+                The dimensionality of the `FixedRectangularBinning` and input `x` do not match.
+                Got $(b.ranges) and $(dimension(x))."""
+            )
+        )
     end
     return RectangularBinEncoding(b)
 end
 
 # Data-controlled grid: just cast into FixesRectangularBinning
 function RectangularBinEncoding(b::RectangularBinning, x)
-    RectangularBinEncoding(FixedRectangularBinning(b, x))
+    return RectangularBinEncoding(FixedRectangularBinning(b, x))
 end
 function FixedRectangularBinning(b::RectangularBinning, x)
     D = dimension(x)
-    T = eltype(x)
+    T = eltype(eltype(x)) # elements might be in vectors
     ϵ = b.ϵ
     mini, maxi = minmaxima(x)
     if ϵ isa AbstractFloat || ϵ isa AbstractVector{<:AbstractFloat}
-        widths = SVector{D,T}(ϵ .* ones(SVector{D,T}))
+        widths = SVector{D, T}(ϵ .* ones(SVector{D, T}))
         # To ensure all points are guaranteed to be covered, we add the width
         # to the max, if the max isn't included in the resulting range.
         # We also add the width if the maximum is the end point of the range,
@@ -185,7 +190,7 @@ function FixedRectangularBinning(b::RectangularBinning, x)
         end
         # We add one, because the user input specifies the number of bins,
         # and the number of bins is the range length - 1
-        lengths = ϵ .* ones(SVector{D,Int}) .+ 1
+        lengths = ϵ .* ones(SVector{D, Int}) .+ 1
         ranges = ntuple(i -> range(mini[i], maxi[i]; length = lengths[i]), D)
     else
         error("Invalid ϵ for binning of a dataset")
@@ -233,9 +238,11 @@ function decode(e::RectangularBinEncoding, bin::Integer)
     if checkbounds(Bool, e.ci, bin)
         @inbounds cartesian = e.ci[bin]
     else
-        throw(ArgumentError(
-            "Cannot decode integer $(bin): out of bounds of underlying binning."
-        ))
+        throw(
+            ArgumentError(
+                "Cannot decode integer $(bin): out of bounds of underlying binning."
+            )
+        )
     end
     # The decoding step is rather trivial here; we just index the ranges at the index
     ranges = e.ranges
@@ -256,14 +263,14 @@ total_outcomes(e::RectangularBinEncoding) = prod(e.histsize)
 
 function outcome_space(e::RectangularBinEncoding)
     # This is super simple thanks to using ranges :)
-    reduced_ranges = map(r -> r[1:end-1], e.ranges)
+    reduced_ranges = map(r -> r[1:(end - 1)], e.ranges)
     iter = Iterators.product(reduced_ranges...)
     # Convert to `SVector` because that's the agreed outcome space type
     V = SVector{length(e.ranges), eltype(float(first(e.ranges)))}
     return sort!(vec(V.(iter)))
 end
 outcome_space(b::AbstractBinning, args...) =
-outcome_space(RectangularBinEncoding(b, args...))
+    outcome_space(RectangularBinEncoding(b, args...))
 
 ##################################################################
 # low level histogram call
@@ -287,7 +294,7 @@ end
 
 function discard_minus_ones!(bins)
     idxs = findall(isequal(-1), bins)
-    deleteat!(bins, idxs)
+    return deleteat!(bins, idxs)
 end
 
 # ----------------------------------------------------------------

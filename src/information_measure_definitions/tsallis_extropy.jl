@@ -2,7 +2,8 @@ export TsallisExtropy
 
 """
     TsallisExtropy <: InformationMeasure
-    TsallisExtropy(; base = 2)
+    TsallisExtropy(q; k = 1.0, base = 2)
+    TsallisExtropy(; q = 1.0, k = 1.0, base = 2)
 
 The Tsallis extropy [Xue2023](@cite).
 
@@ -23,7 +24,7 @@ on the interval ``[0, 1]`` by normalizing to to the maximal Tsallis extropy, giv
 J_T(P) = \\dfrac{(N - 1)N^{q - 1} - (N - 1)^q}{(q - 1)N^{q - 1}}
 ```
 """
-struct TsallisExtropy{Q,K,B} <: InformationMeasure
+struct TsallisExtropy{Q, K, B} <: InformationMeasure
     q::Q
     k::K
     base::B

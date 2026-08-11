@@ -65,20 +65,22 @@ Stencils are passed in one of the following three ways:
     in the previous examples, use here `stencil = ((2, 2), (1, 1))`.
     When passing a stencil using `extent` and `lag`, `m = prod(extent)`.
 """
-struct SpatialOrdinalPatterns{D,P,V,M,F} <: SpatialOutcomeSpace{D, P}
+struct SpatialOrdinalPatterns{D, P, V, M, F} <: SpatialOutcomeSpace{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
     valid::V
-    encoding::OrdinalPatternEncoding{M,F}
+    encoding::OrdinalPatternEncoding{M, F}
 end
 
-function SpatialOrdinalPatterns(stencil, x::AbstractArray{T, D};
-        periodic::Bool = true, lt::F = isless_rand) where {T, D, F}
+function SpatialOrdinalPatterns(
+        stencil, x::AbstractArray{T, D};
+        periodic::Bool = true, lt::F = isless_rand
+    ) where {T, D, F}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
     m = stencil_length(stencil)
     encoding = OrdinalPatternEncoding{m}(lt)
-    return SpatialOrdinalPatterns{D,periodic,typeof(valid),m,F}(
+    return SpatialOrdinalPatterns{D, periodic, typeof(valid), m, F}(
         stencil, copy(stencil), arraysize, valid, encoding
     )
 end
@@ -100,22 +102,23 @@ function counts_and_outcomes!(s, est::SpatialOrdinalPatterns, x)
     outs = sort!(unique(observed_outcomes))
     z = copy(s)
     cts = fasthist!(z)
-    c = Counts(cts, (outs, ))
+    c = Counts(cts, (outs,))
     return c, outcomes(c)
 end
 
 # Don't use generic dispatch, because we need to use `counts_and_outcomes`!.
 function probabilities!(est::SpatialOrdinalPatterns, x, s)
-    s = zeros(Int, length(est.valid))
     return Probabilities(first(counts_and_outcomes!(s, est, x)))
 end
 
 # Pretty printing
-function Base.show(io::IO, est::SpatialOrdinalPatterns{D,P,V,M}) where {D,P,V,M}
-    print(io, "Spatial symbolic permutation probabilities estimator"*
-              "of order $(M) and for $D-dimensional data. Periodic: $(P). Stencil:")
+function Base.show(io::IO, est::SpatialOrdinalPatterns{D, P, V, M}) where {D, P, V, M}
+    print(
+        io, "Spatial symbolic permutation probabilities estimator" *
+            "of order $(M) and for $D-dimensional data. Periodic: $(P). Stencil:"
+    )
     print(io, "\n")
-    show(io, MIME"text/plain"(), est.stencil)
+    return show(io, MIME"text/plain"(), est.stencil)
 end
 
 outcome_space(est::SpatialOrdinalPatterns) = outcome_space(est.encoding)
@@ -134,21 +137,21 @@ end
 function check_preallocated_length!(
         πs, est::SpatialOrdinalPatterns{D, periodic}, x::AbstractArray{T, N}
     ) where {D, periodic, T, N}
-    if periodic
+    return if periodic
         # If periodic boundary conditions, then each pixel has a well-defined neighborhood,
         # and there are as many encoded symbols as there are pixels.
         length(πs) == length(x) ||
             throw(
-                ArgumentError(
-                    """Need length(πs) == length(x), got `length(πs)=$(length(πs))`
-                    and `length(x)==$(length(x))`."""
-                )
+            ArgumentError(
+                """Need length(πs) == length(x), got `length(πs)=$(length(πs))`
+                and `length(x)==$(length(x))`."""
             )
+        )
     else
         # If not periodic, then we must count the number of encoded symbols from the
         # valid coordinates of the estimator.
         length(πs) == length(est.valid) ||
-        throw(
+            throw(
             ArgumentError(
                 """Need length(πs) == length(est.valid), got `length(πs)=$(length(πs))`
                 and `length(est.valid)==$(length(est.valid))`."""

@@ -9,12 +9,17 @@ outs = collect(1:10)
 @test Probabilities(rand(rng, 10), outs) isa Probabilities
 @test Probabilities(rand(rng, 10), outs, :x1) isa Probabilities
 @test Probabilities(rand(rng, 10), (outs,)) isa Probabilities
-@test Probabilities(rand(rng, 10), (outs,), (:x1, )) isa Probabilities
+@test Probabilities(rand(rng, 10), (outs,), (:x1,)) isa Probabilities
+
+# outcome vectors for different eltypes
+outs1 = ["a", "b"]; outs2 = [1, 2];
+cts = rand(1:10, 2, 2);
+@test Probabilities(cts, (outs1, outs2)) isa Probabilities
 
 # ----------------------------------------------------------------
-# Base extensions 
+# Base extensions
 # ----------------------------------------------------------------
-p =  Probabilities(rand(rng, 10), outs)
+p = Probabilities(rand(rng, 10), outs)
 # extend base Array interface:
 @test length(p) == length(p.p)
 @test size(p) == size(p.p)

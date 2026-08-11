@@ -62,14 +62,14 @@ hest = Shannon()
 o = Dispersion()
 mc = multiscale(c, hest, o, x)
 mcn = multiscale_normalized(c, hest, o, x)
-@test mc isa Vector{T} where T <: Real
-@test mcn isa Vector{T} where T <: Real
+@test mc isa Vector{T} where {T <: Real}
+@test mcn isa Vector{T} where {T <: Real}
 @test length(mc) == 5
 @test length(mcn) == 5
 @test multiscale(c_range, hest, o, x) == multiscale(c, hest, o, x)
 
 # `DifferentialInfoEstimator`s` should work for `multiscale`, but not `multiscale_normalized`
-@test multiscale(c, Kraskov(hest), x) isa Vector{T} where T <: Real
+@test multiscale(c, Kraskov(hest), x) isa Vector{T} where {T <: Real}
 @test_throws MethodError multiscale_normalized(c, Kraskov(hest), x)
 
 # `ComplexityEstimator`s

@@ -113,7 +113,7 @@ information(Renyi(q = 2), est, x)
 See also: [`SpatialOrdinalPatterns`](@ref), [`GaussianCDFEncoding`](@ref),
 [`codify`](@ref).
 """
-struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialOutcomeSpace{D, P}
+struct SpatialDispersion{D, P, V, S <: Encoding} <: SpatialOutcomeSpace{D, P}
     stencil::Vector{CartesianIndex{D}}
     viewer::Vector{CartesianIndex{D}}
     arraysize::Dims{D}
@@ -125,12 +125,14 @@ struct SpatialDispersion{D,P,V,S<:Encoding} <: SpatialOutcomeSpace{D, P}
     m::Int
 end
 
-function SpatialDispersion(stencil, x::AbstractArray{T, D};
+function SpatialDispersion(
+        stencil, x::AbstractArray{T, D};
         periodic::Bool = true,
         c::Int = 5,
         encoding::Type{S} = GaussianCDFEncoding,
         skip_encoding::Bool = false,
-        L::Union{Nothing, Int} = nothing) where {S <: Encoding, T, D}
+        L::Union{Nothing, Int} = nothing
+    ) where {S <: Encoding, T, D}
     stencil, arraysize, valid = preprocess_spatial(stencil, x, periodic)
     if skip_encoding
         !isnothing(L) || throw(
@@ -139,19 +141,19 @@ function SpatialDispersion(stencil, x::AbstractArray{T, D};
     end
     m = stencil_length(stencil)
 
-    SpatialDispersion{D, periodic, typeof(valid), S}(
+    return SpatialDispersion{D, periodic, typeof(valid), S}(
         stencil, copy(stencil), arraysize, valid, c, encoding,
         skip_encoding, L, m,
     )
 end
 
 # Pretty printing
-function Base.show(io::IO, est::SpatialDispersion{D,P,V,S}) where {D,P,V,S}
+function Base.show(io::IO, est::SpatialDispersion{D, P, V, S}) where {D, P, V, S}
     println(io, "Spatial dispersion estimator for $D-dimensional data.")
     print(io, "Stencil: ")
     show(io, MIME"text/plain"(), est.stencil)
     print(io, "\nEncoding: $(est.encoding)")
-    print(io, """\nBoundaries: $(P ? "Periodic" : "Non-periodic")""")
+    return print(io, """\nBoundaries: $(P ? "Periodic" : "Non-periodic")""")
 end
 
 function counts_and_outcomes(est::SpatialDispersion, x::AbstractArray{T, N}) where {T, N}
@@ -161,7 +163,7 @@ function counts_and_outcomes(est::SpatialDispersion, x::AbstractArray{T, N}) whe
     # only need the unique values of `symbols` for the outcomes.
     cts = fasthist!(symbols) # fasthist!(x) mutates x --- `symbols` gets sorted here
     outs = unique!(symbols)
-    c = Counts(cts, (outs, ))
+    c = Counts(cts, (outs,))
     return c, outcomes(c)
 end
 

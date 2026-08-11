@@ -117,7 +117,7 @@ barplot(left_edges, probs; axis = (ylabel = "probability",))
 
 using DynamicalSystemsBase
 
-logistic_rule(u, r, t) = SVector(r*u[1]*(1 - u[1]))
+logistic_rule(u, r, t) = SVector(r * u[1] * (1 - u[1]))
 ds = DeterministicIteratedMap(logistic_rule, [0.4], 4.0)
 Y, t = trajectory(ds, 10_000; Ttr = 100)
 y = Y[:, 1]
@@ -190,7 +190,7 @@ probsy_bayes .- probsy
 
 # While the corrections of [`BayesianRegularization`](@ref) are small in this case, they are
 # nevertheless measurable.
-#
+
 # When calling [`probabilities`](@ref) only with an outcome space instance and some input
 # data (skipping the [`ProbabilitiesEstimator`](@ref)), then by default, the
 # [`RelativeAmount`](@ref) probabilities estimator is used to extract the probabilities.

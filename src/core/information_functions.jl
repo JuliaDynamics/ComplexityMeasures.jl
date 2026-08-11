@@ -140,9 +140,13 @@ function entropy(args...)
     else
         false
     end
-    cond || throw(ArgumentError("""
-        You have used `entropy` without an entropy definition
-        ($(typeof(e))). Use `information` instead."""))
+    cond || throw(
+        ArgumentError(
+            """
+            You have used `entropy` without an entropy definition
+            ($(typeof(e))). Use `information` instead."""
+        )
+    )
     return information(args...)
 end
 
@@ -173,7 +177,7 @@ function information_maximum(e::InformationMeasure, ::Int)
     throw(ErrorException("not implemented for entropy type $(nameof(typeof(e)))."))
 end
 function information_maximum(e::InformationMeasureEstimator, args...)
-    information_maximum(e.definition, args...)
+    return information_maximum(e.definition, args...)
 end
 
 """
@@ -274,10 +278,12 @@ end
 # `differential_info_estimators/`.
 
 function information(::InformationMeasure, ::DifferentialInfoEstimator, args...)
-    throw(ArgumentError(
-        """`InformationMeasure` must be given as an argument to `est`, not to `information`.
-        """
-    ))
+    throw(
+        ArgumentError(
+            """`InformationMeasure` must be given as an argument to `est`, not to `information`.
+            """
+        )
+    )
 end
 
 """
@@ -329,7 +335,7 @@ Return a function that computes the logarithm at a given base.
 This definitely increases accuracy, and probably also performance.
 """
 function log_with_base(base)
-    if base == 2
+    return if base == 2
         log2
     elseif base == MathConstants.e
         log
@@ -348,5 +354,5 @@ computed with logarithms to base `base_to`.
 This can be used to convert the "unit" of an entropy.
 """
 function convert_logunit(h_a::Real, base_from, base_to)
-    h_a / log(base_from, base_to)
+    return h_a / log(base_from, base_to)
 end

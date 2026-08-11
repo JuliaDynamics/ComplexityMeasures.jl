@@ -50,13 +50,13 @@ s_c = encode(comboencoding, x)
 encodings = (
     RelativeFirstDifferenceEncoding(0, 1; n = 2),
     RelativeMeanEncoding(0, 1; n = 5),
-    OrdinalPatternEncoding(3) # x is a three-element vector
-    )
+    OrdinalPatternEncoding(3), # x is a three-element vector
+)
 c = CombinationEncoding(encodings)
 @test occursin("encodings = ", repr(c))
 @test !occursin("linear_indices = ", repr(c))
 @test !occursin("cartesian_indices = ", repr(c))
 # -----------------------------------------------------------------
-# Ensuring that empty encoding throw an error 
+# Ensuring that empty encoding throw an error
 # -----------------------------------------------------------------
 @test_throws ArgumentError CombinationEncoding()

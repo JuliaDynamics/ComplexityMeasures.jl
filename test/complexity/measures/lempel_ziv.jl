@@ -4,7 +4,7 @@ using Random
 # the entropy rate of spike trains via Lempel-Ziv complexity. Neural Computation, 16(4),
 # 717-736.
 # This should give the subsequences: 0, 1, 011, 0100, 011011, 1001, 0, or 7 elements
-x = [0,1,0,1,1,0,1,0,0,0,1,1,0,1,1,1,0,0,1,0]
+x = [0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0]
 
 @test complexity(LempelZiv76(), x) == 7
 

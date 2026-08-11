@@ -9,7 +9,7 @@ rng = Xoshiro(1234)
 # and the average symbol is 2.
 minval, maxval = 0, 1
 𝒰 = Uniform(minval, maxval)
-symbols3 = [encode(RelativeMeanEncoding(0, 1; n = 3), rand(rng, 𝒰, 3)) for i = 1:1000000]
+symbols3 = [encode(RelativeMeanEncoding(0, 1; n = 3), rand(rng, 𝒰, 3)) for i in 1:1000000]
 @test 1.99 ≤ mean(symbols3) ≤ 2.01
 @test all(1 .<= symbols3 .<= 3)
 
@@ -41,5 +41,5 @@ s3 = encode(encoding, x)
 @test s3 == 3
 
 @test first(decode(encoding, s1)) ≈ 0.0
-@test first(decode(encoding, s2)) ≈ 1/3
-@test first(decode(encoding, s3)) ≈ 2/3
+@test first(decode(encoding, s2)) ≈ 1 / 3
+@test first(decode(encoding, s3)) ≈ 2 / 3

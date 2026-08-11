@@ -2,8 +2,8 @@ using Test, ComplexityMeasures
 
 # ----------------------------------------------------------------
 # Types that doesn't require any special handling
-# 
-# Printing for types that require specialized printing is 
+#
+# Printing for types that require specialized printing is
 # tested in their respective source files.
 # ----------------------------------------------------------------
 
@@ -34,7 +34,7 @@ for fn in hidden_fields
 end
 
 # A dummy information measure that contains all relevant types we want to test for.
-# This is just to ensure complete test coverage for pretty printing in the case 
+# This is just to ensure complete test coverage for pretty printing in the case
 # of nested types.
 struct DummyPrint <: InformationMeasure
     a
@@ -45,10 +45,9 @@ struct DummyPrint <: InformationMeasure
     f
 end
 
-m = DummyPrint(PlugIn(), Kraskov(), RelativeMeanEncoding(0, 1), OrdinalPatterns{3}(), 
-    RelativeAmount(), MissingDispersionPatterns())
+m = DummyPrint(
+    PlugIn(), Kraskov(), RelativeMeanEncoding(0, 1), OrdinalPatterns{3}(),
+    RelativeAmount(), MissingDispersionPatterns()
+)
 dummyestimator = PlugIn(m)
 @test occursin("definition = ", repr(dummyestimator))
-
-
-

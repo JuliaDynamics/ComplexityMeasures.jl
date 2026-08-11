@@ -9,7 +9,7 @@ rng = Xoshiro(1234)
 minval, maxval = 0, 1
 𝒰 = Uniform(minval, maxval)
 n = 3
-symbols3 = [encode(RelativeFirstDifferenceEncoding(0, 1; n), rand(rng, 𝒰, 5)) for i = 1:1000000]
+symbols3 = [encode(RelativeFirstDifferenceEncoding(0, 1; n), rand(rng, 𝒰, 5)) for i in 1:1000000]
 @test all(1 .<= symbols3 .<= n)
 
 # Zero first differences should give symbol 1
@@ -43,5 +43,5 @@ s3 = encode(encoding, x)
 @test s3 == 3
 
 @test first(decode(encoding, s1)) ≈ 0.0
-@test first(decode(encoding, s2)) ≈ 1/3
-@test first(decode(encoding, s3)) ≈ 2/3
+@test first(decode(encoding, s2)) ≈ 1 / 3
+@test first(decode(encoding, s3)) ≈ 2 / 3

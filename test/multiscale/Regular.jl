@@ -53,13 +53,13 @@ o = Dispersion()
 # Discrete information measures
 mr = multiscale(r, hest, o, x)
 mrn = multiscale_normalized(r, hest, o, x)
-@test mr isa Vector{T} where T <: Real
-@test mrn isa Vector{T} where T <: Real
+@test mr isa Vector{T} where {T <: Real}
+@test mrn isa Vector{T} where {T <: Real}
 @test length(mr) == 5
 @test length(mrn) == 5
 
 # `DifferentialInfoEstimator`s` should work for `multiscale`, but not `multiscale_normalized`
-@test multiscale(r, Kraskov(hest), x) isa Vector{T} where T <: Real
+@test multiscale(r, Kraskov(hest), x) isa Vector{T} where {T <: Real}
 @test_throws MethodError multiscale_normalized(r, Kraskov(hest), x)
 
 # `ComplexityEstimator`s

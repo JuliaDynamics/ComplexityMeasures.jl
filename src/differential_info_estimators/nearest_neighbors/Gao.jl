@@ -43,10 +43,10 @@ function Gao(definition = Shannon(); k = 1, w = 0, corrected = true)
     return Gao(definition, k, w, corrected)
 end
 
-function information(est::Gao{<:Shannon}, x::AbstractStateSpaceSet{D}) where D
+function information(est::Gao{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D}
     (; k, w) = est
     N = length(x)
-    f = (k  * gamma(D / 2 + 1)) / ( (N - 1) * π^(D / 2))
+    f = (k * gamma(D / 2 + 1)) / ((N - 1) * π^(D / 2))
     tree = KDTree(x, Euclidean())
     idxs, ds = bulksearch(tree, x, NeighborNumber(k), Theiler(w))
 

@@ -25,7 +25,7 @@ function counts_and_outcomes(::UniqueElements, x)
     cts = fasthist!(z)
     # notice that `z` is now sorted within `fasthist!` so we can skip sorting
     outs = unique!(z)
-    cts = Counts(cts, (outs, ))
+    cts = Counts(cts, (outs,))
     return cts, outcomes(cts)
 end
 
@@ -35,6 +35,7 @@ probabilities(x) = probabilities(UniqueElements(), x)
 outcome_space(::UniqueElements, x) = sort!(unique(x))
 
 function codify(o::UniqueElements, x)
-    encoding = UniqueElementsEncoding(x)
-    encode.(Ref(encoding), x)
+    xv = vec(x)
+    encoding = UniqueElementsEncoding(xv)
+    return encode.(Ref(encoding), xv)
 end

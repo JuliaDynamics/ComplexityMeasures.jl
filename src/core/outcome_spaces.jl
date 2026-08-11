@@ -35,7 +35,6 @@ discretize/encode the data directly.
 | [`CosineSimilarityBinning`](@ref)       | Cosine similarity                 | `Vector`                  | ✔                  |
 | [`BubbleSortSwaps`](@ref)               | Swap counts when sorting          | `Vector`                  | ✔                  |
 | [`SequentialPairDistances`](@ref)       | Sequential state vector distances | `Vector`, `StateSpaceSet` | ✔                  |
-| [`TransferOperator`](@ref)              | Binning (transfer operator)       | `Vector`, `StateSpaceSet` | ✖                  |
 | [`NaiveKernel`](@ref)                   | Kernel density estimation         | `StateSpaceSet`           | ✖                  |
 | [`WeightedOrdinalPatterns`](@ref)       | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✖                  |
 | [`AmplitudeAwareOrdinalPatterns`](@ref) | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✖                  |
@@ -120,10 +119,14 @@ in which case the function dispatches to `outcome_space(o)`.
 In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
 function outcome_space(o::OutcomeSpace)
-    error(ErrorException("""
-    `outcome_space(o)` not implemented for outcome space $(typeof(o)).
-    Try calling `outcome_space(o, input_data)`, and if you get the same error, open an issue.
-    """))
+    error(
+        ErrorException(
+            """
+            `outcome_space(o)` not implemented for outcome space $(typeof(o)).
+            Try calling `outcome_space(o, input_data)`, and if you get the same error, open an issue.
+            """
+        )
+    )
 end
 outcome_space(o::OutcomeSpace, x) = outcome_space(o)
 

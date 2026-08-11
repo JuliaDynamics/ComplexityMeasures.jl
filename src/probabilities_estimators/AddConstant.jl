@@ -38,7 +38,7 @@ struct AddConstant{A} <: ProbabilitiesEstimator
     c::A
 
     function AddConstant(; c::A = 1.0) where {A}
-        new{A}(c)
+        return new{A}(c)
     end
 end
 
@@ -60,8 +60,10 @@ function allprobabilities_and_outcomes(est::AddConstant, outcomemodel::OutcomeSp
 end
 
 # Only defined for 1D pmfs.
-function probs_and_outs_from_histogram(est::AddConstant, outcomemodel::OutcomeSpace,
-        cts::Counts{T, 1}, outs, x) where T
+function probs_and_outs_from_histogram(
+        est::AddConstant, outcomemodel::OutcomeSpace,
+        cts::Counts{T, 1}, outs, x
+    ) where {T}
 
     c = est.c
     m = length(cts)
@@ -72,5 +74,5 @@ function probs_and_outs_from_histogram(est::AddConstant, outcomemodel::OutcomeSp
     end
     @assert sum(probs) ≈ 1
 
-    return Probabilities(probs, outs,)
+    return Probabilities(probs, outs)
 end

@@ -23,7 +23,7 @@ S_q(p) = \\frac{k}{q - 1}\\left(1 - \\sum_{i} p[i]^q\\right)
 The maximum value of the Tsallis entropy is ``k(L^{1 - q} - 1)/(1 - q)``,
 with ``L`` the [`total_outcomes`](@ref).
 """
-struct Tsallis{Q,K,B} <: Entropy
+struct Tsallis{Q, K, B} <: Entropy
     q::Q
     k::K
     base::B
@@ -38,7 +38,7 @@ function information(e::Tsallis, probs::Probabilities)
     if q ≈ 1
         return -sum(p * log(base, p) for p in non0_probs)
     else
-        return k/(q-1)*(1 - sum(p^q for p in non0_probs))
+        return k / (q - 1) * (1 - sum(p^q for p in non0_probs))
     end
 end
 
@@ -47,7 +47,7 @@ function information_maximum(e::Tsallis, L::Int)
     if q ≈ 1.0
         return log_with_base(base)(L)
     else
-        return k*(L^(1 - q) - 1) / (1 - q)
+        return k * (L^(1 - q) - 1) / (1 - q)
     end
 end
 

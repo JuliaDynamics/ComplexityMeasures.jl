@@ -1,5 +1,3 @@
-
-
 # Minimized for one-element distributions, where there is total order.
 x = [0.1, 0.1, 0.1]
 @test information(ShannonExtropy(), UniqueElements(), x) == 0.0
@@ -19,7 +17,7 @@ js = information_normalized(ShannonExtropy(), UniqueElements(), x)
 # Correctness of maximum
 x = [0.2, 0.2, 0.4, 0.4, 0.5, 0.5]
 js = information(ShannonExtropy(base = 2), UniqueElements(), x)
-@test js ≈ (3 - 1)*log(2, (3 / (3 - 1)))
+@test js ≈ (3 - 1) * log(2, (3 / (3 - 1)))
 
 # ---------------------------------------------------------------------------------------------------------
 # Self-information tests
