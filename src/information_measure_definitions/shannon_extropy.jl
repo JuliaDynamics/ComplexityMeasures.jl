@@ -35,5 +35,8 @@ function information_maximum(e::ShannonExtropy, L::Int)
 end
 
 function self_information(e::ShannonExtropy, pᵢ, N = nothing)
-    return -log(e.base, 1 - pᵢ)
+    # Limit as pᵢ → 1⁻; the expression below is 0 * Inf there.
+    pᵢ >= 1 && return zero(pᵢ)
+    # log1p(-pᵢ) == log(1 - pᵢ), but without cancellation for small pᵢ.
+    return -(1 - pᵢ) * log1p(-pᵢ) / (pᵢ * log(e.base))
 end
