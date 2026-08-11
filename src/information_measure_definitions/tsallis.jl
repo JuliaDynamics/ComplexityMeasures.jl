@@ -23,20 +23,21 @@ S_q(p) = \\frac{k}{q - 1}\\left(1 - \\sum_{i} p[i]^q\\right)
 The maximum value of the Tsallis entropy is ``k(L^{1 - q} - 1)/(1 - q)``,
 with ``L`` the [`total_outcomes`](@ref).
 """
-struct Tsallis{Q, K, B} <: Entropy
+struct Tsallis{Q,K,B} <: Entropy
     q::Q
     k::K
     base::B
 end
-Tsallis(q; k = 1.0, base = 2) = Tsallis(q, k, base)
-Tsallis(; q = 1.0, k = 1.0, base = 2) = Tsallis(q, k, base)
+Tsallis(q; k=1.0, base=2) = Tsallis(q, k, base)
+Tsallis(; q=1.0, k=1.0, base=2) = Tsallis(q, k, base)
 
 function information(e::Tsallis, probs::Probabilities)
     (; q, k, base) = e
     # As for Renyi, we want to skip the zeros as well.
     non0_probs = Iterators.filter(!iszero, probs.p)
     if q ≈ 1
-        return -sum(p * log(base, p) for p in non0_probs)
+        lb = log_with_base(base)
+        return -sum(p * lb(p) for p in non0_probs)
     else
         return k / (q - 1) * (1 - sum(p^q for p in non0_probs))
     end
@@ -51,6 +52,9 @@ function information_maximum(e::Tsallis, L::Int)
     end
 end
 
-function self_information(e::Tsallis, pᵢ, N = nothing)
-    return (1 - pᵢ^(e.q- 1)) / (e.q - 1)
+function self_information(e::Tsallis, pᵢ, N=nothing)
+    (; q, k, base) = e
+    # Mirror the `q ≈ 1` branch of `information`, which reduces to Shannon.
+    q ≈ 1 && return -k * log_with_base(base)(pᵢ)
+    return k * (1 - pᵢ^(q - 1)) / (q - 1)
 end

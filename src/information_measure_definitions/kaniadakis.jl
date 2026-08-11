@@ -16,14 +16,14 @@ f_\\kappa (x) = \\dfrac{x^\\kappa - x^{-\\kappa}}{2\\kappa},
 where if ``\\kappa = 0``, regular logarithm to the given `base` is used, and
 0 probabilities are skipped.
 """
-Base.@kwdef struct Kaniadakis{K <: Real, B <: Real} <: Entropy
+Base.@kwdef struct Kaniadakis{K<:Real,B<:Real} <: Entropy
     κ::K = 1.0
     base::B = 2.0
 end
 
 function information(e::Kaniadakis, probs::Probabilities)
     κ = e.κ
-    return - sum(pᵢ * logκ(e.base, pᵢ, κ)  for pᵢ in probs)
+    return - sum(pᵢ * logκ(e.base, pᵢ, κ) for pᵢ in probs)
 end
 
 function logκ(base, x, κ)
@@ -41,7 +41,6 @@ function information_maximum(e::Kaniadakis, L::Int)
     throw(ErrorException("information_maximum not implemeted for Kaniadakis entropy yet"))
 end
 
-function self_information(e::Kaniadakis, pᵢ, N = nothing)
-    κ = e.κ
-    return (pᵢ^(-κ) - pᵢ^κ) / (2κ)
+function self_information(e::Kaniadakis, pᵢ, N=nothing)
+    return -logκ(e.base, pᵢ, e.κ)
 end
