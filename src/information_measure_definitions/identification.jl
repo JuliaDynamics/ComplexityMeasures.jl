@@ -27,3 +27,7 @@ end
 function information_maximum(e::Identification, L::Int)
     return 2 * (1 - 1 / L)
 end
+
+function self_information(e::Identification, pᵢ, N = nothing)
+    return 2 * (1 - pᵢ)
+end

@@ -166,3 +166,6 @@ function probabilities_and_outcomes(x::Array_or_SSSet, est::TransferOperator)
     o = ValueBinning(b)
     return probabilities_and_outcomes(est, o, x)
 end
+
+# For 4.0
+@deprecate FluctuationComplexity InformationFluctuation

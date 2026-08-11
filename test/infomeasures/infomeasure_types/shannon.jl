@@ -15,3 +15,18 @@ xp = Probabilities(x)
 
 # or minimal when only one probability is nonzero and equal to 1.0
 @test information(Shannon(), Probabilities([1.0, 0.0, 0.0, 0.0])) ≈ 0.0
+
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Self-information tests
+# ---------------------------------------------------------------------------------------------------------
+# Check experimentally that the self-information expressions are correct by comparing to the 
+# regular computation of the measure from a set of probabilities.
+function information_from_selfinfo(e::Shannon, probs::Probabilities)
+    non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
+    return sum(pᵢ * self_information(e, pᵢ) for pᵢ in non0_probs)
+end
+p = Probabilities([1//10, 1//5, 1//7, 1//5, 0])
+Hs = Shannon()
+@test round(information_from_selfinfo(Hs, p), digits = 5) ≈ round(information(Hs, p), digits = 5)

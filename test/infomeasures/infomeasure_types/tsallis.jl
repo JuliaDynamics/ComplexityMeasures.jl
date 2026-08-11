@@ -6,6 +6,7 @@ m2 = Tsallis(q = 2.0)
 
 p = Probabilities(repeat([1 / 5], 5))
 @test round(information(Tsallis(q = -1 / 2, k = 1), p), digits = 2) ≈ 6.79
+@test round(information(Tsallis(q = -1 / 2, k = 1, base = ℯ), p), digits = 2) ≈ 6.79
 
 # Analytical tests from Tsallis (1998)
 # -----------------------------------
@@ -34,3 +35,19 @@ maxvals = [information_maximum(Tsallis(q = q, k = k), N) for q in q_cases]
 
 # Reduces to Shannon entropy for q → 1.0
 @test information(Tsallis(base = 2, q = 1.0), ps) ≈ log(2, N)
+
+# ---------------------------------------------------------------------------------------------------------
+# Self-information tests
+# ---------------------------------------------------------------------------------------------------------
+# Check experimentally that the self-information expressions are correct by comparing to the 
+# regular computation of the measure from a set of probabilities.
+function information_from_selfinfo(e::Tsallis, probs::Probabilities)
+    e.q ≈ 1.0 && return information_wm(Shannon(; base = e.base ), probs)
+    non0_probs = collect(Iterators.filter(!iszero, vec(probs)))
+    return sum(pᵢ * self_information(e, pᵢ) for pᵢ in non0_probs)
+end
+p = Probabilities([1//5, 1//5, 1//5, 1//2, 0])
+Ht = Tsallis(q = 2)
+@test round(information_from_selfinfo(Ht, p), digits = 5) ≈ round(information(Ht, p), digits = 5)
+
+

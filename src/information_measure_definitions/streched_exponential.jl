@@ -10,14 +10,19 @@ The stretched exponential, or Anteneodo-Plastino, entropy [Anteneodo1999](@cite)
 [`information`](@ref) to compute
 
 ```math
-S_{\\eta}(p) = \\sum_{i = 1}^N
-\\Gamma \\left( \\dfrac{\\eta + 1}{\\eta}, - \\log_{base}(p_i) \\right) -
-p_i \\Gamma \\left( \\dfrac{\\eta + 1}{\\eta} \\right),
+S_{\\eta}(p) = \\dfrac{1}{\\ln{(base)}} \\sum_{i = 1}^N \\left[
+\\Gamma \\left( \\dfrac{\\eta + 1}{\\eta}, - \\ln(p_i) \\right) -
+p_i \\Gamma \\left( \\dfrac{\\eta + 1}{\\eta} \\right) \\right],
 ```
 
 where ``\\eta \\geq 0``, ``\\Gamma(\\cdot, \\cdot)`` is the upper incomplete Gamma
 function, and ``\\Gamma(\\cdot) = \\Gamma(\\cdot, 0)`` is the Gamma function. Reduces to
-[`Shannon`](@ref) entropy for `η = 1.0`.
+[`Shannon`](@ref) entropy, at the same `base`, for `η = 1.0`.
+
+`base` sets the (dimensionless) scale of the returned value: the expression published by
+[Anteneodo1999](@citet) divided by ``\\ln{(base)}``. Use `base = MathConstants.e` to
+recover that expression exactly.
+See [Units and the `base` keyword](@ref units_and_base).
 
 The maximum entropy for `StrechedExponential` is a rather complicated expression involving
 incomplete Gamma functions (see source code).
@@ -39,8 +44,14 @@ function stretched_exponential(pᵢ, η, base)
     # integral used in Anteneodo & Plastino (1999). See
     # https://specialfunctions.juliamath.org/stable/functions_list/#SpecialFunctions.gamma_inc
     Γx = gamma(x)
-
-    return gamma_inc(x, -log(base, pᵢ))[2] * Γx - pᵢ * Γx
+    # `base` is applied as an overall 1/log(base) factor rather than inside the incomplete
+    # gamma function. Unlike Shannon (where the base sits in the logarithm) or Tsallis and
+    # Kaniadakis (where it sits in the deformed logarithm), there is no logarithm here to
+    # absorb it: the natural logarithm below is fixed by the definition, and substituting
+    # log(base, pᵢ) for it yields a different function rather than a change of units. For
+    # base = 2 that substitution makes self_information negative for small pᵢ, and breaks
+    # the reduction to Shannon at η = 1.
+    return (gamma_inc(x, -log(pᵢ))[2] * Γx - pᵢ * Γx) / log(base)
 end
 
 
@@ -54,5 +65,13 @@ function information_maximum(e::StretchedExponential, L::Int)
     Γx = gamma(x)
     # We need the scaled  *upper* incomplete gamma function, which is the second
     # entry in the tuple returned from `gamma_inc`.
-    return L * gamma_inc(x, log(e.base, L))[2] * Γx - Γx
+    return (L * gamma_inc(x, log(L))[2] * Γx - Γx) / log(e.base)
+end
+
+function self_information(e::StretchedExponential, pᵢ, N=nothing)
+    η, base = e.η, e.base
+    Γ₁ = gamma((η + 1) / η, -log(pᵢ))
+    Γ₂ = gamma((η + 1) / η)
+    # NB! Filter for pᵢ != 0 before calling this method.
+    return (Γ₁ / pᵢ - Γ₂) / log(base)
 end
