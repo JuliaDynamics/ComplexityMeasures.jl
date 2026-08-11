@@ -2,6 +2,45 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## Unreleased
+
+### Breaking: `base` is now applied consistently
+
+Previously, `base` was only honoured in isolated parameter branches of some measures, so the same measure could return nats for one parameter value and bits for another. `base` now uniformly scales the value by `1/log(base)`, at every parameter value, in `information`, `information_maximum` and `self_information`.
+
+- `Tsallis`, `Kaniadakis` and `TsallisExtropy` ignored `base` except in their `q == 1` / `κ == 0` limits. At the default `base = 2` their values are now scaled by `1/log(2) ≈ 1.4427` relative to v3.10.
+- **Bug**: `StretchedExponential` passed `log(base, pᵢ)` *into* the incomplete Gamma function. That is not a change of units but a different function: at `base = 2` it made the information content of a rare outcome negative, and `η = 1` did not reduce to `Shannon`. The natural logarithm is now used inside the Gamma function and `base` is applied as an overall factor. At the default `base = 2` values change by more than the factor above.
+- `Tsallis` also ignored the Boltzmann constant `k` in its `q == 1` branch and in `information_maximum`; `k` is now applied there too. No effect at the default `k = 1`.
+
+**Migration:** passing `base = MathConstants.e` reproduces the v3.10 values exactly for all four measures, and is also the form in which they are published. As a consequence of the fix, the limits `q → 1`, `κ → 0` and `η = 1` are now continuous and coincide exactly with `Shannon` at the same base.
+
+See [Units and the `base` keyword](https://juliadynamics.github.io/ComplexityMeasures.jl/stable/information_measures/#units_and_base) for the reasoning.
+
+### Breaking: `FluctuationComplexity` renamed
+
+`FluctuationComplexity`, added in 3.6, is now `InformationFluctuation`. The constructor
+signature is unchanged, and the old name is deprecated rather than removed, so existing
+code keeps working with a deprecation warning.
+
+### New
+
+- `self_information(measure, p)` computes the information content of a single probability
+  under a given `InformationMeasure`, defined by requiring that
+  `sum(pᵢ * self_information(measure, pᵢ)) == information(measure, probs)` for probability
+  mass functions of every length. Implemented for `Shannon`, `Tsallis`, `Kaniadakis`,
+  `Curado`, `StretchedExponential`, `Identification` and `ShannonExtropy`.
+- `InformationFluctuation` — the standard deviation of the information content about its
+  own mean — accepts any measure implementing `self_information`, generalizing the
+  Shannon-based information fluctuation complexity of Bates & Shepard (1993).
+
+### Fixed
+
+- `Curado`'s `self_information` used the numerator `exp(-b*p)` instead of `1 - exp(-b*p)`
+  and divided its constant term by `N`, so it did not satisfy the defining relation above.
+- `ShannonExtropy`'s `self_information` returned `-log(base, 1 - pᵢ)`, which satisfies
+  `sum((1 - pᵢ) * I) == J_S` rather than the `pᵢ`-weighted convention used by every other
+  measure.
+
 ## 3.10
 
 - `TransferOperator` has been reworked and substantially enhanced. It is now a `ProbabilitiesEstimator` and works with any count based outcome space. See its new docstring for more!

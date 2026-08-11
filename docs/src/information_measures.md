@@ -18,6 +18,27 @@ information_normalized
 self_information
 ```
 
+## [Units and the `base` keyword](@id units_and_base)
+
+`base` sets the scale of a measure, never its shape: two bases differ only by the constant
+factor ``1/\ln{(base)}``. For [`Shannon`](@ref) and the other logarithmic measures this is
+the familiar choice of unit — `base = 2` gives bits, `base = MathConstants.e` gives nats.
+
+For [`Tsallis`](@ref), [`Kaniadakis`](@ref), [`TsallisExtropy`](@ref) and
+[`StretchedExponential`](@ref) the word "unit" is looser, because their defining
+expressions contain no logarithm to take the base of; at, say, `q = 1.5` the value is
+simply a dimensionless number. What fixes the scale instead is a limit. Each of these
+measures is built from a deformed logarithm that becomes an ordinary logarithm at one
+parameter value (``q \to 1``, ``\kappa \to 0``, ``\eta = 1``), and their source papers
+normalize that limit to the *natural* logarithm. `base = MathConstants.e` therefore
+reproduces the published expressions exactly, while any other `base` rescales them
+uniformly so that the limiting logarithm is to that base instead. The scaling is applied
+at every parameter value, so these limits are continuous and agree exactly with
+[`Shannon`](@ref) at the same base.
+
+[`Curado`](@ref) and [`Identification`](@ref) take no `base` at all: they are algebraic
+rather than logarithmic and have no such limit, so no scale convention applies to them.
+
 ## Entropies
 
 ```@docs

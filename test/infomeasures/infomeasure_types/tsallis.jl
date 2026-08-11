@@ -6,6 +6,7 @@ m2 = Tsallis(q = 2.0)
 
 p = Probabilities(repeat([1 / 5], 5))
 @test round(information(Tsallis(q = -1 / 2, k = 1), p), digits = 2) ≈ 6.79
+@test round(information(Tsallis(q = -1 / 2, k = 1, base = ℯ), p), digits = 2) ≈ 6.79
 
 # Analytical tests from Tsallis (1998)
 # -----------------------------------
