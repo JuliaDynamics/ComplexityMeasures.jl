@@ -52,6 +52,12 @@ AmplitudeAwareOrdinalPatterns
 Dispersion
 ```
 
+### Slope values
+
+```@docs
+SequentialSlopes
+```
+
 ### Kernel density
 
 ```@docs

@@ -2,6 +2,10 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+## 3.11
+
+- New outcome space `SequentialSlopes` used to calculate slope entropy.
+
 ## 3.10
 
 - `TransferOperator` has been reworked and substantially enhanced. It is now a `ProbabilitiesEstimator` and works with any count based outcome space. See its new docstring for more!
