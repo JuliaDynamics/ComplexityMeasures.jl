@@ -14,7 +14,7 @@ and `c ∈ [3, 4, …, 8]` categories for the Gaussian symbol mapping.
 
 ## Description
 
-Assume we have a univariate time series ``X = \\{x_i\\}_{i=1}^N``. First, this time series
+Assume we have a univariate timeseries ``X = \\{x_i\\}_{i=1}^N``. First, this time series
 is encoded into a symbol timeseries ``S`` using the Gaussian encoding
 [`GaussianCDFEncoding`](@ref) with empirical mean `μ` and empirical standard deviation `σ`
 (both determined from ``X``), and `c` as given to `Dispersion`.
