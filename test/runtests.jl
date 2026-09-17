@@ -17,6 +17,7 @@ end
     testfile("outcome_spaces/implementations/value_binning.jl")
     testfile("outcome_spaces/implementations/naive_kernel.jl")
     testfile("outcome_spaces/implementations/permutation.jl")
+    testfile("outcome_spaces/implementations/sequential_slopes.jl")
     testfile("outcome_spaces/implementations/timescales.jl")
     testfile("outcome_spaces/implementations/dispersion.jl")
     testfile("outcome_spaces/implementations/cosine_similarity_binning.jl")
