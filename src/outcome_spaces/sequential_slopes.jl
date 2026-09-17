@@ -52,9 +52,9 @@ the slopes to a simpler 3-symbol alphabet of Up Down Flat).
 
 ## Outcome space
 
-`SlopesOfDifferences` is a [`CountBasedOutcomeSpace`](@ref). The outcome
+`SlopesOfDifferences` is a count-based outcome space. The outcome
 space `Ω` consists of the length-`m` words formed by sliding a window of
-length `m` (step `1`) over the symbolized difference sequence, i.e. the
+length `m` (and step `1`) over the symbolized difference sequence, i.e. the
 same embedding scheme used for e.g. [`OrdinalPatterns`](@ref). Each
 outcome is thus an `NTuple{m, Int} and `total_outcomes` is `(length(thresholds) + 1)^m`
 (`5^m` in the default, 5-symbol case).
