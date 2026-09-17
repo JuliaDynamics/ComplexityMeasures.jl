@@ -1,3 +1,5 @@
+export SequentialSlopes
+
 """
     SequentialSlopes <: CountBasedOutcomeSpace
     SequentialSlopes(m::Int, thresholds::AbstractVector)
