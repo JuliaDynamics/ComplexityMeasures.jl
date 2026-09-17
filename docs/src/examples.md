@@ -452,7 +452,7 @@ entropy(Shannon(), o, x)
 which as expected is approximately 1 because only two outcomes exist with same probability and the logarithm used is base 2.
 The *normalised* slope entropy on the other hand is much less than 1:
 ```@example MAIN
-entropy_normalised(Shannon(), o, x)
+entropy_normalized(Shannon(), o, x)
 ```
 
 
