@@ -49,7 +49,8 @@ steep thresholds.
 
 The general two-argument constructor `SlopesOfDifferences(m, thresholds)`
 allows an arbitrary sorted vector of thresholds, generalizing beyond
-the 5-symbol alphabet (e.g. to add extra interval parameters).
+the 5-symbol alphabet (e.g. to add extra interval parameters or reduce
+the slopes to a simpler 3-symbol alphabet of Up Down Flat).
 
 ## Outcome space
 
