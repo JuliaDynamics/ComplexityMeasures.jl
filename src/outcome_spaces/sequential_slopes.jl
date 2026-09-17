@@ -57,11 +57,11 @@ same embedding scheme used for e.g. [`OrdinalPatterns`](@ref). Each
 outcome is thus an `NTuple{m, Int} and `total_outcomes` is `(length(thresholds) + 1)^m`
 (`5^m` in the default, 5-symbol case).
 """
-struct SequentialSlopes{T<:Real} <: CountBasedOutcomeSpace
+struct SequentialSlopes{V<:AbstractVector{<:Real}} <: CountBasedOutcomeSpace
     m::Int
     # thresholds contains all the `γ, δ` difference thresholds,
     # while allowing generalizability to as many thresholds as we want.
-    thresholds::Vector{T}
+    thresholds::V
     zero_integer::Int # what to subtract to make symbols symmetric around 0
 end
 
