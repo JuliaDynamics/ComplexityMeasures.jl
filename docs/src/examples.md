@@ -70,10 +70,10 @@ kldivergence(py, px)
 ## Transition probabilitites: Transfer operator
 
 What are the most probable outcomes the system can transition to, given its current state?
-Transition probabilities capture dynamic information and can also be relevant in cases 
-where one needs more than just the probabilities of outcomes. 
-The [`TransferOperator`](@ref) or (Perron-Frobenius operator) is also implemented as a 
-subtype of `ProbabilitiesEstimator`, giving access to transition probabilities as well as 
+Transition probabilities capture dynamic information and can also be relevant in cases
+where one needs more than just the probabilities of outcomes.
+The [`TransferOperator`](@ref) or (Perron-Frobenius operator) is also implemented as a
+subtype of `ProbabilitiesEstimator`, giving access to transition probabilities as well as
 the probabilities of outcomes themselves.
 
 As a first example, let's look at transition probabilities between bins of
@@ -93,13 +93,13 @@ to = transferoperator(b, timeseries)
 P = transfermatrix(to)
 ````
 
-Estimate probabilities from the transition matrix: 
+Estimate probabilities from the transition matrix:
 ````@example MAIN
 outs = outcomes(to) #bins
 probs = probabilities(TransferOperator(), b, timeseries)
 ````
 
-The transfer operator is generalized to work with many more outcomes. Let's look at 
+The transfer operator is generalized to work with many more outcomes. Let's look at
 transition probabilities between ordinal patterns using time series  of the logistic map:
 ````@example MAIN
 using ComplexityMeasures
@@ -115,7 +115,7 @@ to = transferoperator(o, x)
 P = transfermatrix(to)
 ````
 
-Estimate probabilities from the transition matrix iteratively or by calculating eigenvectors: 
+Estimate probabilities from the transition matrix iteratively or by calculating eigenvectors:
 ````@example MAIN
 outs = outcomes(to) #show observed ordinal patterns
 p_it = probabilities(TransferOperator(ApproximationIterative()), o, x)
@@ -431,6 +431,30 @@ for a in (ax, ay, az); axislegend(a); end
 for a in (ax, ay); hidexdecorations!(a; grid=false); end
 fig
 ```
+
+
+## Discrete entropy: slope entropy
+
+If we have a perfectly alternating timeseries of 0 and 1, the sequential slopes alternate between +1 and -1. This can be identified with the [`SequentialSlopes`](@ref) outcome space (and appropriate `γ`)
+
+```@example MAIN
+x = repeat([1, 2], 1000)
+o = SequentialSlopes(2; γ = 0.5)
+outs = outcomes(o, x)
+```
+
+Following the convention of the original papers introducing slope entropy, the slope outcomes are encoded as +2 or -2, because there are 5 intervals within which a slope can fall into (for the default values of `γ, δ`).
+
+The corresponding slope entropy is obtained as
+```@example MAIN
+entropy(Shannon(), o, x)
+```
+which as expected is approximately 1 because only two outcomes exist with same probability and the logarithm used is base 2.
+The *normalised* slope entropy on the other hand is much less than 1:
+```@example MAIN
+entropy_normalised(Shannon(), o, x)
+```
+
 
 ## Discrete entropies: properties
 
