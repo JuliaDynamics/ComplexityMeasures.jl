@@ -1,7 +1,3 @@
-# Remove these when PR is done
-using ComplexityMeasures
-import ComplexityMeasures: CountBasedOutcomeSpace, outcome_space, total_outcomes, counts_and_outcomes, codify, encode
-
 """
     SequentialSlopes <: CountBasedOutcomeSpace
     SequentialSlopes(m::Int, thresholds::AbstractVector)
@@ -107,8 +103,8 @@ end
 
 function counts_and_outcomes(o::SequentialSlopes, x::AbstractVector{<:Real})
     symbols = codify(o, x)
-    words = ComplexityMeasures.embed(symbols, o.m, 1)
-    cts = ComplexityMeasures.fasthist!(words) # this sorts the words
+    words = embed(symbols, o.m, 1)
+    cts = fasthist!(words) # this sorts the words
     outs = unique!(words) # therefore, outcomes are the sorted patterns.
     c = Counts(cts, (outs,))
     return c, outcomes(c)
