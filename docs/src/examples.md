@@ -438,7 +438,7 @@ fig
 If we have a perfectly alternating timeseries of 0 and 1, the sequential slopes alternate between +1 and -1. This can be identified with the [`SequentialSlopes`](@ref) outcome space (and appropriate `γ`)
 
 ```@example MAIN
-x = repeat([1, 2], 1000)
+x = repeat([0, 1], 1000)
 o = SequentialSlopes(2; γ = 0.5)
 outs = outcomes(o, x)
 ```
