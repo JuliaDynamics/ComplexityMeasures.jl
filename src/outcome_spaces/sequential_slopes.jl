@@ -96,8 +96,6 @@ function slope_symbol(o::SequentialSlopes, d::Real)
 end
 
 function codify(o::SequentialSlopes, x::AbstractVector{<:Real})
-    # d = diff(x)
-    # symbols = encode.(Ref(o.encoding), d)
     indices = 1:length(x)-1
     symbols = map(i -> slope_symbol(o, x[i+1] - x[i]), indices)
     return symbols
