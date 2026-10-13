@@ -48,25 +48,29 @@ RectangularBinning(ε) = RectangularBinning(ε, false)
 
 """
     FixedRectangularBinning <: AbstractBinning
-    FixedRectangularBinning(ranges::Tuple{<:AbstractRange...}, precise = false)
+    FixedRectangularBinning(ranges::Tuple, precise = false)
 
 Rectangular box partition of state space where the partition along each dimension
-is explicitly given by each range `ranges`, which is a tuple of `AbstractRange` subtypes.
-Typically, each range is the output of the `range` Base function, e.g.,
-`ranges = (0:0.1:1, range(0, 1; length = 101), range(2.1, 3.2; step = 0.33))`.
+is explicitly given by each range in `ranges`, which is a tuple of `AbstractVector`s.
 All ranges must be sorted.
+Typically, each range is an `AbstractRange` with fixed step size, e.g.,
+`ranges = (0:0.1:1, range(0, 1; length = 101), range(2.1, 3.2; step = 0.33))`.
 
 The optional second argument `precise` dictates whether Julia Base's `TwicePrecision`
 is used for when searching where a point falls into the range.
 Useful for edge cases of points being almost exactly on the bin edges,
 but it is exactly four times as slow, so by default it is `false`.
 
+If `precise = true`, the ranges may also be sorted vectors of bin edges with
+non-uniform spacing, e.g., `(10.0 .^ (-3:3),)`. When `precise = false`,
+only `AbstractRange` inputs are allowed because the fast path assumes a constant step size.
+
 Points falling outside the partition do not contribute to probabilities.
 Bins are always left-closed-right-open: `[a, b)`.
 **This means that the last value of
 each of the ranges dictates the last right-closing value.**
 This value does _not_ belong to the histogram!
-E.g., if given a range `r = range(0, 1; length = 11)`, with `r[end] = 1`,
+E.g., if given a range `r = range(0, 1; length = 11)`, with `r[end] == 1`,
 the value `1` is outside the partition and would not attribute any
 increase of the probability corresponding to the last bin (here `[0.9, 1)`)!
 
@@ -82,6 +86,10 @@ struct FixedRectangularBinning{R <: Tuple} <: AbstractBinning
     function FixedRectangularBinning(ranges::R, precise) where {R}
         if any(r -> !issorted(r), ranges)
             throw(ArgumentError("All input ranges must be sorted!"))
+        end
+        if !precise && any(r -> !(r isa AbstractRange), ranges)
+            throw(ArgumentError("Ranges that are not `AbstractRange` (e.g., vectors of "*
+                "non-uniform bin edges) require `precise = true`."))
         end
         return new{R}(ranges, precise)
     end
@@ -138,7 +146,8 @@ function RectangularBinEncoding(b::FixedRectangularBinning)
     D = length(ranges)
     T = float(eltype(first(ranges)))
     mini = SVector{D, T}(map(minimum, ranges))
-    widths = SVector{D, T}(map(step, ranges))
+    # `widths` is only used when `precise = false`, which requires `AbstractRange`s
+    widths = SVector{D, T}(map(r -> r isa AbstractRange ? step(r) : T(NaN), ranges))
     ci = CartesianIndices(Tuple(histsize))
     li = LinearIndices(ci)
     return RectangularBinEncoding(ranges, b.precise, mini, widths, histsize, ci, li)
