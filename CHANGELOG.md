@@ -2,6 +2,10 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+# 3.12
+
+- `FixedRectangularBinning` with `precise = true` now accepts sorted vectors of (non-uniformly spaced) bin edges, e.g. `10.0 .^ (-3:3)`, in addition to `AbstractRange`s.
+
 ## 3.11
 
 - New outcome space `SequentialSlopes` used to calculate slope entropy.

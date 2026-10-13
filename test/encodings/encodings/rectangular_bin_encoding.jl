@@ -12,6 +12,21 @@ using StaticArrays: SVector
     @test_throws ArgumentError FixedRectangularBinning((5:-1:0,))
 end
 
+@testset "RectangularBinEncoding: non-uniform edges" begin
+    edges = 10.0 .^ (-3:3)
+    @test_throws ArgumentError FixedRectangularBinning((edges,), false)
+    b = FixedRectangularBinning((edges,), true)
+    e = RectangularBinEncoding(b)
+    @test total_outcomes(e) == 6
+    @test encode(e, 0.0005) == -1 # below first edge
+    @test encode(e, edges[1]) == 1
+    @test encode(e, 0.5) == 3
+    @test encode(e, 999.0) == 6
+    @test encode(e, edges[end]) == -1 # last edge is excluded
+    @test decode(e, 3) == SVector(edges[3])
+    @test outcome_space(e) == [SVector(x) for x in edges[1:end-1]]
+end
+
 seeds = [1234, 57772, 90897, 2158081, 888]
 # Note that if `false` is used for `precise` the tests will fail.
 # But that's okay, since we do not do guarantees for that case.
