@@ -23,7 +23,7 @@ on the interval ``[0, 1]`` by normalizing to to the maximal Rényi extropy, give
 J_R(P) = (N - 1)\\log \\left( \\dfrac{n}{n-1} \\right) .
 ```
 """
-struct RenyiExtropy{Q,B} <: InformationMeasure
+struct RenyiExtropy{Q, B} <: InformationMeasure
     q::Q
     base::B
 end
@@ -42,7 +42,7 @@ function information(e::RenyiExtropy, probs::Probabilities)
         return information(ShannonExtropy(; base), Probabilities(non0_probs))
     else
         N = length(non0_probs)
-        num = -(N - 1)*log(base, N - 1) + (N - 1)*log(base, sum((1 - pᵢ)^q for pᵢ in non0_probs))
+        num = -(N - 1) * log(base, N - 1) + (N - 1) * log(base, sum((1 - pᵢ)^q for pᵢ in non0_probs))
         den = 1 - q
         return num / den
     end

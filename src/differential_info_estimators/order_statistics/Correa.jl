@@ -68,7 +68,7 @@ function information(est::Correa{<:Shannon}, x::AbstractVector{<:Real})
 
     ex = sort(x)
     HCₘₙ = 0.0
-    for i = 1:n
+    for i in 1:n
         x̄ᵢ = local_scaled_mean(ex, i, m, n)
         num = 0.0
         den = 0.0

@@ -38,11 +38,12 @@ decode(encoding, c3) ≈ [0.35] # true
 ```
 """
 struct PairDistanceEncoding{
-        R, 
+        R,
         I <: Integer,
         MINV <: Real,
         MAXV <: Real,
-        M} <: Encoding
+        M,
+    } <: Encoding
     binencoder::R # RectangularBinEncoding
     n::I
     min_dist::MINV
@@ -50,8 +51,10 @@ struct PairDistanceEncoding{
     metric::M
 end
 
-function PairDistanceEncoding(min_dist, max_dist; 
-        n = 2, metric = Chebyshev(), precise = false)
+function PairDistanceEncoding(
+        min_dist, max_dist;
+        n = 2, metric = Chebyshev(), precise = false
+    )
     bin_edges = range(min_dist, nextfloat(max_dist); length = n + 1)
     binning = FixedRectangularBinning(bin_edges, 1, precise)
     binencoder = RectangularBinEncoding(binning)
@@ -63,7 +66,7 @@ end
 # ----------------------------------------------------------------
 hidefields(::Type{<:PairDistanceEncoding}) = [:binencoder]
 
-function encode(d::PairDistanceEncoding, x::Tuple{<:AbstractVector, <:AbstractVector}) 
+function encode(d::PairDistanceEncoding, x::Tuple{<:AbstractVector, <:AbstractVector})
     dist = d.metric(first(x), last(x))
     # Encode distance as an integer from the set {1, 2, …, encoding.n}
     return encode(d.binencoder, dist)

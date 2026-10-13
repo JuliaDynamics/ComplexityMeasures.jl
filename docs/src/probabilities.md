@@ -52,18 +52,10 @@ AmplitudeAwareOrdinalPatterns
 Dispersion
 ```
 
-### Transfer operator
+### Slope values
 
 ```@docs
-TransferOperator
-```
-
-#### Utility methods/types
-
-```@docs
-InvariantMeasure
-invariantmeasure
-transfermatrix
+SequentialSlopes
 ```
 
 ### Kernel density
@@ -135,6 +127,15 @@ RelativeAmount
 BayesianRegularization
 Shrinkage
 AddConstant
+```
+
+### Transfer operator
+
+```@docs
+TransferOperator
+transferoperator
+ApproximationIterative
+ApproximationEigen
 ```
 
 ## [Encodings/Symbolizations API](@id encodings)

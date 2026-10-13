@@ -60,10 +60,10 @@ function information(hest::GeneralizedSchuermann{<:Shannon}, cts::Counts)
     N = sum(cts)
 
     if a isa Real
-        h = digamma(N) - 1/N * sum(nᵢ * Gₙ(a, nᵢ) for nᵢ in cts)
+        h = digamma(N) - 1 / N * sum(nᵢ * Gₙ(a, nᵢ) for nᵢ in cts)
     else
         # Assumes a[i] corresponds to cts[i]
-        h = digamma(N) - 1/N * sum(nᵢ * Gₙ(aᵢ, nᵢ) for (nᵢ, aᵢ) in zip(cts, a))
+        h = digamma(N) - 1 / N * sum(nᵢ * Gₙ(aᵢ, nᵢ) for (nᵢ, aᵢ) in zip(cts, a))
     end
 
     # Grassberger's estimate of `h` is based on the natural logarithm, so we must convert

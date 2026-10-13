@@ -6,20 +6,12 @@ ComplexityMeasures
 
 ## Latest news
 
-ComplexityMeasures.jl has been updated to v3!
+[`TransferOperator`](@ref) has been reworked and substantially enhanced. It is now a `ProbabilitiesEstimator` and works with any count based outcome space. See its new docstring for more!
 
-The software has been massively improved and its core principles were
-redesigned to be extendable, accessible, and more closely based
-on the rigorous mathematics of probabilities and entropies.
+You can always check the
+[CHANGELOG.md](https://github.com/JuliaDynamics/ComplexityMeasures.jl/main/CHANGELOG.md) for details!
 
-For more details of this new release, please see our [announcement
-post on discourse](https://discourse.julialang.org/t/complexitymeasures-jl-v3-a-mathematically-rigorous-software-for-probability-entropy-and-complexity/108562)
-or the central [Tutorial](@ref) of the v3 documentation.
-
-In this v3 many concepts were renamed, but there is no formally
-breaking change. Everything that changed has been deprecated
-and is backwards compatible. You can see the
-[CHANGELOG.md](https://github.com/JuliaDynamics/ComplexityMeasures.jl/blob/v3.0.0/CHANGELOG.md) for more details!
+Note that the **DynamicalSystem.jl** library publishes general updates in a [JuliaLang Discourse post](https://discourse.julialang.org/t/dynamicalsystems-jl-news-updates-and-announcements/122079) that you can subscribe to!
 
 ## Documentation contents
 

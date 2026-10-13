@@ -53,7 +53,7 @@ See also: [`RegularDownsampling`](@ref).
 struct CompositeDownsampling{S} <: MultiScaleAlgorithm
     f::Function
     scales::S
-    function CompositeDownsampling(; f::Function = Statistics.mean, scales::S = 1:8) where S
+    function CompositeDownsampling(; f::Function = Statistics.mean, scales::S = 1:8) where {S}
         if S <: Integer
             s = 1:scales
             return new{typeof(s)}(f, s)
@@ -62,8 +62,10 @@ struct CompositeDownsampling{S} <: MultiScaleAlgorithm
     end
 end
 
-function downsample(method::CompositeDownsampling, s::Int, x::AbstractVector{T},
-        args...) where T
+function downsample(
+        method::CompositeDownsampling, s::Int, x::AbstractVector{T},
+        args...
+    ) where {T}
 
     verify_scale_level(method, s, x)
     f = method.f
@@ -94,10 +96,10 @@ function downsample(method::CompositeDownsampling, s::Int, x::AbstractVector{T},
         #    Only one window is possible for start index 4, so `min_possible_windows = 1`
         min_possible_windows = floor(Int, (N - s + 1) / s)
 
-        ys = [zeros(ET, min_possible_windows) for i = 1:s]
-        for k = 1:s
-            for t = 1:min_possible_windows
-                inds = ((t - 1)*s + k):(t * s + k - 1)
+        ys = [zeros(ET, min_possible_windows) for i in 1:s]
+        for k in 1:s
+            for t in 1:min_possible_windows
+                inds = ((t - 1) * s + k):(t * s + k - 1)
                 ys[k][t] = @views f(x[inds], args...)
             end
         end
@@ -110,7 +112,7 @@ function apply_multiscale(alg::CompositeDownsampling, f::Function, args...)
     downscaled_timeseries = [downsample(alg, s, last(args)) for s in alg.scales]
 
     # Use all args for estimation, except the last argument, which is the input data.
-    estimation_args = @views args[1:end-1]
+    estimation_args = @views args[1:(end - 1)]
     hs = zeros(Float64, length(alg.scales))
     for (i, s) in enumerate(alg.scales)
         x = downscaled_timeseries[i] # contains an array of time series

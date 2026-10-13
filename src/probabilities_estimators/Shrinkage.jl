@@ -57,7 +57,7 @@ struct Shrinkage{T <: Union{Nothing, Real, Vector{<:Real}}, L <: Union{Nothing, 
     t::T
     λ::L
     function Shrinkage(; t::T = nothing, λ::L = nothing) where {T, L}
-        new{T, L}(t, λ)
+        return new{T, L}(t, λ)
     end
 end
 
@@ -71,8 +71,10 @@ function allprobabilities_and_outcomes(est::Shrinkage, outcomemodel::OutcomeSpac
     return probs_and_outs_from_histogram(est, outcomemodel, probs_all, Ω_all, x)
 end
 
-function probs_and_outs_from_histogram(est::Shrinkage, outcomemodel::OutcomeSpace,
-        probs_observed, Ω_observed, x)
+function probs_and_outs_from_histogram(
+        est::Shrinkage, outcomemodel::OutcomeSpace,
+        probs_observed, Ω_observed, x
+    )
     verify_counting_based(outcomemodel, "Shrinkage")
     t = est.t
 
@@ -93,7 +95,7 @@ function probs_and_outs_from_histogram(est::Shrinkage, outcomemodel::OutcomeSpac
         probs[idx] = θₖ_shrink(probs_observed[k], λ, tₖ)
     end
     @assert sum(probs) ≈ 1.0
-    p = Probabilities(probs, Ω_observed,)
+    p = Probabilities(probs, Ω_observed)
     return p, outcomes(p)
 end
 
@@ -101,12 +103,12 @@ function get_λ(est, n, probs_observed, t, m)
     # Optimal shrinkage intensity (eq. 5 in Hausser and Strimmer, 2009).
     if est.λ === nothing
         densum = 0.0
-        for k = 1:m
+        for k in 1:m
             tₖ = get_tₖ(t, k, m)
-            densum += (tₖ - probs_observed[k]) ^ 2
+            densum += (tₖ - probs_observed[k])^2
         end
-        λ = (1 - sum(probs_observed .^ 2)) / (n - 1)*densum
-    # User-picked shrinkage intensity.
+        λ = (1 - sum(probs_observed .^ 2)) / (n - 1) * densum
+        # User-picked shrinkage intensity.
     else
         λ = est.λ
     end
@@ -118,9 +120,9 @@ function get_tₖ(t, k::Int, m::Int)
     if t isa Real
         return t
     elseif t === nothing
-        return 1/m
+        return 1 / m
     else
         return t[k]
     end
 end
-θₖ_shrink(θₖML, λ, tₖ) = λ*tₖ + (1 - λ)*θₖML
+θₖ_shrink(θₖML, λ, tₖ) = λ * tₖ + (1 - λ) * θₖML

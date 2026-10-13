@@ -3,7 +3,7 @@ using ComplexityMeasures.DelayEmbeddings.Neighborhood: KDTree
 @test NaiveKernel(0.1; method = KDTree) isa OutcomeSpace
 
 N = 1000
-pts = StateSpaceSet([rand(2) for i = 1:N]);
+pts = StateSpaceSet([rand(2) for i in 1:N]);
 ϵ = 0.3
 o_direct = NaiveKernel(ϵ, method = KDTree)
 o_tree = NaiveKernel(ϵ, method = BruteForce)

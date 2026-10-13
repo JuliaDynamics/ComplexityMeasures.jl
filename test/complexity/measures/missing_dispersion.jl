@@ -13,7 +13,7 @@ est = MissingDispersionPatterns(dispest)
 # with m = 2 and τ = 1, hen the symbol (2, 2) doesn't occur, so the number of missing
 # dispersion patterns is 1
 @test complexity(est, x) == 1
-@test complexity_normalized(est, x) == 1/9
+@test complexity_normalized(est, x) == 1 / 9
 
 # For uniformly distributed noise, with sufficiently low-dimensional embeddings and
 # few enough categories for the symbolization, it is expected that all dispersion patterns

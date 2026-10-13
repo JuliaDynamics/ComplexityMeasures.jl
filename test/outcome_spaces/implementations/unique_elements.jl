@@ -10,7 +10,9 @@ probs2 = probabilities(UniqueElements(), x)
 probs3, outs = probabilities_and_outcomes(UniqueElements(), x)
 
 for ps in (probs1, probs2, probs3)
-    for p in ps; @test 0.49 < p < 0.51; end
+    for p in ps
+        @test 0.49 < p < 0.51
+    end
 end
 
 @test outs == [false, true]
@@ -24,7 +26,9 @@ D = StateSpaceSet(x, y)
 probs1 = probabilities(D)
 probs2 = probabilities(UniqueElements(), D)
 for ps in (probs1, probs2)
-    for p in ps; @test 0.24 < p < 0.26; end
+    for p in ps
+        @test 0.24 < p < 0.26
+    end
 end
 
 # Renyi of coin toss is 1 bit, and for two coin tosses is two bits
@@ -38,4 +42,7 @@ end
 
 # Codification of vector inputs (time series)
 x = [1, 3, 2, 1, 2, 2, 1, 3, 1]
+y = ["a", "b", "c", "b", "a"]
+
 @test codify(UniqueElements(), x) isa Vector{Int}
+@test codify(UniqueElements(), y) isa Vector{Int}

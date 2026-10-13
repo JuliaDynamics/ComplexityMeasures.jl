@@ -30,5 +30,5 @@ function information(hest::MillerMadow{<:Shannon}, pest::ProbabilitiesEstimator,
     # in Paninski (2003)
     m̂ = count(probs .> 0.0)
     h_naive = information(PlugIn(hest.definition), probs)
-    return h_naive + (m̂ - 1)/(2 * N)
+    return h_naive + (m̂ - 1) / (2 * N)
 end

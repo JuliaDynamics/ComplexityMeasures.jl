@@ -1,4 +1,3 @@
-
 # Analytical tests
 # -----------------------------------
 # Minimal and equal to zero when probability distribution has only one element...

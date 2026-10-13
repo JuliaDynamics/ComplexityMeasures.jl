@@ -90,15 +90,15 @@ function information(est::Lord{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D
     # C contains neighborhood-centroid-centered vectors, where
     # `C[1]` := the centered query point
     # `C[1 + j]` := the centered `j`-th neighbor of the query point.
-    C = [@SVector zeros(D) for i = 1:k+1]
+    C = [@SVector zeros(D) for i in 1:(k + 1)]
 
     # Centered neighbors need to be ordered row-wise in a matrix. We re-fill this matrix
     # for every query point `xᵢ`
-    A = @MMatrix zeros(k+1, D)
+    A = @MMatrix zeros(k + 1, D)
 
     # Precompute some factors
-    γ = gamma(1 + D/2)
-    f = N * π^(D/2)
+    γ = gamma(1 + D / 2)
+    f = N * π^(D / 2)
 
     h = 0.0
     for (i, xᵢ) in enumerate(x)
@@ -123,7 +123,7 @@ function information(est::Lord{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D
         # to zero (by just skipping the computation) if that is the case.
         kᵢ = center_neighbors_and_count(neighborsᵢ, xᵢ, Λ)
         if kᵢ > 0
-            h += log(kᵢ * γ / (f * ϵᵢ^D * prod(Σ ./ σ₁)) )
+            h += log(kᵢ * γ / (f * ϵᵢ^D * prod(Σ ./ σ₁)))
         end
     end
     # The estimated entropy has "unit" [nats]
@@ -134,7 +134,7 @@ end
 
 # This is zero-allocating.
 function fill_A!(A, C)
-    @inbounds for (j, m) in enumerate(C)
+    return @inbounds for (j, m) in enumerate(C)
         A[j, :] = m
     end
 end
@@ -149,7 +149,7 @@ function center_neighbors_and_count(neighborsᵢ, xᵢ, Λ)
 end
 
 # If all input vectors are `SVector`s, then this is zero-allocating.
-function centroid(xᵢ::SVector{D}, neighbors, k::Int) where D
+function centroid(xᵢ::SVector{D}, neighbors, k::Int) where {D}
     centroid = SVector{D}(xᵢ)
     for nᵢ in neighbors
         centroid += nᵢ

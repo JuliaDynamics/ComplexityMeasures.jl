@@ -31,11 +31,11 @@ discretize/encode the data directly.
 | [`OrdinalPatterns`](@ref)               | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✔                  |
 | [`SpatialOrdinalPatterns`](@ref)        | Ordinal patterns in space         | `Array`                   | ✔                  |
 | [`Dispersion`](@ref)                    | Dispersion patterns               | `Vector`                  | ✔                  |
+| [`SequentialSlopes`](@ref)              | Slopes of differences             | `Vector`                  | ✔                  |
 | [`SpatialDispersion`](@ref)             | Dispersion patterns in space      | `Array`                   | ✔                  |
 | [`CosineSimilarityBinning`](@ref)       | Cosine similarity                 | `Vector`                  | ✔                  |
 | [`BubbleSortSwaps`](@ref)               | Swap counts when sorting          | `Vector`                  | ✔                  |
 | [`SequentialPairDistances`](@ref)       | Sequential state vector distances | `Vector`, `StateSpaceSet` | ✔                  |
-| [`TransferOperator`](@ref)              | Binning (transfer operator)       | `Vector`, `StateSpaceSet` | ✖                  |
 | [`NaiveKernel`](@ref)                   | Kernel density estimation         | `StateSpaceSet`           | ✖                  |
 | [`WeightedOrdinalPatterns`](@ref)       | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✖                  |
 | [`AmplitudeAwareOrdinalPatterns`](@ref) | Ordinal patterns                  | `Vector`, `StateSpaceSet` | ✖                  |
@@ -52,7 +52,7 @@ Outcome spaces are used as input to
     probability mass functions.
 - [`outcome_space`](@ref), which returns the elements of the outcome space.
 - [`total_outcomes`](@ref), which returns the cardinality of the outcome space.
-- [`counts`](@ref)/[`counts_and_outcomes`](@ref)/[`allcounts_and_outcomes`](@ref), for 
+- [`counts`](@ref)/[`counts_and_outcomes`](@ref)/[`allcounts_and_outcomes`](@ref), for
     obtaining raw counts instead of probabilities (only for counting-compatible outcome
     spaces).
 
@@ -120,10 +120,14 @@ in which case the function dispatches to `outcome_space(o)`.
 In general it is recommended to use the 2-argument version irrespectively of estimator.
 """
 function outcome_space(o::OutcomeSpace)
-    error(ErrorException("""
-    `outcome_space(o)` not implemented for outcome space $(typeof(o)).
-    Try calling `outcome_space(o, input_data)`, and if you get the same error, open an issue.
-    """))
+    error(
+        ErrorException(
+            """
+            `outcome_space(o)` not implemented for outcome space $(typeof(o)).
+            Try calling `outcome_space(o, input_data)`, and if you get the same error, open an issue.
+            """
+        )
+    )
 end
 outcome_space(o::OutcomeSpace, x) = outcome_space(o)
 

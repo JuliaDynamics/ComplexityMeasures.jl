@@ -7,6 +7,7 @@ rng = Xoshiro(1234)
     @test BayesianRegularization() isa BayesianRegularization
     @test Shrinkage() isa Shrinkage
     @test AddConstant() isa AddConstant
+    @test TransferOperator() isa TransferOperator
 end
 
 # Counting-basedoutcome spaces work with any estimator
@@ -25,17 +26,17 @@ x = rand(rng, 100)
     @test probabilities(BayesianRegularization(), o, x) isa Probabilities
     @test probabilities(Shrinkage(), o, x) isa Probabilities
     @test probabilities(AddConstant(), o, x) isa Probabilities
+    @test probabilities(TransferOperator(), o, x) isa Probabilities
 end
 
 
 # Non-counting based outcome spaces don't work with counting-based estimators
 os_noncount = [
     WaveletOverlap(),
-    TransferOperator(RectangularBinning(3)),
     PowerSpectrum(),
     AmplitudeAwareOrdinalPatterns(),
     WeightedOrdinalPatterns(),
-    NaiveKernel(0.1)
+    NaiveKernel(0.1),
 ]
 
 @testset "`ProbabilitiesEstimator` with $(typeof(os_noncount[i]).name.name)" for i in eachindex(os_noncount)
@@ -47,4 +48,5 @@ os_noncount = [
     @test_throws ArgumentError probabilities(BayesianRegularization(), o, x)
     @test_throws ArgumentError probabilities(Shrinkage(), o, x)
     @test_throws ArgumentError probabilities(AddConstant(), o, x)
+    @test_throws ArgumentError probabilities(TransferOperator(), o, x)
 end

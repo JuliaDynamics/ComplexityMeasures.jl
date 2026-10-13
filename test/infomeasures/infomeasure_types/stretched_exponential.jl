@@ -8,7 +8,7 @@ p = Probabilities([1.0])
 
 # Maximal value occurs for uniform distribution
 N = 10
-up = Probabilities(repeat([1/N], N))
+up = Probabilities(repeat([1 / N], N))
 b = 2
 η = 2.0
 

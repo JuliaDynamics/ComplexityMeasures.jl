@@ -42,10 +42,10 @@ function n_swaps_for_bubblesort(encoding::BubbleSortSwapsEncoding, state_vector)
     while swapped
         swapped = false
         n_swaps = 0
-        for j = 1:(L - 1)
-            if x[j] > x[j+1]
+        for j in 1:(L - 1)
+            if x[j] > x[j + 1]
                 n_swaps += 1
-                x[j], x[j+1] = x[j+1], x[j] # move smallest element to the right
+                x[j], x[j + 1] = x[j + 1], x[j] # move smallest element to the right
             end
         end
         if iszero(n_swaps)

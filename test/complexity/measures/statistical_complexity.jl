@@ -5,15 +5,15 @@ rng = MersenneTwister(1234)
 
 
 @testset "Statistical Complexity" begin
-    
+
 
     m, τ = 6, 1
     x = randn(rng, 10000)
     c = StatisticalComplexity(
-        dist=JSDivergence(),
-        pest=RelativeAmount(),
-        o=OrdinalPatterns(; m, τ),
-        hest=Renyi()
+        dist = JSDivergence(),
+        pest = RelativeAmount(),
+        o = OrdinalPatterns(; m, τ),
+        hest = Renyi()
     )
     # complexity of white noise should be very close to zero
     compl = complexity(c, x)
@@ -27,10 +27,10 @@ rng = MersenneTwister(1234)
     # we don't have any specific values but we can at least repeat the edge case of noise
     # which should also be close to zeros
     c = StatisticalComplexity(
-        dist=JSDivergence(),
-        pest=RelativeAmount(),
-        o=OrdinalPatterns(; m, τ),
-        hest=PlugIn(Tsallis())
+        dist = JSDivergence(),
+        pest = RelativeAmount(),
+        o = OrdinalPatterns(; m, τ),
+        hest = PlugIn(Tsallis())
     )
 
     # complexity of white noise should be very close to zero
@@ -50,7 +50,7 @@ rng = MersenneTwister(1234)
     @test 0.99 < entr < 1.0
 
     # test minimum and maximum complexity entropy curves
-    min_curve, max_curve = entropy_complexity_curves(c; num_min=10000)
+    min_curve, max_curve = entropy_complexity_curves(c; num_min = 10000)
     @test minimum(x[1] for x in min_curve) == 0
     @test maximum(x[1] for x in min_curve) ≈ 1
     @test minimum(x[2] for x in min_curve) == 0
@@ -63,22 +63,22 @@ rng = MersenneTwister(1234)
     @test maximum(x[2] for x in max_curve) ≈ 0.496700423446187
 
     # check that complexity value of schuster map is between minimum and maximum curve
-    function schuster(x0=0.5, z=3.0/2)
+    function schuster(x0 = 0.5, z = 3.0 / 2)
         return DeterministicIteratedMap(schuster_rule, SVector(x0), [z])
     end
-    schuster_rule(x, p, n) = @inbounds SVector((x[1]+x[1]^p[1]) % 1)
+    schuster_rule(x, p, n) = @inbounds SVector((x[1] + x[1]^p[1]) % 1)
     m, τ = 6, 1
     c = StatisticalComplexity(
-        dist=JSDivergence(),
-        est=OrdinalPatterns(; m, τ),
-        entr=Renyi()
+        dist = JSDivergence(),
+        est = OrdinalPatterns(; m, τ),
+        entr = Renyi()
     )
     ds = schuster()
-    x, t = trajectory(ds, 2^15, Ttr=100)
+    x, t = trajectory(ds, 2^15, Ttr = 100)
     entr, compl = entropy_complexity(c, x[:, 1])
     # get indices where the entropy of the system is close to a h-value of the entropy complexity curves
-    min_entr_ind = findfirst(isapprox.([x[1] for x in min_curve], 0.5, atol=5e-4) )
-    max_entr_ind = findlast(isapprox.([x[1] for x in max_curve], 0.5, atol=5e-3) )
+    min_entr_ind = findfirst(isapprox.([x[1] for x in min_curve], 0.5, atol = 5.0e-4))
+    max_entr_ind = findlast(isapprox.([x[1] for x in max_curve], 0.5, atol = 5.0e-3))
     # get corresponding complexity values
     min_complexity = [x[2] for x in min_curve][min_entr_ind]
     max_complexity = [x[2] for x in max_curve][max_entr_ind]
@@ -87,9 +87,9 @@ rng = MersenneTwister(1234)
     # also test that we get an error if we try an `OutcomeSpace`
     # where the outcome space is not defined a priori
     c = StatisticalComplexity(
-        dist=JSDivergence(),
-        est=ValueBinning(0.1),
-        entr=Tsallis()
+        dist = JSDivergence(),
+        est = ValueBinning(0.1),
+        entr = Tsallis()
     )
     @test_throws ErrorException complexity(c, x)
 end
@@ -101,9 +101,9 @@ end
     # As with regular entropy, for extropy, the edge case of noise should be close to zeros
     m, τ = 6, 1
     c = StatisticalComplexity(
-        dist=JSDivergence(),
-        est=OrdinalPatterns(; m, τ),
-        entr=TsallisExtropy(q = 5)
+        dist = JSDivergence(),
+        est = OrdinalPatterns(; m, τ),
+        entr = TsallisExtropy(q = 5)
     )
 
     # complexity of white noise should be very close to zero

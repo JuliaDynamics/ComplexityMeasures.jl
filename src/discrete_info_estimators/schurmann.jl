@@ -30,7 +30,7 @@ function information(hest::Schuermann{<:Shannon}, est::ProbabilitiesEstimator, o
     cts = counts(o, x)
     N = sum(cts)
 
-    h = digamma(N) - 1/N * sum(nᵢ * Sₙ(a, nᵢ) for nᵢ in cts)
+    h = digamma(N) - 1 / N * sum(nᵢ * Sₙ(a, nᵢ) for nᵢ in cts)
 
     # The Schuermann estimate of `h` is based on the natural logarithm, so we must convert
     # to the desired base.
@@ -44,7 +44,7 @@ function Sₙ(a, n)
     # Integrate `f_schurmann` from `lb` to `ub`. We only need the value of the integral
     # (not the error), so index first element returned from `quadgk`
     lb = 0.0
-    ub = 1/a - 1 # Assumes a > 0, which is handled in the constructor to `Schuermann`.
+    ub = 1 / a - 1 # Assumes a > 0, which is handled in the constructor to `Schuermann`.
     if lb == ub
         return digamma(n)
     end

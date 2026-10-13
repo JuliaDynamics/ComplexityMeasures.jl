@@ -55,7 +55,7 @@ c_i =
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-struct Ebrahimi{I <: InformationMeasure, M<:Integer} <: DifferentialInfoEstimator{I}
+struct Ebrahimi{I <: InformationMeasure, M <: Integer} <: DifferentialInfoEstimator{I}
     definition::I
     m::M
 end
@@ -68,7 +68,8 @@ function ebrahimi_scaling_factor(i, m, n)
         return 1 + (i - 1) / m
     elseif m + 1 ≤ i ≤ n - m
         return 2
-    else n - m + 1 ≤ i ≤ n
+    else
+        n - m + 1 ≤ i ≤ n
         return 1 + (n - i) / m
     end
 end
@@ -80,7 +81,7 @@ function information(est::Ebrahimi{<:Shannon}, x::AbstractVector{<:Real})
 
     ex = sort(x)
     HVₘₙ = 0.0
-    for i = 1:n
+    for i in 1:n
         cᵢ = ebrahimi_scaling_factor(i, m, n)
         f = n / (cᵢ * m)
         dnext = ith_order_statistic(ex, i + m, n)

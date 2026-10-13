@@ -13,8 +13,8 @@ using Statistics
 function eom_henon(u, p, n)
     R = p[1]
     x, y = u
-    dx = R*y + 1 - 1.4*x^2
-    dy = 0.3*R*x
+    dx = R * y + 1 - 1.4 * x^2
+    dy = 0.3 * R * x
     return SVector(dx, dy)
 end
 henon(; u₀ = rand(2), R = 0.8) = DeterministicIteratedMap(eom_henon, u₀, [R])

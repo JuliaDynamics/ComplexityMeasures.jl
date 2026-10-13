@@ -10,21 +10,21 @@ are allocated when using `counts`) vs actual integer outcomes (which may be allo
 when using `counts_and_outcomes`). It is also used for pretty-printing `Counts` and 
 `Probabilities`.
 """
-struct Outcome{T<:Integer} <: Number
+struct Outcome{T <: Integer} <: Number
     num::T
 end
 Base.show(io::IO, o::Outcome) = print(io, "Outcome($(o.num))")
 
 # Some necessary methods for ranges to work.
-Outcome{T}(x::Outcome{T}) where T<:Integer = Outcome(x.num)
-Integer(x::Outcome{T}) where T<:Integer = x.num
+Outcome{T}(x::Outcome{T}) where {T <: Integer} = Outcome(x.num)
+Base.Integer(x::Outcome{T}) where {T <: Integer} = x.num
 
 import Base: -, +, *, rem, div, inv
 for f in [:(*), :(+), :(-), :rem, :div]
     @eval begin
         @eval Base.$(f)(o1::Outcome, o2::Outcome) = Outcome($(f)(o1.num, o2.num))
-        @eval Base.$(f)(o1::Outcome, o2::T) where T <: Integer = Outcome($(f)(o1.num, o2))
-        @eval Base.$(f)(o1::T, o2::Outcome) where T <: Integer = Outcome($(f)(o1, o2.num))
+        @eval Base.$(f)(o1::Outcome, o2::T) where {T <: Integer} = Outcome($(f)(o1.num, o2))
+        @eval Base.$(f)(o1::T, o2::Outcome) where {T <: Integer} = Outcome($(f)(o1, o2.num))
     end
 end
 

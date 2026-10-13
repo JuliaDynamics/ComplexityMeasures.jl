@@ -24,13 +24,13 @@ using ComplexityMeasures.DelayEmbeddings: embed
     # Test case from Rostaghi & Azami (2016)'s dispersion entropy paper. The
     # symbolization step is tested separately in the "Symbolization" test set.
     # We here start from pre-computed symbols `s`.
-    x = [0.82,0.75,0.21,0.94,0.52,0.05,0.241,0.75,0.35,0.43,0.11,0.87]
+    x = [0.82, 0.75, 0.21, 0.94, 0.52, 0.05, 0.241, 0.75, 0.35, 0.43, 0.11, 0.87]
     m, n_classes = 2, 3
     o = Dispersion(m = m, c = n_classes)
 
     # Take only the non-zero probabilities from the paper (in `dispersion_histogram`,
     # we don't count zero-probability bins, so eliminate zeros for comparison).
-    ps_paper = [1/11, 0/11, 3/11, 2/11, 1/11, 0/11, 1/11, 2/11, 1/11] |> sort
+    ps_paper = [1 / 11, 0 / 11, 3 / 11, 2 / 11, 1 / 11, 0 / 11, 1 / 11, 2 / 11, 1 / 11] |> sort
     ps_paper = ps_paper[findall(ps_paper .> 0)]
 
     ps = probabilities(o, x)

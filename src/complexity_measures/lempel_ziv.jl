@@ -5,7 +5,8 @@ export LempelZiv76
     LempelZiv76()
 
 The Lempel-Ziv, or `LempelZiv76`, complexity measure [LempelZiv1976](@cite),
-which is used with [`complexity`](@ref) and [`complexity_normalized`](@ref).
+which is used with [`complexity`](@ref) and [`complexity_normalized`](@ref)
+along with a timeseries/vector input data.
 
 For results to be comparable across sequences with different length, use the normalized
 version. Normalized `LempelZiv76`-complexity is implemented as given in [Amigó2004](@citet).
@@ -18,6 +19,9 @@ two-element alphabet (precisely two distinct outcomes). For performance optimiza
 we do not check the number of unique elements in the input. If your input sequence is not
 binary, you must [`encode`](@ref) it first using one of the implemented [`Encoding`](@ref)
 schemes (or encode your data manually).
+
+A common binarization done on a timeseries is to transform each value to 0 if it is
+less than the mean, or 1 if it is higher than the mean.
 """
 struct LempelZiv76 <: ComplexityEstimator end
 

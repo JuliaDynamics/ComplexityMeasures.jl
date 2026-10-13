@@ -50,7 +50,7 @@ function Goria(definition = Shannon(); k = 1, w = 0)
     return Goria(definition, k, w)
 end
 
-function information(est::Goria{<:Shannon}, x::AbstractStateSpaceSet{D}) where D
+function information(est::Goria{<:Shannon}, x::AbstractStateSpaceSet{D}) where {D}
     (; k, w) = est
     N = length(x)
 
@@ -58,9 +58,9 @@ function information(est::Goria{<:Shannon}, x::AbstractStateSpaceSet{D}) where D
     ds = last.(bulksearch(tree, x, NeighborNumber(k), Theiler(w))[2])
     # The estimated entropy has "unit" [nats]
     h = D * log(prod(ds .^ (1 / N))) +
-          log(N - 1) +
-          log(c1(D)) -
-          digamma(k)
+        log(N - 1) +
+        log(c1(D)) -
+        digamma(k)
     return convert_logunit(h, ℯ, est.definition.base)
 end
-c1(D::Int) = (2π^(D/2)) / (D* gamma(D/2))
+c1(D::Int) = (2π^(D / 2)) / (D * gamma(D / 2))

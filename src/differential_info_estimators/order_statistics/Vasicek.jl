@@ -51,7 +51,7 @@ written for this package).
 See also: [`information`](@ref), [`Correa`](@ref), [`AlizadehArghami`](@ref),
 [`Ebrahimi`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-struct Vasicek{I <: InformationMeasure, M<:Integer} <: DifferentialInfoEstimator{I}
+struct Vasicek{I <: InformationMeasure, M <: Integer} <: DifferentialInfoEstimator{I}
     definition::I
     m::M
 end
@@ -59,7 +59,7 @@ function Vasicek(definition = Shannon(); m = 1)
     return Vasicek(definition, m)
 end
 
-function information(est::Vasicek{<:Shannon}, x::AbstractVector{T}) where {T<:Real}
+function information(est::Vasicek{<:Shannon}, x::AbstractVector{T}) where {T <: Real}
     (; m) = est
     n = length(x)
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
@@ -67,7 +67,7 @@ function information(est::Vasicek{<:Shannon}, x::AbstractVector{T}) where {T<:Re
     ex = sort(x)
     HVₘₙ = zero(T)
     f = n / (2m)
-    for i = 1:n
+    for i in 1:n
         dnext = ith_order_statistic(ex, i + m, n)
         dprev = ith_order_statistic(ex, i - m, n)
         HVₘₙ += log(f * (dnext - dprev))

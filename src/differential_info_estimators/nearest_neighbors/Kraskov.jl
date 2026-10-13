@@ -44,6 +44,6 @@ function information(est::Kraskov{<:Shannon}, x::AbstractStateSpaceSet{D}) where
     # The estimated entropy has "unit" [nats]
     h = -digamma(k) + digamma(N) +
         log(MathConstants.e, ball_volume(D)) +
-        D/N*sum(log.(MathConstants.e, ρs))
+        D / N * sum(log.(MathConstants.e, ρs))
     return convert_logunit(h, ℯ, est.definition.base)
 end

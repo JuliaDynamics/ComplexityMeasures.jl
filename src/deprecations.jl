@@ -1,12 +1,12 @@
 # from before histogram-from-ranges rework
-function FixedRectangularBinning(ϵmin::NTuple{D,T}, ϵmax::NTuple{D,T}, N::Int) where {D, T}
-    FixedRectangularBinning(ntuple(i->range(ϵmin[i],ϵmax[i];length=N), D))
+function FixedRectangularBinning(ϵmin::NTuple{D, T}, ϵmax::NTuple{D, T}, N::Int) where {D, T}
+    return FixedRectangularBinning(ntuple(i -> range(ϵmin[i], ϵmax[i]; length = N), D))
 end
 function FixedRectangularBinning(ϵmin::Real, ϵmax::Real, N, D::Int = 1)
-    if N isa Int
-        FixedRectangularBinning(ntuple(x-> range(ϵmin, nextfloat(float(ϵmax)); length = N), D))
+    return if N isa Int
+        FixedRectangularBinning(ntuple(x -> range(ϵmin, nextfloat(float(ϵmax)); length = N), D))
     else
-        FixedRectangularBinning(ntuple(x-> range(ϵmin, nextfloat(float(ϵmax)); step = N), D))
+        FixedRectangularBinning(ntuple(x -> range(ϵmin, nextfloat(float(ϵmax)); step = N), D))
     end
 end
 
@@ -43,7 +43,7 @@ function probabilities(x::Vector_or_SSSet, ε::Union{Real, Vector{<:Real}})
     `probabilities(x::Vector_or_SSSet, ε::Real)`
     is deprecated, use `probabilities(ValueBinning(ε), x)`.
     """
-    probabilities(ValueBinning(ε), x)
+    return probabilities(ValueBinning(ε), x)
 end
 
 function probabilities(x, est::OutcomeSpace)
@@ -94,20 +94,20 @@ end
 @deprecate SymbolicAmplitudeAwarePermutation AmplitudeAwareOrdinalPatterns
 
 function OrdinalPatternEncoding(m::Int, lt::F = isless_rand) where {F}
-    @warn "Passing `m` as an argument to `OrdinalPattern...(m = ...)` is deprecated. "*
-    "Pass it as a type parameter instead: `OrdinalPattern...{m}`."
+    @warn "Passing `m` as an argument to `OrdinalPattern...(m = ...)` is deprecated. " *
+        "Pass it as a type parameter instead: `OrdinalPattern...{m}`."
     return OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
 end
 # Initializations
-function OrdinalPatterns(; τ::I = 1, m::Int = 3, lt::F=isless_rand) where {F, I}
+function OrdinalPatterns(; τ::I = 1, m::Int = 3, lt::F = isless_rand) where {F, I}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return OrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function WeightedOrdinalPatterns(; τ::I = 1, m::Int = 3, lt::F=isless_rand) where {F, I}
+function WeightedOrdinalPatterns(; τ::I = 1, m::Int = 3, lt::F = isless_rand) where {F, I}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return WeightedOrdinalPatterns{m, F, I}(OrdinalPatternEncoding{m}(lt), τ)
 end
-function AmplitudeAwareOrdinalPatterns(; A::T = 0.5, τ::I = 1, m::Int = 3, lt::F=isless_rand) where {F, I, T}
+function AmplitudeAwareOrdinalPatterns(; A::T = 0.5, τ::I = 1, m::Int = 3, lt::F = isless_rand) where {F, I, T}
     m >= 2 || throw(ArgumentError("Need order m ≥ 2."))
     return AmplitudeAwareOrdinalPatterns{m, F, I, T}(OrdinalPatternEncoding{m}(lt), τ, A)
 end
@@ -123,4 +123,46 @@ export allcounts
 function allcounts(args...)
     @warn "`allcounts` is deprecated. Use `allcounts_and_outcomes` instead."
     return first(allcounts_and_outcomes(args...))
+end
+
+function TransferOperator(b::AbstractBinning)
+    @warn "`TransferOperator(b <: AbstractBinning)` is deprecated. Use `TransferOperator(approximation_method::ApproximationMethod,boundary_condition)` instead."
+    return TransferOperator()
+end
+
+function transferoperator(
+        pts::Array_or_SSSet,
+        binning::Union{FixedRectangularBinning, RectangularBinning};
+        boundary_condition = :none,
+        warn_precise = true
+    )
+
+    @warn "`transferoperator(pts, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `transferoperator(o::OutcomeSpace,x)` instead."
+
+    return transferoperator(ValueBinning(binning), pts)
+
+end
+
+function invariantmeasure(x::Array_or_SSSet, binning::Union{FixedRectangularBinning, RectangularBinning})
+
+    @warn "`invariantmeasure(x, binning::Union{FixedRectangularBinning, RectangularBinning)` is deprecated. Use `invariantmeasure(o::OutcomeSpace,x)` instead."
+
+    o = ValueBinning(binning)
+    return invariantmeasure(o, x)
+
+end
+
+function probabilities(x::Array_or_SSSet, est::TransferOperator)
+    @warn "`probabilities(est::TransferOperator, x` is deprecated. Since `TransferOperator` is no longer limited to binnings, you have to explicitly provide an `OutcomeSpace` as well. Use `probabilities(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)` instead. Defaulting to `RectangularBinning(3,true)`."
+    b = RectangularBinning(3, true)
+    o = ValueBinning(b)
+    return probabilities(est, o, x)
+end
+
+
+function probabilities_and_outcomes(x::Array_or_SSSet, est::TransferOperator)
+    @warn "`probabilities_and_outcomes(est::TransferOperator, x` is deprecated. Since `TransferOperator` is no longer limited to binnings, you have to explicitly provide an `OutcomeSpace` as well. Use `probabilities_and_outcomes(probest::TransferOperator, o::OutcomeSpace, x::Array_or_SSSet)` instead. Defaulting to `RectangularBinning(3,true)."
+    b = RectangularBinning(3, true)
+    o = ValueBinning(b)
+    return probabilities_and_outcomes(est, o, x)
 end

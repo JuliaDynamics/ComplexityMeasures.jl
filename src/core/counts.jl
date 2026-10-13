@@ -47,11 +47,13 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
     # A label for each dimension
     dimlabels::NTuple{N, S}
 
-    function Counts(cts::AbstractArray{T, N},
+    function Counts(
+            cts::AbstractArray{T, N},
             outcomes::Tuple{Vararg{AbstractVector, N}},
-            dimlabels::NTuple{N, S}) where {T, N, S}
+            dimlabels::NTuple{N, S}
+        ) where {T, N, S}
         s = size(cts)
-        for dim = 1:N
+        for dim in 1:N
             L = length(outcomes[dim])
             if L != s[dim]
                 msg = "The number of outcomes for dimension $dim must match the number " *
@@ -59,19 +61,19 @@ struct Counts{T <: Integer, N, S} <: AbstractArray{T, N}
                 throw(ArgumentError(msg))
             end
         end
-        new{T, N, S}(cts, outcomes, dimlabels)
+        return new{T, N, S}(cts, outcomes, dimlabels)
     end
 end
 
 # If dimlabels are not given, simply label them as symbols (:x1, :x2, ... :xN)
 function Counts(x::AbstractArray{T, N}, outcomes) where {T <: Integer, N}
-    return Counts(x, outcomes, tuple((Symbol("x$i") for i = 1:N)...))
+    return Counts(x, outcomes, tuple((Symbol("x$i") for i in 1:N)...))
 end
 function Counts(x::AbstractVector{Int}, outcomes::AbstractVector, dimlabel::Union{Symbol, AbstractString})
-    return Counts(x, (outcomes, ), (dimlabel, ))
+    return Counts(x, (outcomes,), (dimlabel,))
 end
 function Counts(x::AbstractVector{Int}, outcomes::AbstractVector)
-    return Counts(x, (outcomes, ), (:x1, ))
+    return Counts(x, (outcomes,), (:x1,))
 end
 
 # If no outcomes are given, assign generic `Outcome`s.
@@ -82,13 +84,15 @@ end
 function generate_outcomes(x::AbstractArray{T, N}) where {T, N}
     # One set of outcomes per dimension
     s = size(x)
-    gen = (Outcome(1):1:Outcome(s[i]) for i = 1:N)
+    gen = (Outcome(1):1:Outcome(s[i]) for i in 1:N)
     return tuple(gen...)
 end
 
 # extend base Array interface:
-for f in (:length, :size, :eltype, :parent,
-    :lastindex, :firstindex, :vec, :getindex, :iterate)
+for f in (
+        :length, :size, :eltype, :parent,
+        :lastindex, :firstindex, :vec, :getindex, :iterate,
+    )
     @eval Base.$(f)(c::Counts, args...) = $(f)(c.cts, args...)
 end
 # One-argument definitions to avoid type ambiguities with Base:
@@ -103,7 +107,7 @@ function counts_and_outcomes(x)
     outs = unique!(xc)
     # Generically call the first dimension `x1` (convention: additional dimensions
     # are named `x2`, `x3`, etc..., but this is defined in CausalityTools.jl)
-    c = Counts(cts, (outs, ), (:x1, ))
+    c = Counts(cts, (outs,), (:x1,))
     return c, outcomes(c)
 end
 
@@ -167,11 +171,13 @@ that actually appear in the input data). If you need the counts for
 *unobserved* outcomes as well, use [`allcounts_and_outcomes`](@ref).
 """
 function counts_and_outcomes(o::OutcomeSpace, x)
-    if !is_counting_based(o)
-        throw(ArgumentError(
-            "`counts_and_outcomes` only works with counting based outcome spaces. "*
-            "You provided $(nameof(typeof(o))) which is not one."
-        ))
+    return if !is_counting_based(o)
+        throw(
+            ArgumentError(
+                "`counts_and_outcomes` only works with counting based outcome spaces. " *
+                    "You provided $(nameof(typeof(o))) which is not one."
+            )
+        )
     else
         error("`counts_and_outcomes` not yet implemented for outcome space $(nameof(typeof(o)))")
     end
@@ -185,11 +191,11 @@ end
 outcomes(c::Counts) = c.outcomes
 outcomes(c::Counts{<:Integer, 1}) = first(c.outcomes)
 # Integer indexing returns the outcomes for that dimension directly.
-function outcomes(c::Counts{<:Integer, N}, i::Int) where N
+function outcomes(c::Counts{<:Integer, N}, i::Int) where {N}
     return c.outcomes[i]
 end
-function outcomes(c::Counts{<:Integer, N}, idxs) where N
-    map(i -> c.outcomes[i], tuple(idxs...))
+function outcomes(c::Counts{<:Integer, N}, idxs) where {N}
+    return map(i -> c.outcomes[i], tuple(idxs...))
 end
 
 """
@@ -212,7 +218,7 @@ function allcounts_and_outcomes(o::OutcomeSpace, x::Array_or_SSSet)
             allcts[i] = cts[idx]
         end
     end
-    c = Counts(allcts, (ospace,), (:x1, ))
+    c = Counts(allcts, (ospace,), (:x1,))
     return c, outcomes(c)
 end
 

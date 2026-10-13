@@ -50,7 +50,7 @@ Base.@kwdef struct RelativeFirstDifferenceEncoding{R} <: Encoding
     maxval::Real
     binencoder::R # RectangularBinEncoding
 
-    function RelativeFirstDifferenceEncoding(n::Int, minval::Real, maxval::Real, binencoder::R) where R
+    function RelativeFirstDifferenceEncoding(n::Int, minval::Real, maxval::Real, binencoder::R) where {R}
         if minval > maxval
             s = "Need minval <= maxval. Got minval=$minval and maxval=$maxval."
             throw(ArgumentError(s))
@@ -77,8 +77,8 @@ function encode(encoding::RelativeFirstDifferenceEncoding, x::AbstractVector{<:R
 
     L = length(x)
     Λ = 0.0 # a loop is much faster than using `diff` (which allocates a new vector)
-    for i = 2:L
-       Λ += abs(x[i] - x[i - 1])
+    for i in 2:L
+        Λ += abs(x[i] - x[i - 1])
     end
     Λ /= (L - 1)
 

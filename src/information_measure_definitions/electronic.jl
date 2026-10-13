@@ -20,14 +20,14 @@ struct ElectronicEntropy <: InformationMeasure
 
     function ElectronicEntropy(; h = Shannon(; base = 2), j = ShannonExtropy(; base = 2))
         verify_equal_bases(h, j)
-        new(h, j)
+        return new(h, j)
     end
 end
 
 function verify_equal_bases(h::Shannon, j::ShannonExtropy)
-    if h.base != j.base
+    return if h.base != j.base
         s = "The logarithm base must be the same for both the entropy and extropy measure." *
-        "Got bases $(h.base) (entropy) and $(j.base) (extropy)."
+            "Got bases $(h.base) (entropy) and $(j.base) (extropy)."
         throw(ArgumentError(s))
     end
 end

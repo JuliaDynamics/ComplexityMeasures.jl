@@ -15,13 +15,13 @@ rng = Xoshiro(1234)
 # analytically derivable entropy.
 # -------------------------------------------------------------------------------------
 # Entropy to log with base b of a uniform distribution on [0, 1] = ln(1 - 0)/(ln(b)) = 0
-U = 0.00
+U = 0.0
 pts = rand(rng, npts)
 ea = information(LeonenkoProzantoSavani(Shannon(base = 2), k = 5), pts)
-@test U - max(0.01, U*0.03) ≤ ea ≤ U + max(0.01, U*0.03)
+@test U - max(0.01, U * 0.03) ≤ ea ≤ U + max(0.01, U * 0.03)
 
 # Entropy with natural log of 𝒩(0, 1) is 0.5*ln(2π) + 0.5.
-N = 0.5*log(2π) + 0.5
+N = 0.5 * log(2π) + 0.5
 N_base3 = ComplexityMeasures.convert_logunit(N, ℯ, 3)
 npts = 100000
 
@@ -32,7 +32,7 @@ ea_n3_t = information(LeonenkoProzantoSavani(Tsallis(base = 3, q = 1), k = 5), p
 @test ea_n3_r ≈ ea_n3_t ≈ ea_n3_s
 
 # Check that we're less than 10% off target
-@test abs(N_base3 - ea_n3)/N_base3 ≤ 0.10
+@test abs(N_base3 - ea_n3) / N_base3 ≤ 0.1
 
 # -------------------------------------------------------------------------------------
 # Renyi entropy.
@@ -61,7 +61,7 @@ h_true = information(Renyi(q = 2), 𝒩, base = 2)
 h_estimated = information(LeonenkoProzantoSavani(Renyi(q = 2, base = 2), k = 10), 𝒩pts)
 
 # Check that we're less than 10% off target
-@test abs(h_estimated - h_true)/h_true < 0.1
+@test abs(h_estimated - h_true) / h_true < 0.1
 
 # -------------------------------------------------------------------------------------
 # Tsallis entropy.
@@ -87,4 +87,4 @@ h_true = information(Tsallis(q = 2), 𝒩, base = 2)
 h_estimated = information(LeonenkoProzantoSavani(Tsallis(q = 2, base = 2), k = 10), 𝒩pts)
 
 # Check that we're less than 10% off target
-@test abs(h_estimated - h_true)/h_true < 0.1
+@test abs(h_estimated - h_true) / h_true < 0.1

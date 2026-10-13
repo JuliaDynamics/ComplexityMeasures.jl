@@ -92,14 +92,14 @@ embeddings), and `r` is the radius.
 function sample_entropy_probs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * Statistics.std(x))
 
     N = length(x)
-    pts = genembed(x, 0:τ:(k - 1)*τ)
+    pts = genembed(x, 0:τ:((k - 1) * τ))
     tree = KDTree(pts, Chebyshev())
 
     # Pᵐ := The probability that two sequences will match for k points.
     # We only consider the first N-m*τ vectors, regardless of embedding dimension. This
     # means that the last vector is skipped in the highest-dimensional embedding.
     # `inrangecount` includes the point itself, so subtract 1.
-    Pᵐ = sum(inrangecount(tree, pᵢ, r) - 1 for pᵢ in Iterators.take(pts, N - m*τ))
+    Pᵐ = sum(inrangecount(tree, pᵢ, r) - 1 for pᵢ in Iterators.take(pts, N - m * τ))
 
     # We don't include the normalization terms here, because they cancel in the final
     # computation.
@@ -107,10 +107,10 @@ function sample_entropy_probs(x; k::Int = 2, m::Int = 2, τ::Int = 1, r = 0.2 * 
 end
 
 function scale(x, min_range, max_range, min_target, max_target)
-    (x - min_range)/(max_range - min_range) * (max_target - min_target) + min_target
+    return (x - min_range) / (max_range - min_range) * (max_target - min_target) + min_target
 end
 
-function complexity(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
+function complexity(c::SampleEntropy, x::AbstractVector{T}) where {T <: Real}
     (; m, τ, r) = c
 
     A = sample_entropy_probs(x; m = m, τ = τ, r = r, k = m + 1)
@@ -123,7 +123,7 @@ function complexity(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
     end
 end
 
-function complexity_normalized(c::SampleEntropy, x::AbstractVector{T}) where T <: Real
+function complexity_normalized(c::SampleEntropy, x::AbstractVector{T}) where {T <: Real}
     (; m, τ, r) = c
 
     sampen = complexity(c, x)
@@ -139,8 +139,8 @@ function complexity_normalized(c::SampleEntropy, x::AbstractVector{T}) where T <
         # For τ = 1, this recovers the normalization from Richman & Moorman (2000).
         # The absolute value accounts for negative lags.
         N = length(x)
-        lowerbound = 1/(2*(N - m*abs(τ) - 1) * (N - m*abs(τ)))
-        upperbound = log(N - m*abs(τ)) + log(N - m*abs(τ) - 1) - log(2)
+        lowerbound = 1 / (2 * (N - m * abs(τ) - 1) * (N - m * abs(τ)))
+        upperbound = log(N - m * abs(τ)) + log(N - m * abs(τ) - 1) - log(2)
         return scale(sampen, lowerbound, upperbound, 0.0, 1.0)
     end
 end

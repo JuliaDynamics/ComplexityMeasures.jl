@@ -52,4 +52,4 @@ function information(hest::ChaoShen{<:Shannon}, pest::ProbabilitiesEstimator, o:
     return h
 end
 
-chao_shenᵢ(pᵢ, base, N, C) = (C*pᵢ * log(base, C*pᵢ)) / (1 - (1 - C*pᵢ)^N)
+chao_shenᵢ(pᵢ, base, N, C) = (C * pᵢ * log(base, C * pᵢ)) / (1 - (1 - C * pᵢ)^N)

@@ -8,9 +8,9 @@ x = rand(100)
     m, n_classes = 2, 2
     est = ReverseDispersion(m = m, c = n_classes)
 
-        # Reverse dispersion entropy is 0 when all probabilities are identical and equal
+    # Reverse dispersion entropy is 0 when all probabilities are identical and equal
     # to 1/(n_classes^m).
-    flat_dist = Probabilities(repeat([1/m^n_classes], m^n_classes))
+    flat_dist = Probabilities(repeat([1 / m^n_classes], m^n_classes))
     Hrde_minimal = ComplexityMeasures.distance_to_whitenoise(est, flat_dist, normalize = false)
     @test round(Hrde_minimal, digits = 7) ≈ 0.0
 
@@ -21,6 +21,6 @@ x = rand(100)
     single_element_dist = Probabilities([1.0, 0.0, 0.0, 0.0])
     Hrde_maximal = ComplexityMeasures.distance_to_whitenoise(est, single_element_dist, normalize = false)
     Hrde_maximal_norm = ComplexityMeasures.distance_to_whitenoise(est, single_element_dist, normalize = true)
-    @test round(Hrde_maximal, digits = 7) ≈ 1 - 1/(n_classes^m)
+    @test round(Hrde_maximal, digits = 7) ≈ 1 - 1 / (n_classes^m)
     @test round(Hrde_maximal_norm, digits = 7) ≈ 1.0
 end

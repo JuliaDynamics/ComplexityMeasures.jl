@@ -44,7 +44,7 @@ the [`Vasicek`](@ref) estimate ``\\hat{H}_{V}(\\bar{X}, m, n)``, plus a correcti
 See also: [`information`](@ref), [`Correa`](@ref), [`Ebrahimi`](@ref),
 [`Vasicek`](@ref), [`DifferentialInfoEstimator`](@ref).
 """
-struct AlizadehArghami{I <: InformationMeasure, M<:Integer} <: DifferentialInfoEstimator{I}
+struct AlizadehArghami{I <: InformationMeasure, M <: Integer} <: DifferentialInfoEstimator{I}
     definition::I
     m::M
 end
@@ -58,6 +58,6 @@ function information(est::AlizadehArghami{<:Shannon}, x::AbstractVector{<:Real})
     m < floor(Int, n / 2) || throw(ArgumentError("Need m < length(x)/2."))
     # The estimated entropy has "unit" [nats]
     # We make sure base is correct by defining a new `Shannon` instance.
-    h = information(Vasicek(Shannon(base = MathConstants.e); m), x) + (2 / n)*(m * log(2))
+    h = information(Vasicek(Shannon(base = MathConstants.e); m), x) + (2 / n) * (m * log(2))
     return convert_logunit(h, ℯ, est.definition.base)
 end

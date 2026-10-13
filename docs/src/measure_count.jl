@@ -17,7 +17,7 @@ function concrete_subtypes!(out, type::Type)
     else
         foreach(T -> concrete_subtypes!(out, T), subtypes(type))
     end
-    out
+    return out
 end
 
 # ## Count Based Outcome Spaces
@@ -102,7 +102,7 @@ INFO_MEASURE_ESTIMATOR_GENERIC = concrete_subtypes(ComplexityMeasures.DiscreteIn
 
 # so we count by multiplying
 
-n_discrete_infoest_generic = length(INFO_MEASURES_DISCRETE)*length(INFO_MEASURE_ESTIMATOR_GENERIC)
+n_discrete_infoest_generic = length(INFO_MEASURES_DISCRETE) * length(INFO_MEASURE_ESTIMATOR_GENERIC)
 
 
 # In addition to the generic estimators,
@@ -196,7 +196,7 @@ n_extra_prob_measures = 2 * n_probs_discrete
 # ComplexityMeasures.jl are:
 
 n_grand_total =
-  n_discrete_info +
-  n_diff_info +
-  n_complexity_measures_total +
-  n_extra_prob_measures
+    n_discrete_info +
+    n_diff_info +
+    n_complexity_measures_total +
+    n_extra_prob_measures

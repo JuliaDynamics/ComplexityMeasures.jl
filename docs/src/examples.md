@@ -66,6 +66,62 @@ kldivergence(py, px)
 
 (`Inf` because there are events with 0 probability in `px`)
 
+
+## Transition probabilitites: Transfer operator
+
+What are the most probable outcomes the system can transition to, given its current state?
+Transition probabilities capture dynamic information and can also be relevant in cases
+where one needs more than just the probabilities of outcomes.
+The [`TransferOperator`](@ref) or (Perron-Frobenius operator) is also implemented as a
+subtype of `ProbabilitiesEstimator`, giving access to transition probabilities as well as
+the probabilities of outcomes themselves.
+
+As a first example, let's look at transition probabilities between bins of
+the coarse-grained phase space (partitioning) of the Henon map:
+
+````@example MAIN
+using ComplexityMeasures
+using DynamicalSystemsBase
+
+henon_rule(x, p, n) = SVector{2}(1.0 - p[1]*x[1]^2 + x[2], p[2]*x[1])
+ds = DeterministicIteratedMap(henon_rule, [0.0,0.0], [1.4,0.3])
+timeseries, t = trajectory(ds, 10_000; Ttr = 500)
+
+
+b = ValueBinning(RectangularBinning(3,true)) #3x3 grid in 2D
+to = transferoperator(b, timeseries)
+P = transfermatrix(to)
+````
+
+Estimate probabilities from the transition matrix:
+````@example MAIN
+outs = outcomes(to) #bins
+probs = probabilities(TransferOperator(), b, timeseries)
+````
+
+The transfer operator is generalized to work with many more outcomes. Let's look at
+transition probabilities between ordinal patterns using time series  of the logistic map:
+````@example MAIN
+using ComplexityMeasures
+using DynamicalSystemsBase
+
+logistic_rule(u, r, t) = SVector(r*u[1]*(1 - u[1]))
+ds = DeterministicIteratedMap(logistic_rule, [0.4], 4.0)
+X, t = trajectory(ds, 10_000; Ttr = 100)
+x = x[:, 1]
+
+o = OrdinalPatterns{3}()
+to = transferoperator(o, x)
+P = transfermatrix(to)
+````
+
+Estimate probabilities from the transition matrix iteratively or by calculating eigenvectors:
+````@example MAIN
+outs = outcomes(to) #show observed ordinal patterns
+p_it = probabilities(TransferOperator(ApproximationIterative()), o, x)
+p_eig = probabilities(TransferOperator(ApproximationEigen()), o, x)
+````
+
 ## Differential entropy: estimator comparison
 
 ### Shannon entropy
@@ -376,6 +432,30 @@ for a in (ax, ay); hidexdecorations!(a; grid=false); end
 fig
 ```
 
+
+## Discrete entropy: slope entropy
+
+If we have a perfectly alternating timeseries of 0 and 1, the sequential slopes alternate between +1 and -1. This can be identified with the [`SequentialSlopes`](@ref) outcome space (and appropriate `γ`)
+
+```@example MAIN
+x = repeat([0, 1], 1000)
+o = SequentialSlopes(2; γ = 0.5)
+outs = outcomes(o, x)
+```
+
+Following the convention of the original papers introducing slope entropy, the slope outcomes are encoded as +2 or -2, because there are 5 intervals within which a slope can fall into (for the default values of `γ, δ`).
+
+The corresponding slope entropy is obtained as
+```@example MAIN
+entropy(Shannon(), o, x)
+```
+which as expected is approximately 1 because only two outcomes exist with same probability and the logarithm used is base 2.
+The *normalised* slope entropy on the other hand is much less than 1:
+```@example MAIN
+entropy_normalized(Shannon(), o, x)
+```
+
+
 ## Discrete entropies: properties
 
 Here, we show the sensitivity of the various entropies to variations in their parameters.
@@ -520,6 +600,12 @@ for N in (N1, N2)
         local h = information(PowerSpectrum(), q)
         local n = information_normalized(PowerSpectrum(), q)
         println("entropy: $(h), normalized: $(n).")
+        local h_thresh = information(PowerSpectrum(δ = 0.1), q)
+        local n_thresh = information_normalized(PowerSpectrum(δ = 0.1), q)
+        println("with a threshold; entropy: $(h_thresh), normalized: $(n_thresh).")
+        local h_thresh = information(PowerSpectrum(10.1, true), q)
+        local n_thresh = information_normalized(PowerSpectrum(10.1, true), q)
+        println("with threshold applied to power spectrum; entropy: $(h_thresh), normalized: $(n_thresh).")
     end
 end
 ```
@@ -834,7 +920,7 @@ using CairoMakie
 N, a = 2000, 10
 t = LinRange(0, 2*a*π, N)
 
-x = repeat([-5:5 |> collect; 4:-1:-4 |> collect], N ÷ 20);
+x = repeat([-5:5.0 |> collect; 4.0:-1:-4 |> collect], N ÷ 20);
 y = sin.(t .+ cos.(t/0.5));
 z = rand(N)
 

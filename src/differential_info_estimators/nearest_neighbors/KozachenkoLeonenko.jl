@@ -45,7 +45,7 @@ function information(est::KozachenkoLeonenko{<:Shannon}, x::AbstractStateSpaceSe
     N = length(x)
     ρs = maximum_neighbor_distances(x, w, 1)
     # The estimated entropy has "unit" [nats]
-    h = 1/N * sum(log.(MathConstants.e, ρs .^ D)) +
+    h = 1 / N * sum(log.(MathConstants.e, ρs .^ D)) +
         log(MathConstants.e, ball_volume(D)) +
         MathConstants.eulergamma +
         log(MathConstants.e, N - 1)

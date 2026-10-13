@@ -23,7 +23,7 @@ See [`SequentialPairDistances`](@ref) for more info.
 """
 function entropy_distribution(x; base = 2, kwargs...)
     est = SequentialPairDistances(x; kwargs...)
-    information(Shannon(; base), est, x)
+    return information(Shannon(; base), est, x)
 end
 
 """
@@ -43,7 +43,7 @@ for the weighted/amplitude-aware versions.
 """
 function entropy_permutation(x; base = 2, kwargs...)
     est = OrdinalPatterns(; kwargs...)
-    information(Shannon(base), est, x)
+    return information(Shannon(base), est, x)
 end
 
 """
@@ -60,7 +60,7 @@ See [`WaveletOverlap`](@ref) for more info.
 """
 function entropy_wavelet(x; wavelet = Wavelets.WT.Daubechies{12}(), base = 2)
     est = WaveletOverlap(wavelet)
-    information(Shannon(base), est, x)
+    return information(Shannon(base), est, x)
 end
 
 """
@@ -77,7 +77,7 @@ See [`Dispersion`](@ref) for more info.
 """
 function entropy_dispersion(x; base = 2, kwargs...)
     est = Dispersion(kwargs...)
-    information(Shannon(base), est, x)
+    return information(Shannon(base), est, x)
 end
 
 """
@@ -92,7 +92,7 @@ See also: [`SampleEntropy`](@ref), [`complexity`](@ref), [`complexity_normalized
 """
 function entropy_sample(x; normalize = true, r = 0.2std(x), kwargs...)
     c = SampleEntropy(x; r, kwargs...)
-    if normalize
+    return if normalize
         complexity_normalized(c, x)
     else
         complexity(c, x)

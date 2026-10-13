@@ -62,8 +62,8 @@ end
 function complexity_normalized(est::BubbleEntropy, x)
     o_m = BubbleSortSwaps(m = est.m)
     o_m₊₁ = BubbleSortSwaps(m = est.m + 1)
-    h_m =  information(est.definition, o_m, x)
-    h_m₊₁ =  information(est.definition, o_m₊₁, x)
+    h_m = information(est.definition, o_m, x)
+    h_m₊₁ = information(est.definition, o_m₊₁, x)
 
     # The normalized factor as (I think) described in Manis et al. (2017).
     # Their description is a bit unclear to me.
@@ -71,5 +71,5 @@ function complexity_normalized(est::BubbleEntropy, x)
     h_max_m₊₁ = information_maximum(est.definition, o_m₊₁, x)
     norm_factor = (h_max_m₊₁ - h_max_m) # maximum difference for dims `m` and `m + 1`
 
-    return (h_m₊₁ - h_m)/norm_factor
+    return (h_m₊₁ - h_m) / norm_factor
 end

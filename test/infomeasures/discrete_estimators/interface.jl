@@ -9,7 +9,7 @@ probests = [
     WaveletOverlap(),
     PowerSpectrum(),
     ValueBinning(RectangularBinning(3)),
-    CosineSimilarityBinning()
+    CosineSimilarityBinning(),
 ]
 h = Shannon()
 hests = [
@@ -29,6 +29,6 @@ for pest in probests
         h = information(hest, pest, x)
         @test h isa Real
         @test h >= 0
-        @test h > hplugin || abs(h - hplugin) < 1e-5
+        @test h > hplugin || abs(h - hplugin) < 1.0e-5
     end
 end

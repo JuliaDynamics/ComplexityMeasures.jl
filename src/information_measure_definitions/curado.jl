@@ -18,7 +18,7 @@ the [`total_outcomes`](@ref).
 Base.@kwdef struct Curado{B} <: Entropy
     b::B = 1.0
 
-    function Curado(b::B) where B <: Real
+    function Curado(b::B) where {B <: Real}
         b > 0 || throw(ArgumentError("Need b > 0. Got b=$(b)."))
         return new{B}(b)
     end
@@ -26,11 +26,11 @@ end
 
 function information(e::Curado, probs::Probabilities)
     b = e.b
-    return sum(1 - exp(-b*pᵢ)  for pᵢ in probs) + exp(-b) - 1
+    return sum(1 - exp(-b * pᵢ)  for pᵢ in probs) + exp(-b) - 1
 end
 
 function information_maximum(e::Curado, L::Int)
     b = e.b
     # Maximized for the uniform distribution, which for distribution of length L is
-    return L * (1 - exp(-b/L)) + exp(-b) - 1
+    return L * (1 - exp(-b / L)) + exp(-b) - 1
 end

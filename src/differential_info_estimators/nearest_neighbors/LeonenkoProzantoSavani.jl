@@ -26,7 +26,7 @@ struct LeonenkoProzantoSavani{I <: InformationMeasure} <: DifferentialInfoEstima
     k::Int
     w::Int
 
-    function LeonenkoProzantoSavani(definition::I, k, w) where I
+    function LeonenkoProzantoSavani(definition::I, k, w) where {I}
         if !(I <: Shannon || (I <: Renyi) || I <: Tsallis)
             s = "`definition` must be either a `Shannon`, `Renyi` or `Tsallis` instance."
             throw(ArgumentError(s))
@@ -35,7 +35,7 @@ struct LeonenkoProzantoSavani{I <: InformationMeasure} <: DifferentialInfoEstima
             throw(ArgumentError("`k` must be ≥ 2. Got k=$k."))
         end
 
-        new{I}(definition, k, w)
+        return new{I}(definition, k, w)
     end
 end
 function LeonenkoProzantoSavani(definition = Shannon(); k = 2, w = 0)
@@ -76,7 +76,7 @@ function information(est::LeonenkoProzantoSavani{<:Tsallis}, x::AbstractStateSpa
 end
 
 # Use notation from original paper
-function Î(q, est::LeonenkoProzantoSavani, x::AbstractStateSpaceSet{D}) where D
+function Î(q, est::LeonenkoProzantoSavani, x::AbstractStateSpaceSet{D}) where {D}
     (; k, w) = est
     N = length(x)
     Vₘ = ball_volume(D)

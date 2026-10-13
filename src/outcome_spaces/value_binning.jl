@@ -40,10 +40,10 @@ binning, but for [`RectangularBinning`](@ref) input `x` is needed as well.
 
 - [`codify`](@ref). Used for encoding inputs where ordering matters (e.g. time series).
 """
-struct ValueBinning{B<:AbstractBinning} <: CountBasedOutcomeSpace
+struct ValueBinning{B <: AbstractBinning} <: CountBasedOutcomeSpace
     binning::B
 end
-ValueBinning(ϵ::Union{Real,Vector}) = ValueBinning(RectangularBinning(ϵ))
+ValueBinning(ϵ::Union{Real, Vector}) = ValueBinning(RectangularBinning(ϵ))
 
 
 # --------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ function outcome_space(est::ValueBinning{<:FixedRectangularBinning})
     return outcome_space(RectangularBinEncoding(est.binning))
 end
 
-function codify(o::ValueBinning{<:FixedRectangularBinning{D}}, x::AbstractVector) where D
+function codify(o::ValueBinning{<:FixedRectangularBinning{D}}, x::AbstractVector) where {D}
     verify_input(o.binning, x)
     encoder = RectangularBinEncoding(o.binning)
     # TODO: should we warn if points outside the binning are considered? Probably not,
@@ -89,39 +89,39 @@ function codify(o::ValueBinning{<:FixedRectangularBinning{D}}, x::AbstractVector
     return encode.(Ref(encoder), x)
 end
 
-function codify(o::ValueBinning{<:FixedRectangularBinning}, x::AbstractStateSpaceSet{D}) where D
+function codify(o::ValueBinning{<:FixedRectangularBinning}, x::AbstractStateSpaceSet{D}) where {D}
     verify_input(o.binning, x)
     encoder = RectangularBinEncoding(o.binning)
     return encode.(Ref(encoder), x.data)
 end
 
-function codify(o::ValueBinning{<:RectangularBinning}, x::AbstractVector{<:Real})
+function codify(o::ValueBinning{<:RectangularBinning}, x::AbstractVector)
     encoder = RectangularBinEncoding(o.binning, x)
     return encode.(Ref(encoder), x)
 end
 
-function codify(o::ValueBinning{<:RectangularBinning}, x::AbstractStateSpaceSet{D}) where D
+function codify(o::ValueBinning{<:RectangularBinning}, x::AbstractStateSpaceSet{D}) where {D}
     encoder = RectangularBinEncoding(o.binning, x)
     return encode.(Ref(encoder), x.data)
 end
 
 # Some input checks
 #----------------------------------------------------------------
-function verify_input(f::FixedRectangularBinning, x::AbstractStateSpaceSet{D}) where D
-    if length(f.ranges) != D
+function verify_input(f::FixedRectangularBinning, x::AbstractStateSpaceSet{D}) where {D}
+    return if length(f.ranges) != D
         l = length(f.ranges)
-        s = "The number of ranges for the `FixedRectangularBinning` is $l, but the input"*
-            " `StateSpaceSet` is $D-dimensional. Please provide a "*
-                "`FixedRectangularBinning` with $D ranges."
+        s = "The number of ranges for the `FixedRectangularBinning` is $l, but the input" *
+            " `StateSpaceSet` is $D-dimensional. Please provide a " *
+            "`FixedRectangularBinning` with $D ranges."
         throw(DimensionMismatch(s))
     end
 end
 function verify_input(f::FixedRectangularBinning, x::AbstractVector)
-    if length(f.ranges) != 1
+    return if length(f.ranges) != 1
         l = length(f.ranges)
-        s = "The number of ranges for the `FixedRectangularBinning` is $l, but the "*
-            " dimension is 1-dimensional (a vector). Please provide a "*
-                "`FixedRectangularBinning` with only 1 range."
+        s = "The number of ranges for the `FixedRectangularBinning` is $l, but the " *
+            " dimension is 1-dimensional (a vector). Please provide a " *
+            "`FixedRectangularBinning` with only 1 range."
         throw(DimensionMismatch(s))
     end
 end

@@ -81,15 +81,17 @@ statistical complexity together as a `Tuple`, use the wrapper [`entropy_complexi
 
 See also: [`entropy_complexity_curves`](@ref).
 """
-struct StatisticalComplexity{D,
+struct StatisticalComplexity{
+        D,
         H <: DiscreteInfoEstimator{<:InformationMeasure},
         E <: ProbabilitiesEstimator,
-        O <: OutcomeSpace} <: ComplexityEstimator
+        O <: OutcomeSpace,
+    } <: ComplexityEstimator
     dist::D
     hest::H
     pest::E
     o::O
-    entr_val::Base.RefValue{T} where T
+    entr_val::Base.RefValue{T} where {T}
 end
 
 # ----------------------------------------------------------------
@@ -102,7 +104,8 @@ function StatisticalComplexity(;
         hest::H = PlugIn(Renyi()),
         pest::E = RelativeAmount(),
         o::O = OrdinalPatterns{3}(),
-        entr_val = Ref(0.0), kwargs...) where {D, H, E, O}
+        entr_val = Ref(0.0), kwargs...
+    ) where {D, H, E, O}
     if hest isa InformationMeasure
         hest = PlugIn(hest)
     end
@@ -112,7 +115,7 @@ function StatisticalComplexity(;
     #
     if haskey(kwargs, :entr)
         msg = "Keyword argument `entr` is deprecated. Use `hest` instead. " *
-         "Since you used `entr`, any value you gave `hest` will be overridden."
+            "Since you used `entr`, any value you gave `hest` will be overridden."
         @warn msg
         hest = PlugIn(kwargs[:entr])
     end
@@ -121,14 +124,13 @@ function StatisticalComplexity(;
         msg = "Keyword argument `est` is deprecated. " *
             "Use `o` to specify the outcome space instead. " *
             "Since you used `est`, any value you gave `pest` will be overridden. " *
-            "Note: the probabilities estimator `pest` must be provided separately ";
+            "Note: the probabilities estimator `pest` must be provided separately "
         @warn msg
         o = kwargs[:est]
     end
 
     return StatisticalComplexity(dist, hest, pest, o, entr_val)
 end
-
 
 
 function complexity(c::StatisticalComplexity, x)
@@ -153,30 +155,32 @@ end
 function complexity(c::StatisticalComplexity, p::Probabilities)
     L = total_outcomes(c.o)
     if length(p) != L
-        throw(ArgumentError(
-            "`p` must contain the probabilities for every outcome in Ω, but contains only $(length(p))
+        throw(
+            ArgumentError(
+                "`p` must contain the probabilities for every outcome in Ω, but contains only $(length(p))
             out of $L outcomes.
             If you are trying to call `complexity(::StatisticalComplexity, p::Probabilities)`,
             you must set `p = allprobabilities(probest, outcomespace, x)`."
-            ))
+            )
+        )
     end
     H_q = information(c.hest, p) / information_maximum(c.hest, c.o)
 
     # calculate distance between calculated distribution and uniform one
-    D_q = evaluate(c.dist, vec(p), fill(1.0/L, L))
+    D_q = evaluate(c.dist, vec(p), fill(1.0 / L, L))
 
     # generate distribution with just one filled bin
     deterministic = zeros(L)
     deterministic[1] = 1
 
-    D_max = evaluate(c.dist, deterministic, fill(1.0/L, L))
+    D_max = evaluate(c.dist, deterministic, fill(1.0 / L, L))
     C_q = D_q / D_max * H_q
     c.entr_val[] = H_q
 
     return C_q
 end
 
-linearpermissiverange(start; stop, length) = length==1 ? [start] : collect(range(start, stop=stop, length=length))
+linearpermissiverange(start; stop, length) = length == 1 ? [start] : collect(range(start, stop = stop, length = length))
 
 """
     entropy_complexity_curves(c::StatisticalComplexity;
@@ -203,11 +207,11 @@ This function is inspired by S. Sippels implementation in statcomp [Sippel2016](
 This function will work with any `ProbabilitiesEstimator` where [`total_outcomes`](@ref)
 is known a priori.
 """
-function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, num_min::Int=1000)
+function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, num_min::Int = 1000)
 
     L = total_outcomes(c.o)
     # avoid having to resize later by just making result containers vectors straight away.
-    hs_cs_max = zeros(SVector{2, Float64}, (L-1)*num_max)
+    hs_cs_max = zeros(SVector{2, Float64}, (L - 1) * num_max)
 
     p = Probabilities(zeros(L); normed = true) # can't normalize zeros, so let's pretend this is already normalized
     prob_params = linearpermissiverange(0; stop = 1 / L, length = num_max)
@@ -228,21 +232,21 @@ function entropy_complexity_curves(c::StatisticalComplexity; num_max::Int = 1, n
     args = sortperm(hs)
     hs_cs_max = hs_cs_max[args]
 
-    prob_params = linearpermissiverange(1/L; stop=1, length=num_min)
+    prob_params = linearpermissiverange(1 / L; stop = 1, length = num_min)
     hs_cs_min = zeros(SVector{2, Float64}, num_min)
     p = ones(L)
 
     for i in 1:num_min
         fill!(p, 1.0)
-        p .*= (1-prob_params[i]) / (L-1)
+        p .*= (1 - prob_params[i]) / (L - 1)
         p[1] = prob_params[i]
         probs = Probabilities(p, true)
         compl = complexity(c, probs)
-        hs_cs_min[end-i+1] = SVector(c.entr_val[], compl)
+        hs_cs_min[end - i + 1] = SVector(c.entr_val[], compl)
     end
     return (
         hs_cs_min,
-        hs_cs_max
+        hs_cs_max,
     )
 end
 
@@ -251,7 +255,7 @@ function _fill_probs_k!(p, prob_params, L, i, k)
     probs[1] = prob_params[k] # why set first element here if overwriting it in the loop below?
     # if we know that p has sufficient length relative to L and i,
     # @inbounds can save some computation time by skipping bounds checking.
-    @inbounds for j = 1:(L - i)
+    return @inbounds for j in 1:(L - i)
         probs[j] = (1 - prob_params[k]) / (L - i)
     end
 end

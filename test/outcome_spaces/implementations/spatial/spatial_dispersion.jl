@@ -23,7 +23,8 @@ o = SpatialDispersion(stencil, x, c = 3, periodic = false)
 # so we should get a uniform two-element probabilitity distribution.
 @test probabilities_and_outcomes(o, x) == (
     [0.5, 0.5],
-    SVector{3, Int}.([[1, 2, 1], [2, 3, 2]]))
+    SVector{3, Int}.([[1, 2, 1], [2, 3, 2]]),
+)
 
 # With periodic boundary conditions, we expect a different dispersion pattern distribution.
 # `probabilities` sorts the dispersion patterns, so we must also consider frequencies of
@@ -36,9 +37,9 @@ o = SpatialDispersion(stencil, x, c = 3, periodic = true)
 # "311" [1]
 # "313" [1]
 @test probabilities_and_outcomes(o, x) == (
-    [1/9, 3/9, 1/9, 2/9, 1/9, 1/9],
-    SVector{3, Int}.([[1, 1, 3], [1, 2, 1], [2, 1, 2], [2, 3, 2], [3, 1, 1], [3, 1, 3]])
-    )
+    [1 / 9, 3 / 9, 1 / 9, 2 / 9, 1 / 9, 1 / 9],
+    SVector{3, Int}.([[1, 1, 3], [1, 2, 1], [2, 1, 2], [2, 3, 2], [3, 1, 1], [3, 1, 3]]),
+)
 
 # Normalized Shannon entropy should be close to 1 when the obtained probability
 # distribution is close to uniform. This happens for uniform noise.
@@ -49,7 +50,7 @@ o = SpatialDispersion(stencil, x, c = 3, periodic = true)
 using Random: Xoshiro
 y = rand(Xoshiro(1234), 0:1, 100, 100);
 o_y = SpatialDispersion(stencil, y, c = 2)
-o_y_presymb = SpatialDispersion(stencil, y; skip_encoding =  true, L = 2)
+o_y_presymb = SpatialDispersion(stencil, y; skip_encoding = true, L = 2)
 
 @test 0.99 <= information_normalized(o_y, y) <= 1.0
 @test 0.99 <= information_normalized(o_y_presymb, y) <= 1.0

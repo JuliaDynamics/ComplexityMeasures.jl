@@ -29,8 +29,10 @@ Base.@kwdef struct Jackknife{I <: InformationMeasure} <: DiscreteInfoEstimatorGe
     definition::I = Shannon()
 end
 
-function information(hest::Jackknife, pest::ProbabilitiesEstimator,
-        outcomemodel::OutcomeSpace, x)
+function information(
+        hest::Jackknife, pest::ProbabilitiesEstimator,
+        outcomemodel::OutcomeSpace, x
+    )
     (; definition) = hest
     N = length(x)
 
@@ -48,5 +50,5 @@ function information(hest::Jackknife, pest::ProbabilitiesEstimator,
     end
 
     # The jackknifed estimate
-    return N * i_plugin - (N - 1)/N * sum(i_jackknifed)
+    return N * i_plugin - (N - 1) / N * sum(i_jackknifed)
 end

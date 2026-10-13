@@ -4,20 +4,20 @@
 # --------------------------------------------------------------------------------
 
 # get stencil in the form of vectors of cartesian indices from either input type
-stencil_to_offsets(stencil::Vector{CartesianIndex{D}}) where D = stencil, D
+stencil_to_offsets(stencil::Vector{CartesianIndex{D}}) where {D} = stencil, D
 
 function stencil_to_offsets(stencil::NTuple{2, NTuple{D, T}}) where {D, T}
     extent, lag = stencil
     # generate a D-dimensional stencil
     # start by generating a list of iterators for each dimension
-    iters = [0:lag[i]:extent[i]-1 for i in 1:D]
+    iters = [0:lag[i]:(extent[i] - 1) for i in 1:D]
     # then generate the stencil. We use an iterator product that we basically only reshape
     # after that
     stencil = CartesianIndex.(vcat(collect(Iterators.product(iters...))...))
     return stencil, D
 end
 
-function stencil_to_offsets(stencil::Array{Int, D}) where D
+function stencil_to_offsets(stencil::Array{Int, D}) where {D}
     # translate D-dim array into stencil of cartesian indices (of dimension D)
     stencil = [idx - CartesianIndex(Tuple(ones(Int, D))) for idx in findall(Bool.(stencil))]
     # subtract first coordinate from everything to get a stencil that contains (0,0)
@@ -34,7 +34,7 @@ Count the number of elements in the `stencil`.
 function stencil_length end
 stencil_length(stencil::Vector{CartesianIndex{D}}) where {D} = length(stencil)
 stencil_length(stencil::NTuple{2, NTuple{D, T}}) where {D, T} = prod(stencil[1])
-stencil_length(stencil::Array{Int, D}) where D = sum(stencil)
+stencil_length(stencil::Array{Int, D}) where {D} = sum(stencil)
 
 function preprocess_spatial(stencil, x::AbstractArray, periodic::Bool = true)
     arraysize = size(x)
@@ -49,7 +49,7 @@ function preprocess_spatial(stencil, x::AbstractArray, periodic::Bool = true)
         # Safety check
         minoffsets = [min(0, minimum(s[i] for s in stencil)) for i in 1:D]
         ranges = Iterators.product(
-            [(1-minoffsets[i]):(arraysize[i]-maxoffsets[i]) for i in 1:D]...
+            [(1 - minoffsets[i]):(arraysize[i] - maxoffsets[i]) for i in 1:D]...
         )
         valid = Base.Generator(idxs -> CartesianIndex{D}(idxs), ranges)
     end
@@ -59,14 +59,14 @@ end
 
 # This source code is a modification of the code of Agents.jl that finds neighbors
 # in grid-like spaces. It's the code of `nearby_positions` in `grid_general.jl`.
-function pixels_in_stencil(est::SpatialOutcomeSpace{D,false}, pixel) where {D}
+function pixels_in_stencil(est::SpatialOutcomeSpace{D, false}, pixel) where {D}
     @inbounds for i in eachindex(est.stencil)
         est.viewer[i] = est.stencil[i] + pixel
     end
     return est.viewer
 end
 
-function pixels_in_stencil(est::SpatialOutcomeSpace{D,true}, pixel) where {D}
+function pixels_in_stencil(est::SpatialOutcomeSpace{D, true}, pixel) where {D}
     @inbounds for i in eachindex(est.stencil)
         # It's annoying that we have to change to tuple and then to CartesianIndex
         # because iteration over cartesian indices is not allowed. But oh well.

@@ -11,7 +11,7 @@ function maximum_neighbor_distances(pts, w::Int, k::Int)
 end
 
 "Volume of a unit ball in R^d."
-ball_volume(d::Int) = π^(d/2)/gamma((d/2)+1)
+ball_volume(d::Int) = π^(d / 2) / gamma((d / 2) + 1)
 
 abstract type NNDifferentialInfoEstimator{I} <: DifferentialInfoEstimator{I} end
 

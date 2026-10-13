@@ -49,17 +49,17 @@ struct OrdinalPatternEncoding{M, F} <: Encoding
     perm::MVector{M, Int}
     lt::F
 end
-special_typeparameter_info(::Type{OrdinalPatternEncoding{m}}) where m = "{$m}"
+special_typeparameter_info(::Type{OrdinalPatternEncoding{m}}) where {m} = "{$m}"
 
-function OrdinalPatternEncoding{m}(lt::F = isless_rand) where {m,F}
-    OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
+function OrdinalPatternEncoding{m}(lt::F = isless_rand) where {m, F}
+    return OrdinalPatternEncoding{m, F}(zero(MVector{m, Int}), lt)
 end
 OrdinalPatternEncoding() = OrdinalPatternEncoding{3}(isless_rand)
 
 # So that SymbolicPerm stuff fallback here
 total_outcomes(::OrdinalPatternEncoding{m}) where {m} = factorial(m)
 function outcome_space(::OrdinalPatternEncoding{m}) where {m}
-    collect(SVector{m}(p) for p in permutations(1:m))
+    return collect(SVector{m}(p) for p in permutations(1:m))
 end
 
 # Notice that `χ` is an element of a `StateSpaceSet`, so most definitely a static vector in
@@ -77,11 +77,11 @@ end
 function permutation_to_integer(perm)
     m = length(perm)
     n = 0
-    for i = 1:m-1
-        for j = i+1:m
+    for i in 1:(m - 1)
+        for j in (i + 1):m
             n += perm[i] > perm[j] ? 1 : 0
         end
-        n = (m-i)*n
+        n = (m - i) * n
     end
     # The Lehmer code actually results in 0 being an encoded symbol. Shift by 1, so that
     # encodings are the positive integers.
@@ -99,7 +99,7 @@ function decode(::OrdinalPatternEncoding{m}, s::Integer) where {m}
     # Reconstruct the permutation from the factorial representation
     xs = 1:m |> collect
     perm = zeros(MVector{m, Int})
-    for i = 1:m
+    for i in 1:m
         perm[i] = popat!(xs, f[i] + 1)
     end
 
@@ -126,7 +126,7 @@ function base10_to_factorial(s::Int, ndigits::Int = ndigits_in_factorial_base(s)
     q = s ÷ 1
     r = s % 1
     remainders[end] = r
-    for k = 2:ndigits
+    for k in 2:ndigits
         r = q % k
         q = q ÷ k
         remainders[end - k + 1] = r
@@ -146,7 +146,7 @@ function ndigits_in_factorial_base(n::Int)
 end
 
 function isless_rand(a, b)
-    if  a < b
+    return if a < b
         true
     elseif a > b
         false

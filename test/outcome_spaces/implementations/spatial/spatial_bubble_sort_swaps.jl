@@ -5,7 +5,7 @@ stencil = [1 1; 1 1];
 x = rand(10, 10);
 @test SpatialBubbleSortSwaps(stencil, x) isa SpatialBubbleSortSwaps
 
-# m = 4 for the given stencil, so there should be ((4 * (4 - 1)) ÷ 2) + 1 = 7 outcomes 
+# m = 4 for the given stencil, so there should be ((4 * (4 - 1)) ÷ 2) + 1 = 7 outcomes
 # (we also count 0 swaps as an outcome)
 stencil = [1 1; 1 1];
 x = rand(500, 500); # enough data that all outcomes should be covered.
@@ -28,7 +28,3 @@ s = repr(o)
 @test !occursin("arraysize = ", s)
 @test !occursin("valid = ", s)
 @test !occursin("encoding = ", s)
-
-
-
-
