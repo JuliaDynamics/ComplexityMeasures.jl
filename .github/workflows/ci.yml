@@ -17,6 +17,7 @@ jobs:
       matrix:
         version:
           - '1'
+          - 'min'
         os:  [ubuntu-latest] # adjust according to need, e.g. os: [ubuntu-latest] if testing only on linux
         arch:
           - x64

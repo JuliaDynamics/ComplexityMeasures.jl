@@ -97,12 +97,12 @@ end
 FixedRectangularBinning(ranges) = FixedRectangularBinning(ranges, false)
 
 """
-    FixedRectangularBinning(range::AbstractRange, D::Int = 1, precise = false)
+    FixedRectangularBinning(range::AbstractVector, D::Int = 1, precise = false)
 
 This is a convenience method where each dimension of the binning has the same range
 and the input data are `D` dimensional, which defaults to 1 (timeseries).
 """
-function FixedRectangularBinning(r::AbstractRange, D::Int = 1, precise = false)
+function FixedRectangularBinning(r::AbstractVector, D::Int = 1, precise = false)
     return FixedRectangularBinning(ntuple(x -> r, D), precise)
 end
 
