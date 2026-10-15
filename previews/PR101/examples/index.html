@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Entropies.jl examples · Entropies.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="https://fonts.googleapis.com/css?family=Montserrat|Source+Code+Pro&amp;display=swap" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">Entropies.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Entropies.jl</a></li><li><a class="tocitem" href="../probabilities/">Probabilities</a></li><li><a class="tocitem" href="../entropies/">Entropies</a></li><li><a class="tocitem" href="../complexity_measures/">Complexity measures</a></li><li class="is-active"><a class="tocitem" href>Entropies.jl examples</a><ul class="internal"><li><a class="tocitem" href="#Nearest-neighbor-direct-entropy-example"><span>Nearest neighbor direct entropy example</span></a></li><li><a class="tocitem" href="#Permutation-entropy-example"><span>Permutation entropy example</span></a></li><li><a class="tocitem" href="#Kernel-density-example"><span>Kernel density example</span></a></li><li><a class="tocitem" href="#Wavelet-entropy-example"><span>Wavelet entropy example</span></a></li><li><a class="tocitem" href="#dispersion_examples"><span>Dispersion and reverse dispersion entropy</span></a></li><li><a class="tocitem" href="#Normalized-entropy-for-comparing-different-signals"><span>Normalized entropy for comparing different signals</span></a></li></ul></li><li><a class="tocitem" href="../utils/">Utility methods</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Entropies.jl examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Entropies.jl examples</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaDynamics/Entropies.jl/blob/main/docs/src/examples.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h1><h2 id="Nearest-neighbor-direct-entropy-example"><a class="docs-heading-anchor" href="#Nearest-neighbor-direct-entropy-example">Nearest neighbor direct entropy example</a><a id="Nearest-neighbor-direct-entropy-example-1"></a><a class="docs-heading-anchor-permalink" href="#Nearest-neighbor-direct-entropy-example" title="Permalink"></a></h2><p>This example reproduces Figure in Charzyńska &amp; Gambin (2016)<sup class="footnote-reference"><a id="citeref-Charzyńska2016" href="#footnote-Charzyńska2016">[Charzyńska2016]</a></sup>. Both estimators nicely converge to the &quot;true&quot; entropy with increasing time series length. For a uniform 1D distribution <span>$U(0, 1)$</span>, the true entropy is <code>0</code>.</p><pre><code class="language-julia hljs">using DynamicalSystems, CairoMakie, Statistics
+using Distributions: Uniform, Normal
+
+Ns = [100:100:500; 1000:1000:10000]
+Ekl = Vector{Vector{Float64}}(undef, 0)
+Ekr = Vector{Vector{Float64}}(undef, 0)
+
+nreps = 50
+for N in Ns
+    kl = Float64[]
+    kr = Float64[]
+    for i = 1:nreps
+        pts = Dataset([rand(Uniform(0, 1), 1) for i = 1:N]);
+
+        push!(kl, entropy_kozachenkoleonenko(pts, w = 0, k = 1))
+        # with k = 1, Kraskov is virtually identical to
+        # Kozachenko-Leonenko, so pick a higher number of neighbors
+        push!(kr, entropy_kraskov(pts, w = 0, k = 3))
+    end
+    push!(Ekl, kl)
+    push!(Ekr, kr)
+end
+
+fig = Figure()
+ax = Axis(fig[1,1]; ylabel = &quot;entropy (nats)&quot;, title = &quot;Kozachenko-Leonenko&quot;)
+lines!(ax, Ns, mean.(Ekl); color = Cycled(1))
+band!(ax, Ns, mean.(Ekl) .+ std.(Ekl), mean.(Ekl) .- std.(Ekl);
+color = (Main.COLORS[1], 0.5))
+
+ay = Axis(fig[2,1]; xlabel = &quot;time step&quot;, ylabel = &quot;entropy (nats)&quot;, title = &quot;Kraskov&quot;)
+lines!(ay, Ns, mean.(Ekr); color = Cycled(2))
+band!(ay, Ns, mean.(Ekr) .+ std.(Ekr), mean.(Ekr) .- std.(Ekr);
+color = (Main.COLORS[2], 0.5))
+
+fig</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&lt;&lt; @example-block not executed in draft mode &gt;&gt;</code></pre><h2 id="Permutation-entropy-example"><a class="docs-heading-anchor" href="#Permutation-entropy-example">Permutation entropy example</a><a id="Permutation-entropy-example-1"></a><a class="docs-heading-anchor-permalink" href="#Permutation-entropy-example" title="Permalink"></a></h2><p>This example reproduces an example from Bandt and Pompe (2002), where the permutation entropy is compared with the largest Lyapunov exponents from time series of the chaotic logistic map. Entropy estimates using <a href="@ref"><code>SymbolicWeightedPermutation</code></a> and <a href="@ref"><code>SymbolicAmplitudeAwarePermutation</code></a> are added here for comparison.</p><pre><code class="language-julia hljs">using DynamicalSystems, CairoMakie
+
+ds = Systems.logistic()
+rs = 3.4:0.001:4
+N_lyap, N_ent = 100000, 10000
+m, τ = 6, 1 # Symbol size/dimension and embedding lag
+
+# Generate one time series for each value of the logistic parameter r
+lyaps = Float64[]
+hs_perm = Float64[]
+hs_wtperm = Float64[]
+hs_ampperm = Float64[]
+
+base = Base.MathConstants.e
+for r in rs
+    ds.p[1] = r
+    push!(lyaps, lyapunov(ds, N_lyap))
+
+    x = trajectory(ds, N_ent) # time series
+    hperm = Entropies.entropy_renyi(x, SymbolicPermutation(m = m, τ = τ), base = base)
+    hwtperm = Entropies.entropy_renyi(x, SymbolicWeightedPermutation(m = m, τ = τ), base = base)
+    hampperm = Entropies.entropy_renyi(x, SymbolicAmplitudeAwarePermutation(m = m, τ = τ), base = base)
+
+    push!(hs_perm, hperm); push!(hs_wtperm, hwtperm); push!(hs_ampperm, hampperm)
+end
+
+fig = Figure()
+a1 = Axis(fig[1,1]; ylabel = L&quot;\lambda&quot;)
+lines!(a1, rs, lyaps); ylims!(a1, (-2, log(2)))
+a2 = Axis(fig[2,1]; ylabel = L&quot;h_6 (SP)&quot;)
+lines!(a2, rs, hs_perm; color = Cycled(2))
+a3 = Axis(fig[3,1]; ylabel = L&quot;h_6 (WT)&quot;)
+lines!(a3, rs, hs_wtperm; color = Cycled(3))
+a4 = Axis(fig[4,1]; ylabel = L&quot;h_6 (SAAP)&quot;)
+lines!(a4, rs, hs_ampperm; color = Cycled(4))
+a4.xlabel = L&quot;r&quot;
+
+for a in (a1,a2,a3)
+    hidexdecorations!(a, grid = false)
+end
+fig</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&lt;&lt; @example-block not executed in draft mode &gt;&gt;</code></pre><h2 id="Kernel-density-example"><a class="docs-heading-anchor" href="#Kernel-density-example">Kernel density example</a><a id="Kernel-density-example-1"></a><a class="docs-heading-anchor-permalink" href="#Kernel-density-example" title="Permalink"></a></h2><p>Here, we draw some random points from a 2D normal distribution. Then, we use kernel density estimation to associate a probability to each point <code>p</code>, measured by how many points are within radius <code>1.5</code> of <code>p</code>. Plotting the actual points, along with their associated probabilities estimated by the KDE procedure, we get the following surface plot.</p><pre><code class="language-julia hljs">using DynamicalSystems, CairoMakie, Distributions
+𝒩 = MvNormal([1, -4], 2)
+N = 500
+D = Dataset(sort([rand(𝒩) for i = 1:N]))
+x, y = columns(D)
+p = probabilities(D, NaiveKernel(1.5))
+fig, ax = scatter(D[:, 1], D[:, 2], zeros(N);
+    markersize=8, axis=(type = Axis3,)
+)
+surface!(ax, x, y, p.p)
+ax.zlabel = &quot;P&quot;
+ax.zticklabelsvisible = false
+fig</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&lt;&lt; @example-block not executed in draft mode &gt;&gt;</code></pre><h2 id="Wavelet-entropy-example"><a class="docs-heading-anchor" href="#Wavelet-entropy-example">Wavelet entropy example</a><a id="Wavelet-entropy-example-1"></a><a class="docs-heading-anchor-permalink" href="#Wavelet-entropy-example" title="Permalink"></a></h2><p>The scale-resolved wavelet entropy should be lower for very regular signals (most of the energy is contained at one scale) and higher for very irregular signals (energy spread more out across scales).</p><pre><code class="language-julia hljs">using DynamicalSystems, CairoMakie
+N, a = 1000, 10
+t = LinRange(0, 2*a*π, N)
+
+x = sin.(t);
+y = sin.(t .+ cos.(t/0.5));
+z = sin.(rand(1:15, N) ./ rand(1:10, N))
+
+h_x = entropy_wavelet(x)
+h_y = entropy_wavelet(y)
+h_z = entropy_wavelet(z)
+
+fig = Figure()
+ax = Axis(fig[1,1]; ylabel = &quot;x&quot;)
+lines!(ax, t, x; color = Cycled(1), label = &quot;h=$(h=round(h_x, sigdigits = 5))&quot;);
+ay = Axis(fig[2,1]; ylabel = &quot;y&quot;)
+lines!(ay, t, y; color = Cycled(2), label = &quot;h=$(h=round(h_y, sigdigits = 5))&quot;);
+az = Axis(fig[3,1]; ylabel = &quot;z&quot;, xlabel = &quot;time&quot;)
+lines!(az, t, z; color = Cycled(3), label = &quot;h=$(h=round(h_z, sigdigits = 5))&quot;);
+for a in (ax, ay, az); axislegend(a); end
+for a in (ax, ay); hidexdecorations!(a; grid=false); end
+fig</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&lt;&lt; @example-block not executed in draft mode &gt;&gt;</code></pre><h2 id="dispersion_examples"><a class="docs-heading-anchor" href="#dispersion_examples">Dispersion and reverse dispersion entropy</a><a id="dispersion_examples-1"></a><a class="docs-heading-anchor-permalink" href="#dispersion_examples" title="Permalink"></a></h2><p>Here we reproduce parts of figure 3 in Li et al. (2019), computing reverse and regular dispersion entropy for a time series consisting of normally distributed noise with a single spike in the middle of the signal. We compute the entropies over a range subsets of the data, using a sliding window consisting of 70 data points, stepping the window 10 time steps at a time.</p><p>Note: the results here are not exactly the same as in the original paper, because Li et al. (2019) base their examples on randomly generated numbers and do not provide code that specify random number seeds.</p><pre><code class="language-julia hljs">using Entropies, DynamicalSystems, Random, CairoMakie, Distributions
+
+n = 1000
+ts = 1:n
+x = [i == n ÷ 2 ? 50.0 : 0.0 for i in ts]
+rng = Random.default_rng()
+s = rand(rng, Normal(0, 1), n)
+y = x .+ s
+
+ws = 70
+windows = [t:t+ws for t in 1:10:n-ws]
+rdes = zeros(length(windows))
+des = zeros(length(windows))
+pes = zeros(length(windows))
+
+m, c = 2, 6
+est_de = Dispersion(symbolization = GaussianSymbolization(c), m = m, τ = 1)
+
+for (i, window) in enumerate(windows)
+    rdes[i] = reverse_dispersion(y[window], est_de; normalize = true)
+    des[i] = entropy_renyi_norm(y[window], est_de)
+end
+
+fig = Figure()
+
+a1 = Axis(fig[1,1]; xlabel = &quot;Time step&quot;, ylabel = &quot;Value&quot;)
+lines!(a1, ts, y)
+display(fig)
+
+a2 = Axis(fig[2, 1]; xlabel = &quot;Time step&quot;, ylabel = &quot;Value&quot;)
+p_rde = scatterlines!([first(w) for w in windows], rdes,
+    label = &quot;Reverse dispersion entropy&quot;,
+    color = :black,
+    markercolor = :black, marker = &#39;●&#39;)
+p_de = scatterlines!([first(w) for w in windows], des,
+    label = &quot;Dispersion entropy&quot;,
+    color = :red,
+    markercolor = :red, marker = &#39;x&#39;, markersize = 20)
+
+axislegend(position = :rc)
+ylims!(0, max(maximum(pes), 1))
+fig</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&lt;&lt; @example-block not executed in draft mode &gt;&gt;</code></pre><h2 id="Normalized-entropy-for-comparing-different-signals"><a class="docs-heading-anchor" href="#Normalized-entropy-for-comparing-different-signals">Normalized entropy for comparing different signals</a><a id="Normalized-entropy-for-comparing-different-signals-1"></a><a class="docs-heading-anchor-permalink" href="#Normalized-entropy-for-comparing-different-signals" title="Permalink"></a></h2><p>When comparing different signals or signals that have different length, it is best to normalize entropies so that the &quot;complexity&quot; or &quot;disorder&quot; quantification is directly comparable between signals. Here is an example based on the <a href="#Wavelet-entropy-example">Wavelet entropy example</a> (where we use the spectral entropy instead of the wavelet entropy):</p><pre><code class="language-julia hljs">using DynamicalSystems
+N1, N2, a = 101, 100001, 10
+
+for N in (N1, N2)
+    t = LinRange(0, 2*a*π, N)
+    x = sin.(t) # periodic
+    y = sin.(t .+ cos.(t/0.5)) # periodic, complex spectrum
+    z = sin.(rand(1:15, N) ./ rand(1:10, N)) # random
+    w = trajectory(Systems.lorenz(), N÷10; Δt = 0.1, Ttr = 100)[:, 1] # chaotic
+
+    for q in (x, y, z, w)
+        h = entropy(q, PowerSpectrum())
+        n = entropy_normalized(q, PowerSpectrum())
+        println(&quot;entropy: $(h), normalized: $(n).&quot;)
+    end
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">&lt;&lt; @example-block not executed in draft mode &gt;&gt;</code></pre><p>You see that while the direct entropy values of the chaotic and noisy signals change massively with <code>N</code> but they are almost the same for the normalized version. For the regular signals, the entropy decreases nevertheless because the noise contribution of the Fourier computation becomes less significant.</p><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-Charzyńska2016"><a class="tag is-link" href="#citeref-Charzyńska2016">Charzyńska2016</a>Charzyńska, A., &amp; Gambin, A. (2016). Improvement of the k-NN entropy estimator with applications in systems biology. Entropy, 18(1), 13.</li><li class="footnote" id="footnote-Rostaghi2016"><a class="tag is-link" href="#citeref-Rostaghi2016">Rostaghi2016</a>Rostaghi, M., &amp; Azami, H. (2016). Dispersion entropy: A measure for time-series analysis. IEEE Signal Processing Letters, 23(5), 610-614.</li><li class="footnote" id="footnote-Li2019"><a class="tag is-link" href="#citeref-Li2019">Li2019</a>Li, Y., Gao, X., &amp; Wang, L. (2019). Reverse dispersion entropy: a new complexity measure for sensor signal. Sensors, 19(23), 5203.</li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../complexity_measures/">« Complexity measures</a><a class="docs-footer-nextpage" href="../utils/">Utility methods »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Tuesday 27 September 2022 11:34">Tuesday 27 September 2022</span>. Using Julia version 1.8.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
