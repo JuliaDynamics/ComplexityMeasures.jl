@@ -2,6 +2,12 @@
 
 Changelog is kept with respect to version 0.11 of Entropies.jl. From version v2.0 onwards, this package has been renamed to ComplexityMeasures.jl.
 
+# 3.12.2
+
+- Fixed `MillerMadow`: the bias correction ``(m - 1)/2N`` is in nats and is now converted to the base of the entropy (it was added unconverted, e.g. to the default base-2 entropy). `N` is now the number of encoded points instead of `length(x)`, which differs for outcome spaces that embed the input, e.g. `OrdinalPatterns`.
+- Fixed `ChaoShen` returning `NaN` when every outcome is a singleton.
+- Fixed the optimal shrinkage intensity of `Shrinkage`, which multiplied by the sum of squared distances to the target instead of dividing by it (eq. 5 in Hausser & Strimmer, 2009).
+
 # 3.12
 
 - `FixedRectangularBinning` with `precise = true` now accepts sorted vectors of (non-uniformly spaced) bin edges, e.g. `10.0 .^ (-3:3)`, in addition to `AbstractRange`s.
