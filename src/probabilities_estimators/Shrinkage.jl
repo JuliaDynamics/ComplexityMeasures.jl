@@ -107,7 +107,9 @@ function get_λ(est, n, probs_observed, t, m)
             tₖ = get_tₖ(t, k, m)
             densum += (tₖ - probs_observed[k])^2
         end
-        λ = (1 - sum(probs_observed .^ 2)) / (n - 1) * densum
+        # If the estimate already equals the target (densum = 0), shrinkage changes
+        # nothing, so use λ = 0 (this avoids 0/0 for a single observed outcome).
+        λ = iszero(densum) ? 0.0 : (1 - sum(probs_observed .^ 2)) / ((n - 1) * densum)
         # User-picked shrinkage intensity.
     else
         λ = est.λ
