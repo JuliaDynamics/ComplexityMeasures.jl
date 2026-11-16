@@ -9,6 +9,7 @@ end
     # Core
     testfile("counts/counts.jl")
     testfile("probabilities/probabilities.jl")
+    testfile("probabilities/majorization.jl")
     testfile("pretty_printing.jl")
 
     # # Outcome spaces

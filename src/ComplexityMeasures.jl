@@ -21,6 +21,7 @@ include("core/counts.jl")
 include("core/probabilities.jl")
 include("core/print_counts_probs.jl") # pretty printing
 include("core/information_measures.jl")
+include("core/majorization.jl")
 include("core/information_functions.jl")
 include("core/encodings.jl")
 include("core/complexity.jl")
