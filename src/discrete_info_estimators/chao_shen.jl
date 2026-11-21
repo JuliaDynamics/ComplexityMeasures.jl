@@ -42,7 +42,7 @@ function information(hest::ChaoShen{<:Shannon}, pest::ProbabilitiesEstimator, o:
 
     N = sum(cts)
     if f₁ == N
-        f₁ == N - 1
+        f₁ = N - 1
     end
     C = 1 - (f₁ / N)
 
