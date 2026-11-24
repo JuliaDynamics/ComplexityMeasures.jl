@@ -67,3 +67,12 @@ end
     s = "[OrdinalPatterns{3}(encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1), OrdinalPatterns{3}(encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1), OrdinalPatterns{3}(encoding = OrdinalPatternEncoding(perm = [0, 0, 0], lt = isless_rand), τ = 1)]"
     @test occursin(s, repr(os))
 end
+
+@testset "usage of isless" begin
+    o = OrdinalPatternEncoding{2}() # random is less
+    res = [encode(o, [1,1]) for i in 1:1000]
+    @test sort!(unique(res)) == [1, 2]
+    o = OrdinalPatternEncoding{2}(isless) # normal is less
+    res = [encode(o, [1,1]) for i in 1:1000]
+    @test unique(res) == [1]
+end

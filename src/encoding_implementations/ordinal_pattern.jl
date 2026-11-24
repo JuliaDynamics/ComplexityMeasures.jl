@@ -68,7 +68,7 @@ function encode(encoding::OrdinalPatternEncoding{m}, χ::AbstractVector) where {
     if m != length(χ)
         throw(ArgumentError("Permutation order and length of input must match!"))
     end
-    perm = sortperm!(encoding.perm, χ)
+    perm = sortperm!(encoding.perm, χ; lt = encoding.lt)
     return permutation_to_integer(perm)
 end
 
@@ -103,7 +103,7 @@ function decode(::OrdinalPatternEncoding{m}, s::Integer) where {m}
         perm[i] = popat!(xs, f[i] + 1)
     end
 
-    return SVector{m, Int}(perm) # converting from SVector to MVector is essentially free
+    return SVector{m, Int}(perm) # converting to SVector is free
 end
 
 """
